@@ -1,16 +1,16 @@
-import React from 'react'
-import { Label, RadioGroup, SizeTokens, XStack, YStack } from 'tamagui'
+import React from "react"
+import { Label, RadioGroup, SizeTokens, XStack } from "tamagui"
 
 type RadioGroupItemProps = {
-    size: SizeTokens;
-    value: string;
-    label: string;
+    size: SizeTokens
+    value: string
+    label: string
 }
 
 const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
     size,
     value,
-    label
+    label,
 }) => {
     const id = `radiogroup-${value}`
     return (
