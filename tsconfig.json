@@ -4,6 +4,15 @@
         "@tsconfig/react-native/tsconfig.json"
     ],
     "compilerOptions": {
-        "strict": true
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "components/*": [
+                "src/components/*"
+            ],
+            "models/*": [
+                "src/models/*"
+            ]
+        }
     }
 }

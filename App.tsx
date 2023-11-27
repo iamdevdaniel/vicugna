@@ -1,11 +1,16 @@
 import React, { FC } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+import { Form10 } from './src/components'
+import { TamaguiProvider } from 'tamagui'
+import tamaguiConfig from './tamagui.config'
 
 const App: FC = () => {
     return (
-        <View style={styles.container}>
-            <Text>Tupelo</Text>
-        </View>
+        <TamaguiProvider config={tamaguiConfig}>
+            <View style={styles.container}>
+                <Form10 />
+            </View>
+        </TamaguiProvider>
     )
 }
 

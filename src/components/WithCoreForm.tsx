@@ -1,13 +1,8 @@
 import React, { useState } from 'react'
 import { View } from 'react-native'
+import { WrappedFormProps } from 'src/models'
 
-export interface WrappedFormProps {
-    formData: Record<string, unknown>;
-    onInputChange: (name: string, value: string) => void;
-    onSubmit: (formData: Record<string, unknown>) => void;
-}
-
-const withCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
+const WithCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
     return () => {
 
         const [formData, setFormData] = useState<Record<string, unknown>>({})
@@ -36,4 +31,4 @@ const withCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
 }
 
 
-export default withCoreForm
+export default WithCoreForm
