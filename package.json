@@ -11,10 +11,15 @@
         "lint:fix": "eslint . --fix"
     },
     "dependencies": {
+        "@expo/webpack-config": "^19.0.0",
+        "@tamagui/config": "^1.79.1",
         "expo": "~49.0.15",
         "expo-status-bar": "~1.6.0",
         "react": "18.2.0",
-        "react-native": "0.72.6"
+        "react-dom": "18.2.0",
+        "react-native": "0.72.6",
+        "react-native-web": "~0.19.6",
+        "tamagui": "^1.79.1"
     },
     "devDependencies": {
         "@babel/core": "^7.20.0",
@@ -22,8 +27,9 @@
         "@types/jest": "^29.5.8",
         "@types/react": "~18.2.14",
         "@types/react-test-renderer": "^18.0.6",
-        "@typescript-eslint/eslint-plugin": "^6.11.0",
-        "@typescript-eslint/parser": "^6.11.0",
+        "@typescript-eslint/eslint-plugin": "^6.12.0",
+        "@typescript-eslint/parser": "^6.12.0",
+        "babel-plugin-module-resolver": "^5.0.0",
         "eslint": "^8.54.0",
         "eslint-plugin-react": "^7.33.2",
         "prettier": "3.1.0",
