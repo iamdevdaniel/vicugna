@@ -1,14 +1,18 @@
 import React, { FC } from 'react'
 import {
     Button,
+    Checkbox,
     Form,
     H4,
     Input,
+    Label,
     RadioGroup,
     Text,
     TextArea,
+    XStack,
     YStack,
 } from 'tamagui'
+import { Check as CheckIcon } from '@tamagui/lucide-icons'
 import { Formik } from 'formik'
 import { WithCoreForm, RadioGroupItem } from '@components'
 import { WrappedFormProps } from '@models'
@@ -81,7 +85,7 @@ const Form10: FC<WrappedFormProps> = ({
                         <Input
                             size={dimensions.inputSpacing}
                             borderWidth={dimensions.inputBorderWidth}
-                            onChangeText={handleChange('live-weight')}
+                            onChangeText={handleChange('text-live-weight')}
                         />
                     </>
                     <>
@@ -89,11 +93,13 @@ const Form10: FC<WrappedFormProps> = ({
                         <Input
                             size={dimensions.inputSpacing}
                             borderWidth={dimensions.inputBorderWidth}
+                            onChangeText={handleChange('text-fiber-length')}
                         />
                     </>
                     <RadioGroup
                         aria-labelledby="Select one item"
                         name="radio-phisycal-state"
+                        onValueChange={handleChange('radio-phisycal-state')}
                     >
                         <H4>{'Condición Corporal'}</H4>
                         <YStack
@@ -120,6 +126,7 @@ const Form10: FC<WrappedFormProps> = ({
                     <RadioGroup
                         aria-labelledby="Select one item"
                         name="radio-pregnancy"
+                        onValueChange={handleChange('radio-pregnancy')}
                     >
                         <H4>{'Gestación'}</H4>
                         <YStack
@@ -146,6 +153,7 @@ const Form10: FC<WrappedFormProps> = ({
                     <RadioGroup
                         aria-labelledby="Select one item"
                         name="radio-parasite"
+                        onValueChange={handleChange('radio-parasite')}
                     >
                         <H4>{'Parásitos Externos'}</H4>
                         <YStack
@@ -166,7 +174,8 @@ const Form10: FC<WrappedFormProps> = ({
                     </RadioGroup>
                     <RadioGroup
                         aria-labelledby="Select one item"
-                        name="radio-parasite"
+                        name="radio-mange"
+                        onValueChange={handleChange('radio-mange')}
                     >
                         <H4>{'Sarna'}</H4>
                         <YStack
@@ -175,79 +184,54 @@ const Form10: FC<WrappedFormProps> = ({
                         >
                             <RadioGroupItem
                                 size={dimensions.radioSize}
-                                value="1"
+                                value="light"
+                                label="Leve"
+                            />
+                            <RadioGroupItem
+                                size={dimensions.radioSize}
+                                value="moderate"
                                 label="Moderado"
                             />
                             <RadioGroupItem
                                 size={dimensions.radioSize}
-                                value="2"
+                                value="severe"
                                 label="Severo"
                             />
                         </YStack>
                     </RadioGroup>
-                    <RadioGroup
-                        aria-labelledby="Select one item"
-                        name="radio-dandruff"
-                    >
-                        <H4>{'Caspa'}</H4>
-                        <YStack
-                            alignItems={dimensions.radioAlign}
-                            space={dimensions.radioSpacing}
-                        >
-                            <RadioGroupItem
-                                size={dimensions.radioSize}
-                                value="1"
-                                label="No"
-                            />
-                            <RadioGroupItem
-                                size={dimensions.radioSize}
-                                value="2"
-                                label="Sí"
-                            />
-                        </YStack>
-                    </RadioGroup>
-                    <RadioGroup
-                        aria-labelledby="Select one item"
-                        name="radio-"
-                    >
-                        <H4>{'Esquila'}</H4>
-                        <YStack
-                            alignItems={dimensions.radioAlign}
-                            space={dimensions.radioSpacing}
-                        >
-                            <RadioGroupItem
-                                size={dimensions.radioSize}
-                                value="1"
-                                label="No"
-                            />
-                            <RadioGroupItem
-                                size={dimensions.radioSize}
-                                value="2"
-                                label="Sí"
-                            />
-                        </YStack>
-                    </RadioGroup>
-                    <RadioGroup
-                        aria-labelledby="Select one item"
-                        name="radio-is-dead"
-                    >
-                        <H4>{'Vicuña Muerta'}</H4>
-                        <YStack
-                            alignItems={dimensions.radioAlign}
-                            space={dimensions.radioSpacing}
-                        >
-                            <RadioGroupItem
-                                size={dimensions.radioSize}
-                                value="1"
-                                label="No"
-                            />
-                            <RadioGroupItem
-                                size={dimensions.radioSize}
-                                value="2"
-                                label="Sí"
-                            />
-                        </YStack>
-                    </RadioGroup>
+                    <H4>{'Caspa'}</H4>
+                    <XStack alignItems='center' space={dimensions.checkboxSpacing}>
+                        <Checkbox id={'chckbx-dandruff'} size={dimensions.checkboxSize} >
+                            <Checkbox.Indicator>
+                                <CheckIcon />
+                            </Checkbox.Indicator>
+                        </Checkbox>
+                        <Label size={dimensions.checkboxLabelSize} htmlFor={'chckbx-dandruff'}>
+                            {`Tiene caspa`}
+                        </Label>
+                    </XStack>
+                    <H4>{'Animal muerto'}</H4>
+                    <XStack alignItems='center' space={dimensions.checkboxSpacing}>
+                        <Checkbox id={'chckbx-is-dead'} size={dimensions.checkboxSize} >
+                            <Checkbox.Indicator>
+                                <CheckIcon />
+                            </Checkbox.Indicator>
+                        </Checkbox>
+                        <Label size={dimensions.checkboxLabelSize} htmlFor={'chckbx-is-dead'}>
+                            {`Esta muerto`}
+                        </Label>
+                    </XStack>
+                    <H4>{'Esquila'}</H4>
+                    <XStack alignItems='center' space={dimensions.checkboxSpacing}>
+                        <Checkbox id={'chckbx-can-be-sheared'} size={dimensions.checkboxSize} >
+                            <Checkbox.Indicator>
+                                <CheckIcon />
+                            </Checkbox.Indicator>
+                        </Checkbox>
+                        <Label size={dimensions.checkboxLabelSize} htmlFor={'chckbx-can-be-sheared'}>
+                            {`Se esquila`}
+                        </Label>
+                    </XStack>
                     <>
                         <H4>{'Observaciones'}</H4>
                         <TextArea
