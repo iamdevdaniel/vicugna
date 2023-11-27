@@ -4,15 +4,32 @@
         "@tsconfig/react-native/tsconfig.json"
     ],
     "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react-native",
+        "lib": [
+            "dom",
+            "esnext"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "noEmit": true,
+        "target": "es6",
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
         "strict": true,
         "baseUrl": ".",
         "paths": {
-            "components/*": [
+            "@components/*": [
                 "src/components/*"
             ],
-            "models/*": [
+            "@models/*": [
                 "src/models/*"
             ]
         }
-    }
+    },
+    "exclude": [
+        "node_modules"
+    ]
 }

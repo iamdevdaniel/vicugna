@@ -1,8 +1,8 @@
 import React, { FC } from 'react'
 import { View } from 'react-native'
 import { Button, Text, Label, RadioGroup, SizeTokens, XStack, YStack } from 'tamagui'
-import { WithCoreForm, WithRadioGroupItem } from 'components'
-import { WrappedFormProps } from 'models'
+import { WithCoreForm, WithRadioGroupItem } from '@components'
+import { WrappedFormProps } from '@models'
 
 const Form10: FC<WrappedFormProps> = ({ formData, onInputChange, onSubmit }) => {
 
