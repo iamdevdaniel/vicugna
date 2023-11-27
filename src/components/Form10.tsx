@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC } from 'react'
 import {
     Button,
     Form,
@@ -8,11 +8,11 @@ import {
     Text,
     TextArea,
     YStack,
-} from "tamagui"
-import { Formik } from "formik"
-import { WithCoreForm, WithRadioGroupItem } from "@components"
-import { WrappedFormProps } from "@models"
-import { dimensions } from "@styles/FormDimensions"
+} from 'tamagui'
+import { Formik } from 'formik'
+import { WithCoreForm, WithRadioGroupItem } from '@components'
+import { WrappedFormProps } from '@models'
+import { dimensions } from '@styles/FormDimensions'
 
 const Form10: FC<WrappedFormProps> = ({
     formData,
@@ -24,16 +24,16 @@ const Form10: FC<WrappedFormProps> = ({
     }
 
     return (
-        <Formik initialValues={{ "radio-sex": "" }} onSubmit={handleSubmit}>
+        <Formik initialValues={{ 'radio-sex': '' }} onSubmit={handleSubmit}>
             {({ handleChange, handleSubmit }) => (
                 <Form onSubmit={handleSubmit}>
                     <YStack space={dimensions.formItemsSpacing} width={300}>
                         <RadioGroup
                             aria-labelledby="Select one item"
                             name="radio-sex"
-                            onValueChange={handleChange("radio-sex")}
+                            onValueChange={handleChange('radio-sex')}
                         >
-                            <H4>{"Sexo"}</H4>
+                            <H4>{'Sexo'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -53,9 +53,9 @@ const Form10: FC<WrappedFormProps> = ({
                         <RadioGroup
                             aria-labelledby="Select one item"
                             name="radio-age"
-                            onValueChange={handleChange("radio-age")}
+                            onValueChange={handleChange('radio-age')}
                         >
-                            <H4>{"Edad"}</H4>
+                            <H4>{'Edad'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -78,15 +78,15 @@ const Form10: FC<WrappedFormProps> = ({
                             </YStack>
                         </RadioGroup>
                         <>
-                            <H4>{"Peso Vivo (Kg)"}</H4>
+                            <H4>{'Peso Vivo (Kg)'}</H4>
                             <Input
                                 size={dimensions.inputSpacing}
                                 borderWidth={dimensions.inputBorderWidth}
-                                onChangeText={handleChange("live-weight")}
+                                onChangeText={handleChange('live-weight')}
                             />
                         </>
                         <>
-                            <H4>{"Long. Fibra (cm)"}</H4>
+                            <H4>{'Long. Fibra (cm)'}</H4>
                             <Input
                                 size={dimensions.inputSpacing}
                                 borderWidth={dimensions.inputBorderWidth}
@@ -96,7 +96,7 @@ const Form10: FC<WrappedFormProps> = ({
                             aria-labelledby="Select one item"
                             name="radio-phisycal-state"
                         >
-                            <H4>{"Condición Corporal"}</H4>
+                            <H4>{'Condición Corporal'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -122,7 +122,7 @@ const Form10: FC<WrappedFormProps> = ({
                             aria-labelledby="Select one item"
                             name="radio-pregnancy"
                         >
-                            <H4>{"Gestación"}</H4>
+                            <H4>{'Gestación'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -148,7 +148,7 @@ const Form10: FC<WrappedFormProps> = ({
                             aria-labelledby="Select one item"
                             name="radio-parasite"
                         >
-                            <H4>{"Parásitos Externos"}</H4>
+                            <H4>{'Parásitos Externos'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -169,7 +169,7 @@ const Form10: FC<WrappedFormProps> = ({
                             aria-labelledby="Select one item"
                             name="radio-parasite"
                         >
-                            <H4>{"Sarna"}</H4>
+                            <H4>{'Sarna'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -190,7 +190,7 @@ const Form10: FC<WrappedFormProps> = ({
                             aria-labelledby="Select one item"
                             name="radio-dandruff"
                         >
-                            <H4>{"Caspa"}</H4>
+                            <H4>{'Caspa'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -211,7 +211,7 @@ const Form10: FC<WrappedFormProps> = ({
                             aria-labelledby="Select one item"
                             name="radio-"
                         >
-                            <H4>{"Esquila"}</H4>
+                            <H4>{'Esquila'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -232,7 +232,7 @@ const Form10: FC<WrappedFormProps> = ({
                             aria-labelledby="Select one item"
                             name="radio-is-dead"
                         >
-                            <H4>{"Vicuña Muerta"}</H4>
+                            <H4>{'Vicuña Muerta'}</H4>
                             <YStack
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
@@ -250,7 +250,7 @@ const Form10: FC<WrappedFormProps> = ({
                             </YStack>
                         </RadioGroup>
                         <>
-                            <H4>{"Observaciones"}</H4>
+                            <H4>{'Observaciones'}</H4>
                             <TextArea
                                 size={dimensions.textAreaSize}
                                 borderWidth={dimensions.inputBorderWidth}

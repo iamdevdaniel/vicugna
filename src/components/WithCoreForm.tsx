@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { WrappedFormProps } from "src/models"
+import React, { useState } from 'react'
+import { WrappedFormProps } from 'src/models'
 
 const WithCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
     const CoreForm = () => {
