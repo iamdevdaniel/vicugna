@@ -7,3 +7,4 @@ package-lock.json
 README.md
 tsconfig.json
 tamagui.config.js
+webpack.config.js

@@ -1,22 +1,29 @@
+import React from 'react'
 import { Label, RadioGroup, SizeTokens, XStack, YStack } from 'tamagui'
 
-export function RadioGroupItemWithLabel(props: {
-    size: SizeTokens
-    value: string
-    label: string
-}) {
-    const id = `radiogroup-${props.value}`
+type RadioGroupItemProps = {
+    size: SizeTokens;
+    value: string;
+    label: string;
+}
+
+const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
+    size,
+    value,
+    label
+}) => {
+    const id = `radiogroup-${value}`
     return (
         <XStack width={300} alignItems="center" space="$4">
-            <RadioGroup.Item value={props.value} id={id} size={props.size}>
+            <RadioGroup.Item value={value} id={id} size={size}>
                 <RadioGroup.Indicator />
             </RadioGroup.Item>
 
-            <Label size={props.size} htmlFor={id}>
-                {props.label}
+            <Label size={size} htmlFor={id}>
+                {label}
             </Label>
         </XStack>
     )
 }
 
-export default RadioGroupItemWithLabel
+export default RadioGroupItem
