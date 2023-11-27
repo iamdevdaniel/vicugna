@@ -1,6 +1,3 @@
-import { default as WithCoreForm } from './WithCoreForm'
-import { default as WithRadioGroupItem } from './WithRadioGroupItem'
-import { default as Form10 } from './Form10'
-
-export { WithCoreForm, Form10, WithRadioGroupItem }
-
+export { default as WithCoreForm } from './WithCoreForm'
+export { default as WithRadioGroupItem } from './WithRadioGroupItem'
+export { default as Form10 } from './Form10'

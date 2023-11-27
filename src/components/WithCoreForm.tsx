@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import { WrappedFormProps } from 'src/models'
 
 const WithCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
-    return () => {
+    const CoreForm = () => {
 
         const [formData, setFormData] = useState<Record<string, unknown>>({})
 
@@ -28,6 +28,10 @@ const WithCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
             </View>
         )
     }
+
+    CoreForm.displayName = `WithCoreForm-${WrappedForm.displayName}`
+
+    return CoreForm
 }
 
 
