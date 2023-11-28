@@ -1,3 +1,4 @@
+import React from 'react'
 import { Field, FieldInputProps } from 'formik'
 import { Checkbox, Label, XStack } from 'tamagui'
 import { Check as CheckIcon } from '@tamagui/lucide-icons'
@@ -14,7 +15,7 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({ id, label, name, onChange
     <XStack alignItems='center' space={size.spacing}>
         <Field name={name}>
             {
-                ({ field }: { field: FieldInputProps<any> }) => {
+                ({ field }: { field: FieldInputProps<boolean> }) => {
                     const syntheticEvent = {
                         target: {
                             name: field.name,

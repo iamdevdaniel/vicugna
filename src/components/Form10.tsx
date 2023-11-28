@@ -1,19 +1,15 @@
 import React, { FC } from 'react'
 import {
     Button,
-    Checkbox,
     Form,
     H4,
     Input,
-    Label,
     RadioGroup,
     Text,
     TextArea,
-    XStack,
     YStack,
 } from 'tamagui'
-import { Check as CheckIcon } from '@tamagui/lucide-icons'
-import { Formik, Field, FieldInputProps } from 'formik'
+import { Formik } from 'formik'
 import { WithCoreForm, RadioGroupItem } from '@components'
 import { WrappedFormProps } from '@models'
 import { dimensions } from '@styles/FormDimensions'
@@ -40,7 +36,7 @@ const Form10: FC<WrappedFormProps> = ({
             'radio-parasites': '',
             'chkbx-has-dandruff': null,
             'chckbx-is-dead': null,
-            'chkbx-can-be-sheared': null,
+            'chckbx-can-be-sheared': null,
         }}
         onSubmit={handleSubmit
         }>
