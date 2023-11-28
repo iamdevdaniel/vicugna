@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
-import { View } from 'react-native'
 import { WrappedFormProps } from 'src/models'
 
 const WithCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
     const CoreForm = () => {
-
         const [formData, setFormData] = useState<Record<string, unknown>>({})
 
         const handleInputChange = (name: string, value: string) => {
@@ -19,13 +17,11 @@ const WithCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
         }
 
         return (
-            <View>
-                <WrappedForm
-                    formData={formData}
-                    onInputChange={handleInputChange}
-                    onSubmit={handleSubmit}
-                />
-            </View>
+            <WrappedForm
+                formData={formData}
+                onInputChange={handleInputChange}
+                onSubmit={handleSubmit}
+            />
         )
     }
 
@@ -33,6 +29,5 @@ const WithCoreForm = (WrappedForm: React.FC<WrappedFormProps>) => {
 
     return CoreForm
 }
-
 
 export default WithCoreForm
