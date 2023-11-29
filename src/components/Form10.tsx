@@ -1,10 +1,11 @@
-import React, { FC } from 'react'
+import React from 'react'
 import { Button, Form, H4, RadioGroup, Text, YStack } from 'tamagui'
 import { Formik } from 'formik'
 import {
-    ExtendedRadioItem,
     ExtendedCheckbox,
+    ExtendedCheckboxGroup,
     ExtendedInput,
+    ExtendedRadioItem,
     ExtendedTextArea,
 } from '@components'
 import { WrappedFormProps } from '@models'
@@ -14,7 +15,7 @@ import {
 } from '@resources/settings'
 import { dimensions } from '@styles/FormDimensions'
 
-const Form10: FC<WrappedFormProps> = () => {
+const Form10: React.FC<WrappedFormProps> = () => {
     const handleSubmit = (formValues: Record<string, unknown>) => {
         console.log(formValues)
     }
@@ -196,44 +197,51 @@ const Form10: FC<WrappedFormProps> = () => {
                                 />
                             </YStack>
                         </RadioGroup>
-                        <H4>{'Caspa'}</H4>
-                        <ExtendedCheckbox
-                            id="chkbx-has-dandruff"
-                            name="chkbx-has-dandruff"
-                            label="Tiene caspa"
-                            onChange={() => handleChange('chkbx-has-dandruff')}
-                            size={{
-                                label: dimensions.checkboxLabelSize,
-                                checkBox: dimensions.checkboxSize,
-                                spacing: dimensions.checkboxSpacing,
-                            }}
-                        />
-                        <H4>{'Animal muerto'}</H4>
-                        <ExtendedCheckbox
-                            id="chckbx-is-dead"
-                            name="chckbx-is-dead"
-                            label="Está muerto"
-                            onChange={() => handleChange('chckbx-is-dead')}
-                            size={{
-                                label: dimensions.checkboxLabelSize,
-                                checkBox: dimensions.checkboxSize,
-                                spacing: dimensions.checkboxSpacing,
-                            }}
-                        />
-                        <H4>{'Esquila'}</H4>
-                        <ExtendedCheckbox
-                            id="chckbx-can-be-sheared"
-                            name="chckbx-can-be-sheared"
-                            label="Se esquila"
-                            onChange={() =>
-                                handleChange('chckbx-can-be-sheared')
-                            }
-                            size={{
-                                label: dimensions.checkboxLabelSize,
-                                checkBox: dimensions.checkboxSize,
-                                spacing: dimensions.checkboxSpacing,
-                            }}
-                        />
+                        <ExtendedCheckboxGroup header={<H4>{'Caspa'}</H4>}>
+                            <ExtendedCheckbox
+                                id="chkbx-has-dandruff"
+                                name="chkbx-has-dandruff"
+                                label="Tiene caspa"
+                                onChange={() =>
+                                    handleChange('chkbx-has-dandruff')
+                                }
+                                size={{
+                                    label: dimensions.checkboxLabelSize,
+                                    checkBox: dimensions.checkboxSize,
+                                    spacing: dimensions.checkboxSpacing,
+                                }}
+                            />
+                        </ExtendedCheckboxGroup>
+                        <ExtendedCheckboxGroup
+                            header={<H4>{'Animal muerto'}</H4>}
+                        >
+                            <ExtendedCheckbox
+                                id="chckbx-is-dead"
+                                name="chckbx-is-dead"
+                                label="Está muerto"
+                                onChange={() => handleChange('chckbx-is-dead')}
+                                size={{
+                                    label: dimensions.checkboxLabelSize,
+                                    checkBox: dimensions.checkboxSize,
+                                    spacing: dimensions.checkboxSpacing,
+                                }}
+                            />
+                        </ExtendedCheckboxGroup>
+                        <ExtendedCheckboxGroup header={<H4>{'Esquila'}</H4>}>
+                            <ExtendedCheckbox
+                                id="chckbx-can-be-sheared"
+                                name="chckbx-can-be-sheared"
+                                label="Se esquila"
+                                onChange={() =>
+                                    handleChange('chckbx-can-be-sheared')
+                                }
+                                size={{
+                                    label: dimensions.checkboxLabelSize,
+                                    checkBox: dimensions.checkboxSize,
+                                    spacing: dimensions.checkboxSpacing,
+                                }}
+                            />
+                        </ExtendedCheckboxGroup>
                         <ExtendedTextArea
                             size={dimensions.textAreaSize}
                             borderWidth={dimensions.inputBorderWidth}
