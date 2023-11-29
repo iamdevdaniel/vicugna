@@ -12,7 +12,7 @@
         "lint:check": "npx eslint . --no-fix",
         "prettier:check": "npx prettier --check 'src/**/*.{ts,tsx}'",
         "clean": "cmd /C \"npm run lint:fix & npm run prettier:fix\"",
-        "check": "sh -c 'npm run lint:check ; npm run prettier:check'"
+        "check": "sh -c 'npm run lint:check && npm run prettier:check'"
     },
     "dependencies": {
         "@expo/webpack-config": "^19.0.0",
