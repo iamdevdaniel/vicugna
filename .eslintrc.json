@@ -25,7 +25,7 @@
     "rules": {
         "function-paren-newline": [
             "error",
-            "multiline"
+            "multiline-arguments"
         ],
         "complexity": [
             "error",
@@ -39,6 +39,10 @@
         "quotes": [
             "error",
             "single"
+        ],
+        "arrow-body-style": [
+            "error",
+            "as-needed"
         ]
     }
 }

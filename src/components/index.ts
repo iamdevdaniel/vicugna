@@ -1,3 +1,5 @@
-export { default as WithCoreForm } from './WithCoreForm'
-export { default as RadioGroupItem } from './RadioGroupItem'
+export { default as ExtendedCheckbox } from './ExtendedCheckbox'
+export { default as ExtendedInput } from './ExtendedInput'
+export { default as ExtendedRadioItem } from './ExtendedRadioItem'
+export { default as ExtendedTextArea } from './ExtendedTextArea'
 export { default as Form10 } from './Form10'

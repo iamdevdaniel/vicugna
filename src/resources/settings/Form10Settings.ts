@@ -1,4 +1,4 @@
-import { object, string, number } from 'yup';
+import { object, string, number } from 'yup'
 
 export const initialValues = {
     'radio-sex': '',
@@ -11,12 +11,11 @@ export const initialValues = {
     'radio-parasites': '',
     'chkbx-has-dandruff': null,
     'chckbx-is-dead': null,
-    'chckbx-can-be-sheared': null
+    'chckbx-can-be-sheared': null,
 }
 
 export const validationSchema = object().shape({
-    'radio-sex': string().
-        required('Escoga una opción'),
+    'radio-sex': string().required('Escoga una opción'),
     'radio-age': string().required('Escoga una opción'),
     'text-live-weight': number().required('Este campo es requerido'),
     'text-fiber-length': number().required('Este campo es requerido'),

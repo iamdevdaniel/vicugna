@@ -4,15 +4,13 @@ import { Form10 } from './src/components'
 import { TamaguiProvider } from 'tamagui'
 import tamaguiConfig from './tamagui.config'
 
-const App: FC = () => {
-    return (
+const App: FC = () => (
         <TamaguiProvider config={tamaguiConfig}>
             <View style={styles.container}>
                 <Form10 />
             </View>
         </TamaguiProvider>
     )
-}
 
 const styles = StyleSheet.create({
     container: {
