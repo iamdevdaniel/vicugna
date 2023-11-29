@@ -1,4 +1,5 @@
 export { default as ExtendedCheckbox } from './ExtendedCheckbox'
+export { default as ExtendedCheckboxGroup } from './ExtendedCheckboxGroup'
 export { default as ExtendedInput } from './ExtendedInput'
 export { default as ExtendedRadioItem } from './ExtendedRadioItem'
 export { default as ExtendedTextArea } from './ExtendedTextArea'

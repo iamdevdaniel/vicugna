@@ -9,7 +9,7 @@ export const initialValues = {
     'radio-mange': '',
     'radio-pregnancy': '',
     'radio-parasites': '',
-    'chkbx-has-dandruff': null,
+    'chckbx-has-dandruff': null,
     'chckbx-is-dead': null,
     'chckbx-can-be-sheared': null,
 }
