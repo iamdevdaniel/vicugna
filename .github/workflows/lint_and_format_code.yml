@@ -16,10 +16,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: '16.x'
     - name: Install dependencies
       run: npm ci
+    - name: Print file structure and package versions
+      run: |
+        echo "File structure:"
+        ls -R
+        echo "Prettier version:"
+        npx prettier --version
+        echo "ESLint version:"
+        npx eslint --version
     - name: Run lint and format
       run: npm run clean
