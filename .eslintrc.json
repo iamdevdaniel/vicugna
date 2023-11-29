@@ -18,11 +18,27 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": ["@typescript-eslint", "react"],
+    "plugins": [
+        "@typescript-eslint",
+        "react"
+    ],
     "rules": {
-        "function-paren-newline": ["error", "multiline"],
-        "complexity": ["error", 2],
-        "semi": ["error", "never"],
-        "quotes": ["error", "single"]
+        "function-paren-newline": [
+            "error",
+            "multiline"
+        ],
+        "complexity": [
+            "error",
+            2
+        ],
+        "semi": [
+            "error",
+            "never"
+        ],
+        "react/prop-types": "off",
+        "quotes": [
+            "error",
+            "single"
+        ]
     }
 }

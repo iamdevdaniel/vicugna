@@ -1,21 +1,18 @@
 import React, { FC } from 'react'
 import {
     Button,
-    Checkbox,
     Form,
     H4,
     Input,
-    Label,
     RadioGroup,
     Text,
     TextArea,
-    XStack,
     YStack,
 } from 'tamagui'
-import { Check as CheckIcon } from '@tamagui/lucide-icons'
-import { Formik, Field, FieldInputProps } from 'formik'
+import { Formik } from 'formik'
 import { WithCoreForm, RadioGroupItem } from '@components'
 import { WrappedFormProps } from '@models'
+import { initialValuesForm10, validationSchemaForm10 } from '@resources/settings'
 import { dimensions } from '@styles/FormDimensions'
 import CheckboxInput from './CheckboxInput'
 
@@ -29,21 +26,10 @@ const Form10: FC<WrappedFormProps> = ({
     }
 
     return <Formik
-        initialValues={{
-            'radio-sex': '',
-            'radio-age': '',
-            'text-live-weight': '',
-            'text-fiber-length': '',
-            'radio-phyisycal-state': '',
-            'radio-mange': '',
-            'radio-pregnancy': '',
-            'radio-parasites': '',
-            'chkbx-has-dandruff': null,
-            'chckbx-is-dead': null,
-            'chkbx-can-be-sheared': null,
-        }}
-        onSubmit={handleSubmit
-        }>
+        initialValues={initialValuesForm10}
+        validationSchema={validationSchemaForm10}
+        onSubmit={handleSubmit}
+    >
         {({ handleChange, handleSubmit }) => (
             <Form onSubmit={handleSubmit}>
                 <YStack space={dimensions.formItemsSpacing} width={300}>
@@ -99,6 +85,7 @@ const Form10: FC<WrappedFormProps> = ({
                     <>
                         <H4>{'Peso Vivo (Kg)'}</H4>
                         <Input
+                            inputMode='numeric'
                             size={dimensions.inputSpacing}
                             borderWidth={dimensions.inputBorderWidth}
                             onChangeText={handleChange('text-live-weight')}
@@ -107,6 +94,7 @@ const Form10: FC<WrappedFormProps> = ({
                     <>
                         <H4>{'Longitud Fibra (cm)'}</H4>
                         <Input
+                            inputMode='numeric'
                             size={dimensions.inputSpacing}
                             borderWidth={dimensions.inputBorderWidth}
                             onChangeText={handleChange('text-fiber-length')}
