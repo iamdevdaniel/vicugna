@@ -1,4 +1,4 @@
-import { object, string, number } from 'yup';
+import { object, string, number } from 'yup'
 
 export const initialValues = {
     'radio-sex': '',
