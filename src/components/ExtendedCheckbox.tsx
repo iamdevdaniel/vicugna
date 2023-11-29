@@ -9,7 +9,9 @@ interface ExtendedCheckboxProps {
     name: string
     onChange: (name: string, value: boolean) => void
     size: { checkBox: string; label: string; spacing: string }
-    header?: React.ReactElement<typeof H1 | typeof H2 | typeof H3 | typeof H4 | typeof H5 | typeof H6>
+    header?: React.ReactElement<
+        typeof H1 | typeof H2 | typeof H3 | typeof H4 | typeof H5 | typeof H6
+    >
 }
 
 const ExtendedCheckbox: React.FC<ExtendedCheckboxProps> = ({

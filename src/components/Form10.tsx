@@ -1,14 +1,12 @@
 import React, { FC } from 'react'
-import {
-    Button,
-    Form,
-    H4,
-    RadioGroup,
-    Text,
-    YStack,
-} from 'tamagui'
+import { Button, Form, H4, RadioGroup, Text, YStack } from 'tamagui'
 import { Formik } from 'formik'
-import { ExtendedRadioItem, ExtendedCheckbox, ExtendedInput, ExtendedTextArea } from '@components'
+import {
+    ExtendedRadioItem,
+    ExtendedCheckbox,
+    ExtendedInput,
+    ExtendedTextArea,
+} from '@components'
 import { WrappedFormProps } from '@models'
 import {
     initialValuesForm10,
@@ -27,7 +25,6 @@ const Form10: FC<WrappedFormProps> = () => {
             validationSchema={validationSchemaForm10}
             onSubmit={handleSubmit}
         >
-
             {({ handleChange, handleSubmit }) => (
                 <Form onSubmit={handleSubmit}>
                     <YStack space={dimensions.formItemsSpacing} width={300}>
@@ -249,9 +246,8 @@ const Form10: FC<WrappedFormProps> = () => {
                         </Form.Trigger>
                     </YStack>
                 </Form>
-            )
-            }
-        </Formik >
+            )}
+        </Formik>
     )
 }
 
