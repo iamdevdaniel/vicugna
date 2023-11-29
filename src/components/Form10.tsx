@@ -3,27 +3,20 @@ import {
     Button,
     Form,
     H4,
-    Input,
     RadioGroup,
     Text,
-    TextArea,
     YStack,
 } from 'tamagui'
 import { Formik } from 'formik'
-import { WithCoreForm, RadioGroupItem } from '@components'
+import { ExtendedRadioItem, ExtendedCheckbox, ExtendedInput, ExtendedTextArea } from '@components'
 import { WrappedFormProps } from '@models'
 import {
     initialValuesForm10,
     validationSchemaForm10,
 } from '@resources/settings'
 import { dimensions } from '@styles/FormDimensions'
-import CheckboxInput from './CheckboxInput'
 
-const Form10: FC<WrappedFormProps> = ({
-    formData,
-    onInputChange,
-    onSubmit,
-}) => {
+const Form10: FC<WrappedFormProps> = () => {
     const handleSubmit = (formValues: Record<string, unknown>) => {
         console.log(formValues)
     }
@@ -34,6 +27,7 @@ const Form10: FC<WrappedFormProps> = ({
             validationSchema={validationSchemaForm10}
             onSubmit={handleSubmit}
         >
+
             {({ handleChange, handleSubmit }) => (
                 <Form onSubmit={handleSubmit}>
                     <YStack space={dimensions.formItemsSpacing} width={300}>
@@ -47,12 +41,12 @@ const Form10: FC<WrappedFormProps> = ({
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
                             >
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="male"
                                     label="Macho"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="female"
                                     label="Hembra"
@@ -69,41 +63,37 @@ const Form10: FC<WrappedFormProps> = ({
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
                             >
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="young"
                                     label="Cría"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="juvenile"
                                     label="Juvenil"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="adult"
                                     label="Adulto"
                                 />
                             </YStack>
                         </RadioGroup>
-                        <>
-                            <H4>{'Peso Vivo (Kg)'}</H4>
-                            <Input
-                                inputMode="numeric"
-                                size={dimensions.inputSpacing}
-                                borderWidth={dimensions.inputBorderWidth}
-                                onChangeText={handleChange('text-live-weight')}
-                            />
-                        </>
-                        <>
-                            <H4>{'Longitud Fibra (cm)'}</H4>
-                            <Input
-                                inputMode="numeric"
-                                size={dimensions.inputSpacing}
-                                borderWidth={dimensions.inputBorderWidth}
-                                onChangeText={handleChange('text-fiber-length')}
-                            />
-                        </>
+                        <ExtendedInput
+                            inputMode="numeric"
+                            size={dimensions.inputSpacing}
+                            borderWidth={dimensions.inputBorderWidth}
+                            onChangeText={handleChange('text-live-weight')}
+                            header={<H4>{'Peso Vivo (Kg)'}</H4>}
+                        />
+                        <ExtendedInput
+                            inputMode="numeric"
+                            size={dimensions.inputSpacing}
+                            borderWidth={dimensions.inputBorderWidth}
+                            onChangeText={handleChange('text-fiber-length')}
+                            header={<H4>{'Longitud Fibra (cm)'}</H4>}
+                        />
                         <RadioGroup
                             aria-labelledby="Select one item"
                             name="radio-phyisycal-state"
@@ -116,17 +106,17 @@ const Form10: FC<WrappedFormProps> = ({
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
                             >
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="bad"
                                     label="Malo"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="regular"
                                     label="Regular"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="good"
                                     label="Bueno"
@@ -143,17 +133,17 @@ const Form10: FC<WrappedFormProps> = ({
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
                             >
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="no"
                                     label="No"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="yes"
                                     label="Sí"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="yes-3rd-trimester"
                                     label="Sí, último trimestre"
@@ -170,12 +160,12 @@ const Form10: FC<WrappedFormProps> = ({
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
                             >
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="ticks"
                                     label="Garrapatas"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="lices"
                                     label="Piojos"
@@ -192,17 +182,17 @@ const Form10: FC<WrappedFormProps> = ({
                                 alignItems={dimensions.radioAlign}
                                 space={dimensions.radioSpacing}
                             >
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="light"
                                     label="Leve"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="moderate"
                                     label="Moderado"
                                 />
-                                <RadioGroupItem
+                                <ExtendedRadioItem
                                     size={dimensions.radioSize}
                                     value="severe"
                                     label="Severo"
@@ -210,7 +200,7 @@ const Form10: FC<WrappedFormProps> = ({
                             </YStack>
                         </RadioGroup>
                         <H4>{'Caspa'}</H4>
-                        <CheckboxInput
+                        <ExtendedCheckbox
                             id="chkbx-has-dandruff"
                             name="chkbx-has-dandruff"
                             label="Tiene caspa"
@@ -222,7 +212,7 @@ const Form10: FC<WrappedFormProps> = ({
                             }}
                         />
                         <H4>{'Animal muerto'}</H4>
-                        <CheckboxInput
+                        <ExtendedCheckbox
                             id="chckbx-is-dead"
                             name="chckbx-is-dead"
                             label="Está muerto"
@@ -234,7 +224,7 @@ const Form10: FC<WrappedFormProps> = ({
                             }}
                         />
                         <H4>{'Esquila'}</H4>
-                        <CheckboxInput
+                        <ExtendedCheckbox
                             id="chckbx-can-be-sheared"
                             name="chckbx-can-be-sheared"
                             label="Se esquila"
@@ -247,13 +237,11 @@ const Form10: FC<WrappedFormProps> = ({
                                 spacing: dimensions.checkboxSpacing,
                             }}
                         />
-                        <>
-                            <H4>{'Observaciones'}</H4>
-                            <TextArea
-                                size={dimensions.textAreaSize}
-                                borderWidth={dimensions.inputBorderWidth}
-                            />
-                        </>
+                        <ExtendedTextArea
+                            size={dimensions.textAreaSize}
+                            borderWidth={dimensions.inputBorderWidth}
+                            header={<H4>{'Observaciones'}</H4>}
+                        />
                         <Form.Trigger asChild>
                             <Button>
                                 <Text>Submit</Text>
@@ -261,9 +249,10 @@ const Form10: FC<WrappedFormProps> = ({
                         </Form.Trigger>
                     </YStack>
                 </Form>
-            )}
-        </Formik>
+            )
+            }
+        </Formik >
     )
 }
 
-export default WithCoreForm(Form10)
+export default Form10

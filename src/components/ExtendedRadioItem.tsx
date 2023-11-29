@@ -1,13 +1,13 @@
 import React from 'react'
 import { Label, RadioGroup, SizeTokens, XStack } from 'tamagui'
 
-type RadioGroupItemProps = {
+type ExtendedRadioItemProps = {
     size: SizeTokens
     value: string
     label: string
 }
 
-const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
+const ExtendedRadioItem: React.FC<ExtendedRadioItemProps> = ({
     size,
     value,
     label,
@@ -26,4 +26,4 @@ const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
     )
 }
 
-export default RadioGroupItem
+export default ExtendedRadioItem
