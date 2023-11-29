@@ -24,10 +24,10 @@ jobs:
     - name: Print file structure and package versions
       run: |
         echo "File structure:"
-        ls -R
+        ls -R src
         echo "Prettier version:"
         npx prettier --version
         echo "ESLint version:"
         npx eslint --version
     - name: Run lint and format
-      run: npm run clean
+      run: npm run clean -- '**/*.{js,jsx}'
