@@ -7,7 +7,12 @@
         "android": "expo start --android",
         "ios": "expo start --ios",
         "web": "expo start --web",
-        "clean": "npx eslint . --fix || npx prettier --write 'src/**/*.{js,jsx}'"
+        "lint:fix": "npx eslint . --fix",
+        "prettier:fix": "npx prettier --write 'src/**/*.{ts,tsx}'",
+        "lint:check": "npx eslint . --no-fix",
+        "prettier:check": "npx prettier --check 'src/**/*.{ts,tsx}'",
+        "clean": "cmd /C \"npm run lint:fix & npm run prettier:fix\"",
+        "check": "sh -c 'npm run lint:check ; npm run prettier:check'"
     },
     "dependencies": {
         "@expo/webpack-config": "^19.0.0",

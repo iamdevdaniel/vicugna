@@ -39,6 +39,10 @@
         "quotes": [
             "error",
             "single"
+        ],
+        "arrow-body-style": [
+            "error",
+            "as-needed"
         ]
     }
 }
