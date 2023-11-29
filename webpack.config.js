@@ -10,6 +10,7 @@ module.exports = async function (env, argv) {
     )
     config.resolve.alias['@models'] = path.resolve(__dirname, 'src/models')
     config.resolve.alias['@styles'] = path.resolve(__dirname, 'src/styles')
+    config.resolve.alias['@resources'] = path.resolve(__dirname, 'src/resources')
 
     return config
 }
