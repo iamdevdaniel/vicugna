@@ -5,6 +5,7 @@ import {
     initialValuesForm10,
     validationSchemaForm10,
 } from '@resources/settings'
+import { TextInput } from 'react-native-paper'
 import { dimensions } from '@styles/FormDimensions'
 
 const Form10: React.FC = () => {
@@ -18,7 +19,15 @@ const Form10: React.FC = () => {
             validationSchema={validationSchemaForm10}
             onSubmit={handleSubmit}
         >
-            {({ handleChange, handleSubmit, isValid }) => <></>}
+            {({ handleChange, handleSubmit, isValid }) => <>
+
+                <TextInput
+                    mode="outlined"
+                    label="Email"
+                    value={''}
+                // onChangeText={text => setText(text)}
+                />
+            </>}
         </Formik>
     )
 }
