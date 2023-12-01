@@ -89,22 +89,20 @@ const Form10: React.FC = () => {
                             { label: 'Si', value: 'yes' },
                         ]}
                     />
-                    <View>
-                        <Text>Garrapatas</Text>
-                        <Checkbox
-                            status={
-                                values['chckbx-parasites']?.ticks
-                                    ? 'checked'
-                                    : 'unchecked'
-                            }
-                            onPress={() =>
-                                setFieldValue('chckbx-parasites', {
-                                    ...values['chckbx-parasites'],
-                                    ticks: !values['chckbx-parasites'].ticks,
-                                })
-                            }
-                        />
-                    </View>
+                    <ExtendedCheckboxGroup
+                        onValueChange={(
+                            newValue: { name: string; value: boolean }[],
+                        ) => setFieldValue('chckbx-parasites', newValue)}
+                        value={values['chckbx-parasites']}
+                        options={[
+                            {
+                                name: 'ticks',
+                                label: 'Garrapatas',
+                                value: false,
+                            },
+                            { name: 'lice', label: 'Lice', value: false },
+                        ]}
+                    />
                     <Button
                         style={{ borderRadius: 5 }}
                         buttonColor="#4749BC"

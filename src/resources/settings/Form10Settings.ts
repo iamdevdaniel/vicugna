@@ -8,7 +8,10 @@ export const initialValues = {
     'radio-physical-condition': '',
     'radio-mange': '',
     'radio-pregnancy': '',
-    'chckbx-parasites': { ticks: false, lice: false },
+    'chckbx-parasites': [
+        { name: 'ticks', value: false },
+        { name: 'lice', value: false },
+    ],
 }
 
 export const validationSchema = object().shape({
