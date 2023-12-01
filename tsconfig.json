@@ -19,21 +19,7 @@
         "skipLibCheck": true,
         "resolveJsonModule": true,
         "strict": true,
-        "baseUrl": ".",
-        "paths": {
-            "@components/*": [
-                "src/components/*"
-            ],
-            "@models/*": [
-                "src/models/*"
-            ],
-            "@styles/*": [
-                "src/styles/*"
-            ],
-            "@resources/*": [
-                "src/resources/*"
-            ]
-        }
+        "baseUrl": "."
     },
     "exclude": [
         "node_modules"

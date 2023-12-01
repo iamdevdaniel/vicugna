@@ -1,8 +1,6 @@
-// ExtendedRadioGroup.tsx
 import { View, StyleSheet } from 'react-native'
 import { RadioButton, Text, useTheme } from 'react-native-paper'
 import React from 'react'
-
 interface ExtendedRadioGroupProps {
     onValueChange: (value: string) => void
     value: string

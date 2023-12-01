@@ -1,10 +1,11 @@
 import React from 'react'
 import { Formik } from 'formik'
-import { ExtendedRadioGroup, ExtendedCheckboxGroup } from '@components'
+import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
+import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
 import {
     initialValuesForm10,
     validationSchemaForm10,
-} from '@resources/settings'
+} from './Form10Config'
 import { View, StyleSheet } from 'react-native'
 import { TextInput, Text, Checkbox, Button } from 'react-native-paper'
 
@@ -90,18 +91,18 @@ const Form10: React.FC = () => {
                         ]}
                     />
                     <ExtendedCheckboxGroup
-                        onValueChange={(
-                            newValue: { name: string; value: boolean }[],
-                        ) => setFieldValue('chckbx-parasites', newValue)}
+                        onValueChange="chckbx-parasites"
                         value={values['chckbx-parasites']}
+                        label="Parásitos Externos"
                         options={[
                             {
                                 name: 'ticks',
                                 label: 'Garrapatas',
                                 value: false,
                             },
-                            { name: 'lice', label: 'Lice', value: false },
+                            { name: 'lice', label: 'Piojos', value: false },
                         ]}
+                        setFieldValue={setFieldValue}
                     />
                     <Button
                         style={{ borderRadius: 5 }}

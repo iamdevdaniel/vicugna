@@ -1,6 +1,6 @@
 import { object, string, number } from 'yup'
 
-export const initialValues = {
+export const initialValuesForm10 = {
     'radio-sex': '',
     'radio-age': '',
     'text-live-weight': '',
@@ -14,7 +14,7 @@ export const initialValues = {
     ],
 }
 
-export const validationSchema = object().shape({
+export const validationSchemaForm10 = object().shape({
     'radio-sex': string().required('Escoga una opción'),
     'radio-age': string().required('Escoga una opción'),
     'text-live-weight': number().required('Este campo es requerido'),
