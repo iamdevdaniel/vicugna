@@ -9,8 +9,7 @@ import { View, StyleSheet } from 'react-native'
 import { TextInput, Text, Checkbox, Button } from 'react-native-paper'
 
 const Form10: React.FC = () => {
-    const handleSubmit = (
-        formValues: Record<string, unknown>) => {
+    const handleSubmit = (formValues: Record<string, unknown>) => {
         console.log(formValues)
     }
 
@@ -20,7 +19,13 @@ const Form10: React.FC = () => {
             // validationSchema={validationSchemaForm10}
             onSubmit={handleSubmit}
         >
-            {({ handleChange, handleBlur, values, setFieldValue, handleSubmit }) => (
+            {({
+                handleChange,
+                handleBlur,
+                values,
+                setFieldValue,
+                handleSubmit,
+            }) => (
                 <View style={styles.container}>
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-sex')}
@@ -99,18 +104,19 @@ const Form10: React.FC = () => {
                                 })
                             }
                         />
-                        <Button
-                            buttonColor="#4749BC"
-                            mode="contained"
-                            disabled={false}
-                            onPress={(e) => {
-                                e.preventDefault();
-                                handleSubmit();
-                            }}
-                        >
-                            <Text style={{ color: 'white' }}>Guardar</Text>
-                        </Button>
                     </View>
+                    <Button
+                        style={{ borderRadius: 5 }}
+                        buttonColor="#4749BC"
+                        mode="contained"
+                        disabled={false}
+                        onPress={e => {
+                            e.preventDefault()
+                            handleSubmit()
+                        }}
+                    >
+                        <Text style={{ color: 'white' }}>Guardar</Text>
+                    </Button>
                 </View>
             )}
         </Formik>
