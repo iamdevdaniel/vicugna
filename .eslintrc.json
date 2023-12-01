@@ -23,6 +23,12 @@
         "react"
     ],
     "rules": {
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ],
         "function-paren-newline": [
             "error",
             "multiline-arguments"

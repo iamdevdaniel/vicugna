@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Form10 } from './src/components'
-import { DefaultTheme, PaperProvider } from 'react-native-paper';
+import { DefaultTheme, PaperProvider } from 'react-native-paper'
 
 const theme = {
     ...DefaultTheme,
