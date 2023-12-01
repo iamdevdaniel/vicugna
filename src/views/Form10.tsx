@@ -2,10 +2,7 @@ import React from 'react'
 import { Formik } from 'formik'
 import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
 import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
-import {
-    initialValuesForm10,
-    validationSchemaForm10,
-} from './Form10Config'
+import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
 import { View, StyleSheet } from 'react-native'
 import { TextInput, Text, Checkbox, Button } from 'react-native-paper'
 
