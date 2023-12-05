@@ -1,9 +1,10 @@
 import React from 'react'
-import { Formik } from 'formik'
+import { Formik, FastField } from 'formik'
 import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
 import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
+import ExtendedButton from '../components/ExtendedButton'
 import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
-import { View, StyleSheet } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import { TextInput, Text, Checkbox, Button } from 'react-native-paper'
 
 const Form10: React.FC = () => {
@@ -12,11 +13,7 @@ const Form10: React.FC = () => {
     }
 
     return (
-        <Formik
-            initialValues={initialValuesForm10}
-            // validationSchema={validationSchemaForm10}
-            onSubmit={handleSubmit}
-        >
+        <Formik initialValues={initialValuesForm10} onSubmit={handleSubmit}>
             {({
                 handleChange,
                 handleBlur,
@@ -24,7 +21,7 @@ const Form10: React.FC = () => {
                 setFieldValue,
                 handleSubmit,
             }) => (
-                <View style={styles.container}>
+                <ScrollView style={styles.container}>
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-sex')}
                         value={values['radio-sex']}
@@ -101,7 +98,7 @@ const Form10: React.FC = () => {
                         ]}
                         setFieldValue={setFieldValue}
                     />
-                    <Button
+                    <ExtendedButton
                         style={{ borderRadius: 5 }}
                         buttonColor="#4749BC"
                         mode="contained"
@@ -112,8 +109,9 @@ const Form10: React.FC = () => {
                         }}
                     >
                         <Text style={{ color: 'white' }}>Guardar</Text>
-                    </Button>
-                </View>
+                    </ExtendedButton>
+
+                </ScrollView>
             )}
         </Formik>
     )
@@ -121,7 +119,8 @@ const Form10: React.FC = () => {
 
 const styles = StyleSheet.create({
     container: {
-        minWidth: 400,
+        width: '100%',
+        padding: 8,
     },
 })
 export default Form10

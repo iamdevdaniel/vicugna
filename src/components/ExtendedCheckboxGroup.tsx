@@ -67,6 +67,11 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
     )
 }
 
+const areEqual = (
+    prevProps: ExtendedCheckboxGroupProps,
+    nextProps: ExtendedCheckboxGroupProps,
+) => prevProps.value === nextProps.value
+
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
@@ -98,4 +103,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ExtendedCheckboxGroup
+export default React.memo(ExtendedCheckboxGroup, areEqual)

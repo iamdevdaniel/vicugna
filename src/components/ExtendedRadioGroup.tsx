@@ -1,5 +1,6 @@
 import { View, StyleSheet } from 'react-native'
 import { RadioButton, Text, useTheme } from 'react-native-paper'
+import { isEqual } from 'lodash'
 import React from 'react'
 interface ExtendedRadioGroupProps {
     onValueChange: (value: string) => void
@@ -49,6 +50,11 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
     )
 }
 
+const areEqual = (
+    prevProps: ExtendedRadioGroupProps,
+    nextProps: ExtendedRadioGroupProps,
+) => prevProps.value === nextProps.value
+
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
@@ -70,4 +76,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ExtendedRadioGroup
+export default React.memo(ExtendedRadioGroup, areEqual)
