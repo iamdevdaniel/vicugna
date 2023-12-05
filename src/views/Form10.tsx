@@ -1,11 +1,13 @@
+import { Formik } from 'formik'
 import React from 'react'
-import { Formik, FastField } from 'formik'
-import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
-import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
-import ExtendedButton from '../components/ExtendedButton'
-import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
 import { ScrollView, StyleSheet } from 'react-native'
-import { TextInput, Text, Checkbox, Button } from 'react-native-paper'
+import { Text, TextInput } from 'react-native-paper'
+
+import ExtendedButton from '../components/ExtendedButton'
+import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
+import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
+
+import { initialValuesForm10 } from './Form10Config'
 
 const Form10: React.FC = () => {
     const handleSubmit = (formValues: Record<string, unknown>) => {
@@ -60,9 +62,9 @@ const Form10: React.FC = () => {
                         value={values['radio-physical-condition']}
                         label="Condición corporal"
                         options={[
-                            { label: 'Bad', value: 'bad' },
+                            { label: 'Mala', value: 'bad' },
                             { label: 'Regular', value: 'regular' },
-                            { label: 'Good', value: 'good' },
+                            { label: 'Buena', value: 'good' },
                         ]}
                     />
                     <ExtendedRadioGroup
@@ -90,11 +92,11 @@ const Form10: React.FC = () => {
                         label="Parásitos Externos"
                         options={[
                             {
-                                name: 'ticks',
                                 label: 'Garrapatas',
+                                name: 'ticks',
                                 value: false,
                             },
-                            { name: 'lice', label: 'Piojos', value: false },
+                            { label: 'Piojos', name: 'ticks', value: false },
                         ]}
                         setFieldValue={setFieldValue}
                     />
@@ -110,7 +112,6 @@ const Form10: React.FC = () => {
                     >
                         <Text style={{ color: 'white' }}>Guardar</Text>
                     </ExtendedButton>
-
                 </ScrollView>
             )}
         </Formik>
@@ -119,8 +120,8 @@ const Form10: React.FC = () => {
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
         padding: 8,
+        width: '100%',
     },
 })
 export default Form10

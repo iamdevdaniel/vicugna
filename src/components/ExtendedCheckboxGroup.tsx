@@ -1,6 +1,6 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Checkbox, useTheme, Text } from 'react-native-paper'
+import { StyleSheet, View } from 'react-native'
+import { Checkbox, Text, useTheme } from 'react-native-paper'
 
 interface Option {
     name: string
@@ -12,7 +12,7 @@ interface ExtendedCheckboxGroupProps {
     options: Option[]
     value: Option[]
     onValueChange: string
-    setFieldValue: (field: string, value: any) => void
+    setFieldValue: (field: string, value: unknown) => void
     label: string
 }
 
@@ -37,7 +37,7 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
             <Text
                 style={[
                     styles.label,
-                    { color: colors.primary, backgroundColor: colors.surface },
+                    { backgroundColor: colors.surface, color: colors.primary },
                 ]}
             >
                 {label}
@@ -45,7 +45,10 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
             <View
                 style={[
                     styles.checkboxesContainer,
-                    { backgroundColor: colors.surface },
+                    {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.outline,
+                    },
                 ]}
             >
                 {options.map(option => (
@@ -63,6 +66,7 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
                     </View>
                 ))}
             </View>
+            <Text></Text>
         </View>
     )
 }
@@ -73,33 +77,33 @@ const areEqual = (
 ) => prevProps.value === nextProps.value
 
 const styles = StyleSheet.create({
-    container: {
-        position: 'relative',
-        paddingTop: 10,
-    },
-    label: {
-        position: 'absolute',
-        paddingHorizontal: 4,
-        top: 3,
-        left: 10,
-        zIndex: 1,
-        backgroundColor: '#ffffff',
-        fontSize: 12,
-    },
-    checkboxesContainer: {
-        borderWidth: 1,
-        borderRadius: 4,
-        padding: 8,
+    checkbox: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        minHeight: 52,
+        paddingHorizontal: 16,
     },
     checkboxLabel: {
         fontSize: 16,
     },
-    checkbox: {
-        minHeight: 52,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
+    checkboxesContainer: {
+        borderRadius: 4,
+        borderWidth: 1,
+        padding: 8,
+    },
+    container: {
+        paddingTop: 10,
+        position: 'relative',
+    },
+    label: {
+        backgroundColor: '#ffffff',
+        fontSize: 12,
+        left: 10,
+        paddingHorizontal: 4,
+        position: 'absolute',
+        top: 3,
+        zIndex: 1,
     },
 })
 

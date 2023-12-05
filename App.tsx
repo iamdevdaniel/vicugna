@@ -1,7 +1,8 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Form10 } from './src/views'
 import { DefaultTheme, PaperProvider } from 'react-native-paper'
+
+import { Form10 } from './src/views'
 
 const theme = {
     ...DefaultTheme,
@@ -18,9 +19,9 @@ const App: React.FC = () => (
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: 'white',
         alignItems: 'center',
+        backgroundColor: 'white',
+        flex: 1,
         justifyContent: 'center',
     },
 })

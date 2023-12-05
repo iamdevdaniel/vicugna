@@ -1,12 +1,12 @@
-import { View, StyleSheet } from 'react-native'
-import { RadioButton, Text, useTheme } from 'react-native-paper'
-import { isEqual } from 'lodash'
 import React from 'react'
+import { StyleSheet, View } from 'react-native'
+import { RadioButton, Text, useTheme } from 'react-native-paper'
 interface ExtendedRadioGroupProps {
     onValueChange: (value: string) => void
     value: string
     options: { label: string; value: string }[]
     label: string
+    error?: string
 }
 
 const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
@@ -14,6 +14,7 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
     value,
     options,
     label,
+    error,
 }) => {
     const { colors } = useTheme()
 
@@ -22,7 +23,7 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
             <Text
                 style={[
                     styles.label,
-                    { color: colors.primary, backgroundColor: colors.surface },
+                    { backgroundColor: colors.surface, color: colors.primary },
                 ]}
             >
                 {label}
@@ -57,21 +58,21 @@ const areEqual = (
 
 const styles = StyleSheet.create({
     container: {
-        position: 'relative',
         paddingTop: 10,
+        position: 'relative',
     },
     label: {
-        position: 'absolute',
-        paddingHorizontal: 4,
-        top: 3,
-        left: 10,
-        zIndex: 1,
         backgroundColor: '#ffffff',
         fontSize: 12,
+        left: 10,
+        paddingHorizontal: 4,
+        position: 'absolute',
+        top: 3,
+        zIndex: 1,
     },
     radioGroupContainer: {
-        borderWidth: 1,
         borderRadius: 4,
+        borderWidth: 1,
         padding: 8,
     },
 })

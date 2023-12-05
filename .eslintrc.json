@@ -20,7 +20,8 @@
     },
     "plugins": [
         "@typescript-eslint",
-        "react"
+        "react",
+        "import"
     ],
     "rules": {
         "@typescript-eslint/no-unused-vars": [
@@ -49,6 +50,39 @@
         "arrow-body-style": [
             "error",
             "as-needed"
+        ],
+        "import/order": [
+            "error",
+            {
+                "newlines-between": "always",
+                "groups": [
+                    "builtin",
+                    "external",
+                    "internal",
+                    "parent",
+                    "sibling",
+                    "index"
+                ],
+                "pathGroups": [
+                    {
+                        "pattern": "react",
+                        "group": "external",
+                        "position": "before"
+                    }
+                ],
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true
+                }
+            }
+        ],
+        "sort-keys": [
+            "error",
+            "asc",
+            {
+                "caseSensitive": true,
+                "natural": false
+            }
         ]
     }
 }
