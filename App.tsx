@@ -1,16 +1,12 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { DefaultTheme, PaperProvider } from 'react-native-paper'
+import { PaperProvider } from 'react-native-paper'
 
+import customTheme from './src/common/CustomTheme'
 import { Form10 } from './src/views'
 
-const theme = {
-    ...DefaultTheme,
-    dark: false,
-}
-
 const App: React.FC = () => (
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={customTheme}>
         <View style={styles.container}>
             <Form10 />
         </View>

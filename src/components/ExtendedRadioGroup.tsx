@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { RadioButton, Text, useTheme } from 'react-native-paper'
+import { HelperText, RadioButton, Text, useTheme } from 'react-native-paper'
+import { CustomTheme } from 'src/models'
 interface ExtendedRadioGroupProps {
     onValueChange: (value: string) => void
     value: string
@@ -16,14 +17,19 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
     label,
     error,
 }) => {
-    const { colors } = useTheme()
+    const { colors } = useTheme() as CustomTheme
+
+    const hasError = !!error
 
     return (
         <View style={styles.container}>
             <Text
                 style={[
                     styles.label,
-                    { backgroundColor: colors.surface, color: colors.primary },
+                    {
+                        backgroundColor: colors.surface,
+                        color: hasError ? colors.red?.[500] : colors.primary,
+                    },
                 ]}
             >
                 {label}
@@ -33,7 +39,9 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
                     styles.radioGroupContainer,
                     {
                         backgroundColor: colors.surface,
-                        borderColor: colors.outline,
+                        borderColor: hasError
+                            ? colors.red?.[500]
+                            : colors.outline,
                     },
                 ]}
             >
@@ -47,6 +55,13 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
                     ))}
                 </RadioButton.Group>
             </View>
+            <HelperText
+                type="error"
+                visible={hasError}
+                style={{ backgroundColor: colors.red?.[50] }}
+            >
+                {error}
+            </HelperText>
         </View>
     )
 }
@@ -54,7 +69,7 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
 const areEqual = (
     prevProps: ExtendedRadioGroupProps,
     nextProps: ExtendedRadioGroupProps,
-) => prevProps.value === nextProps.value
+) => prevProps.value === nextProps.value && prevProps.error === nextProps.error
 
 const styles = StyleSheet.create({
     container: {

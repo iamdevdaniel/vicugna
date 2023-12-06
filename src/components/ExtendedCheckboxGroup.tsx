@@ -1,29 +1,32 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Checkbox, Text, useTheme } from 'react-native-paper'
+import { Checkbox, Text, useTheme, HelperText } from 'react-native-paper'
+import { CustomTheme } from 'src/models'
 
 interface Option {
+    label?: string
     name: string
     value: boolean
-    label?: string
 }
 
 interface ExtendedCheckboxGroupProps {
-    options: Option[]
-    value: Option[]
-    onValueChange: string
-    setFieldValue: (field: string, value: unknown) => void
+    error?: string
     label: string
+    onValueChange: string
+    options: Option[]
+    setFieldValue: (field: string, value: unknown) => void
+    value: Option[]
 }
 
 const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
-    options,
-    value,
-    onValueChange,
-    setFieldValue,
+    error,
     label,
+    onValueChange,
+    options,
+    setFieldValue,
+    value,
 }) => {
-    const { colors } = useTheme()
+    const { colors } = useTheme() as CustomTheme
 
     const handlePress = (name: string) => {
         const newValues = value.map(item =>
@@ -32,12 +35,17 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
         setFieldValue(onValueChange, newValues)
     }
 
+    const hasError = !!error
+
     return (
         <View style={styles.container}>
             <Text
                 style={[
                     styles.label,
-                    { backgroundColor: colors.surface, color: colors.primary },
+                    {
+                        backgroundColor: colors.surface,
+                        color: hasError ? colors.red?.[500] : colors.primary,
+                    },
                 ]}
             >
                 {label}
@@ -47,7 +55,9 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
                     styles.checkboxesContainer,
                     {
                         backgroundColor: colors.surface,
-                        borderColor: colors.outline,
+                        borderColor: hasError
+                            ? colors.red?.[500]
+                            : colors.outline,
                     },
                 ]}
             >
@@ -66,7 +76,13 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
                     </View>
                 ))}
             </View>
-            <Text></Text>
+            <HelperText
+                type="error"
+                visible={hasError}
+                style={{ backgroundColor: colors.red?.[50] }}
+            >
+                {error}
+            </HelperText>
         </View>
     )
 }
@@ -74,7 +90,7 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
 const areEqual = (
     prevProps: ExtendedCheckboxGroupProps,
     nextProps: ExtendedCheckboxGroupProps,
-) => prevProps.value === nextProps.value
+) => prevProps.value === nextProps.value && prevProps.error === nextProps.error
 
 const styles = StyleSheet.create({
     checkbox: {
@@ -97,7 +113,6 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     label: {
-        backgroundColor: '#ffffff',
         fontSize: 12,
         left: 10,
         paddingHorizontal: 4,

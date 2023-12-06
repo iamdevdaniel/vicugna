@@ -32,6 +32,7 @@ const Form10: React.FC = () => {
                             { label: 'Hembra', value: 'female' },
                             { label: 'Macho', value: 'male' },
                         ]}
+                        error="Campo requerido"
                     />
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-age')}
@@ -96,9 +97,10 @@ const Form10: React.FC = () => {
                                 name: 'ticks',
                                 value: false,
                             },
-                            { label: 'Piojos', name: 'ticks', value: false },
+                            { label: 'Piojos', name: 'lice', value: false },
                         ]}
                         setFieldValue={setFieldValue}
+                        error="Selecciona al menos una opción"
                     />
                     <ExtendedButton
                         style={{ borderRadius: 5 }}
