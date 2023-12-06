@@ -7,7 +7,7 @@ interface ExtendedRadioGroupProps {
     value: string
     options: { label: string; value: string }[]
     label: string
-    error?: string
+    errorMessage?: string
 }
 
 const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
@@ -15,11 +15,11 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
     value,
     options,
     label,
-    error,
+    errorMessage,
 }) => {
     const { colors } = useTheme() as CustomTheme
 
-    const hasError = !!error
+    const hasError = !!errorMessage
 
     return (
         <View style={styles.container}>
@@ -60,7 +60,7 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
                 visible={hasError}
                 style={{ backgroundColor: colors.red?.[50] }}
             >
-                {error}
+                {errorMessage}
             </HelperText>
         </View>
     )
@@ -69,7 +69,9 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = ({
 const areEqual = (
     prevProps: ExtendedRadioGroupProps,
     nextProps: ExtendedRadioGroupProps,
-) => prevProps.value === nextProps.value && prevProps.error === nextProps.error
+) =>
+    prevProps.value === nextProps.value &&
+    prevProps.errorMessage === nextProps.errorMessage
 
 const styles = StyleSheet.create({
     container: {

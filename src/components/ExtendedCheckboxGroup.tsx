@@ -10,7 +10,7 @@ interface Option {
 }
 
 interface ExtendedCheckboxGroupProps {
-    error?: string
+    errorMessage?: string
     label: string
     onValueChange: string
     options: Option[]
@@ -19,7 +19,7 @@ interface ExtendedCheckboxGroupProps {
 }
 
 const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
-    error,
+    errorMessage,
     label,
     onValueChange,
     options,
@@ -35,7 +35,7 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
         setFieldValue(onValueChange, newValues)
     }
 
-    const hasError = !!error
+    const hasError = !!errorMessage
 
     return (
         <View style={styles.container}>
@@ -81,7 +81,7 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
                 visible={hasError}
                 style={{ backgroundColor: colors.red?.[50] }}
             >
-                {error}
+                {errorMessage}
             </HelperText>
         </View>
     )
@@ -90,7 +90,9 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
 const areEqual = (
     prevProps: ExtendedCheckboxGroupProps,
     nextProps: ExtendedCheckboxGroupProps,
-) => prevProps.value === nextProps.value && prevProps.error === nextProps.error
+) =>
+    prevProps.value === nextProps.value &&
+    prevProps.errorMessage === nextProps.errorMessage
 
 const styles = StyleSheet.create({
     checkbox: {

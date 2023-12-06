@@ -1,11 +1,12 @@
 import { Formik } from 'formik'
 import React from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
-import { Text, TextInput } from 'react-native-paper'
+import { Text } from 'react-native-paper'
 
 import ExtendedButton from '../components/ExtendedButton'
 import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
 import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
+import ExtendedTextInput from '../components/ExtendedTextInput'
 
 import { initialValuesForm10 } from './Form10Config'
 
@@ -32,7 +33,7 @@ const Form10: React.FC = () => {
                             { label: 'Hembra', value: 'female' },
                             { label: 'Macho', value: 'male' },
                         ]}
-                        error="Campo requerido"
+                        errorMessage="Campo requerido"
                     />
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-age')}
@@ -44,14 +45,15 @@ const Form10: React.FC = () => {
                             { label: 'Adulto', value: 'adult' },
                         ]}
                     />
-                    <TextInput
+                    <ExtendedTextInput
                         mode="outlined"
                         label="Peso vivo (kg)"
                         value={values['text-live-weight']}
                         onChangeText={handleChange('text-live-weight')}
                         onBlur={handleBlur('text-live-weight')}
+                        errorMessage="Campo requerido"
                     />
-                    <TextInput
+                    <ExtendedTextInput
                         mode="outlined"
                         label="Longitud de fibra (cm)"
                         value={values['text-fiber-length']}
@@ -100,7 +102,7 @@ const Form10: React.FC = () => {
                             { label: 'Piojos', name: 'lice', value: false },
                         ]}
                         setFieldValue={setFieldValue}
-                        error="Selecciona al menos una opción"
+                        errorMessage="Selecciona al menos una opción"
                     />
                     <ExtendedButton
                         style={{ borderRadius: 5 }}
