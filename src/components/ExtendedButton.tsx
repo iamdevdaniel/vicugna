@@ -1,8 +1,16 @@
 import React from 'react'
 import { Button, ButtonProps } from 'react-native-paper'
 
-const ExtendedButton: React.FC<ButtonProps> = props => (
-    <Button {...props}>{props.children}</Button>
+interface ExtendedButtonProps extends ButtonProps {
+    onSubmit?: () => void;
+}
+
+const ExtendedButton: React.FC<ExtendedButtonProps> = ({ onSubmit, ...props }) => (
+    <Button {...props} onPress={() => {
+        console.log('ExtendedButton onPress')
+        console.log(onSubmit)
+        onSubmit && onSubmit()
+    }}>{props.children}</Button>
 )
 
 const areEqual = (prevProps: ButtonProps, nextProps: ButtonProps) =>

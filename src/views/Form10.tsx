@@ -1,4 +1,4 @@
-import { Formik, FormikTouched, FormikErrors } from 'formik'
+import { Formik, FormikHelpers } from 'formik'
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { Text } from 'react-native-paper'
@@ -11,26 +11,25 @@ import ExtendedTextInput from '../components/ExtendedTextInput'
 import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
 
 const Form10: React.FC = () => {
-    const [wasSubmitted, setWasSubmitted] = React.useState(false)
 
-    const handleSubmit = (formValues: Record<string, unknown>) => {
-        setWasSubmitted(true)
-        console.log(formValues)
-    }
+    const onSubmit = (values: Record<string, unknown>) => {
+        console.log('Form10 onSubmit')
+        console.log(values);
+    };
 
     return (
         <Formik
             initialValues={initialValuesForm10}
-            onSubmit={handleSubmit}
             validateOnBlur={false}
             validateOnChange={false}
             validationSchema={validationSchemaForm10}
+            onSubmit={onSubmit}
         >
             {({
                 handleChange,
                 handleBlur,
-                handleSubmit,
                 setFieldValue,
+                handleSubmit,
                 values,
                 errors,
                 touched,
@@ -110,8 +109,8 @@ const Form10: React.FC = () => {
                         errorMessage={errors['radio-mange']}
                     />
                     <ExtendedCheckboxGroup
-                        onValueChange="chckbx-parasites"
-                        value={values['chckbx-parasites']}
+                        onValueChange="chbx-parasites"
+                        value={values['chbx-parasites']}
                         label="Parásitos Externos"
                         options={[
                             {
@@ -127,14 +126,10 @@ const Form10: React.FC = () => {
                         style={{ borderRadius: 5 }}
                         buttonColor="#4749BC"
                         mode="contained"
-                        disabled={!dirty || !isValid}
-                        onPress={async e => {
-                            e.preventDefault()
-                            setWasSubmitted(true)
-                            await validateForm()
-                            if (isValid) {
-                                handleSubmit()
-                            }
+                        onSubmit={async () => {
+                            const errors = await validateForm();
+                            console.log('Validation errors:', errors);
+                            handleSubmit();
                         }}
                     >
                         <Text style={{ color: 'white' }}>Guardar</Text>
@@ -143,16 +138,6 @@ const Form10: React.FC = () => {
             )}
         </Formik>
     )
-}
-
-function getErrorMessage(
-    touched: FormikTouched<Record<string, unknown>>,
-    errors: FormikErrors<Record<string, unknown>>,
-    fieldName: string,
-): string | undefined {
-    return touched[fieldName] && errors[fieldName]
-        ? (errors[fieldName] as string)
-        : undefined
 }
 
 const styles = StyleSheet.create({
