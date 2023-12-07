@@ -1,5 +1,5 @@
-import { Formik, FormikHelpers } from 'formik'
-import React, { useState } from 'react'
+import { Formik } from 'formik'
+import React from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { Text } from 'react-native-paper'
 
@@ -16,6 +16,7 @@ const Form10: React.FC = () => {
         console.log('Form10 onSubmit')
         console.log(values);
     };
+
 
     return (
         <Formik
@@ -123,13 +124,14 @@ const Form10: React.FC = () => {
                         setFieldValue={setFieldValue}
                     />
                     <ExtendedButton
-                        style={{ borderRadius: 5 }}
-                        buttonColor="#4749BC"
+                        type="submit"
                         mode="contained"
                         onSubmit={async () => {
                             const errors = await validateForm();
                             console.log('Validation errors:', errors);
-                            handleSubmit();
+                            if (Object.keys(errors).length === 0) {
+                                handleSubmit();
+                            }
                         }}
                     >
                         <Text style={{ color: 'white' }}>Guardar</Text>
