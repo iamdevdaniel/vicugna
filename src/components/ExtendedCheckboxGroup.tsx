@@ -32,6 +32,7 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
         const newValues = value.map(item =>
             item.name === name ? { ...item, value: !item.value } : item,
         )
+
         setFieldValue(onValueChange, newValues)
     }
 
