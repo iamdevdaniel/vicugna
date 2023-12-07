@@ -11,7 +11,6 @@ import ExtendedTextInput from '../components/ExtendedTextInput'
 import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
 
 const Form10: React.FC = () => {
-
     const [wasSubmitted, setWasSubmitted] = React.useState(false)
 
     const handleSubmit = (formValues: Record<string, unknown>) => {
@@ -37,7 +36,7 @@ const Form10: React.FC = () => {
                 touched,
                 isValid,
                 dirty,
-                validateForm
+                validateForm,
             }) => (
                 <ScrollView style={styles.container}>
                     <ExtendedRadioGroup
@@ -130,11 +129,11 @@ const Form10: React.FC = () => {
                         mode="contained"
                         disabled={!dirty || !isValid}
                         onPress={async e => {
-                            e.preventDefault();
-                            setWasSubmitted(true);
-                            await validateForm();
+                            e.preventDefault()
+                            setWasSubmitted(true)
+                            await validateForm()
                             if (isValid) {
-                                handleSubmit();
+                                handleSubmit()
                             }
                         }}
                     >

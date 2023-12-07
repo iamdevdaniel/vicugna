@@ -56,8 +56,8 @@
             {
                 "newlines-between": "always",
                 "groups": [
-                    "builtin",
                     "external",
+                    "builtin",
                     "internal",
                     "parent",
                     "sibling",
@@ -74,14 +74,6 @@
                     "order": "asc",
                     "caseInsensitive": true
                 }
-            }
-        ],
-        "sort-keys": [
-            "error",
-            "asc",
-            {
-                "caseSensitive": true,
-                "natural": false
             }
         ]
     }
