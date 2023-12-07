@@ -11,12 +11,10 @@ import ExtendedTextInput from '../components/ExtendedTextInput'
 import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
 
 const Form10: React.FC = () => {
-
     const onSubmit = (values: Record<string, unknown>) => {
         console.log('Form10 onSubmit')
-        console.log(values);
-    };
-
+        console.log(values)
+    }
 
     return (
         <Formik
@@ -127,10 +125,10 @@ const Form10: React.FC = () => {
                         type="submit"
                         mode="contained"
                         onSubmit={async () => {
-                            const errors = await validateForm();
-                            console.log('Validation errors:', errors);
+                            const errors = await validateForm()
+                            console.log('Validation errors:', errors)
                             if (Object.keys(errors).length === 0) {
-                                handleSubmit();
+                                handleSubmit()
                             }
                         }}
                     >
