@@ -1,5 +1,5 @@
-import { Formik } from 'formik'
-import React from 'react'
+import { Formik, FormikTouched, FormikErrors } from 'formik'
+import React, { useState } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { Text } from 'react-native-paper'
 
@@ -8,21 +8,36 @@ import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
 import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
 import ExtendedTextInput from '../components/ExtendedTextInput'
 
-import { initialValuesForm10 } from './Form10Config'
+import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
 
 const Form10: React.FC = () => {
+
+    const [wasSubmitted, setWasSubmitted] = React.useState(false)
+
     const handleSubmit = (formValues: Record<string, unknown>) => {
+        setWasSubmitted(true)
         console.log(formValues)
     }
 
     return (
-        <Formik initialValues={initialValuesForm10} onSubmit={handleSubmit}>
+        <Formik
+            initialValues={initialValuesForm10}
+            onSubmit={handleSubmit}
+            validateOnBlur={false}
+            validateOnChange={false}
+            validationSchema={validationSchemaForm10}
+        >
             {({
                 handleChange,
                 handleBlur,
-                values,
-                setFieldValue,
                 handleSubmit,
+                setFieldValue,
+                values,
+                errors,
+                touched,
+                isValid,
+                dirty,
+                validateForm
             }) => (
                 <ScrollView style={styles.container}>
                     <ExtendedRadioGroup
@@ -33,7 +48,7 @@ const Form10: React.FC = () => {
                             { label: 'Hembra', value: 'female' },
                             { label: 'Macho', value: 'male' },
                         ]}
-                        errorMessage="Campo requerido"
+                        errorMessage={errors['radio-sex']}
                     />
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-age')}
@@ -44,21 +59,24 @@ const Form10: React.FC = () => {
                             { label: 'Juvenil', value: 'juvenile' },
                             { label: 'Adulto', value: 'adult' },
                         ]}
+                        errorMessage={errors['radio-age']}
                     />
                     <ExtendedTextInput
                         mode="outlined"
                         label="Peso vivo (kg)"
+                        keyboardType="numeric"
                         value={values['text-live-weight']}
                         onChangeText={handleChange('text-live-weight')}
-                        onBlur={handleBlur('text-live-weight')}
-                        errorMessage="Campo requerido"
+                        errorMessage={errors['text-live-weight']}
                     />
                     <ExtendedTextInput
                         mode="outlined"
+                        keyboardType="numeric"
                         label="Longitud de fibra (cm)"
                         value={values['text-fiber-length']}
                         onChangeText={handleChange('text-fiber-length')}
                         onBlur={handleBlur('text-fiber-length')}
+                        errorMessage={errors['text-fiber-length']}
                     />
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-physical-condition')}
@@ -69,6 +87,7 @@ const Form10: React.FC = () => {
                             { label: 'Regular', value: 'regular' },
                             { label: 'Buena', value: 'good' },
                         ]}
+                        errorMessage={errors['radio-physical-condition']}
                     />
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-pregnancy')}
@@ -79,6 +98,7 @@ const Form10: React.FC = () => {
                             { label: 'Si', value: 'yes' },
                             { label: 'Si, último tercio', value: 'last-third' },
                         ]}
+                        errorMessage={errors['radio-pregnancy']}
                     />
                     <ExtendedRadioGroup
                         onValueChange={handleChange('radio-mange')}
@@ -88,6 +108,7 @@ const Form10: React.FC = () => {
                             { label: 'No', value: 'no' },
                             { label: 'Si', value: 'yes' },
                         ]}
+                        errorMessage={errors['radio-mange']}
                     />
                     <ExtendedCheckboxGroup
                         onValueChange="chckbx-parasites"
@@ -102,16 +123,19 @@ const Form10: React.FC = () => {
                             { label: 'Piojos', name: 'lice', value: false },
                         ]}
                         setFieldValue={setFieldValue}
-                        errorMessage="Selecciona al menos una opción"
                     />
                     <ExtendedButton
                         style={{ borderRadius: 5 }}
                         buttonColor="#4749BC"
                         mode="contained"
-                        disabled={false}
-                        onPress={e => {
-                            e.preventDefault()
-                            handleSubmit()
+                        disabled={!dirty || !isValid}
+                        onPress={async e => {
+                            e.preventDefault();
+                            setWasSubmitted(true);
+                            await validateForm();
+                            if (isValid) {
+                                handleSubmit();
+                            }
                         }}
                     >
                         <Text style={{ color: 'white' }}>Guardar</Text>
@@ -120,6 +144,16 @@ const Form10: React.FC = () => {
             )}
         </Formik>
     )
+}
+
+function getErrorMessage(
+    touched: FormikTouched<Record<string, unknown>>,
+    errors: FormikErrors<Record<string, unknown>>,
+    fieldName: string,
+): string | undefined {
+    return touched[fieldName] && errors[fieldName]
+        ? (errors[fieldName] as string)
+        : undefined
 }
 
 const styles = StyleSheet.create({
