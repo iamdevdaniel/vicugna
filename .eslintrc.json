@@ -20,6 +20,7 @@
         "sourceType": "module"
     },
     "plugins": [
+        "prettier",
         "@typescript-eslint",
         "react",
         "import"
@@ -31,10 +32,13 @@
                 "argsIgnorePattern": "^_"
             }
         ],
-        "function-paren-newline": [
+        "prettier/prettier": [
             "error",
-            "multiline-arguments"
+            {
+                "endOfLine": "auto"
+            }
         ],
+        "function-paren-newline": "off",
         "complexity": [
             "error",
             3
