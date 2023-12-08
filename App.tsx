@@ -1,22 +1,23 @@
-import React, { FC } from 'react'
+import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Form10 } from './src/components'
-import { TamaguiProvider } from 'tamagui'
-import tamaguiConfig from './tamagui.config'
+import { PaperProvider } from 'react-native-paper'
 
-const App: FC = () => (
-        <TamaguiProvider config={tamaguiConfig}>
-            <View style={styles.container}>
-                <Form10 />
-            </View>
-        </TamaguiProvider>
-    )
+import customTheme from './src/common/CustomTheme'
+import { Form10Entry } from './src/views'
+
+const App: React.FC = () => (
+    <PaperProvider theme={customTheme}>
+        <View style={styles.container}>
+            <Form10Entry />
+        </View>
+    </PaperProvider>
+)
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
+        backgroundColor: 'white',
+        flex: 1,
         justifyContent: 'center',
     },
 })

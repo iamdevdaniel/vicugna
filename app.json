@@ -1,24 +1,30 @@
 {
-    "expo": {
-        "name": "vicugna",
-        "slug": "vicugna",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "userInterfaceStyle": "light",
-        "splash": {
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-        },
-        "assetBundlePatterns": [
-            "**/*"
-        ],
-        "ios": {
-            "supportsTablet": true
-        },
-        "android": {
-            "adaptiveIcon": {
-                "backgroundColor": "#ffffff"
-            }
-        }
+  "expo": {
+    "name": "vicugna",
+    "slug": "vicugna",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.maydanachi.vicugna"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e38a2167-559d-4f1d-a4e9-4a2440ce2e22"
+      }
     }
+  }
 }

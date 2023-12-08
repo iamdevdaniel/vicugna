@@ -9,6 +9,7 @@
         "es2021": true
     },
     "extends": [
+        "prettier",
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:react/recommended"
@@ -19,17 +20,28 @@
         "sourceType": "module"
     },
     "plugins": [
+        "prettier",
         "@typescript-eslint",
-        "react"
+        "react",
+        "import"
     ],
     "rules": {
-        "function-paren-newline": [
+        "@typescript-eslint/no-unused-vars": [
             "error",
-            "multiline-arguments"
+            {
+                "argsIgnorePattern": "^_"
+            }
         ],
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto"
+            }
+        ],
+        "function-paren-newline": "off",
         "complexity": [
             "error",
-            2
+            3
         ],
         "semi": [
             "error",
@@ -43,6 +55,31 @@
         "arrow-body-style": [
             "error",
             "as-needed"
+        ],
+        "import/order": [
+            "error",
+            {
+                "newlines-between": "always",
+                "groups": [
+                    "external",
+                    "builtin",
+                    "internal",
+                    "parent",
+                    "sibling",
+                    "index"
+                ],
+                "pathGroups": [
+                    {
+                        "pattern": "react",
+                        "group": "external",
+                        "position": "before"
+                    }
+                ],
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true
+                }
+            }
         ]
     }
 }
