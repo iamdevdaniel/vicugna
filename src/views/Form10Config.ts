@@ -2,7 +2,7 @@ import { object, string } from 'yup'
 
 import { isGreaterThanMin, isLessThanMax } from '../utilities/helpers'
 
-export const initialValuesForm10 = {
+export const initialValuesForm10Entry = {
     'chbx-parasites': [
         { name: 'ticks', value: false },
         { name: 'lice', value: false },
@@ -21,7 +21,7 @@ const range = {
     weight: { min: 10, max: 100 },
 }
 
-export const validationSchemaForm10 = object().shape({
+export const validationSchemaForm10Entry = object().shape({
     'radio-age': string().required('Escoga una opción'),
     'radio-mange': string().required('Escoga una opción'),
     'radio-physical-condition': string().required('Escoga una opción'),

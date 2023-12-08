@@ -32,13 +32,13 @@ const ExtendedButton: React.FC<ExtendedButtonProps> = ({
     )
 }
 
-const areEqual = (prevProps: ButtonProps, nextProps: ButtonProps) =>
-    prevProps.disabled === nextProps.disabled
-
-export default React.memo(ExtendedButton, areEqual)
-
 const styles = StyleSheet.create({
     submit: {
         borderRadius: 5,
     },
 })
+
+const areEqual = (prevProps: ButtonProps, nextProps: ButtonProps) =>
+    prevProps.disabled === nextProps.disabled
+
+export default React.memo(ExtendedButton, areEqual)

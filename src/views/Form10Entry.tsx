@@ -8,20 +8,23 @@ import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
 import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
 import ExtendedTextInput from '../components/ExtendedTextInput'
 
-import { initialValuesForm10, validationSchemaForm10 } from './Form10Config'
+import {
+    initialValuesForm10Entry,
+    validationSchemaForm10Entry,
+} from './Form10Config'
 
-const Form10: React.FC = () => {
+const Form10Entry: React.FC = () => {
     const onSubmit = (values: Record<string, unknown>) => {
-        console.log('Form10 onSubmit')
+        console.log('Form10Entry onSubmit')
         console.log(values)
     }
 
     return (
         <Formik
-            initialValues={initialValuesForm10}
+            initialValues={initialValuesForm10Entry}
             validateOnBlur={false}
             validateOnChange={false}
-            validationSchema={validationSchemaForm10}
+            validationSchema={validationSchemaForm10Entry}
             onSubmit={onSubmit}
         >
             {({
@@ -31,9 +34,6 @@ const Form10: React.FC = () => {
                 handleSubmit,
                 values,
                 errors,
-                touched,
-                isValid,
-                dirty,
                 validateForm,
             }) => (
                 <ScrollView style={styles.container}>
@@ -146,4 +146,4 @@ const styles = StyleSheet.create({
         width: '100%',
     },
 })
-export default Form10
+export default Form10Entry

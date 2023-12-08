@@ -3,12 +3,12 @@ import { StyleSheet, View } from 'react-native'
 import { PaperProvider } from 'react-native-paper'
 
 import customTheme from './src/common/CustomTheme'
-import { Form10 } from './src/views'
+import { Form10Entry } from './src/views'
 
 const App: React.FC = () => (
     <PaperProvider theme={customTheme}>
         <View style={styles.container}>
-            <Form10 />
+            <Form10Entry />
         </View>
     </PaperProvider>
 )
