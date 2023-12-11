@@ -1,4 +1,5 @@
 import React from 'react'
+import { TextInput as RNTextInput } from 'react-native'
 import {
     TextInput,
     TextInputProps,
@@ -11,30 +12,30 @@ interface ExtendedTextInputProps extends TextInputProps {
     errorMessage?: string
 }
 
-const ExtendedTextInput: React.FC<ExtendedTextInputProps> = ({
-    errorMessage,
-    ...props
-}) => {
-    const hasError = !!errorMessage
+const ExtendedTextInput = React.forwardRef<RNTextInput, ExtendedTextInputProps>(
+    ({ errorMessage, ...props }, ref) => {
+        const hasError = !!errorMessage
 
-    const { colors } = useTheme() as CustomTheme
+        const { colors } = useTheme() as CustomTheme
 
-    return (
-        <>
-            <TextInput
-                {...props}
-                error={hasError}
-                outlineStyle={{ borderWidth: 1 }}
-            />
-            <HelperText
-                type="error"
-                visible={hasError}
-                style={{ backgroundColor: colors.red?.[50] }}
-            >
-                {errorMessage}
-            </HelperText>
-        </>
-    )
-}
+        return (
+            <>
+                <TextInput
+                    {...props}
+                    ref={ref}
+                    error={hasError}
+                    outlineStyle={{ borderWidth: 1 }}
+                />
+                <HelperText
+                    type="error"
+                    visible={hasError}
+                    style={{ backgroundColor: colors.red?.[50] }}
+                >
+                    {errorMessage}
+                </HelperText>
+            </>
+        )
+    },
+)
 
 export default ExtendedTextInput

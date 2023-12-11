@@ -9,6 +9,7 @@ const Form10Header: React.FC = () => (
         <ExtendedSelect
             label="Asociación regional"
             value=""
+            placeholder="Seleccione una opción"
             options={[
                 { value: 'Cochabamba', id: '1' },
                 { value: 'La Paz', id: '2' },
