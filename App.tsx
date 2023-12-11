@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native'
 import { PaperProvider } from 'react-native-paper'
 
 import customTheme from './src/common/CustomTheme'
-import { Form10Entry } from './src/views'
 import { Form10Header } from './src/modules'
+import { Form10Entry } from './src/views'
 
 const App: React.FC = () => (
     <PaperProvider theme={customTheme}>
