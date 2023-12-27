@@ -1,4 +1,4 @@
-import { Text } from '@ui-kitten/components'
+import { Text, IndexPath } from '@ui-kitten/components'
 import React, { useMemo, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
@@ -25,17 +25,14 @@ const Form10Header: React.FC = () => {
             return getListOf.communities(selectedRegional, selectedDepartment)
         }
         return []
-    }, [selectedRegional, selectedDepartment])
+    }, [selectedRegional])
 
     return (
         <View style={styles.container}>
             <ExtendedSelect
                 placeholder={'Departamento'}
                 onSelect={index => {
-                    console.log('onSelect triggered', index)
-                    if (!Array.isArray(index)) {
-                        setSelectedDepartment(departments[index.row].value)
-                    }
+                    setSelectedDepartment(departments[(index as IndexPath).row].value)
                 }}
                 options={departments}
             />
@@ -43,9 +40,7 @@ const Form10Header: React.FC = () => {
                 placeholder={'Asociación Regional'}
                 disabled={!selectedDepartment}
                 onSelect={index => {
-                    if (!Array.isArray(index)) {
-                        setSelectedRegional(regionals[index.row].value)
-                    }
+                    setSelectedRegional(regionals[(index as IndexPath).row].value)
                 }}
                 options={regionals}
             />
@@ -53,9 +48,7 @@ const Form10Header: React.FC = () => {
                 placeholder={'Comunidad'}
                 disabled={!selectedRegional}
                 onSelect={index => {
-                    if (!Array.isArray(index)) {
-                        setSelectedCommunity(communities[index.row].value)
-                    }
+                    setSelectedCommunity(communities[(index as IndexPath).row].value)
                 }}
                 options={communities}
             />
