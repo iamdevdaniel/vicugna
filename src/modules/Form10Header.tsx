@@ -1,59 +1,93 @@
-import { Text, IndexPath } from '@ui-kitten/components'
-import React, { useMemo, useState } from 'react'
+import {
+    IndexPath,
+    Button
+} from '@ui-kitten/components'
+import { Formik } from 'formik'
+import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import ExtendedSelect from '../components/ExtendedSelect'
 import { getListOf } from '../models/arcmv'
 
 const Form10Header: React.FC = () => {
-    const [selectedDepartment, setSelectedDepartment] = useState('')
-    const [selectedRegional, setSelectedRegional] = useState('')
-    const [selectedCommunity, setSelectedCommunity] = useState('')
-
-    const departments = getListOf.departments()
-
-    const regionals = useMemo(() => {
-        console.log('selectedDepartment', selectedDepartment)
-        if (selectedDepartment) {
-            return getListOf.regionals(selectedDepartment)
-        }
-        return []
-    }, [selectedDepartment])
-
-    const communities = useMemo(() => {
-        if (selectedRegional) {
-            return getListOf.communities(selectedRegional, selectedDepartment)
-        }
-        return []
-    }, [selectedRegional])
 
     return (
-        <View style={styles.container}>
-            <ExtendedSelect
-                placeholder={'Departamento'}
-                onSelect={index => {
-                    setSelectedDepartment(departments[(index as IndexPath).row].value)
-                }}
-                options={departments}
-            />
-            <ExtendedSelect
-                placeholder={'Asociación Regional'}
-                disabled={!selectedDepartment}
-                onSelect={index => {
-                    setSelectedRegional(regionals[(index as IndexPath).row].value)
-                }}
-                options={regionals}
-            />
-            <ExtendedSelect
-                placeholder={'Comunidad'}
-                disabled={!selectedRegional}
-                onSelect={index => {
-                    setSelectedCommunity(communities[(index as IndexPath).row].value)
-                }}
-                options={communities}
-            />
-            <Text>BRMC</Text>
-        </View>
+        <Formik
+            initialValues={{
+                department: '',
+                regional: '',
+                community: '',
+            }}
+            onSubmit={() => { }}
+        >
+            {({ values, setFieldValue }) => {
+                const departments = getListOf.departments()
+
+                const regionals = React.useMemo(() => {
+                    if (values.department) {
+                        return getListOf.regionals(values.department)
+                    }
+                    return []
+                }, [values.department])
+
+                const communities = React.useMemo(() => {
+                    if (values.regional) {
+                        return getListOf.communities(
+                            values.regional,
+                            values.department,
+                        )
+                    }
+                    return []
+                }, [values.regional])
+
+                return (
+                    <View style={styles.container}>
+                        <ExtendedSelect
+                            label={'Departamento'}
+                            placeholder={'Seleccione una opción'}
+                            value={values.department}
+                            options={departments}
+                            onSelect={index => {
+                                setFieldValue(
+                                    'department',
+                                    departments[(index as IndexPath).row].value,
+                                )
+                                setFieldValue('regional', '')
+                                setFieldValue('community', '')
+                            }}
+                        />
+                        <ExtendedSelect
+                            label={'Asociación Regional'}
+                            placeholder={'Seleccione una opción'}
+                            value={values.regional}
+                            options={regionals}
+                            disabled={!values.department}
+                            onSelect={index => {
+                                setFieldValue(
+                                    'regional',
+                                    regionals[(index as IndexPath).row].value,
+                                )
+                                setFieldValue('community', '')
+                            }}
+                        />
+                        <ExtendedSelect
+                            label={'Comunidad Manejadora'}
+                            placeholder={'Seleccione una opción'}
+                            value={values.community}
+                            options={communities}
+                            disabled={!values.regional}
+                            onSelect={index => {
+                                setFieldValue(
+                                    'community',
+                                    communities[(index as IndexPath).row].value,
+                                )
+                            }}
+                        />
+                        <Button onPress={() => { }}>Guardar</Button>
+                    </View>
+                )
+            }}
+        </Formik>
     )
 }
 
