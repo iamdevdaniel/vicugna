@@ -1,7 +1,11 @@
-const path = require('path')
-const createExpoWebpackConfigAsync = require('@expo/webpack-config')
+const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 
 module.exports = async function (env, argv) {
-    const config = await createExpoWebpackConfigAsync(env, argv)
-    return config
-}
+    const config = await createExpoWebpackConfigAsync(env, argv);
+
+    config.ignoreWarnings = [{
+        module: /@eva-design\/processor|@ui-kitten\/components|@eva-design\/eva/,
+    }];
+
+    return config;
+};

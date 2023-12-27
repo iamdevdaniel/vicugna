@@ -1,26 +1,25 @@
+import * as eva from '@eva-design/eva'
+import { ApplicationProvider, Layout } from '@ui-kitten/components'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { PaperProvider } from 'react-native-paper'
+import { StyleSheet } from 'react-native'
 
-import customTheme from './src/common/CustomTheme'
 import { Form10Header } from './src/modules'
 import { Form10Entry } from './src/views'
 
 const App: React.FC = () => (
-    <PaperProvider theme={customTheme}>
-        <View style={styles.container}>
+    <ApplicationProvider {...eva} theme={eva.light}>
+        <Layout style={styles.layout}>
             {/* <Form10Entry /> */}
             <Form10Header />
-        </View>
-    </PaperProvider>
+        </Layout>
+    </ApplicationProvider>
 )
 
 const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-        backgroundColor: 'white',
+    layout: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
     },
 })
 
