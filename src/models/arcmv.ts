@@ -11,7 +11,7 @@ export type ARCMVListType = {
     }
 }
 
-type option = { key: string; value: string }
+export type option = { key: string; value: string }
 
 const ARCMVList: ARCMVListType = ARCMVListData
 

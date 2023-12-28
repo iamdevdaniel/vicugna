@@ -25,20 +25,6 @@ const regex = {
         /^-?([1-8]?[1-9]|[1-9]0)\.{1}\d{2,6}$/.test(value),
 }
 
-export const initialValuesForm10Entry = {
-    'chbx-parasites': [
-        { name: 'ticks', value: false },
-        { name: 'lice', value: false },
-    ],
-    'radio-age': '',
-    'radio-mange': '',
-    'radio-physical-condition': '',
-    'radio-pregnancy': '',
-    'radio-sex': '',
-    'text-fiber-length': '',
-    'text-live-weight': '',
-}
-
 export const initialValuesForm10Header = {
     department: '',
     regional: '',
@@ -49,6 +35,21 @@ export const initialValuesForm10Header = {
     captureDate: null,
     herdingAttempts: '',
     authorizationCode: '',
+}
+
+export const initialValuesForm10Entry = {
+    sex: '',
+    age: '',
+    weight: '',
+    woolLength: '',
+    physicalCondition: '',
+    pregnancyStatus: '',
+    externalParasites: '',
+    mangeSeverity: '',
+    dandruff: '',
+    canShareWool: '',
+    isAlive: '',
+    observations: '',
 }
 
 export const validationSchemaForm10Header = object().shape({
@@ -86,42 +87,4 @@ export const validationSchemaForm10Header = object().shape({
     authorizationCode: string().required(errors.isRequired),
 })
 
-export const validationSchemaForm10Entry = object().shape({
-    'radio-age': string().required('Escoga una opción'),
-    'radio-mange': string().required('Escoga una opción'),
-    'radio-physical-condition': string().required('Escoga una opción'),
-    'radio-pregnancy': string().required('Escoga una opción'),
-    'radio-sex': string().required('Escoga una opción'),
-    'text-fiber-length': string()
-        .matches(
-            /^[0-9]*\.?[0-9]{0,3}$/,
-            'Este campo debe ser un número con hasta 3 decimales',
-        )
-        .test(
-            'minLength',
-            `La longitud debe ser mayor que ${range.length.min} cm`,
-            isGreaterThanMin(range.length.min),
-        )
-        .test(
-            'maxCharLength',
-            `La longitud debe ser menor que ${range.length.max} cm`,
-            isLessThanMax(range.length.max),
-        )
-        .required('Este campo es requerido'),
-    'text-live-weight': string()
-        .matches(
-            /^[0-9]*\.?[0-9]{0,3}$/,
-            'Este campo debe ser un número con hasta 3 decimales',
-        )
-        .test(
-            'minWeight',
-            `El peso debe ser mayor que ${range.weight.min} kg`,
-            isGreaterThanMin(range.weight.min),
-        )
-        .test(
-            'maxWeight',
-            `El peso debe ser menor que ${range.weight.max} kg`,
-            isLessThanMax(range.weight.max),
-        )
-        .required('Este campo es requerido'),
-})
+export const validationSchemaForm10Entry = object().shape({})
