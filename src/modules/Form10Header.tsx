@@ -11,7 +11,7 @@ import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { date } from 'yup'
 
-import ExtendedSelect from '../components/ExtendedSelect'
+import CustomSelect from '../components/CustomSelect'
 import { getListOf } from '../models/arcmv'
 
 import {
@@ -51,7 +51,7 @@ const Form10Header: React.FC = () => {
 
                 return (
                     <View style={styles.container}>
-                        <ExtendedSelect
+                        <CustomSelect
                             style={styles.field}
                             label={'Departamento'}
                             placeholder={'Seleccione una opción'}
@@ -66,7 +66,7 @@ const Form10Header: React.FC = () => {
                                 setFieldValue('community', '')
                             }}
                         />
-                        <ExtendedSelect
+                        <CustomSelect
                             style={styles.field}
                             label={'Asociación Regional'}
                             placeholder={'Seleccione una opción'}
@@ -81,7 +81,7 @@ const Form10Header: React.FC = () => {
                                 setFieldValue('community', '')
                             }}
                         />
-                        <ExtendedSelect
+                        <CustomSelect
                             style={styles.field}
                             label={'Comunidad Manejadora'}
                             placeholder={'Seleccione una opción'}

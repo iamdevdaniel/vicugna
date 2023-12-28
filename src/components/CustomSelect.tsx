@@ -2,11 +2,11 @@ import { Select, SelectProps, SelectItem } from '@ui-kitten/components'
 import React from 'react'
 import { View } from 'react-native'
 
-interface ExtendedSelectProps extends SelectProps {
+interface CustomSelectProps extends SelectProps {
     options?: { key: string; value: string }[]
 }
 
-const ExtendedSelect: React.FC<ExtendedSelectProps> = props => (
+const CustomSelect: React.FC<CustomSelectProps> = props => (
     <View>
         <Select {...props}>
             {props.options?.map((option, index) => (
@@ -16,4 +16,4 @@ const ExtendedSelect: React.FC<ExtendedSelectProps> = props => (
     </View>
 )
 
-export default ExtendedSelect
+export default CustomSelect

@@ -7,11 +7,11 @@ import {
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 
-interface ExtendedRadioGroupProps extends RadioGroupProps {
+interface CustomRadioGroupProps extends RadioGroupProps {
     label?: string
 }
 
-const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = props => {
+const CustomRadioGroup: React.FC<CustomRadioGroupProps> = props => {
     const theme = useTheme()
 
     return (
@@ -29,7 +29,7 @@ const ExtendedRadioGroup: React.FC<ExtendedRadioGroupProps> = props => {
     )
 }
 
-export default ExtendedRadioGroup
+export default CustomRadioGroup
 
 const styles = StyleSheet.create({
     container: {

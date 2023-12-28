@@ -4,8 +4,8 @@ import React from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { option } from 'src/models/arcmv'
 
-import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
-import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
+import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
+import CustomRadioGroup from '../components/CustomRadioGroup'
 
 import {
     initialValuesForm10Entry,
@@ -56,8 +56,8 @@ const Form10Entry: React.FC = () => {
             initialValues={initialValuesForm10Entry}
             validationSchema={validationSchemaForm10Entry}
             onSubmit={onSubmit}
-            // validateOnBlur={false}
-            // validateOnChange={false}
+            validateOnBlur={false}
+            validateOnChange={false}
         >
             {({
                 handleChange,
@@ -69,7 +69,7 @@ const Form10Entry: React.FC = () => {
                 validateForm,
             }) => (
                 <ScrollView style={styles.container}>
-                    <ExtendedRadioGroup
+                    <CustomRadioGroup
                         style={styles.field}
                         label="Sexo"
                         selectedIndex={options.sex.findIndex(
@@ -82,8 +82,8 @@ const Form10Entry: React.FC = () => {
                         {options.sex.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
-                    </ExtendedRadioGroup>
-                    <ExtendedRadioGroup
+                    </CustomRadioGroup>
+                    <CustomRadioGroup
                         style={styles.field}
                         label="Edad"
                         selectedIndex={options.age.findIndex(
@@ -96,7 +96,7 @@ const Form10Entry: React.FC = () => {
                         {options.age.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
-                    </ExtendedRadioGroup>
+                    </CustomRadioGroup>
                     <Input
                         style={styles.field}
                         label={'Peso vivo (kg)'}
@@ -104,6 +104,8 @@ const Form10Entry: React.FC = () => {
                         onChange={event => {
                             setFieldValue('weight', event.nativeEvent.text)
                         }}
+                        caption={'Tangled up in blue'}
+
                     />
                     <Input
                         style={styles.field}
@@ -113,7 +115,7 @@ const Form10Entry: React.FC = () => {
                             setFieldValue('woolLength', event.nativeEvent.text)
                         }}
                     />
-                    <ExtendedRadioGroup
+                    <CustomRadioGroup
                         style={styles.field}
                         label="Condición corporal"
                         selectedIndex={options.physicalCondition.findIndex(
@@ -129,8 +131,8 @@ const Form10Entry: React.FC = () => {
                         {options.physicalCondition.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
-                    </ExtendedRadioGroup>
-                    <ExtendedRadioGroup
+                    </CustomRadioGroup>
+                    <CustomRadioGroup
                         style={styles.field}
                         label="Gestación"
                         selectedIndex={options.pregnancyStatus.findIndex(
@@ -146,8 +148,8 @@ const Form10Entry: React.FC = () => {
                         {options.pregnancyStatus.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
-                    </ExtendedRadioGroup>
-                    <ExtendedCheckboxGroup
+                    </CustomRadioGroup>
+                    <CustomCheckboxGroup
                         style={styles.field}
                         label={'Parásitos externos'}
                         options={options.externalParasites}
@@ -156,7 +158,7 @@ const Form10Entry: React.FC = () => {
                             setFieldValue('externalParasites', selectedValues)
                         }}
                     />
-                    <ExtendedRadioGroup
+                    <CustomRadioGroup
                         style={styles.field}
                         label="Gestación"
                         selectedIndex={options.mangeSeverity.findIndex(
@@ -172,8 +174,8 @@ const Form10Entry: React.FC = () => {
                         {options.mangeSeverity.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
-                    </ExtendedRadioGroup>
-                    <ExtendedCheckboxGroup
+                    </CustomRadioGroup>
+                    <CustomCheckboxGroup
                         style={styles.field}
                         label={'Caspa'}
                         options={options.dandruff}
@@ -182,7 +184,7 @@ const Form10Entry: React.FC = () => {
                             setFieldValue('dandruff', selectedValues)
                         }}
                     />
-                    <ExtendedCheckboxGroup
+                    <CustomCheckboxGroup
                         style={styles.field}
                         label={'Esquila'}
                         options={options.canShareWool}
@@ -191,7 +193,7 @@ const Form10Entry: React.FC = () => {
                             setFieldValue('canShareWool', selectedValues)
                         }}
                     />
-                    <ExtendedCheckboxGroup
+                    <CustomCheckboxGroup
                         style={styles.field}
                         label={'Vicuña muerta'}
                         options={options.isAlive}

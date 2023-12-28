@@ -2,7 +2,7 @@ import { CheckBox, Text, useTheme } from '@ui-kitten/components'
 import React from 'react'
 import { View, ViewStyle, StyleSheet } from 'react-native'
 
-interface ExtendedCheckboxGroupProps {
+interface CustomCheckboxGroupProps {
     options: { key: string; value: string }[]
     onChange: (selectedValues: string[]) => void
     value: string[]
@@ -10,7 +10,7 @@ interface ExtendedCheckboxGroupProps {
     style?: ViewStyle
 }
 
-const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
+const CustomCheckboxGroup: React.FC<CustomCheckboxGroupProps> = ({
     options,
     onChange,
     value,
@@ -58,7 +58,7 @@ const ExtendedCheckboxGroup: React.FC<ExtendedCheckboxGroupProps> = ({
     )
 }
 
-export default ExtendedCheckboxGroup
+export default CustomCheckboxGroup
 
 const style = StyleSheet.create({
     container: {
