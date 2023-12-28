@@ -1,5 +1,10 @@
 import ARCMVListData from '../common/arcmv.json'
 
+export type option = {
+    key: string
+    value: string
+}
+
 export type ARCMVListType = {
     [department: string]: {
         [regional: string]: {
@@ -11,11 +16,9 @@ export type ARCMVListType = {
     }
 }
 
-export type option = { key: string; value: string }
-
 const ARCMVList: ARCMVListType = ARCMVListData
 
-export const getListOf = {
+export const getOptionListOf = {
     departments: (): option[] =>
         Object.keys(ARCMVList).map((department, index) => ({
             key: index.toString(),
@@ -31,9 +34,25 @@ export const getListOf = {
             )
         } else return []
     },
-    communities: (regional: string, department: string): option[] =>
-        Object.values(ARCMVList[department][regional]).map(community => ({
-            key: community.id.toString(),
-            value: community.community,
-        })),
-}
+    regionalsByDepartment: (): { [department: string]: option[] } =>
+        Object.keys(ARCMVList).reduce<{ [department: string]: option[] }>(
+            (allRegionals, department) => {
+                allRegionals[department] = getOptionListOf.regionals(department)
+                return allRegionals
+            },
+            {},
+        ),
+    communitiesByDepartmentAndRegional: (): { [department: string]: { [regional: string]: { key: string, value: string }[] } } => {
+        return Object.keys(ARCMVList).reduce<{ [department: string]: { [regional: string]: { key: string, value: string }[] } }>((allCommunities, department) => {
+            allCommunities[department] = Object.keys(ARCMVList[department]).reduce<{ [regional: string]: { key: string, value: string }[] }>((regionals, regional) => {
+                regionals[regional] = ARCMVList[department][regional].map(community => ({
+                    key: community.id.toString(),
+                    value: community.community
+                }));
+                return regionals;
+            }, {});
+            return allCommunities;
+        }, {});
+    },
+};
+

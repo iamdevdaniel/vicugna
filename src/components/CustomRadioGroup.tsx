@@ -1,9 +1,4 @@
-import {
-    RadioGroup,
-    Text,
-    RadioGroupProps,
-    useTheme,
-} from '@ui-kitten/components'
+import { RadioGroup, RadioGroupProps } from '@ui-kitten/components'
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 

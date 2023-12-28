@@ -1,9 +1,9 @@
 import {
     Input,
-    IndexPath,
     Button,
     Datepicker,
-    useTheme,
+    SelectItem,
+    IndexPath
 } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import React from 'react'
@@ -11,7 +11,7 @@ import { StyleSheet, View } from 'react-native'
 
 import CustomLabel from '../components/CustomLabel'
 import CustomSelect from '../components/CustomSelect'
-import { getListOf } from '../models/arcmv'
+import { getOptionListOf } from '../models/arcmv'
 
 import {
     initialValuesForm10Header,
@@ -21,74 +21,80 @@ import {
 const Form10Header: React.FC = () => {
     const onSubmit = (values: unknown) => console.log(values)
 
+    React.useEffect(() => {
+        console.log('Parent rendered!')
+    })
+
+    // const departments = getOptionListOf.departments()
+    // const regionals = getOptionListOf.regionalsByDepartment()
+    // const communities = getOptionListOf.communitiesByDepartmentAndRegional()
+
+    console.log('outside useEffect')
+
     return (
         <Formik
             initialValues={initialValuesForm10Header}
+            enableReinitialize={false}
             validationSchema={validationSchemaForm10Header}
             onSubmit={onSubmit}
         >
-            {({ values, isValid, dirty, setFieldValue, handleSubmit }) => {
-                const departments = getListOf.departments()
+            {({
+                values,
+                errors,
+                isValid,
+                dirty,
+                setFieldValue,
+                handleSubmit,
+            }) => {
 
-                const regionals = React.useMemo(() => {
-                    if (values.department) {
-                        return getListOf.regionals(values.department)
-                    }
-                    return []
-                }, [values.department])
-
-                const communities = React.useMemo(() => {
-                    if (values.regional) {
-                        return getListOf.communities(
-                            values.regional,
-                            values.department,
-                        )
-                    }
-                    return []
-                }, [values.regional])
+                const departments = React.useMemo(() => getOptionListOf.departments(), [])
+                console.log('Formik rerender')
 
                 return (
                     <View style={styles.container}>
-                        <CustomSelect
+                        {/* <CustomSelect
                             style={styles.field}
                             label={'Departamento'}
                             placeholder={'Seleccione una opción'}
-                            helperText={{
-                                text: 'Seleccione una opción',
-                                category: 'danger',
-                            }}
                             value={values.department}
-                            options={departments}
                             onSelect={index => {
-                                setFieldValue(
-                                    'department',
-                                    departments[(index as IndexPath).row].value,
-                                )
-                                setFieldValue('regional', '')
-                                setFieldValue('community', '')
+                                setFieldValue('department', departments[(index as IndexPath).row].value)
+                                // setValues({
+                                //     ...values,
+                                //     department: departments[(index as IndexPath).row].value,
+                                //     regional: '',
+                                //     community: ''
+                                // })
                             }}
-                        />
+                        >
+                            {departments.map((option, index) => (
+                                <SelectItem key={index} title={option.value} />
+                            ))}
+                        </CustomSelect> */}
+                        {/*
                         <CustomSelect
                             style={styles.field}
                             label={'Asociación Regional'}
                             placeholder={'Seleccione una opción'}
                             value={values.regional}
-                            options={regionals}
                             disabled={!values.department}
                             onSelect={index => {
-                                setFieldValue(
-                                    'regional',
-                                    regionals[(index as IndexPath).row].value,
-                                )
-                                setFieldValue('community', '')
+                                setValues({
+                                    ...values,
+                                    regional: regionals[(index as IndexPath).row].value,
+                                    community: ''
+                                })
                             }}
-                        />
+                        >
+                            {regionals.map((option, index) => (
+                                <SelectItem key={index} title={option.value} />
+                            ))}
+                        </CustomSelect>
                         <CustomSelect
                             style={styles.field}
                             label={'Comunidad Manejadora'}
                             placeholder={'Seleccione una opción'}
                             value={values.community}
-                            options={communities}
                             disabled={!values.regional}
                             onSelect={index => {
                                 setFieldValue(
@@ -96,7 +102,11 @@ const Form10Header: React.FC = () => {
                                     communities[(index as IndexPath).row].value,
                                 )
                             }}
-                        />
+                        >
+                            {communities.map((option, index) => (
+                                <SelectItem key={index} title={option.value} />
+                            ))}
+                        </CustomSelect> */}
                         <View style={styles.field}>
                             <CustomLabel
                                 style={styles.subtitle}

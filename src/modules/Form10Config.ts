@@ -1,6 +1,5 @@
-import { isInteger } from 'formik'
 import { object, string } from 'yup'
-
+import { option } from 'src/models/arcmv'
 import { isGreaterThanMin, isLessThanMax } from '../utilities/helpers'
 
 const range = {
@@ -38,18 +37,52 @@ export const initialValuesForm10Header = {
 }
 
 export const initialValuesForm10Entry = {
-    sex: '',
-    age: '',
+    sex: -1,
+    age: -1,
     weight: '',
     woolLength: '',
-    physicalCondition: '',
-    pregnancyStatus: '',
+    physicalCondition: -1,
+    pregnancyStatus: -1,
     externalParasites: [],
-    mangeSeverity: '',
+    mangeSeverity: -1,
     dandruff: [],
     canShareWool: [],
     isAlive: [],
     observations: '',
+}
+
+export const optionsForm10Entry: Record<string, option[]> = {
+    sex: [
+        { key: '1', value: 'Macho' },
+        { key: '2', value: 'Hembra' },
+    ],
+    age: [
+        { key: '1', value: 'Cría' },
+        { key: '2', value: 'Juvenil' },
+        { key: '3', value: 'Adulto' },
+    ],
+    physicalCondition: [
+        { key: '1', value: 'Mala' },
+        { key: '2', value: 'Regular' },
+        { key: '3', value: 'Buena' },
+    ],
+    pregnancyStatus: [
+        { key: '1', value: 'No' },
+        { key: '2', value: 'Si' },
+        { key: '3', value: 'Si, último tercio' },
+    ],
+    externalParasites: [
+        { key: '1', value: 'Garrapatas' },
+        { key: '2', value: 'Piojos' },
+    ],
+    mangeSeverity: [
+        { key: '1', value: 'Leve' },
+        { key: '2', value: 'Moderado' },
+        { key: '3', value: 'Severo' },
+    ],
+    dandruff: [{ key: '1', value: 'Tiene caspa' }],
+    canShareWool: [{ key: '1', value: 'Puede esquilarse' }],
+    isAlive: [{ key: '1', value: 'El animal esta vivo ' }],
 }
 
 export const validationSchemaForm10Header = object().shape({

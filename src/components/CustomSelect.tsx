@@ -1,4 +1,5 @@
-import { Select, SelectProps, SelectItem } from '@ui-kitten/components'
+import { Select, SelectProps } from '@ui-kitten/components'
+import { isEqual } from 'lodash'
 import React from 'react'
 import { View, StyleSheet, ViewStyle } from 'react-native'
 
@@ -6,8 +7,7 @@ import CustomHelperText, { helperTextCategory } from './CustomHelperText'
 
 interface CustomSelectProps extends SelectProps {
     style?: ViewStyle
-    options?: { key: string; value: string }[]
-    helperText?: string | { category?: helperTextCategory; text: string }
+    helperText?: string | { category?: helperTextCategory; text?: string }
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -22,11 +22,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
     return (
         <View style={[externalStyle]}>
-            <Select {...props}>
-                {props.options?.map((option, index) => (
-                    <SelectItem key={index} title={option.value} />
-                ))}
-            </Select>
+            <Select {...props}>{props.children}</Select>
             <CustomHelperText
                 style={styles.helperText}
                 text={actualHelperText}
@@ -36,10 +32,18 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     )
 }
 
-export default CustomSelect
+const arePropsEqual = (
+    prevProps: CustomSelectProps,
+    nextProps: CustomSelectProps,
+): boolean => {
+    console.log(`${prevProps.label} select`, { prevProps, nextProps })
+    return isEqual(prevProps, nextProps)
+}
 
 const styles = StyleSheet.create({
     helperText: {
         marginTop: 0,
     },
 })
+
+export default React.memo(CustomSelect, arePropsEqual)

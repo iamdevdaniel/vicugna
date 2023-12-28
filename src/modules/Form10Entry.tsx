@@ -1,15 +1,15 @@
 import { Radio, Input, Button } from '@ui-kitten/components'
-import { Formik } from 'formik'
 import React from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
-import { option } from 'src/models/arcmv'
-
+import { useForm, Controller } from 'react-hook-form'
 import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
 import CustomRadioGroup from '../components/CustomRadioGroup'
+
 
 import {
     initialValuesForm10Entry,
     validationSchemaForm10Entry,
+    optionsForm10Entry as options,
 } from './Form10Config'
 
 const Form10Entry: React.FC = () => {
@@ -17,206 +17,187 @@ const Form10Entry: React.FC = () => {
         console.log(values)
     }
 
-    const options: Record<string, option[]> = {
-        sex: [
-            { key: '1', value: 'Macho' },
-            { key: '2', value: 'Hembra' },
-        ],
-        age: [
-            { key: '1', value: 'Cría' },
-            { key: '2', value: 'Juvenil' },
-            { key: '3', value: 'Adulto' },
-        ],
-        physicalCondition: [
-            { key: '1', value: 'Mala' },
-            { key: '2', value: 'Regular' },
-            { key: '3', value: 'Buena' },
-        ],
-        pregnancyStatus: [
-            { key: '1', value: 'No' },
-            { key: '2', value: 'Si' },
-            { key: '3', value: 'Si, último tercio' },
-        ],
-        externalParasites: [
-            { key: '1', value: 'Garrapatas' },
-            { key: '2', value: 'Piojos' },
-        ],
-        mangeSeverity: [
-            { key: '1', value: 'Leve' },
-            { key: '2', value: 'Moderado' },
-            { key: '3', value: 'Severo' },
-        ],
-        dandruff: [{ key: '1', value: 'Tiene caspa' }],
-        canShareWool: [{ key: '1', value: 'Puede esquilarse' }],
-        isAlive: [{ key: '1', value: 'El animal esta vivo ' }],
-    }
+
+    const { control, handleSubmit } = useForm({
+        defaultValues: initialValuesForm10Entry,
+    })
 
     return (
-        <Formik
-            initialValues={initialValuesForm10Entry}
-            validationSchema={validationSchemaForm10Entry}
-            onSubmit={onSubmit}
-            validateOnBlur={false}
-            validateOnChange={false}
-        >
-            {({
-                handleChange,
-                handleBlur,
-                setFieldValue,
-                handleSubmit,
-                values,
-                errors,
-                validateForm,
-            }) => (
-                <ScrollView style={styles.container}>
+        <ScrollView style={styles.container}>
+
+            <Controller
+                name='sex'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
                         style={styles.field}
                         label="Sexo"
-                        selectedIndex={options.sex.findIndex(
-                            option => option.key === values.sex,
-                        )}
-                        onChange={(index: number) => {
-                            setFieldValue('sex', options.sex[index].key)
-                        }}
+                        selectedIndex={value}
+                        onChange={val => onChange(val)}
                     >
                         {options.sex.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
                     </CustomRadioGroup>
+                )}
+            />
+            <Controller
+                name='age'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
                         style={styles.field}
                         label="Edad"
-                        selectedIndex={options.age.findIndex(
-                            option => option.key === values.age,
-                        )}
-                        onChange={(index: number) => {
-                            setFieldValue('age', options.age[index].key)
-                        }}
+                        selectedIndex={value}
+                        onChange={val => onChange(val)}
                     >
                         {options.age.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
                     </CustomRadioGroup>
+                )}
+            />
+            <Controller
+                name='weight'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <Input
                         style={styles.field}
                         label={'Peso vivo (kg)'}
-                        value={values.weight}
-                        onChange={event => {
-                            setFieldValue('weight', event.nativeEvent.text)
-                        }}
-                        caption={'Tangled up in blue'}
+                        value={value}
+                        onChange={value => onChange(value)}
                     />
+                )}
+            />
+            <Controller
+                name='woolLength'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <Input
                         style={styles.field}
                         label={'Longitud de fibra (cm)'}
-                        value={values.woolLength}
-                        onChange={event => {
-                            setFieldValue('woolLength', event.nativeEvent.text)
-                        }}
+                        value={value}
+                        onChange={value => onChange(value)}
                     />
+                )}
+            />
+            <Controller
+                name='physicalCondition'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
                         style={styles.field}
                         label="Condición corporal"
-                        selectedIndex={options.physicalCondition.findIndex(
-                            option => option.key === values.physicalCondition,
-                        )}
-                        onChange={(index: number) => {
-                            setFieldValue(
-                                'physicalCondition',
-                                options.physicalCondition[index].key,
-                            )
-                        }}
+                        selectedIndex={value}
+                        onChange={value => onChange(value)}
                     >
                         {options.physicalCondition.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
                     </CustomRadioGroup>
+                )}
+            />
+            <Controller
+                name='pregnancyStatus'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
                         style={styles.field}
                         label="Gestación"
-                        selectedIndex={options.pregnancyStatus.findIndex(
-                            option => option.key === values.pregnancyStatus,
-                        )}
-                        onChange={(index: number) => {
-                            setFieldValue(
-                                'pregnancyStatus',
-                                options.pregnancyStatus[index].key,
-                            )
-                        }}
+                        selectedIndex={value}
+                        onChange={value => onChange(value)}
                     >
                         {options.pregnancyStatus.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
                     </CustomRadioGroup>
+                )}
+            />
+            <Controller
+                name='externalParasites'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
                         style={styles.field}
                         label={'Parásitos externos'}
                         options={options.externalParasites}
-                        value={values.externalParasites}
-                        onChange={(selectedValues: string[]) => {
-                            setFieldValue('externalParasites', selectedValues)
-                        }}
+                        value={value}
+                        onChange={value => onChange(value)}
                     />
+                )}
+            />
+            <Controller
+                name='mangeSeverity'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
                         style={styles.field}
                         label="Gestación"
-                        selectedIndex={options.mangeSeverity.findIndex(
-                            option => option.key === values.mangeSeverity,
-                        )}
-                        onChange={(index: number) => {
-                            setFieldValue(
-                                'mangeSeverity',
-                                options.mangeSeverity[index].key,
-                            )
-                        }}
+                        selectedIndex={value}
+                        onChange={value => onChange(value)}
                     >
                         {options.mangeSeverity.map((option, index) => (
                             <Radio key={index}>{option.value}</Radio>
                         ))}
                     </CustomRadioGroup>
+                )}
+            />
+            <Controller
+                name='dandruff'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
                         style={styles.field}
                         label={'Caspa'}
                         options={options.dandruff}
-                        value={values.dandruff}
-                        onChange={(selectedValues: string[]) => {
-                            setFieldValue('dandruff', selectedValues)
-                        }}
+                        value={value}
+                        onChange={value => onChange(value)}
                     />
+                )}
+            />
+            <Controller
+                name='canShareWool'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
                         style={styles.field}
                         label={'Esquila'}
                         options={options.canShareWool}
-                        value={values.canShareWool}
-                        onChange={(selectedValues: string[]) => {
-                            setFieldValue('canShareWool', selectedValues)
-                        }}
+                        value={value}
+                        onChange={value => onChange(value)}
                     />
+                )}
+            />
+            <Controller
+                name='isAlive'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
                         style={styles.field}
                         label={'Vicuña muerta'}
                         options={options.isAlive}
-                        value={values.isAlive}
-                        onChange={(selectedValues: string[]) => {
-                            setFieldValue('isAlive', selectedValues)
-                        }}
+                        value={value}
+                        onChange={value => onChange(value)}
                     />
+
+                )}
+            />
+            <Controller
+                name='observations'
+                control={control}
+                render={({ field: { value, onChange } }) => (
                     <Input
                         style={styles.field}
                         multiline={true}
                         label={'Observaciones'}
-                        value={values.observations}
-                        onChange={event => {
-                            setFieldValue(
-                                'observations',
-                                event.nativeEvent.text,
-                            )
-                        }}
+                        value={value}
+                        onChange={value => onChange(value)}
                     />
-                    <Button onPress={() => handleSubmit()}>Guardar</Button>
-                </ScrollView>
-            )}
-        </Formik>
+
+                )}
+            />
+            <Button onPress={handleSubmit(onSubmit)}>Guardar</Button>
+        </ScrollView>
     )
 }
 
