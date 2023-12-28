@@ -4,7 +4,7 @@ import { View, ViewStyle, StyleSheet } from 'react-native'
 
 interface ExtendedCheckboxGroupProps {
     options: { key: string; value: string }[]
-    onChange: (selectedValues: any[]) => void
+    onChange: (selectedValues: string[]) => void
     value: string[]
     label?: string
     style?: ViewStyle
