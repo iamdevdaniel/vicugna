@@ -1,7 +1,6 @@
 import {
     Input,
     IndexPath,
-    Text,
     Button,
     Datepicker,
     useTheme,
@@ -10,6 +9,7 @@ import { Formik } from 'formik'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
+import CustomLabel from '../components/CustomLabel'
 import CustomSelect from '../components/CustomSelect'
 import { getListOf } from '../models/arcmv'
 
@@ -20,7 +20,6 @@ import {
 
 const Form10Header: React.FC = () => {
     const onSubmit = (values: unknown) => console.log(values)
-    const theme = useTheme()
 
     return (
         <Formik
@@ -99,16 +98,10 @@ const Form10Header: React.FC = () => {
                             }}
                         />
                         <View style={styles.field}>
-                            <Text
-                                style={[
-                                    styles.subtitle,
-                                    { color: theme['color-basic-600'] },
-                                ]}
-                                category="label"
-                            >
-                                {'Coordenadas'}
-                            </Text>
-
+                            <CustomLabel
+                                style={styles.subtitle}
+                                text={'Coordenadas'}
+                            />
                             <View style={styles.coordinates}>
                                 <Input
                                     style={[
@@ -198,6 +191,7 @@ export default Form10Header
 const styles = StyleSheet.create({
     container: {
         width: '100%',
+        padding: 8,
     },
     field: {
         marginBottom: 12,

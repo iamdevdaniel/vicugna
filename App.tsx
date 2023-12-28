@@ -3,7 +3,7 @@ import { ApplicationProvider, Layout } from '@ui-kitten/components'
 import React from 'react'
 import { StyleSheet } from 'react-native'
 
-import Form10Header from './src/modules/Form10Entry'
+import Form10Header from './src/modules/Form10Header'
 
 const App: React.FC = () => (
     <ApplicationProvider {...eva} theme={eva.light}>
@@ -16,8 +16,7 @@ const App: React.FC = () => (
 const styles = StyleSheet.create({
     layout: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'flex-start',
     },
 })
 

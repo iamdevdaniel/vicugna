@@ -1,4 +1,4 @@
-import { Radio, Input, Button, CheckBox } from '@ui-kitten/components'
+import { Radio, Input, Button } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import React from 'react'
 import { ScrollView, StyleSheet } from 'react-native'

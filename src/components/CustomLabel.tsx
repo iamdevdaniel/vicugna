@@ -14,7 +14,7 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
     const theme = useTheme()
 
     return (
-        <View style={[externalStyle]}>
+        <View style={[styles.container, externalStyle]}>
             <Text
                 category="label"
                 style={[{ color: theme['color-basic-600'] }]}
