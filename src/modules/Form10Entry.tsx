@@ -105,7 +105,6 @@ const Form10Entry: React.FC = () => {
                             setFieldValue('weight', event.nativeEvent.text)
                         }}
                         caption={'Tangled up in blue'}
-
                     />
                     <Input
                         style={styles.field}

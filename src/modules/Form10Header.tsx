@@ -9,7 +9,6 @@ import {
 import { Formik } from 'formik'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { date } from 'yup'
 
 import CustomSelect from '../components/CustomSelect'
 import { getListOf } from '../models/arcmv'
@@ -55,6 +54,10 @@ const Form10Header: React.FC = () => {
                             style={styles.field}
                             label={'Departamento'}
                             placeholder={'Seleccione una opción'}
+                            helperText={{
+                                text: 'Seleccione una opción',
+                                category: 'danger',
+                            }}
                             value={values.department}
                             options={departments}
                             onSelect={index => {
@@ -197,10 +200,10 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     field: {
-        marginBottom: 8,
+        marginBottom: 12,
     },
     subtitle: {
-        marginBottom: 8,
+        marginBottom: 12,
     },
     coordinates: {
         flexDirection: 'row',
