@@ -1,9 +1,10 @@
-import { Radio, Input, Button } from '@ui-kitten/components'
+import { Radio, Input, Button, CheckBox } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import React from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { option } from 'src/models/arcmv'
 
+import ExtendedCheckboxGroup from '../components/ExtendedCheckboxGroup'
 import ExtendedRadioGroup from '../components/ExtendedRadioGroup'
 
 import {
@@ -36,15 +37,18 @@ const Form10Entry: React.FC = () => {
             { key: '2', value: 'Si' },
             { key: '3', value: 'Si, último tercio' },
         ],
-        // externalParasites: '',
+        externalParasites: [
+            { key: '1', value: 'Garrapatas' },
+            { key: '2', value: 'Piojos' },
+        ],
         mangeSeverity: [
             { key: '1', value: 'Leve' },
             { key: '2', value: 'Moderado' },
             { key: '3', value: 'Severo' },
         ],
-        // dandruff: '',
-        // canShareWool: '',
-        // isAlive: '',
+        dandruff: [{ key: '1', value: 'Tiene caspa' }],
+        canShareWool: [{ key: '1', value: 'Puede esquilarse' }],
+        isAlive: [{ key: '1', value: 'El animal esta vivo ' }],
     }
 
     return (
@@ -143,6 +147,15 @@ const Form10Entry: React.FC = () => {
                             <Radio key={index}>{option.value}</Radio>
                         ))}
                     </ExtendedRadioGroup>
+                    <ExtendedCheckboxGroup
+                        style={styles.field}
+                        label={'Parásitos externos'}
+                        options={options.externalParasites}
+                        value={values.externalParasites}
+                        onChange={(selectedValues: string[]) => {
+                            setFieldValue('externalParasites', selectedValues)
+                        }}
+                    />
                     <ExtendedRadioGroup
                         style={styles.field}
                         label="Gestación"
@@ -160,82 +173,33 @@ const Form10Entry: React.FC = () => {
                             <Radio key={index}>{option.value}</Radio>
                         ))}
                     </ExtendedRadioGroup>
-                    <></>
-                    {/* <ExtendedRadioGroup
-                        onValueChange={handleChange('radio-age')}
-                        value={values['radio-age']}
-                        label="Edad"
-                        options={[
-                            {label: 'Cría', value: 'young' },
-                            {label: 'Juvenil', value: 'juvenile' },
-                            {label: 'Adulto', value: 'adult' },
-                        ]}
-                        errorMessage={errors['radio-age']}
-                    />
-                    <ExtendedTextInput
-                        mode="outlined"
-                        label="Peso vivo (kg)"
-                        keyboardType="numeric"
-                        value={values['text-live-weight']}
-                        onChangeText={handleChange('text-live-weight')}
-                        errorMessage={errors['text-live-weight']}
-                    />
-                    <ExtendedTextInput
-                        mode="outlined"
-                        keyboardType="numeric"
-                        label="Longitud de fibra (cm)"
-                        value={values['text-fiber-length']}
-                        onChangeText={handleChange('text-fiber-length')}
-                        onBlur={handleBlur('text-fiber-length')}
-                        errorMessage={errors['text-fiber-length']}
-                    />
-                    <ExtendedRadioGroup
-                        onValueChange={handleChange('radio-physical-condition')}
-                        value={values['radio-physical-condition']}
-                        label="Condición corporal"
-                        options={[
-                            {label: 'Mala', value: 'bad' },
-                            {label: 'Regular', value: 'regular' },
-                            {label: 'Buena', value: 'good' },
-                        ]}
-                        errorMessage={errors['radio-physical-condition']}
-                    />
-                    <ExtendedRadioGroup
-                        onValueChange={handleChange('radio-pregnancy')}
-                        value={values['radio-pregnancy']}
-                        label="Gestación"
-                        options={[
-                            {label: 'No', value: 'no' },
-                            {label: 'Si', value: 'yes' },
-                            {label: 'Si, último tercio', value: 'last-third' },
-                        ]}
-                        errorMessage={errors['radio-pregnancy']}
-                    />
-                    <ExtendedRadioGroup
-                        onValueChange={handleChange('radio-mange')}
-                        value={values['radio-mange']}
-                        label="Sarna"
-                        options={[
-                            {label: 'No', value: 'no' },
-                            {label: 'Si', value: 'yes' },
-                        ]}
-                        errorMessage={errors['radio-mange']}
+                    <ExtendedCheckboxGroup
+                        style={styles.field}
+                        label={'Caspa'}
+                        options={options.dandruff}
+                        value={values.dandruff}
+                        onChange={(selectedValues: string[]) => {
+                            setFieldValue('dandruff', selectedValues)
+                        }}
                     />
                     <ExtendedCheckboxGroup
-                        onValueChange="chbx-parasites"
-                        value={values['chbx-parasites']}
-                        label="Parásitos Externos"
-                        options={[
-                            {
-                                label: 'Garrapatas',
-                                name: 'ticks',
-                                value: false,
-                            },
-                            {label: 'Piojos', name: 'lice', value: false },
-                        ]}
-                        setFieldValue={setFieldValue}
+                        style={styles.field}
+                        label={'Esquila'}
+                        options={options.canShareWool}
+                        value={values.canShareWool}
+                        onChange={(selectedValues: string[]) => {
+                            setFieldValue('canShareWool', selectedValues)
+                        }}
                     />
-                */}
+                    <ExtendedCheckboxGroup
+                        style={styles.field}
+                        label={'Vicuña muerta'}
+                        options={options.isAlive}
+                        value={values.isAlive}
+                        onChange={(selectedValues: string[]) => {
+                            setFieldValue('isAlive', selectedValues)
+                        }}
+                    />
                     <Input
                         style={styles.field}
                         multiline={true}

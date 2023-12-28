@@ -44,11 +44,11 @@ export const initialValuesForm10Entry = {
     woolLength: '',
     physicalCondition: '',
     pregnancyStatus: '',
-    externalParasites: '',
+    externalParasites: [],
     mangeSeverity: '',
-    dandruff: '',
-    canShareWool: '',
-    isAlive: '',
+    dandruff: [],
+    canShareWool: [],
+    isAlive: [],
     observations: '',
 }
 
