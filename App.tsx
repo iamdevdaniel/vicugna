@@ -3,7 +3,7 @@ import { ApplicationProvider, Layout } from '@ui-kitten/components'
 import React from 'react'
 import { StyleSheet } from 'react-native'
 
-import Form10Header from './src/modules/Form10Header'
+import Form10Header from './src/modules/Form10Entry'
 
 const App: React.FC = () => (
     <ApplicationProvider {...eva} theme={eva.light}>

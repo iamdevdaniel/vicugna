@@ -2,6 +2,8 @@ import { CheckBox, Text, useTheme } from '@ui-kitten/components'
 import React from 'react'
 import { View, ViewStyle, StyleSheet } from 'react-native'
 
+import CustomLabel from './CustomLabel'
+
 interface CustomCheckboxGroupProps {
     options: { key: string; value: string }[]
     onChange: (selectedValues: string[]) => void
@@ -17,8 +19,6 @@ const CustomCheckboxGroup: React.FC<CustomCheckboxGroupProps> = ({
     label,
     style: externalStyle,
 }) => {
-    const theme = useTheme()
-
     const handleSelect = (selectedValue: string) => {
         const currentIndex = value.indexOf(selectedValue)
         let newSelectedValues = [...value]
@@ -36,14 +36,7 @@ const CustomCheckboxGroup: React.FC<CustomCheckboxGroupProps> = ({
 
     return (
         <View style={[style.container, externalStyle]}>
-            {label && (
-                <Text
-                    category="label"
-                    style={[style.label, { color: theme['color-basic-600'] }]}
-                >
-                    {label}
-                </Text>
-            )}
+            {label && <CustomLabel text={label} />}
             {options.map(option => (
                 <CheckBox
                     style={style.checkbox}
@@ -65,5 +58,4 @@ const style = StyleSheet.create({
         width: '100%',
     },
     checkbox: { marginVertical: 8 },
-    label: {},
 })
