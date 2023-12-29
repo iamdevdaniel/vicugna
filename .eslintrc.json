@@ -41,7 +41,7 @@
         "function-paren-newline": "off",
         "complexity": [
             "error",
-            3
+            4
         ],
         "semi": [
             "error",

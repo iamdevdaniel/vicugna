@@ -1,4 +1,4 @@
-import { CheckBox, Text, useTheme } from '@ui-kitten/components'
+import { CheckBox } from '@ui-kitten/components'
 import React from 'react'
 import { View, ViewStyle, StyleSheet } from 'react-native'
 

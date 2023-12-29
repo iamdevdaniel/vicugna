@@ -25,10 +25,22 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
     )
 }
 
-export default CustomLabel
+const arePropsEqual = (
+    prevProps: CustomLabelProps,
+    nextProps: CustomLabelProps,
+): boolean => {
+    console.log(
+        `${prevProps.text} label will rerender ${
+            prevProps.text !== nextProps.text
+        }`,
+    )
+    return prevProps.text !== nextProps.text
+}
 
 const styles = StyleSheet.create({
     container: {
         width: '100%',
     },
 })
+
+export default React.memo(CustomLabel, arePropsEqual)

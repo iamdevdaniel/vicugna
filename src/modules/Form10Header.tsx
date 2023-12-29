@@ -5,10 +5,9 @@ import {
     SelectItem,
     IndexPath,
 } from '@ui-kitten/components'
-import { get } from 'lodash'
-import React, { useMemo } from 'react'
+import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Dimensions } from 'react-native'
 
 import CustomLabel from '../components/CustomLabel'
 import CustomSelect from '../components/CustomSelect'
@@ -33,183 +32,192 @@ const Form10Header: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <Controller
-                name="department"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                    <CustomSelect
-                        style={styles.field}
-                        label={'Departamento'}
-                        placeholder={'Seleccione una opción'}
-                        value={value}
-                        onSelect={index => {
-                            onChange(
-                                departments[(index as IndexPath).row].value,
-                            )
-                            reset({
-                                ...getValues(),
-                                regional: '',
-                                community: '',
-                            })
-                        }}
-                    >
-                        {departments.map((option, index) => (
-                            <SelectItem key={index} title={option.value} />
-                        ))}
-                    </CustomSelect>
-                )}
-            />
-            <Controller
-                name="regional"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                    <CustomSelect
-                        style={styles.field}
-                        label={'Asociación Regional'}
-                        placeholder={
-                            !selectedDepartment ? ' ' : 'Seleccione una opción'
-                        }
-                        disabled={!selectedDepartment}
-                        value={value}
-                        onSelect={index => {
-                            onChange(
-                                regionals[selectedDepartment][
-                                    (index as IndexPath).row
-                                ].value,
-                            )
-                            reset({ ...getValues(), community: '' })
-                        }}
-                    >
-                        {selectedDepartment ? (
-                            regionals[selectedDepartment].map(
-                                (option, index) => (
+            <View style={styles.fields}>
+                <Controller
+                    name="department"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                        <CustomSelect
+                            style={styles.field}
+                            label={'Departamento'}
+                            placeholder={'Seleccione una opción'}
+                            value={value}
+                            onSelect={index => {
+                                onChange(
+                                    departments[(index as IndexPath).row].value,
+                                )
+                                reset({
+                                    ...getValues(),
+                                    regional: '',
+                                    community: '',
+                                })
+                            }}
+                        >
+                            {departments.map((option, index) => (
+                                <SelectItem key={index} title={option.value} />
+                            ))}
+                        </CustomSelect>
+                    )}
+                />
+                <Controller
+                    name="regional"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                        <CustomSelect
+                            style={styles.field}
+                            label={'Asociación Regional'}
+                            placeholder={
+                                !selectedDepartment
+                                    ? ' '
+                                    : 'Seleccione una opción'
+                            }
+                            disabled={!selectedDepartment}
+                            value={value}
+                            onSelect={index => {
+                                onChange(
+                                    regionals[selectedDepartment][
+                                        (index as IndexPath).row
+                                    ].value,
+                                )
+                                reset({ ...getValues(), community: '' })
+                            }}
+                        >
+                            {selectedDepartment ? (
+                                regionals[selectedDepartment].map(
+                                    (option, index) => (
+                                        <SelectItem
+                                            key={index}
+                                            title={option.value}
+                                        />
+                                    ),
+                                )
+                            ) : (
+                                <React.Fragment />
+                            )}
+                        </CustomSelect>
+                    )}
+                />
+                <Controller
+                    name="community"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                        <CustomSelect
+                            style={styles.field}
+                            label={'Comunidad Manejadora'}
+                            placeholder={
+                                !selectedRegional
+                                    ? ' '
+                                    : 'Seleccione una opción'
+                            }
+                            value={value}
+                            disabled={!selectedRegional}
+                            onSelect={index =>
+                                onChange(
+                                    communities[selectedDepartment][
+                                        selectedRegional
+                                    ][(index as IndexPath).row].value,
+                                )
+                            }
+                        >
+                            {selectedRegional ? (
+                                communities[selectedDepartment][
+                                    selectedRegional
+                                ].map((option, index) => (
                                     <SelectItem
                                         key={index}
                                         title={option.value}
                                     />
-                                ),
-                            )
-                        ) : (
-                            <React.Fragment />
-                        )}
-                    </CustomSelect>
-                )}
-            />
-            <Controller
-                name="community"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                    <CustomSelect
-                        style={styles.field}
-                        label={'Comunidad Manejadora'}
-                        placeholder={
-                            !selectedRegional ? ' ' : 'Seleccione una opción'
-                        }
-                        value={value}
-                        disabled={!selectedRegional}
-                        onSelect={index =>
-                            onChange(
-                                communities[selectedDepartment][
-                                    selectedRegional
-                                ][(index as IndexPath).row].value,
-                            )
-                        }
-                    >
-                        {selectedRegional ? (
-                            communities[selectedDepartment][
-                                selectedRegional
-                            ].map((option, index) => (
-                                <SelectItem key={index} title={option.value} />
-                            ))
-                        ) : (
-                            <React.Fragment />
-                        )}
-                    </CustomSelect>
-                )}
-            />
-            <View style={styles.field}>
-                <CustomLabel style={styles.subtitle} text={'Coordenadas'} />
-                <View style={styles.coordinates}>
-                    <Controller
-                        name="latitude"
-                        control={control}
-                        render={({ field: { value, onChange } }) => (
-                            <Input
-                                style={[
-                                    styles.coordinatesInput,
-                                    styles.firstCoordinate,
-                                ]}
-                                label={'Latitud'}
-                                value={value}
-                                onChange={value => {
-                                    onChange(value)
-                                }}
-                            />
-                        )}
-                    />
-                    <Controller
-                        name="longitude"
-                        control={control}
-                        render={({ field: { value, onChange } }) => (
-                            <Input
-                                style={styles.coordinatesInput}
-                                label={'Longitud'}
-                                value={value}
-                                onChange={value => onChange(value)}
-                            />
-                        )}
-                    />
+                                ))
+                            ) : (
+                                <React.Fragment />
+                            )}
+                        </CustomSelect>
+                    )}
+                />
+                <View style={styles.field}>
+                    <CustomLabel style={styles.subtitle} text={'Coordenadas'} />
+                    <View style={styles.coordinates}>
+                        <Controller
+                            name="latitude"
+                            control={control}
+                            render={({ field: { value, onChange } }) => (
+                                <Input
+                                    style={[
+                                        styles.coordinatesField,
+                                        styles.firstCoordinate,
+                                    ]}
+                                    label={'Latitud'}
+                                    value={value}
+                                    onChange={value => {
+                                        onChange(value)
+                                    }}
+                                />
+                            )}
+                        />
+                        <Controller
+                            name="longitude"
+                            control={control}
+                            render={({ field: { value, onChange } }) => (
+                                <Input
+                                    style={styles.coordinatesField}
+                                    label={'Longitud'}
+                                    value={value}
+                                    onChange={value => onChange(value)}
+                                />
+                            )}
+                        />
+                    </View>
                 </View>
+                <Controller
+                    name="captureSite"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                        <Input
+                            style={styles.field}
+                            label={'Sitio de captura'}
+                            value={value}
+                            onChange={value => onChange(value)}
+                        />
+                    )}
+                />
+                <Controller
+                    name="captureDate"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                        <Datepicker
+                            style={styles.field}
+                            label={'Fecha de captura'}
+                            date={value}
+                            placement={'left end'}
+                            onSelect={value => onChange(value)}
+                        />
+                    )}
+                />
+                <Controller
+                    name="herdingAttempts"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                        <Input
+                            style={styles.field}
+                            label={'Número de repeticiones de arreo'}
+                            value={value}
+                            onChange={value => onChange(value)}
+                        />
+                    )}
+                />
+                <Controller
+                    name="authorizationCode"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                        <Input
+                            style={styles.field}
+                            label={'Codigo de autorización de esquila'}
+                            value={value}
+                            onChange={value => onChange(value)}
+                        />
+                    )}
+                />
             </View>
-            <Controller
-                name="captureSite"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                    <Input
-                        style={styles.field}
-                        label={'Sitio de captura'}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
-                )}
-            />
-            <Controller
-                name="captureDate"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                    <Datepicker
-                        style={styles.field}
-                        label={'Fecha de captura'}
-                        date={value}
-                        placement={'left end'}
-                        onSelect={value => onChange(value)}
-                    />
-                )}
-            />
-            <Controller
-                name="herdingAttempts"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                    <Input
-                        style={styles.field}
-                        label={'Número de repeticiones de arreo'}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
-                )}
-            />
-            <Controller
-                name="authorizationCode"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                    <Input
-                        style={styles.field}
-                        label={'Codigo de autorización de esquila'}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
-                )}
-            />
             <Button style={styles.button}>Guardar</Button>
         </View>
     )
@@ -217,27 +225,36 @@ const Form10Header: React.FC = () => {
 
 export default Form10Header
 
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        padding: 8,
-    },
-    field: {
-        marginBottom: 12,
-    },
-    subtitle: {
-        marginBottom: 12,
-    },
-    coordinates: {
-        flexDirection: 'row',
-    },
-    coordinatesInput: {
-        flex: 1,
-    },
-    firstCoordinate: {
-        marginRight: 8,
-    },
-    button: {
-        marginTop: 8,
-    },
-})
+const getStyles = (screenWidth: number) =>
+    StyleSheet.create({
+        container: {
+            width: '100%',
+            height: '100%',
+            padding: 8,
+            flex: 1,
+            justifyContent: 'space-between',
+        },
+        field: {
+            marginBottom: 12,
+        },
+        fields: { flex: 1 },
+        subtitle: {
+            marginBottom: 12,
+        },
+        coordinates: {
+            flexDirection: screenWidth <= 500 ? 'column' : 'row',
+        },
+        coordinatesField: {
+            flex: 1,
+            marginBottom: screenWidth <= 500 ? 8 : 0,
+        },
+        firstCoordinate: {
+            marginRight: screenWidth > 500 ? 8 : 0,
+        },
+        button: {
+            marginTop: 8,
+        },
+    })
+
+const screenWidth = Dimensions.get('window').width
+const styles = getStyles(screenWidth)

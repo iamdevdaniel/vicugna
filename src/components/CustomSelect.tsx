@@ -1,6 +1,6 @@
 import { Select, SelectProps } from '@ui-kitten/components'
 import { isEqual } from 'lodash'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { View, StyleSheet, ViewStyle } from 'react-native'
 
 import CustomHelperText, { helperTextCategory } from './CustomHelperText'
