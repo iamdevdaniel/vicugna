@@ -36,9 +36,18 @@ const arePropsEqual = (
     prevProps: CustomSelectProps,
     nextProps: CustomSelectProps,
 ): boolean => {
-    console.log(
-        `${prevProps.label} will rerender ${!isEqual(prevProps, nextProps)}`,
-    )
+    if (!isEqual(prevProps.style, nextProps.style)) {
+        if (nextProps.label === 'Departamento') console.log('Dep. style changed');
+    }
+
+    if (!isEqual(prevProps.helperText, nextProps.helperText)) {
+        if (nextProps.label === 'Departamento') console.log('Dep. helperText changed');
+    }
+
+    if (!isEqual(prevProps.children, nextProps.children)) {
+        if (nextProps.label === 'Departamento') console.log('Dep. children changed');
+    }
+
     return isEqual(prevProps, nextProps)
 }
 

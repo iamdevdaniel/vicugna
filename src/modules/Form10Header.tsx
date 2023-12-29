@@ -14,14 +14,17 @@ import CustomSelect from '../components/CustomSelect'
 import { getOptionListOf } from '../models/arcmv'
 
 import {
-    initialValuesForm10Header,
-    validationSchemaForm10Header,
+    initialValuesForm10Header as initialValues,
+    validationSchemaForm10Header as validationSchema,
 } from './Form10Config'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 const Form10Header: React.FC = () => {
-    const { control, reset, watch, getValues } = useForm({
-        defaultValues: initialValuesForm10Header,
+    const { control, reset, watch, getValues, handleSubmit, formState: { errors } } = useForm({
+        defaultValues: initialValues,
+        resolver: yupResolver(validationSchema),
     })
+
     const onSubmit = (values: unknown) => console.log(values)
 
     const departments = getOptionListOf.departments()
@@ -71,6 +74,7 @@ const Form10Header: React.FC = () => {
                                     ? ' '
                                     : 'Seleccione una opción'
                             }
+                            helperText={{ category: 'danger', text: '' }}
                             disabled={!selectedDepartment}
                             value={value}
                             onSelect={index => {
@@ -218,7 +222,12 @@ const Form10Header: React.FC = () => {
                     )}
                 />
             </View>
-            <Button style={styles.button}>Guardar</Button>
+            <Button
+                style={styles.button}
+                onPress={handleSubmit(onSubmit)}
+            >
+                Guardar
+            </Button>
         </View>
     )
 }

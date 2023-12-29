@@ -10,8 +10,8 @@ const range = {
 }
 
 const errors = {
-    isSingleOption: 'Escoga una opción',
-    isRequired: 'Este campo es requerido',
+    isRequiredOption: 'Escoga una opción',
+    isRequiredField: 'Este campo es requerido',
     maxCharLength: (max: number) => `${max} carácteres como máximo`,
     shouldBeGreaterThan: (min: number) => `Debe ser mayor que ${min}`,
     isNotANumber: 'Debe ser un número',
@@ -32,7 +32,7 @@ export const initialValuesForm10Header = {
     captureSite: '',
     latitude: '',
     longitude: '',
-    captureDate: null,
+    captureDate: '',
     herdingAttempts: '',
     authorizationCode: '',
 }
@@ -87,38 +87,38 @@ export const optionsForm10Entry: Record<string, option[]> = {
 }
 
 export const validationSchemaForm10Header = object().shape({
-    department: string().required(errors.isSingleOption),
-    regional: string().required(errors.isSingleOption),
-    community: string().required(errors.isSingleOption),
+    department: string().required(errors.isRequiredOption),
+    regional: string().required(errors.isRequiredOption),
+    community: string().required(errors.isRequiredOption),
     captureSite: string()
-        .test('isRequired', errors.isRequired, value => !!value)
+        .test('isRequiredField', errors.isRequiredField, value => !!value)
         .test(
             'maxLength50',
             errors.maxCharLength(range.captureSiteNameChars.max),
             value => !!value && value.length <= range.captureSiteNameChars.max,
         ),
     latitude: string()
-        .test('isRequired', errors.isRequired, value => !!value)
+        .test('isRequiredField', errors.isRequiredField, value => !!value)
         .test('isNumber', errors.isNotANumber, value => !isNaN(Number(value)))
         .test('isCoordinate', errors.isCoordinate, value =>
             regex.coordinates(value),
         ),
     longitude: string()
-        .test('isRequired', errors.isRequired, value => !!value)
+        .test('isRequiredField', errors.isRequiredField, value => !!value)
         .test('isNumber', errors.isNotANumber, value => !isNaN(Number(value)))
         .test('isCoordinate', errors.isCoordinate, value =>
             regex.coordinates(value),
         ),
-    captureDate: string().required(errors.isRequired),
+    captureDate: string().required(errors.isRequiredField),
     herdingAttempts: string()
-        .test('isNotEmpty', errors.isRequired, value => !!value)
+        .test('isNotEmpty', errors.isRequiredField, value => !!value)
         .test('isNumber', errors.isNotANumber, value => !isNaN(Number(value)))
         .test(
             'greaterThanOne',
             errors.shouldBeGreaterThan(0),
             value => Number(value) > 1,
         ),
-    authorizationCode: string().required(errors.isRequired),
+    authorizationCode: string().required(errors.isRequiredField),
 })
 
 export const validationSchemaForm10Entry = object().shape({})
