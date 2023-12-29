@@ -1,5 +1,6 @@
-import { object, string } from 'yup'
 import { option } from 'src/models/arcmv'
+import { object, string } from 'yup'
+
 import { isGreaterThanMin, isLessThanMax } from '../utilities/helpers'
 
 const range = {

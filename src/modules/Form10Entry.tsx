@@ -1,10 +1,10 @@
 import { Radio, Input, Button } from '@ui-kitten/components'
 import React from 'react'
-import { ScrollView, StyleSheet } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
+import { ScrollView, StyleSheet } from 'react-native'
+
 import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
 import CustomRadioGroup from '../components/CustomRadioGroup'
-
 
 import {
     initialValuesForm10Entry,
@@ -17,16 +17,16 @@ const Form10Entry: React.FC = () => {
         console.log(values)
     }
 
-
     const { control, handleSubmit } = useForm({
         defaultValues: initialValuesForm10Entry,
     })
 
+    console.log('Form rerender')
+
     return (
         <ScrollView style={styles.container}>
-
             <Controller
-                name='sex'
+                name="sex"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
@@ -42,7 +42,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='age'
+                name="age"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
@@ -58,7 +58,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='weight'
+                name="weight"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <Input
@@ -70,7 +70,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='woolLength'
+                name="woolLength"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <Input
@@ -82,7 +82,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='physicalCondition'
+                name="physicalCondition"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
@@ -98,7 +98,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='pregnancyStatus'
+                name="pregnancyStatus"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
@@ -114,7 +114,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='externalParasites'
+                name="externalParasites"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
@@ -127,12 +127,12 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='mangeSeverity'
+                name="mangeSeverity"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomRadioGroup
                         style={styles.field}
-                        label="Gestación"
+                        label="Sarna"
                         selectedIndex={value}
                         onChange={value => onChange(value)}
                     >
@@ -143,7 +143,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='dandruff'
+                name="dandruff"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
@@ -156,7 +156,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='canShareWool'
+                name="canShareWool"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
@@ -169,7 +169,7 @@ const Form10Entry: React.FC = () => {
                 )}
             />
             <Controller
-                name='isAlive'
+                name="isAlive"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <CustomCheckboxGroup
@@ -179,11 +179,10 @@ const Form10Entry: React.FC = () => {
                         value={value}
                         onChange={value => onChange(value)}
                     />
-
                 )}
             />
             <Controller
-                name='observations'
+                name="observations"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <Input
@@ -193,7 +192,6 @@ const Form10Entry: React.FC = () => {
                         value={value}
                         onChange={value => onChange(value)}
                     />
-
                 )}
             />
             <Button onPress={handleSubmit(onSubmit)}>Guardar</Button>

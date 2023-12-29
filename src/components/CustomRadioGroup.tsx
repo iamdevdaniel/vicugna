@@ -8,12 +8,18 @@ interface CustomRadioGroupProps extends RadioGroupProps {
     label?: string
 }
 
-const CustomRadioGroup: React.FC<CustomRadioGroupProps> = props => (
-    <View style={styles.container}>
-        {props.label && <CustomLabel text={props.label} />}
-        <RadioGroup {...props}>{props.children}</RadioGroup>
-    </View>
-)
+const CustomRadioGroup: React.FC<CustomRadioGroupProps> = props => {
+    React.useEffect(() => {
+        console.log(`${props.label} radio group rerender`)
+    })
+
+    return (
+        <View style={styles.container}>
+            {props.label && <CustomLabel text={props.label} />}
+            <RadioGroup {...props}>{props.children}</RadioGroup>
+        </View>
+    )
+}
 
 export default CustomRadioGroup
 

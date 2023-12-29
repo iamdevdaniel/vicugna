@@ -42,17 +42,30 @@ export const getOptionListOf = {
             },
             {},
         ),
-    communitiesByDepartmentAndRegional: (): { [department: string]: { [regional: string]: { key: string, value: string }[] } } => {
-        return Object.keys(ARCMVList).reduce<{ [department: string]: { [regional: string]: { key: string, value: string }[] } }>((allCommunities, department) => {
-            allCommunities[department] = Object.keys(ARCMVList[department]).reduce<{ [regional: string]: { key: string, value: string }[] }>((regionals, regional) => {
-                regionals[regional] = ARCMVList[department][regional].map(community => ({
-                    key: community.id.toString(),
-                    value: community.community
-                }));
-                return regionals;
-            }, {});
-            return allCommunities;
-        }, {});
-    },
-};
-
+    communitiesByDepartmentAndRegional: (): {
+        [department: string]: {
+            [regional: string]: { key: string; value: string }[]
+        }
+    } =>
+        Object.keys(ARCMVList).reduce<{
+            [department: string]: {
+                [regional: string]: { key: string; value: string }[]
+            }
+        }>((allCommunities, department) => {
+            allCommunities[department] = Object.keys(
+                ARCMVList[department],
+            ).reduce<{ [regional: string]: { key: string; value: string }[] }>(
+                (regionals, regional) => {
+                    regionals[regional] = ARCMVList[department][regional].map(
+                        community => ({
+                            key: community.id.toString(),
+                            value: community.community,
+                        }),
+                    )
+                    return regionals
+                },
+                {},
+            )
+            return allCommunities
+        }, {}),
+}
