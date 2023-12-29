@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
     Input,
     Button,
@@ -17,10 +18,16 @@ import {
     initialValuesForm10Header as initialValues,
     validationSchemaForm10Header as validationSchema,
 } from './Form10Config'
-import { yupResolver } from '@hookform/resolvers/yup'
 
 const Form10Header: React.FC = () => {
-    const { control, reset, watch, getValues, handleSubmit, formState: { errors } } = useForm({
+    const {
+        control,
+        reset,
+        watch,
+        getValues,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
         defaultValues: initialValues,
         resolver: yupResolver(validationSchema),
     })
@@ -44,6 +51,7 @@ const Form10Header: React.FC = () => {
                             style={styles.field}
                             label={'Departamento'}
                             placeholder={'Seleccione una opción'}
+                            options={departments}
                             value={value}
                             onSelect={index => {
                                 onChange(
@@ -55,11 +63,7 @@ const Form10Header: React.FC = () => {
                                     community: '',
                                 })
                             }}
-                        >
-                            {departments.map((option, index) => (
-                                <SelectItem key={index} title={option.value} />
-                            ))}
-                        </CustomSelect>
+                        />
                     )}
                 />
                 <Controller
@@ -74,6 +78,7 @@ const Form10Header: React.FC = () => {
                                     ? ' '
                                     : 'Seleccione una opción'
                             }
+                            options={regionals[selectedDepartment] || []}
                             helperText={{ category: 'danger', text: '' }}
                             disabled={!selectedDepartment}
                             value={value}
@@ -85,20 +90,7 @@ const Form10Header: React.FC = () => {
                                 )
                                 reset({ ...getValues(), community: '' })
                             }}
-                        >
-                            {selectedDepartment ? (
-                                regionals[selectedDepartment].map(
-                                    (option, index) => (
-                                        <SelectItem
-                                            key={index}
-                                            title={option.value}
-                                        />
-                                    ),
-                                )
-                            ) : (
-                                <React.Fragment />
-                            )}
-                        </CustomSelect>
+                        />
                     )}
                 />
                 <Controller
@@ -113,6 +105,13 @@ const Form10Header: React.FC = () => {
                                     ? ' '
                                     : 'Seleccione una opción'
                             }
+                            options={
+                                (communities[selectedDepartment] &&
+                                    communities[selectedDepartment][
+                                        selectedRegional
+                                    ]) ||
+                                []
+                            }
                             value={value}
                             disabled={!selectedRegional}
                             onSelect={index =>
@@ -122,20 +121,7 @@ const Form10Header: React.FC = () => {
                                     ][(index as IndexPath).row].value,
                                 )
                             }
-                        >
-                            {selectedRegional ? (
-                                communities[selectedDepartment][
-                                    selectedRegional
-                                ].map((option, index) => (
-                                    <SelectItem
-                                        key={index}
-                                        title={option.value}
-                                    />
-                                ))
-                            ) : (
-                                <React.Fragment />
-                            )}
-                        </CustomSelect>
+                        />
                     )}
                 />
                 <View style={styles.field}>
@@ -222,10 +208,7 @@ const Form10Header: React.FC = () => {
                     )}
                 />
             </View>
-            <Button
-                style={styles.button}
-                onPress={handleSubmit(onSubmit)}
-            >
+            <Button style={styles.button} onPress={handleSubmit(onSubmit)}>
                 Guardar
             </Button>
         </View>
