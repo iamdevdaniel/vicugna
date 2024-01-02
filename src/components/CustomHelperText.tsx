@@ -3,19 +3,25 @@ import React from 'react'
 import { ViewStyle, StyleSheet } from 'react-native'
 
 export type helperTextCategory = 'default' | 'info' | 'danger'
+export type helperText =
+    | string
+    | { category: helperTextCategory; text?: string }
 
 export type CustomHelperTextProps = {
     style?: ViewStyle
-    category?: helperTextCategory
-    text?: string
+    helperText?: helperText
 }
 
 const CustomHelperText: React.FC<CustomHelperTextProps> = ({
-    category = 'default',
-    text,
     style: externalStyle,
+    helperText,
 }) => {
     const theme = useTheme()
+
+    const actualText =
+        typeof helperText === 'string' ? helperText : helperText?.text
+    const actualCategory =
+        typeof helperText === 'string' ? 'default' : helperText?.category
 
     const categoryMap = {
         default: theme['text-hint-color'],
@@ -23,18 +29,20 @@ const CustomHelperText: React.FC<CustomHelperTextProps> = ({
         danger: theme['text-danger-color'],
     }
 
-    return (
+    return helperText ? (
         <Text
             style={[
                 externalStyle,
                 style.container,
                 {
-                    color: categoryMap[category],
+                    color: categoryMap[actualCategory || 'default'],
                 },
             ]}
         >
-            {text}
+            {actualText}
         </Text>
+    ) : (
+        <React.Fragment />
     )
 }
 

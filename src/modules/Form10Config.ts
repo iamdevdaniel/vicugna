@@ -15,7 +15,7 @@ const errors = {
     maxCharLength: (max: number) => `${max} carácteres como máximo`,
     shouldBeGreaterThan: (min: number) => `Debe ser mayor que ${min}`,
     isNotANumber: 'Debe ser un número',
-    isCoordinate: 'Debe ser una coordenada válida',
+    isCoordinate: 'Formato de coordenada incorrecto',
     isInteger: 'Debe ser un número entero',
 }
 

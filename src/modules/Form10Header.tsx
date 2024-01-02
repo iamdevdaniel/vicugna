@@ -1,17 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import {
-    Input,
-    Button,
-    Datepicker,
-    SelectItem,
-    IndexPath,
-} from '@ui-kitten/components'
+import { Button, Datepicker, IndexPath } from '@ui-kitten/components'
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { StyleSheet, View, Dimensions } from 'react-native'
 
+import CustomInput from '../components/CustomInput'
 import CustomLabel from '../components/CustomLabel'
 import CustomSelect from '../components/CustomSelect'
+import LabelWithCaption from '../components/LabelWithCaption'
 import { getOptionListOf } from '../models/arcmv'
 
 import {
@@ -26,13 +22,18 @@ const Form10Header: React.FC = () => {
         watch,
         getValues,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isValid },
     } = useForm({
+        mode: 'onBlur',
         defaultValues: initialValues,
         resolver: yupResolver(validationSchema),
     })
 
-    const onSubmit = (values: unknown) => console.log(values)
+    const onSubmit = (values: unknown) => {
+        console.log(values)
+        console.log('isValid', isValid)
+        console.log('errors', errors)
+    }
 
     const departments = getOptionListOf.departments()
     const regionals = getOptionListOf.regionalsByDepartment()
@@ -46,114 +47,156 @@ const Form10Header: React.FC = () => {
                 <Controller
                     name="department"
                     control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <CustomSelect
+                    render={({ field: { value, onChange, onBlur } }) => (
+                        <LabelWithCaption
                             style={styles.field}
                             label={'Departamento'}
-                            placeholder={'Seleccione una opción'}
-                            options={departments}
-                            value={value}
-                            onSelect={index => {
-                                onChange(
-                                    departments[(index as IndexPath).row].value,
-                                )
-                                reset({
-                                    ...getValues(),
-                                    regional: '',
-                                    community: '',
-                                })
+                            caption={{
+                                category: 'danger',
+                                text: errors.department?.message,
                             }}
-                        />
+                        >
+                            <CustomSelect
+                                placeholder={'Seleccione una opción'}
+                                options={departments}
+                                value={value}
+                                onBlur={onBlur}
+                                onSelect={index => {
+                                    onChange(
+                                        departments[(index as IndexPath).row]
+                                            .value,
+                                    )
+                                    reset({
+                                        ...getValues(),
+                                        regional: '',
+                                        community: '',
+                                    })
+                                }}
+                            />
+                        </LabelWithCaption>
                     )}
                 />
                 <Controller
                     name="regional"
                     control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <CustomSelect
+                    render={({ field: { value, onChange, onBlur } }) => (
+                        <LabelWithCaption
                             style={styles.field}
                             label={'Asociación Regional'}
-                            placeholder={
-                                !selectedDepartment
-                                    ? ' '
-                                    : 'Seleccione una opción'
-                            }
-                            options={regionals[selectedDepartment] || []}
-                            helperText={{ category: 'danger', text: '' }}
-                            disabled={!selectedDepartment}
-                            value={value}
-                            onSelect={index => {
-                                onChange(
-                                    regionals[selectedDepartment][
-                                        (index as IndexPath).row
-                                    ].value,
-                                )
-                                reset({ ...getValues(), community: '' })
+                            caption={{
+                                category: 'danger',
+                                text: errors.regional?.message,
                             }}
-                        />
+                        >
+                            <CustomSelect
+                                placeholder={
+                                    !selectedDepartment
+                                        ? ' '
+                                        : 'Seleccione una opción'
+                                }
+                                options={regionals[selectedDepartment] || []}
+                                disabled={!selectedDepartment}
+                                value={value}
+                                onBlur={onBlur}
+                                onSelect={index => {
+                                    onChange(
+                                        regionals[selectedDepartment][
+                                            (index as IndexPath).row
+                                        ].value,
+                                    )
+                                    reset({ ...getValues(), community: '' })
+                                }}
+                            />
+                        </LabelWithCaption>
                     )}
                 />
                 <Controller
                     name="community"
                     control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <CustomSelect
+                    render={({ field: { value, onChange, onBlur } }) => (
+                        <LabelWithCaption
                             style={styles.field}
                             label={'Comunidad Manejadora'}
-                            placeholder={
-                                !selectedRegional
-                                    ? ' '
-                                    : 'Seleccione una opción'
-                            }
-                            options={
-                                (communities[selectedDepartment] &&
-                                    communities[selectedDepartment][
-                                        selectedRegional
-                                    ]) ||
-                                []
-                            }
-                            value={value}
-                            disabled={!selectedRegional}
-                            onSelect={index =>
-                                onChange(
-                                    communities[selectedDepartment][
-                                        selectedRegional
-                                    ][(index as IndexPath).row].value,
-                                )
-                            }
-                        />
+                            caption={{
+                                category: 'danger',
+                                text: errors.community?.message,
+                            }}
+                        >
+                            <CustomSelect
+                                placeholder={
+                                    !selectedRegional
+                                        ? ' '
+                                        : 'Seleccione una opción'
+                                }
+                                options={
+                                    (communities[selectedDepartment] &&
+                                        communities[selectedDepartment]
+                                        [selectedRegional]) ||
+                                    []
+                                }
+                                value={value}
+                                disabled={!selectedRegional}
+                                onBlur={onBlur}
+                                onSelect={index =>
+                                    onChange(
+                                        communities[selectedDepartment]
+                                        [selectedRegional]
+                                        [(index as IndexPath).row].value,
+                                    )
+                                }
+                            />
+                        </LabelWithCaption>
                     )}
                 />
+
                 <View style={styles.field}>
                     <CustomLabel style={styles.subtitle} text={'Coordenadas'} />
                     <View style={styles.coordinates}>
                         <Controller
                             name="latitude"
                             control={control}
-                            render={({ field: { value, onChange } }) => (
-                                <Input
+                            render={({ field: { value, onChange, onBlur } }) => (
+                                <LabelWithCaption
                                     style={[
                                         styles.coordinatesField,
                                         styles.firstCoordinate,
                                     ]}
                                     label={'Latitud'}
-                                    value={value}
-                                    onChange={value => {
-                                        onChange(value)
+                                    caption={{
+                                        category: 'danger',
+                                        text: errors.latitude?.message,
                                     }}
-                                />
+                                >
+                                    <CustomInput
+                                        value={value}
+                                        onBlur={onBlur}
+                                        onChange={value => {
+                                            onChange(value)
+                                        }}
+                                    />
+                                </LabelWithCaption>
                             )}
                         />
                         <Controller
                             name="longitude"
                             control={control}
-                            render={({ field: { value, onChange } }) => (
-                                <Input
+                            render={({ field: { value, onChange, onBlur } }) => (
+                                <LabelWithCaption
                                     style={styles.coordinatesField}
                                     label={'Longitud'}
-                                    value={value}
-                                    onChange={value => onChange(value)}
-                                />
+                                    caption={{
+                                        category: 'danger',
+                                        text: errors.longitude?.message,
+                                    }}
+                                >
+
+                                    <CustomInput
+                                        onBlur={onBlur}
+                                        value={value}
+                                        onChange={value => onChange(value)}
+                                    />
+
+                                </LabelWithCaption>
                             )}
                         />
                     </View>
@@ -161,54 +204,94 @@ const Form10Header: React.FC = () => {
                 <Controller
                     name="captureSite"
                     control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <Input
+                    render={({ field: { value, onChange, onBlur } }) => (
+                        <LabelWithCaption
                             style={styles.field}
-                            label={'Sitio de captura'}
-                            value={value}
-                            onChange={value => onChange(value)}
-                        />
+                            label='Sitio de captura'
+                            caption={{
+                                category: 'danger',
+                                text: errors.captureSite?.message,
+                            }}
+                        >
+                            <CustomInput
+                                value={value}
+                                onBlur={onBlur}
+                                onChange={value => onChange(value)}
+                            />
+                        </LabelWithCaption>
                     )}
                 />
+
                 <Controller
                     name="captureDate"
                     control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <Datepicker
+                    render={({ field: { value, onChange, onBlur } }) => (
+                        <LabelWithCaption
                             style={styles.field}
-                            label={'Fecha de captura'}
-                            date={value}
-                            placement={'left end'}
-                            onSelect={value => onChange(value)}
-                        />
+                            label='Fecha de captura'
+                            caption={{
+                                category: 'danger',
+                                text: errors.captureDate?.message,
+                            }}
+                        >
+                            <Datepicker
+                                date={value}
+                                placement={'left end'}
+                                onBlur={onBlur}
+                                onSelect={value => onChange(value)}
+                            />
+                        </LabelWithCaption>
                     )}
                 />
+
                 <Controller
                     name="herdingAttempts"
                     control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <Input
+                    render={({ field: { value, onChange, onBlur } }) => (
+                        <LabelWithCaption
                             style={styles.field}
                             label={'Número de repeticiones de arreo'}
-                            value={value}
-                            onChange={value => onChange(value)}
-                        />
+                            caption={{
+                                category: 'danger',
+                                text: errors.herdingAttempts?.message,
+                            }}
+                        >
+                            <CustomInput
+                                value={value}
+                                onBlur={onBlur}
+                                onChange={value => onChange(value)}
+                            />
+                        </LabelWithCaption>
                     )}
                 />
                 <Controller
                     name="authorizationCode"
                     control={control}
-                    render={({ field: { value, onChange } }) => (
-                        <Input
+                    render={({ field: { value, onChange, onBlur } }) => (
+                        <LabelWithCaption
                             style={styles.field}
                             label={'Codigo de autorización de esquila'}
-                            value={value}
-                            onChange={value => onChange(value)}
-                        />
+                            caption={{
+                                category: 'danger',
+                                text: errors.authorizationCode?.message,
+                            }}
+                        >
+                            <CustomInput
+
+                                value={value}
+                                onBlur={onBlur}
+                                onChange={value => onChange(value)}
+                            />
+                        </LabelWithCaption>
                     )}
+
                 />
             </View>
-            <Button style={styles.button} onPress={handleSubmit(onSubmit)}>
+            <Button
+                style={styles.button}
+                onPress={handleSubmit(onSubmit)}
+                disabled={!isValid}
+            >
                 Guardar
             </Button>
         </View>
@@ -231,7 +314,7 @@ const getStyles = (screenWidth: number) =>
         },
         fields: { flex: 1 },
         subtitle: {
-            marginBottom: 12,
+            marginBottom: 8,
         },
         coordinates: {
             flexDirection: screenWidth <= 500 ? 'column' : 'row',

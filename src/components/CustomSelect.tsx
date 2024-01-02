@@ -3,49 +3,42 @@ import { isEqual } from 'lodash'
 import React from 'react'
 import { View, StyleSheet, ViewStyle } from 'react-native'
 
-import CustomHelperText, { helperTextCategory } from './CustomHelperText'
-
-interface CustomSelectProps extends SelectProps {
+type CustomSelectProps = SelectProps & {
     style?: ViewStyle
     options: { key: string; value: string }[]
-    helperText?: string | { category?: helperTextCategory; text?: string }
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
-    helperText,
     style: externalStyle,
     ...props
-}) => {
-    const actualHelperText =
-        typeof helperText === 'string' ? helperText : helperText?.text
-    const actualHelperCategory =
-        typeof helperText === 'string' ? 'default' : helperText?.category
-
-    return (
-        <View style={[externalStyle]}>
-            <Select {...props}>
-                {props.options.map((option, index) => (
-                    <SelectItem key={index} title={option.value} />
-                ))}
-            </Select>
-            <CustomHelperText
-                style={styles.helperText}
-                text={actualHelperText}
-                category={actualHelperCategory}
-            />
-        </View>
-    )
-}
+}) => (
+    <View style={[styles.container, externalStyle]}>
+        <Select {...props}>
+            {props.options.map((option, index) => (
+                <SelectItem key={index} title={option.value} />
+            ))}
+        </Select>
+    </View>
+)
 
 const arePropsEqual = (
     prevProps: CustomSelectProps,
     nextProps: CustomSelectProps,
-): boolean => isEqual(prevProps, nextProps)
+): boolean => {
+    const propsToCheck: Array<keyof CustomSelectProps> = [
+        'label',
+        'value',
+        'options',
+        'placeholder',
+        'status',
+        'disabled',
+    ]
+
+    return propsToCheck.every(prop => isEqual(prevProps[prop], nextProps[prop]))
+}
 
 const styles = StyleSheet.create({
-    helperText: {
-        marginTop: 0,
-    },
+    container: {},
 })
 
 export default React.memo(CustomSelect, arePropsEqual)
