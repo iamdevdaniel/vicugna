@@ -23,6 +23,7 @@ const Form10Entry: React.FC = () => {
     } = useForm({
         defaultValues: initialValues,
         resolver: yupResolver(validationSchema),
+        mode: 'onBlur',
     })
 
     const onSubmit = (values: unknown) => {
@@ -34,7 +35,7 @@ const Form10Entry: React.FC = () => {
             <Controller
                 name="sex"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={({ field: { value, onChange, onBlur } }) => (
                     <LabelWithCaption
                         style={styles.field}
                         label="Sexo"
@@ -46,7 +47,10 @@ const Form10Entry: React.FC = () => {
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.sex}
-                            onChange={val => onChange(val)}
+                            onChange={val => {
+                                onChange(val)
+                                onBlur()
+                            }}
                         />
                     </LabelWithCaption>
                 )}
@@ -54,7 +58,7 @@ const Form10Entry: React.FC = () => {
             <Controller
                 name="age"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={({ field: { value, onChange, onBlur } }) => (
                     <LabelWithCaption
                         style={styles.field}
                         label="Edad"
@@ -66,7 +70,10 @@ const Form10Entry: React.FC = () => {
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.age}
-                            onChange={val => onChange(val)}
+                            onChange={val => {
+                                onChange(val)
+                                onBlur()
+                            }}
                         />
                     </LabelWithCaption>
                 )}
@@ -74,7 +81,7 @@ const Form10Entry: React.FC = () => {
             <Controller
                 name="weight"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={({ field: { value, onChange, onBlur } }) => (
                     <LabelWithCaption
                         style={styles.field}
                         label={'Peso vivo (kg)'}
@@ -85,7 +92,8 @@ const Form10Entry: React.FC = () => {
                     >
                         <CustomInput
                             value={value}
-                            onChange={value => onChange(value)}
+                            onChange={val => onChange(val)}
+                            onBlur={onBlur}
                         />
                     </LabelWithCaption>
                 )}
@@ -93,7 +101,7 @@ const Form10Entry: React.FC = () => {
             <Controller
                 name="woolLength"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={({ field: { value, onChange, onBlur } }) => (
                     <LabelWithCaption
                         style={styles.field}
                         label={'Longitud de fibra (cm)'}
@@ -104,7 +112,8 @@ const Form10Entry: React.FC = () => {
                     >
                         <CustomInput
                             value={value}
-                            onChange={value => onChange(value)}
+                            onChange={val => onChange(val)}
+                            onBlur={onBlur}
                         />
                     </LabelWithCaption>
                 )}
@@ -112,7 +121,7 @@ const Form10Entry: React.FC = () => {
             <Controller
                 name="physicalCondition"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={({ field: { value, onChange, onBlur } }) => (
                     <LabelWithCaption
                         style={styles.field}
                         label="Condición corporal"
@@ -124,7 +133,10 @@ const Form10Entry: React.FC = () => {
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.physicalCondition}
-                            onChange={value => onChange(value)}
+                            onChange={val => {
+                                onChange(val)
+                                onBlur()
+                            }}
                         />
                     </LabelWithCaption>
                 )}
@@ -132,7 +144,7 @@ const Form10Entry: React.FC = () => {
             <Controller
                 name="pregnancyStatus"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={({ field: { value, onChange, onBlur } }) => (
                     <LabelWithCaption
                         style={styles.field}
                         label="Gestación"
@@ -144,7 +156,10 @@ const Form10Entry: React.FC = () => {
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.pregnancyStatus}
-                            onChange={value => onChange(value)}
+                            onChange={val => {
+                                onChange(val)
+                                onBlur()
+                            }}
                         />
                     </LabelWithCaption>
                 )}
@@ -152,7 +167,7 @@ const Form10Entry: React.FC = () => {
             <Controller
                 name="externalParasites"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={({ field: { value, onChange, onBlur } }) => (
                     <LabelWithCaption
                         style={styles.field}
                         label={'Parásitos externos'}
@@ -160,12 +175,14 @@ const Form10Entry: React.FC = () => {
                         <CustomCheckboxGroup
                             value={value}
                             options={options.externalParasites}
-                            onChange={value => onChange(value)}
+                            onChange={val => {
+                                onChange(val)
+                                onBlur()
+                            }}
                         />
                     </LabelWithCaption>
                 )}
             />
-            {/*
             <Controller
                 name="mangeSeverity"
                 control={control}
@@ -199,7 +216,6 @@ const Form10Entry: React.FC = () => {
                     </LabelWithCaption>
                 )}
             />
-
             <Controller
                 name="canShareWool"
                 control={control}
@@ -244,8 +260,10 @@ const Form10Entry: React.FC = () => {
                         />
                     </LabelWithCaption>
                 )}
-            /> */}
-            <Button onPress={handleSubmit(onSubmit)}>Guardar</Button>
+            />
+            <Button onPress={handleSubmit(onSubmit)} disabled={!isValid}>
+                Guardar
+            </Button>
         </ScrollView>
     )
 }

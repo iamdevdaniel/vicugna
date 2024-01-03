@@ -49,11 +49,11 @@ export const initialValuesForm10Entry = {
     physicalCondition: -1,
     pregnancyStatus: -1,
     externalParasites: [],
-    // mangeSeverity: -1,
-    // dandruff: [],
-    // canShareWool: [],
-    // isAlive: [],
-    // observations: '',
+    mangeSeverity: -1,
+    dandruff: [],
+    canShareWool: [],
+    isAlive: [],
+    observations: '',
 }
 
 export const optionsForm10Entry: Record<string, option[]> = {
@@ -176,10 +176,10 @@ export const validationSchemaForm10Entry = object().shape({
         ),
     physicalCondition: number().min(0, errors.shouldRequireOption),
     pregnancyStatus: number().min(0, errors.shouldRequireOption),
-    externalParasites: array().of(string()),
-    // mangeSeverity: number().required(errors.shouldRequireOption),
-    // dandruff: array().of(string()),
-    // canShareWool: array().of(string()),
-    // isAlive: array().of(string()),
-    // observations: string(),
+    externalParasites: array().of(string()).optional(),
+    mangeSeverity: number().min(0, errors.shouldRequireOption),
+    dandruff: array().of(string()).optional(),
+    canShareWool: array().of(string()).optional(),
+    isAlive: array().of(string()).optional(),
+    observations: string().optional(),
 })
