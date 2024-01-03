@@ -1,9 +1,6 @@
 import ARCMVListData from '../common/arcmv.json'
 
-export type option = {
-    key: string
-    value: string
-}
+import { option } from './'
 
 export type ARCMVListType = {
     [department: string]: {

@@ -2,10 +2,12 @@ import { CheckBox } from '@ui-kitten/components'
 import React from 'react'
 import { View, ViewStyle, StyleSheet } from 'react-native'
 
+import { option } from '../models'
+
 import CustomLabel from './CustomLabel'
 
 interface CustomCheckboxGroupProps {
-    options: { key: string; value: string }[]
+    options: option[]
     onChange: (selectedValues: string[]) => void
     value: string[]
     label?: string

@@ -130,8 +130,9 @@ const Form10Header: React.FC = () => {
                                 }
                                 options={
                                     (communities[selectedDepartment] &&
-                                        communities[selectedDepartment]
-                                        [selectedRegional]) ||
+                                        communities[selectedDepartment][
+                                            selectedRegional
+                                        ]) ||
                                     []
                                 }
                                 value={value}
@@ -139,9 +140,9 @@ const Form10Header: React.FC = () => {
                                 onBlur={onBlur}
                                 onSelect={index =>
                                     onChange(
-                                        communities[selectedDepartment]
-                                        [selectedRegional]
-                                        [(index as IndexPath).row].value,
+                                        communities[selectedDepartment][
+                                            selectedRegional
+                                        ][(index as IndexPath).row].value,
                                     )
                                 }
                             />
@@ -155,7 +156,9 @@ const Form10Header: React.FC = () => {
                         <Controller
                             name="latitude"
                             control={control}
-                            render={({ field: { value, onChange, onBlur } }) => (
+                            render={({
+                                field: { value, onChange, onBlur },
+                            }) => (
                                 <LabelWithCaption
                                     style={[
                                         styles.coordinatesField,
@@ -180,7 +183,9 @@ const Form10Header: React.FC = () => {
                         <Controller
                             name="longitude"
                             control={control}
-                            render={({ field: { value, onChange, onBlur } }) => (
+                            render={({
+                                field: { value, onChange, onBlur },
+                            }) => (
                                 <LabelWithCaption
                                     style={styles.coordinatesField}
                                     label={'Longitud'}
@@ -189,13 +194,11 @@ const Form10Header: React.FC = () => {
                                         text: errors.longitude?.message,
                                     }}
                                 >
-
                                     <CustomInput
                                         onBlur={onBlur}
                                         value={value}
                                         onChange={value => onChange(value)}
                                     />
-
                                 </LabelWithCaption>
                             )}
                         />
@@ -207,7 +210,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label='Sitio de captura'
+                            label="Sitio de captura"
                             caption={{
                                 category: 'danger',
                                 text: errors.captureSite?.message,
@@ -228,7 +231,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label='Fecha de captura'
+                            label="Fecha de captura"
                             caption={{
                                 category: 'danger',
                                 text: errors.captureDate?.message,
@@ -277,14 +280,12 @@ const Form10Header: React.FC = () => {
                             }}
                         >
                             <CustomInput
-
                                 value={value}
                                 onBlur={onBlur}
                                 onChange={value => onChange(value)}
                             />
                         </LabelWithCaption>
                     )}
-
                 />
             </View>
             <Button

@@ -3,9 +3,11 @@ import { isEqual } from 'lodash'
 import React from 'react'
 import { View, StyleSheet, ViewStyle } from 'react-native'
 
+import { option } from '../models'
+
 type CustomSelectProps = SelectProps & {
     style?: ViewStyle
-    options: { key: string; value: string }[]
+    options: option[]
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({

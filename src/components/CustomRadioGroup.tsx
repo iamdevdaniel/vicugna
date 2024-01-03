@@ -1,25 +1,30 @@
-import { RadioGroup, RadioGroupProps } from '@ui-kitten/components'
+import { RadioGroup, RadioGroupProps, Radio } from '@ui-kitten/components'
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
+
+import { option } from '../models'
 
 import CustomLabel from './CustomLabel'
 
 interface CustomRadioGroupProps extends RadioGroupProps {
     label?: string
+    options?: option[]
 }
 
-const CustomRadioGroup: React.FC<CustomRadioGroupProps> = props => {
-    React.useEffect(() => {
-        console.log(`${props.label} radio group rerender`)
-    })
-
-    return (
-        <View style={styles.container}>
-            {props.label && <CustomLabel text={props.label} />}
-            <RadioGroup {...props}>{props.children}</RadioGroup>
-        </View>
-    )
-}
+const CustomRadioGroup: React.FC<CustomRadioGroupProps> = ({
+    options = [],
+    label,
+    ...props
+}) => (
+    <View style={styles.container}>
+        {label && <CustomLabel text={label} />}
+        <RadioGroup {...props}>
+            {options.map((option, index) => (
+                <Radio key={index}>{option.value}</Radio>
+            ))}
+        </RadioGroup>
+    </View>
+)
 
 export default CustomRadioGroup
 

@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { Radio, Input, Button } from '@ui-kitten/components'
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
@@ -5,10 +6,11 @@ import { ScrollView, StyleSheet } from 'react-native'
 
 import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
 import CustomRadioGroup from '../components/CustomRadioGroup'
+import LabelWithCaption from '../components/LabelWithCaption'
 
 import {
-    initialValuesForm10Entry,
-    validationSchemaForm10Entry,
+    initialValuesForm10Entry as initialValues,
+    // validationSchemaForm10Entry as validationSchema,
     optionsForm10Entry as options,
 } from './Form10Config'
 
@@ -18,10 +20,9 @@ const Form10Entry: React.FC = () => {
     }
 
     const { control, handleSubmit } = useForm({
-        defaultValues: initialValuesForm10Entry,
+        defaultValues: initialValues,
+        // resolver: yupResolver(validationSchema),
     })
-
-    console.log('Form rerender')
 
     return (
         <ScrollView style={styles.container}>
@@ -29,169 +30,173 @@ const Form10Entry: React.FC = () => {
                 name="sex"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomRadioGroup
-                        style={styles.field}
-                        label="Sexo"
-                        selectedIndex={value}
-                        onChange={val => onChange(val)}
-                    >
-                        {options.sex.map((option, index) => (
-                            <Radio key={index}>{option.value}</Radio>
-                        ))}
-                    </CustomRadioGroup>
+                    <LabelWithCaption style={styles.field} label="Sexo">
+                        <CustomRadioGroup
+                            selectedIndex={value}
+                            options={options.sex}
+                            onChange={val => onChange(val)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="age"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomRadioGroup
-                        style={styles.field}
-                        label="Edad"
-                        selectedIndex={value}
-                        onChange={val => onChange(val)}
-                    >
-                        {options.age.map((option, index) => (
-                            <Radio key={index}>{option.value}</Radio>
-                        ))}
-                    </CustomRadioGroup>
+                    <LabelWithCaption style={styles.field} label="Edad">
+                        <CustomRadioGroup
+                            selectedIndex={value}
+                            options={options.age}
+                            onChange={val => onChange(val)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="weight"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <Input
+                    <LabelWithCaption
                         style={styles.field}
                         label={'Peso vivo (kg)'}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
+                    >
+                        <Input
+                            value={value}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="woolLength"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <Input
+                    <LabelWithCaption
                         style={styles.field}
                         label={'Longitud de fibra (cm)'}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
+                    >
+                        <Input
+                            value={value}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="physicalCondition"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomRadioGroup
+                    <LabelWithCaption
                         style={styles.field}
                         label="Condición corporal"
-                        selectedIndex={value}
-                        onChange={value => onChange(value)}
                     >
-                        {options.physicalCondition.map((option, index) => (
-                            <Radio key={index}>{option.value}</Radio>
-                        ))}
-                    </CustomRadioGroup>
+                        <CustomRadioGroup
+                            selectedIndex={value}
+                            options={options.physicalCondition}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="pregnancyStatus"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomRadioGroup
-                        style={styles.field}
-                        label="Gestación"
-                        selectedIndex={value}
-                        onChange={value => onChange(value)}
-                    >
-                        {options.pregnancyStatus.map((option, index) => (
-                            <Radio key={index}>{option.value}</Radio>
-                        ))}
-                    </CustomRadioGroup>
+                    <LabelWithCaption style={styles.field} label="Gestación">
+                        <CustomRadioGroup
+                            selectedIndex={value}
+                            options={options.pregnancyStatus}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="externalParasites"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomCheckboxGroup
+                    <LabelWithCaption
                         style={styles.field}
                         label={'Parásitos externos'}
-                        options={options.externalParasites}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
+                    >
+                        <CustomCheckboxGroup
+                            value={value}
+                            options={options.externalParasites}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="mangeSeverity"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomRadioGroup
-                        style={styles.field}
-                        label="Sarna"
-                        selectedIndex={value}
-                        onChange={value => onChange(value)}
-                    >
-                        {options.mangeSeverity.map((option, index) => (
-                            <Radio key={index}>{option.value}</Radio>
-                        ))}
-                    </CustomRadioGroup>
+                    <LabelWithCaption style={styles.field} label="Sarna">
+                        <CustomRadioGroup
+                            selectedIndex={value}
+                            options={options.mangeSeverity}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="dandruff"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomCheckboxGroup
-                        style={styles.field}
-                        label={'Caspa'}
-                        options={options.dandruff}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
+                    <LabelWithCaption style={styles.field} label={'Caspa'}>
+                        <CustomCheckboxGroup
+                            value={value}
+                            options={options.dandruff}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
+
             <Controller
                 name="canShareWool"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomCheckboxGroup
-                        style={styles.field}
-                        label={'Esquila'}
-                        options={options.canShareWool}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
+                    <LabelWithCaption style={styles.field} label={'Esquila'}>
+                        <CustomCheckboxGroup
+                            value={value}
+                            options={options.canShareWool}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="isAlive"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <CustomCheckboxGroup
+                    <LabelWithCaption
                         style={styles.field}
                         label={'Vicuña muerta'}
-                        options={options.isAlive}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
+                    >
+                        <CustomCheckboxGroup
+                            value={value}
+                            options={options.isAlive}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Controller
                 name="observations"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <Input
+                    <LabelWithCaption
                         style={styles.field}
-                        multiline={true}
                         label={'Observaciones'}
-                        value={value}
-                        onChange={value => onChange(value)}
-                    />
+                    >
+                        <Input
+                            multiline={true}
+                            value={value}
+                            onChange={value => onChange(value)}
+                        />
+                    </LabelWithCaption>
                 )}
             />
             <Button onPress={handleSubmit(onSubmit)}>Guardar</Button>

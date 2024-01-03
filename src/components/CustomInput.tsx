@@ -3,7 +3,7 @@ import { isEqual } from 'lodash'
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 
-type CustomInputProps = InputProps & {}
+type CustomInputProps = InputProps
 
 const CustomInput: React.FC<CustomInputProps> = props => (
     <View style={style.container}>

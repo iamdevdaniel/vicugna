@@ -38,10 +38,16 @@
                 "endOfLine": "auto"
             }
         ],
+        "max-len": [
+            "error",
+            {
+                "code": 80
+            }
+        ],
         "function-paren-newline": "off",
         "complexity": [
             "error",
-            4
+            7
         ],
         "semi": [
             "error",
