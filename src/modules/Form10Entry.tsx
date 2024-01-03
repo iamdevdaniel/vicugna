@@ -5,25 +5,29 @@ import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, StyleSheet } from 'react-native'
 
 import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
+import CustomInput from '../components/CustomInput'
 import CustomRadioGroup from '../components/CustomRadioGroup'
 import LabelWithCaption from '../components/LabelWithCaption'
-import CustomInput from '../components/CustomInput'
 
 import {
     initialValuesForm10Entry as initialValues,
-    // validationSchemaForm10Entry as validationSchema,
+    validationSchemaForm10Entry as validationSchema,
     optionsForm10Entry as options,
 } from './Form10Config'
 
 const Form10Entry: React.FC = () => {
-    const onSubmit = (values: unknown) => {
-        console.log(values)
-    }
-
-    const { control, handleSubmit } = useForm({
+    const {
+        control,
+        handleSubmit,
+        formState: { errors, isValid },
+    } = useForm({
         defaultValues: initialValues,
-        // resolver: yupResolver(validationSchema),
+        resolver: yupResolver(validationSchema),
     })
+
+    const onSubmit = (values: unknown) => {
+        console.log({ values, errors, isValid })
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -31,7 +35,14 @@ const Form10Entry: React.FC = () => {
                 name="sex"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <LabelWithCaption style={styles.field} label="Sexo">
+                    <LabelWithCaption
+                        style={styles.field}
+                        label="Sexo"
+                        caption={{
+                            text: errors.sex?.message,
+                            category: 'danger',
+                        }}
+                    >
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.sex}
@@ -44,7 +55,14 @@ const Form10Entry: React.FC = () => {
                 name="age"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <LabelWithCaption style={styles.field} label="Edad">
+                    <LabelWithCaption
+                        style={styles.field}
+                        label="Edad"
+                        caption={{
+                            text: errors.age?.message,
+                            category: 'danger',
+                        }}
+                    >
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.age}
@@ -60,6 +78,10 @@ const Form10Entry: React.FC = () => {
                     <LabelWithCaption
                         style={styles.field}
                         label={'Peso vivo (kg)'}
+                        caption={{
+                            text: errors.weight?.message,
+                            category: 'danger',
+                        }}
                     >
                         <CustomInput
                             value={value}
@@ -75,6 +97,10 @@ const Form10Entry: React.FC = () => {
                     <LabelWithCaption
                         style={styles.field}
                         label={'Longitud de fibra (cm)'}
+                        caption={{
+                            text: errors.woolLength?.message,
+                            category: 'danger',
+                        }}
                     >
                         <CustomInput
                             value={value}
@@ -90,6 +116,10 @@ const Form10Entry: React.FC = () => {
                     <LabelWithCaption
                         style={styles.field}
                         label="Condición corporal"
+                        caption={{
+                            text: errors.physicalCondition?.message,
+                            category: 'danger',
+                        }}
                     >
                         <CustomRadioGroup
                             selectedIndex={value}
@@ -103,7 +133,14 @@ const Form10Entry: React.FC = () => {
                 name="pregnancyStatus"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <LabelWithCaption style={styles.field} label="Gestación">
+                    <LabelWithCaption
+                        style={styles.field}
+                        label="Gestación"
+                        caption={{
+                            text: errors.pregnancyStatus?.message,
+                            category: 'danger',
+                        }}
+                    >
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.pregnancyStatus}
@@ -128,11 +165,19 @@ const Form10Entry: React.FC = () => {
                     </LabelWithCaption>
                 )}
             />
+            {/*
             <Controller
                 name="mangeSeverity"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                    <LabelWithCaption style={styles.field} label="Sarna">
+                    <LabelWithCaption
+                        style={styles.field}
+                        label="Sarna"
+                        caption={{
+                            text: errors.mangeSeverity?.message,
+                            category: 'danger',
+                        }}
+                    >
                         <CustomRadioGroup
                             selectedIndex={value}
                             options={options.mangeSeverity}
@@ -199,7 +244,7 @@ const Form10Entry: React.FC = () => {
                         />
                     </LabelWithCaption>
                 )}
-            />
+            /> */}
             <Button onPress={handleSubmit(onSubmit)}>Guardar</Button>
         </ScrollView>
     )

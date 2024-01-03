@@ -9,7 +9,7 @@ import CustomLabel from './CustomLabel'
 interface CustomCheckboxGroupProps {
     options: option[]
     onChange: (selectedValues: string[]) => void
-    value: string[]
+    value?: (string | undefined)[]
     label?: string
     style?: ViewStyle
 }
@@ -17,13 +17,15 @@ interface CustomCheckboxGroupProps {
 const CustomCheckboxGroup: React.FC<CustomCheckboxGroupProps> = ({
     options,
     onChange,
-    value,
+    value = [],
     label,
     style: externalStyle,
 }) => {
+    const filteredValue = (value || []).filter(Boolean) as string[]
+
     const handleSelect = (selectedValue: string) => {
-        const currentIndex = value.indexOf(selectedValue)
-        let newSelectedValues = [...value]
+        const currentIndex = filteredValue.indexOf(selectedValue)
+        let newSelectedValues = [...filteredValue]
 
         if (currentIndex === -1) {
             newSelectedValues.push(selectedValue)
