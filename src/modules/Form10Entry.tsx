@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Radio, Input, Button } from '@ui-kitten/components'
+import { Button } from '@ui-kitten/components'
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, StyleSheet } from 'react-native'
@@ -7,6 +7,7 @@ import { ScrollView, StyleSheet } from 'react-native'
 import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
 import CustomRadioGroup from '../components/CustomRadioGroup'
 import LabelWithCaption from '../components/LabelWithCaption'
+import CustomInput from '../components/CustomInput'
 
 import {
     initialValuesForm10Entry as initialValues,
@@ -60,7 +61,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label={'Peso vivo (kg)'}
                     >
-                        <Input
+                        <CustomInput
                             value={value}
                             onChange={value => onChange(value)}
                         />
@@ -75,7 +76,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label={'Longitud de fibra (cm)'}
                     >
-                        <Input
+                        <CustomInput
                             value={value}
                             onChange={value => onChange(value)}
                         />
@@ -191,7 +192,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label={'Observaciones'}
                     >
-                        <Input
+                        <CustomInput
                             multiline={true}
                             value={value}
                             onChange={value => onChange(value)}

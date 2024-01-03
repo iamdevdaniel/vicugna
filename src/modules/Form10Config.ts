@@ -119,4 +119,4 @@ export const validationSchemaForm10Header = object().shape({
     authorizationCode: string().required(errors.isRequiredField),
 })
 
-// export const validationSchemaForm10Entry = object().shape({})
+export const validationSchemaForm10Entry = object().shape({})
