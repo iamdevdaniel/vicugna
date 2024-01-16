@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, StyleSheet } from 'react-native'
 
 import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
+import CustomCheckBox from '../components/CustomCheckBox'
 import CustomInput from '../components/CustomInput'
 import CustomRadioGroup from '../components/CustomRadioGroup'
 import LabelWithCaption from '../components/LabelWithCaption'
@@ -22,7 +23,7 @@ const Form10Entry: React.FC = () => {
         formState: { errors, isValid },
     } = useForm({
         defaultValues: initialValues,
-        resolver: yupResolver(validationSchema),
+        // resolver: yupResolver(validationSchema),
         mode: 'onBlur',
     })
 
@@ -45,7 +46,7 @@ const Form10Entry: React.FC = () => {
                         }}
                     >
                         <CustomRadioGroup
-                            selectedIndex={value}
+                            value={value}
                             options={options.sex}
                             onChange={val => {
                                 onChange(val)
@@ -68,7 +69,7 @@ const Form10Entry: React.FC = () => {
                         }}
                     >
                         <CustomRadioGroup
-                            selectedIndex={value}
+                            value={value}
                             options={options.age}
                             onChange={val => {
                                 onChange(val)
@@ -131,7 +132,7 @@ const Form10Entry: React.FC = () => {
                         }}
                     >
                         <CustomRadioGroup
-                            selectedIndex={value}
+                            value={value}
                             options={options.physicalCondition}
                             onChange={val => {
                                 onChange(val)
@@ -154,7 +155,7 @@ const Form10Entry: React.FC = () => {
                         }}
                     >
                         <CustomRadioGroup
-                            selectedIndex={value}
+                            value={value}
                             options={options.pregnancyStatus}
                             onChange={val => {
                                 onChange(val)
@@ -196,7 +197,7 @@ const Form10Entry: React.FC = () => {
                         }}
                     >
                         <CustomRadioGroup
-                            selectedIndex={value}
+                            value={value}
                             options={options.mangeSeverity}
                             onChange={value => onChange(value)}
                         />
@@ -208,9 +209,9 @@ const Form10Entry: React.FC = () => {
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <LabelWithCaption style={styles.field} label={'Caspa'}>
-                        <CustomCheckboxGroup
-                            value={value}
-                            options={options.dandruff}
+                        <CustomCheckBox
+                            label={'Tiene caspa'}
+                            checked={value}
                             onChange={value => onChange(value)}
                         />
                     </LabelWithCaption>
@@ -221,9 +222,9 @@ const Form10Entry: React.FC = () => {
                 control={control}
                 render={({ field: { value, onChange } }) => (
                     <LabelWithCaption style={styles.field} label={'Esquila'}>
-                        <CustomCheckboxGroup
-                            value={value}
-                            options={options.canShareWool}
+                        <CustomCheckBox
+                            label={'El animal puede esquilar'}
+                            checked={value}
                             onChange={value => onChange(value)}
                         />
                     </LabelWithCaption>
@@ -237,9 +238,9 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label={'Vicuña muerta'}
                     >
-                        <CustomCheckboxGroup
-                            value={value}
-                            options={options.isAlive}
+                        <CustomCheckBox
+                            label={'El animal está muerto'}
+                            checked={value}
                             onChange={value => onChange(value)}
                         />
                     </LabelWithCaption>

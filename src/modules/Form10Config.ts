@@ -42,21 +42,21 @@ export const initialValuesForm10Header = {
 }
 
 export const initialValuesForm10Entry = {
-    sex: -1,
-    age: -1,
+    sex: '',
+    age: '',
     weight: '',
     woolLength: '',
-    physicalCondition: -1,
-    pregnancyStatus: -1,
+    physicalCondition: '',
+    pregnancyStatus: '',
     externalParasites: [],
-    mangeSeverity: -1,
-    dandruff: [],
-    canShareWool: [],
-    isAlive: [],
+    mangeSeverity: '',
+    dandruff: false,
+    canShareWool: false,
+    isAlive: false,
     observations: '',
 }
 
-export const optionsForm10Entry: Record<string, option[]> = {
+export const optionsForm10Entry = {
     sex: [
         { key: '1', value: 'Macho' },
         { key: '2', value: 'Hembra' },
@@ -85,9 +85,6 @@ export const optionsForm10Entry: Record<string, option[]> = {
         { key: '2', value: 'Moderado' },
         { key: '3', value: 'Severo' },
     ],
-    dandruff: [{ key: '1', value: 'Tiene caspa' }],
-    canShareWool: [{ key: '1', value: 'Puede esquilarse' }],
-    isAlive: [{ key: '1', value: 'El animal esta vivo ' }],
 }
 
 export const validationSchemaForm10Header = object().shape({
