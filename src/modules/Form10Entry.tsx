@@ -23,7 +23,7 @@ const Form10Entry: React.FC = () => {
         formState: { errors, isValid },
     } = useForm({
         defaultValues: initialValues,
-        // resolver: yupResolver(validationSchema),
+        resolver: yupResolver(validationSchema),
         mode: 'onBlur',
     })
 

@@ -1,5 +1,5 @@
-import { option } from 'src/models'
-import { object, string, number, array } from 'yup'
+import { Form10Header, Form10Entry } from 'vicugna-types'
+import { object, string, array, boolean } from 'yup'
 
 const range = {
     captureSiteNameChars: { max: 50 },
@@ -13,23 +13,26 @@ const errors = {
     shouldLimitCharLength: (max: number) => `${max} carácteres como máximo`,
     shouldBeGreaterThan: (min: number) => `Debe ser mayor que ${min}`,
     shouldBeANumber: 'Debe ser un número',
+    shouldHaveUpToTwoDecimalPlaces: 'Debe tener hasta dos decimales',
     shouldBeCoordinate: 'Formato de coordenada incorrecto',
     shouldBeInteger: 'Debe ser un número entero',
-    shouldBeGreaterThanOrEqualTo: (min: number) =>
-        `Debe ser mayor o igual que ${min}`,
-    shouldBeLessThanOrEqualTo: (max: number) =>
-        `Debe ser menor o igual que ${max}`,
+    shouldBeGreaterThanOrEqualTo: (min: number, unit: string = '') =>
+        `Debe ser mayor o igual que ${min} ${unit}`,
+    shouldBeLessThanOrEqualTo: (max: number, unit: string = '') =>
+        `Debe ser menor o igual que ${max} ${unit}`,
 }
 
 const regex = {
-    coordinates: (value: string | undefined) =>
+    isValidCoordinate: (value: string | undefined) =>
         value !== undefined &&
         /^-?([1-8]?[1-9]|[1-9]0)\.{1}\d{2,6}$/.test(value),
-    numberWithUpToTwoDecimalPlaces: (value: string | undefined) =>
-        value !== undefined && /^\d+(\.\d{1,2})?$/.test(value),
+    isNumber: (value: string | undefined) =>
+        value !== undefined && /^-?\d+(\.\d+)?$/.test(value),
+    hasUpToTwoDecimalPlaces: (value: string | undefined) =>
+        value !== undefined && !/\.\d{3,}/.test(value),
 }
 
-export const initialValuesForm10Header = {
+export const initialValuesForm10Header: Form10Header = {
     department: '',
     regional: '',
     community: '',
@@ -37,11 +40,11 @@ export const initialValuesForm10Header = {
     latitude: '',
     longitude: '',
     captureDate: '',
-    herdingAttempts: '',
+    herdingAttempts: '1',
     authorizationCode: '',
 }
 
-export const initialValuesForm10Entry = {
+export const initialValuesForm10Entry: Form10Entry = {
     sex: '',
     age: '',
     weight: '',
@@ -106,7 +109,7 @@ export const validationSchemaForm10Header = object().shape({
             value => !isNaN(Number(value)),
         )
         .test('shouldBeCoordinate', errors.shouldBeCoordinate, value =>
-            regex.coordinates(value),
+            regex.isValidCoordinate(value),
         ),
     longitude: string()
         .test('shouldRequireField', errors.shouldRequireField, value => !!value)
@@ -116,7 +119,7 @@ export const validationSchemaForm10Header = object().shape({
             value => !isNaN(Number(value)),
         )
         .test('shouldBeCoordinate', errors.shouldBeCoordinate, value =>
-            regex.coordinates(value),
+            regex.isValidCoordinate(value),
         ),
     captureDate: string().required(errors.shouldRequireField),
     herdingAttempts: string()
@@ -129,54 +132,65 @@ export const validationSchemaForm10Header = object().shape({
         .test(
             'greaterThanOne',
             errors.shouldBeGreaterThan(0),
-            value => Number(value) > 1,
+            value => Number(value) > 0,
         ),
     authorizationCode: string().required(errors.shouldRequireField),
 })
 
 export const validationSchemaForm10Entry = object().shape({
-    sex: number().min(0, errors.shouldRequireOption),
-    age: number().min(0, errors.shouldRequireOption),
+    sex: string().required(errors.shouldRequireOption),
+    age: string().required(errors.shouldRequireOption),
     weight: string()
         .test('shouldRequireField', errors.shouldRequireField, value => !!value)
+        .test('isNumber', errors.shouldBeANumber, value => regex.isNumber(value))
         .test(
             'isNumberWithUpToTwoDecimalPlaces',
-            errors.shouldBeANumber,
-            value => regex.numberWithUpToTwoDecimalPlaces(value),
+            errors.shouldHaveUpToTwoDecimalPlaces,
+            value => regex.hasUpToTwoDecimalPlaces(value),
         )
         .test(
-            'greaterThanOrEqualTo15',
-            errors.shouldBeGreaterThanOrEqualTo(range.weight.min),
-            value => Number(value as string) >= range.weight.min,
+            'greaterThanOrEqualTo5kg',
+            errors.shouldBeGreaterThanOrEqualTo(range.weight.min, 'kg'),
+            value => {
+                const numberValue = Number(value as string);
+                return !isNaN(numberValue) && numberValue >= range.weight.min;
+            },
         )
         .test(
-            'lessThanOrEqualTo100',
-            errors.shouldBeLessThanOrEqualTo(range.weight.max),
-            value => Number(value as string) <= range.weight.max,
+            'lessThanOrEqualTo15kg',
+            errors.shouldBeLessThanOrEqualTo(range.weight.max, 'kg'),
+            value => {
+                const numberValue = Number(value as string);
+                return !isNaN(numberValue) && numberValue <= range.weight.max;
+            },
         ),
     woolLength: string()
         .test('shouldRequireField', errors.shouldRequireField, value => !!value)
+        .test('isNumber', errors.shouldBeANumber, value => regex.isNumber(value))
         .test(
             'isNumberWithUpToTwoDecimalPlaces',
-            errors.shouldBeANumber,
-            value => regex.numberWithUpToTwoDecimalPlaces(value),
+            errors.shouldHaveUpToTwoDecimalPlaces,
+            value => regex.hasUpToTwoDecimalPlaces(value),
         )
         .test(
-            'greaterThanOrEqualTo15',
-            errors.shouldBeGreaterThanOrEqualTo(range.length.min),
-            value => Number(value as string) >= range.length.min,
+            'greaterThanOrEqualTo1cm',
+            errors.shouldBeGreaterThanOrEqualTo(range.length.min, 'cm'),
+            value => {
+                const numberValue = Number(value as string);
+                return !isNaN(numberValue) && numberValue >= range.length.min;
+            },
         )
         .test(
-            'lessThanOrEqualTo100',
-            errors.shouldBeLessThanOrEqualTo(range.length.max),
+            'lessThanOrEqualTo15cm',
+            errors.shouldBeLessThanOrEqualTo(range.length.max, 'cm'),
             value => Number(value as string) <= range.length.max,
         ),
-    physicalCondition: number().min(0, errors.shouldRequireOption),
-    pregnancyStatus: number().min(0, errors.shouldRequireOption),
+    physicalCondition: string().required(errors.shouldRequireOption),
+    pregnancyStatus: string().required(errors.shouldRequireOption),
     externalParasites: array().of(string()).optional(),
-    mangeSeverity: number().min(0, errors.shouldRequireOption),
-    dandruff: array().of(string()).optional(),
-    canShareWool: array().of(string()).optional(),
-    isAlive: array().of(string()).optional(),
+    mangeSeverity: string().required(errors.shouldRequireOption),
+    dandruff: boolean().optional(),
+    canShareWool: boolean().optional(),
+    isAlive: boolean().optional(),
     observations: string().optional(),
 })
