@@ -4,8 +4,8 @@ import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, StyleSheet } from 'react-native'
 
-import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
 import CustomCheckBox from '../components/CustomCheckBox'
+import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
 import CustomInput from '../components/CustomInput'
 import CustomRadioGroup from '../components/CustomRadioGroup'
 import LabelWithCaption from '../components/LabelWithCaption'
@@ -23,7 +23,7 @@ const Form10Entry: React.FC = () => {
         formState: { errors, isValid },
     } = useForm({
         defaultValues: initialValues,
-        // resolver: yupResolver(validationSchema),
+        resolver: yupResolver(validationSchema),
         mode: 'onBlur',
     })
 
