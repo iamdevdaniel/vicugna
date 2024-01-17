@@ -142,7 +142,9 @@ export const validationSchemaForm10Entry = object().shape({
     age: string().required(errors.shouldRequireOption),
     weight: string()
         .test('shouldRequireField', errors.shouldRequireField, value => !!value)
-        .test('isNumber', errors.shouldBeANumber, value => regex.isNumber(value))
+        .test('isNumber', errors.shouldBeANumber, value =>
+            regex.isNumber(value),
+        )
         .test(
             'isNumberWithUpToTwoDecimalPlaces',
             errors.shouldHaveUpToTwoDecimalPlaces,
@@ -152,21 +154,23 @@ export const validationSchemaForm10Entry = object().shape({
             'greaterThanOrEqualTo5kg',
             errors.shouldBeGreaterThanOrEqualTo(range.weight.min, 'kg'),
             value => {
-                const numberValue = Number(value as string);
-                return !isNaN(numberValue) && numberValue >= range.weight.min;
+                const numberValue = Number(value as string)
+                return !isNaN(numberValue) && numberValue >= range.weight.min
             },
         )
         .test(
             'lessThanOrEqualTo15kg',
             errors.shouldBeLessThanOrEqualTo(range.weight.max, 'kg'),
             value => {
-                const numberValue = Number(value as string);
-                return !isNaN(numberValue) && numberValue <= range.weight.max;
+                const numberValue = Number(value as string)
+                return !isNaN(numberValue) && numberValue <= range.weight.max
             },
         ),
     woolLength: string()
         .test('shouldRequireField', errors.shouldRequireField, value => !!value)
-        .test('isNumber', errors.shouldBeANumber, value => regex.isNumber(value))
+        .test('isNumber', errors.shouldBeANumber, value =>
+            regex.isNumber(value),
+        )
         .test(
             'isNumberWithUpToTwoDecimalPlaces',
             errors.shouldHaveUpToTwoDecimalPlaces,
@@ -176,8 +180,8 @@ export const validationSchemaForm10Entry = object().shape({
             'greaterThanOrEqualTo1cm',
             errors.shouldBeGreaterThanOrEqualTo(range.length.min, 'cm'),
             value => {
-                const numberValue = Number(value as string);
-                return !isNaN(numberValue) && numberValue >= range.length.min;
+                const numberValue = Number(value as string)
+                return !isNaN(numberValue) && numberValue >= range.length.min
             },
         )
         .test(

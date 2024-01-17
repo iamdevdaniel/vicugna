@@ -1,10 +1,13 @@
 import { RadioGroup, RadioGroupProps, Radio } from '@ui-kitten/components'
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
+
 import { option } from '../models'
+
 import CustomLabel from './CustomLabel'
 
-interface CustomRadioGroupProps extends Omit<RadioGroupProps, 'onChange' | 'selectedIndex'> {
+interface CustomRadioGroupProps
+    extends Omit<RadioGroupProps, 'onChange' | 'selectedIndex'> {
     label?: string
     options?: option[]
     value?: string
@@ -18,7 +21,6 @@ const CustomRadioGroup: React.FC<CustomRadioGroupProps> = ({
     onChange,
     ...props
 }) => {
-
     const selectedIndex = options.findIndex(option => option.value === value)
 
     return (
@@ -27,7 +29,7 @@ const CustomRadioGroup: React.FC<CustomRadioGroupProps> = ({
             <RadioGroup
                 {...props}
                 selectedIndex={selectedIndex}
-                onChange={(index) => {
+                onChange={index => {
                     if (onChange && options[index]) {
                         onChange(options[index].value)
                     }

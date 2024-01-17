@@ -1,5 +1,5 @@
-import React from 'react'
 import { CheckBox, CheckBoxProps } from '@ui-kitten/components'
+import React from 'react'
 import { View, StyleSheet } from 'react-native'
 
 type CustomCheckboxProps = Omit<CheckBoxProps, 'onChange'> & {
@@ -7,9 +7,12 @@ type CustomCheckboxProps = Omit<CheckBoxProps, 'onChange'> & {
     onChange?: (value: boolean) => void
 }
 
-const CustomCheckbox: React.FC<CustomCheckboxProps> = ({ label, onChange, ...props }) => {
-
-    return <View style={styles.container}>
+const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
+    label,
+    onChange,
+    ...props
+}) => (
+    <View style={styles.container}>
         <CheckBox
             {...props}
             onChange={(isChecked: boolean) => {
@@ -21,13 +24,13 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({ label, onChange, ...pro
             {label}
         </CheckBox>
     </View>
-}
+)
 
 export default CustomCheckbox
 
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        marginVertical: 8
-    }
+        marginVertical: 8,
+    },
 })
