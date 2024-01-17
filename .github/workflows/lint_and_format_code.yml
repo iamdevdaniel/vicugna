@@ -20,6 +20,8 @@ jobs:
       with:
         node-version: '16.x'
     - name: Install dependencies
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.VICUGNA_TOKEN }}
       run: npm ci
     - name: Check code format
       run: npm run check
