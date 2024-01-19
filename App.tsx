@@ -6,18 +6,18 @@ import { StyleSheet } from 'react-native'
 import Form10 from './src/modules/Form10Entry'
 
 const App: React.FC = () => (
-	<ApplicationProvider {...eva} theme={eva.light}>
-		<Layout style={styles.layout}>
-			<Form10 />
-		</Layout>
-	</ApplicationProvider>
+    <ApplicationProvider {...eva} theme={eva.light}>
+        <Layout style={styles.layout}>
+            <Form10 />
+        </Layout>
+    </ApplicationProvider>
 )
 
 const styles = StyleSheet.create({
-	layout: {
-		flex: 1,
-		justifyContent: 'flex-start',
-	},
+    layout: {
+        flex: 1,
+        justifyContent: 'flex-start',
+    },
 })
 
 export default App
