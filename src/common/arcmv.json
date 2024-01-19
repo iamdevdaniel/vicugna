@@ -1,0 +1,800 @@
+{
+    "Cochabamba": {
+        "Sueltas": [
+            {
+                "id": 1,
+                "community": "Altamachi",
+                "municipality": "Cocapata",
+                "province": "Ayopaya"
+            }
+        ]
+    },
+    "La Paz": {
+        "Apolobamba": [
+            {
+                "id": 2,
+                "community": "Amarka",
+                "municipality": "Charazani",
+                "province": "Bautista Saavedra"
+            },
+            {
+                "id": 3,
+                "community": "Apacheta",
+                "municipality": "Charazani",
+                "province": "Bautista Saavedra"
+            },
+            {
+                "id": 4,
+                "community": "Chari",
+                "municipality": "Charazani",
+                "province": "Bautista Saavedra"
+            },
+            {
+                "id": 5,
+                "community": "Qutapampa",
+                "municipality": "Charazani",
+                "province": "Bautista Saavedra"
+            },
+            {
+                "id": 6,
+                "community": "Cañuhuma",
+                "municipality": "Curva",
+                "province": "Bautista Saavedra"
+            },
+            {
+                "id": 7,
+                "community": "Medallani",
+                "municipality": "Curva",
+                "province": "Bautista Saavedra"
+            },
+            {
+                "id": 8,
+                "community": "Taypi Cañuma",
+                "municipality": "Curva",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 9,
+                "community": "Alto Hichocollo",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 10,
+                "community": "Hichocollo",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 11,
+                "community": "Hilo Hilo",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 12,
+                "community": "Huacochani",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 13,
+                "community": "Marka Cololo",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 14,
+                "community": "Nube Pampa Y Antaquilla",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 15,
+                "community": "Plan Aeropuerto",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 16,
+                "community": "Puyo Puyo",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 17,
+                "community": "Puyo Puyo Bajo",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 18,
+                "community": "Ucha Ucha",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            },
+            {
+                "id": 19,
+                "community": "Ulla Ulla",
+                "municipality": "Pelechuco",
+                "province": "Franz Tamayo"
+            }
+        ],
+        "Calacoto": [
+            {
+                "id": 20,
+                "community": "Agua Rica",
+                "municipality": "Calacoto",
+                "province": "Pacajes"
+            },
+            {
+                "id": 21,
+                "community": "Aylu Collana Baja",
+                "municipality": "Calacoto",
+                "province": "Pacajes"
+            },
+            {
+                "id": 22,
+                "community": "Ninoca Chico",
+                "municipality": "Calacoto",
+                "province": "Pacajes"
+            },
+            {
+                "id": 23,
+                "community": "Rosario",
+                "municipality": "Calacoto",
+                "province": "Pacajes"
+            },
+            {
+                "id": 24,
+                "community": "Ticapata",
+                "municipality": "Calacoto",
+                "province": "Pacajes"
+            }
+        ],
+        "San Andrés de Machaca": [
+            {
+                "id": 25,
+                "community": "Antaquirani",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 26,
+                "community": "Artasivi",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 27,
+                "community": "Ayllu Erben Kalla Yaru",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 28,
+                "community": "Ayllu Rosapata Yaru",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 29,
+                "community": "Chijipucara",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 30,
+                "community": "Chulluncayani",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 31,
+                "community": "Chuncarcota",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 32,
+                "community": "Comunidad Originaria Huancarami",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 33,
+                "community": "Comunidades De Ayllu Levita Laquinamaya",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 34,
+                "community": "Conchacollo",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 35,
+                "community": "Irpa Grande",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 36,
+                "community": "Jerusalen",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 37,
+                "community": "Kanapata",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 38,
+                "community": "Sombrapata",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            },
+            {
+                "id": 39,
+                "community": "Tholahuinto",
+                "municipality": "San Andrés De Machaca",
+                "province": "Ingaví"
+            }
+        ],
+        "Sueltas": [
+            {
+                "id": 40,
+                "community": "Ayllu Ninoca",
+                "municipality": "Achiri",
+                "province": "Pacajes"
+            },
+            {
+                "id": 41,
+                "community": "Capinota",
+                "municipality": "Malla",
+                "province": "Loayza"
+            },
+            {
+                "id": 42,
+                "community": "Jachapampa",
+                "municipality": "Malla",
+                "province": "Loayza"
+            },
+            {
+                "id": 43,
+                "community": "Ullacopa",
+                "municipality": "Malla",
+                "province": "Loayza"
+            }
+        ]
+    },
+    "Oruro": {
+        "Carangas": [
+            {
+                "id": 44,
+                "community": "Ayllu Ayocata Andapata Lupe",
+                "municipality": "Corque",
+                "province": "Carangas"
+            },
+            {
+                "id": 45,
+                "community": "San Pedro De Huaylloco",
+                "municipality": "Corque",
+                "province": "Carangas"
+            },
+            {
+                "id": 46,
+                "community": "Wari Warito",
+                "municipality": "Corque",
+                "province": "Carangas"
+            }
+        ],
+        "Quri Qarwa": [
+            {
+                "id": 47,
+                "community": "Ancorcaya",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 48,
+                "community": "Ayllu Canal Collo",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 49,
+                "community": "Ayllu Sullka De Calavillca",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 50,
+                "community": "Eduardo Avaroa",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 51,
+                "community": "Inca Tama Yuruna",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 52,
+                "community": "Parcomarca Copacabana",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 53,
+                "community": "Qori Qarwa Del Ayllu Qollana",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 54,
+                "community": "Quri Tama Ayllu Pocorcollo",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 55,
+                "community": "Rosapata",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 56,
+                "community": "Sipe Sipe Marka",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 57,
+                "community": "Wiñay Tama Rosapata",
+                "municipality": "Santiago De Andamarca",
+                "province": "Sur Carangas"
+            }
+        ],
+        "Quri Wari Del Sur": [
+            {
+                "id": 58,
+                "community": "Belén De Andamarca",
+                "municipality": "Belén De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 59,
+                "community": "Cruz De Huayllamarca",
+                "municipality": "Belén De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 60,
+                "community": "Real Machacamarca",
+                "municipality": "Belén De Andamarca",
+                "province": "Sur Carangas"
+            },
+            {
+                "id": 61,
+                "community": "Agua De Castilla",
+                "municipality": "Belén De Andamarca",
+                "province": "Sur Carangas"
+            }
+        ],
+        "Wila Khollo": [
+            {
+                "id": 62,
+                "community": "Ayllu Cahualli Maga",
+                "municipality": "Santiago De Huari",
+                "province": "Sebastian Pagador"
+            },
+            {
+                "id": 63,
+                "community": "Ayllu Collana Santiago De Paria",
+                "municipality": "Santiago De Huari",
+                "province": "Sebastian Pagador"
+            },
+            {
+                "id": 64,
+                "community": "Ayllu Yanaque Belén De Challamayu",
+                "municipality": "Santiago De Huari",
+                "province": "Sebastian Pagador"
+            },
+            {
+                "id": 65,
+                "community": "Culta Casa",
+                "municipality": "Santiago De Huari",
+                "province": "Sebastian Pagador"
+            },
+            {
+                "id": 66,
+                "community": "Papujio",
+                "municipality": "Santiago De Huari",
+                "province": "Sebastian Pagador"
+            },
+            {
+                "id": 67,
+                "community": "Ayllu Collana Primero",
+                "municipality": "Santuario De Quillacas",
+                "province": "Eduardo Abaroa"
+            },
+            {
+                "id": 68,
+                "community": "Cayñi",
+                "municipality": "Santuario De Quillacas",
+                "province": "Eduardo Abaroa"
+            },
+            {
+                "id": 69,
+                "community": "Ichocota",
+                "municipality": "Santuario De Quillacas",
+                "province": "Eduardo Abaroa"
+            },
+            {
+                "id": 70,
+                "community": "Sonaja Thola Collo",
+                "municipality": "Santuario De Quillacas",
+                "province": "Eduardo Abaroa"
+            },
+            {
+                "id": 71,
+                "community": "Totorani",
+                "municipality": "Santuario De Quillacas",
+                "province": "Eduardo Abaroa"
+            }
+        ],
+        "Sueltas": [
+            {
+                "id": 72,
+                "community": "Sullkawi",
+                "municipality": "Caracollo",
+                "province": "Cercado"
+            },
+            {
+                "id": 73,
+                "community": "Curahuara Marca",
+                "municipality": "Curahuara De Carangas",
+                "province": "Sajama"
+            },
+            {
+                "id": 74,
+                "community": "Pampa Aullugas",
+                "municipality": "Pampa Aullagas",
+                "province": "Ladislao Cabrera"
+            },
+            {
+                "id": 75,
+                "community": "Marca Peñas",
+                "municipality": "Pazña",
+                "province": "Poopó"
+            },
+            {
+                "id": 76,
+                "community": "Tolapampa",
+                "municipality": "Poopó",
+                "province": "Poopó"
+            },
+            {
+                "id": 77,
+                "community": "Marca Aroma",
+                "municipality": "Salinas De Garci Mendoza",
+                "province": "Ladislao Cabrera"
+            },
+            {
+                "id": 78,
+                "community": "Wari Awatiña",
+                "municipality": "Salinas De Garci Mendoza",
+                "province": "Ladislao Cabrera"
+            },
+            {
+                "id": 79,
+                "community": "Yurita Ucumasi",
+                "municipality": "Salinas De Garci Mendoza",
+                "province": "Ladislao Cabrera"
+            },
+            {
+                "id": 80,
+                "community": "Ayllu Pumasara",
+                "municipality": "Toledo",
+                "province": "Saucarí"
+            },
+            {
+                "id": 81,
+                "community": "Ayllu Jila Pumiri",
+                "municipality": "Turco",
+                "province": "Sajama"
+            },
+            {
+                "id": 82,
+                "community": "Jilanaca",
+                "municipality": "Turco",
+                "province": "Sajama"
+            },
+            {
+                "id": 83,
+                "community": "Julo",
+                "municipality": "Sabaya",
+                "province": "Sabaya"
+            }
+        ]
+    },
+    "Potosí": {
+        "Colcha K": [
+            {
+                "id": 84,
+                "community": "Aguaquiza",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 85,
+                "community": "Atulcha",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 86,
+                "community": "Calcha K",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 87,
+                "community": "Colcha K Mañica Villa Candelaria",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 88,
+                "community": "Culpina K",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 89,
+                "community": "Pampa Grande",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 90,
+                "community": "Rio Grande",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 91,
+                "community": "San Juan De Rosario",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 92,
+                "community": "Santiago De Chuvica",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 93,
+                "community": "Santiago Río Blanco",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 94,
+                "community": "Serena Vinto",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 95,
+                "community": "Vila Vila",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 96,
+                "community": "Vinto K",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            },
+            {
+                "id": 97,
+                "community": "Viluyo",
+                "municipality": "Colcha K",
+                "province": "Nor Lipez"
+            }
+        ],
+        "Sud Lipez": [
+            {
+                "id": 98,
+                "community": "Guadalupe",
+                "municipality": "San Antonio De Esmoruco",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 99,
+                "community": "Tholar",
+                "municipality": "San Antonio De Esmoruco",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 100,
+                "community": "Cerrillos",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 101,
+                "community": "Cerro Colorados",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 102,
+                "community": "Kollpaní",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 103,
+                "community": "Populos",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 104,
+                "community": "Relave",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 105,
+                "community": "Río Mojon",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 106,
+                "community": "Río San Pablo",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 107,
+                "community": "San Antonio De Lipez",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 108,
+                "community": "San Pablo De Lipez",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 109,
+                "community": "Santa Isabel",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            },
+            {
+                "id": 110,
+                "community": "Viluyo",
+                "municipality": "San Pablo De Lipez",
+                "province": "Sud Lipez"
+            }
+        ],
+        "Tomave": [
+            {
+                "id": 111,
+                "community": "El Asiento",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 112,
+                "community": "San Pedro De Opoco",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 113,
+                "community": "Saruyo Uracaya",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 114,
+                "community": "Suntura",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 115,
+                "community": "Viluyo Pisaqueri",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 116,
+                "community": "Jancoyo",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 117,
+                "community": "Parantaca",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 118,
+                "community": "Tacora",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 119,
+                "community": "Villa Concepción",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 120,
+                "community": "Totora K",
+                "municipality": "Tomave",
+                "province": "Antonio Quijarro"
+            }
+        ],
+        "Villazón": [
+            {
+                "id": 121,
+                "community": "Hornos",
+                "municipality": "Villazon",
+                "province": "Modesto Omiste"
+            },
+            {
+                "id": 122,
+                "community": "Sarcari",
+                "municipality": "Villazon",
+                "province": "Modesto Omiste"
+            },
+            {
+                "id": 123,
+                "community": "Sausalito",
+                "municipality": "Villazon",
+                "province": "Modesto Omiste"
+            }
+        ],
+        "Sueltas": [
+            {
+                "id": 124,
+                "community": "Carhuaycollo",
+                "municipality": "Uyuni",
+                "province": "Antonio Quijarro"
+            },
+            {
+                "id": 125,
+                "community": "Leucasi",
+                "municipality": "Uyuni",
+                "province": "Antonio Quijarro"
+            }
+        ]
+    },
+    "Tarija": {
+        "Sueltas": [
+            {
+                "id": 126,
+                "community": "Quebrada Honda Pulario",
+                "municipality": "Yunchara",
+                "province": "Aviles"
+            }
+        ]
+    }
+}
