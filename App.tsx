@@ -1,23 +1,20 @@
-import * as eva from '@eva-design/eva'
-import { ApplicationProvider, Layout } from '@ui-kitten/components'
-import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 
-import Form10 from './src/modules/Form10Entry'
-
-const App: React.FC = () => (
-    <ApplicationProvider {...eva} theme={eva.light}>
-        <Layout style={styles.layout}>
-            <Form10 />
-        </Layout>
-    </ApplicationProvider>
-)
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text>Open up App.tsx to start working on your app!</Text>
+      <StatusBar style="auto" />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-    layout: {
-        flex: 1,
-        justifyContent: 'flex-start',
-    },
-})
-
-export default App
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -4,8 +4,10 @@
     "slug": "vicugna",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,23 +19,12 @@
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.maydanachi.vicugna"
+      }
     },
     "web": {
-      "build": {
-        "babel": {
-          "include": [
-            "@ui-kitten/components"
-          ]
-        }
-      }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "e38a2167-559d-4f1d-a4e9-4a2440ce2e22"
-      }
+      "favicon": "./assets/favicon.png"
     }
   }
 }
