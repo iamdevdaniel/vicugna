@@ -16,10 +16,7 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.maydanachi.vicugna"
+      "package": "iamdevdaniel.vicugna"
     },
     "web": {
       "build": {
@@ -28,11 +25,6 @@
             "@ui-kitten/components"
           ]
         }
-      }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "e38a2167-559d-4f1d-a4e9-4a2440ce2e22"
       }
     }
   }

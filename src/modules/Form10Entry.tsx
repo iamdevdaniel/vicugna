@@ -4,7 +4,7 @@ import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, StyleSheet } from 'react-native'
 
-import CustomCheckBox from '../components/CustomCheckBox'
+import CustomCheckBox from '../components/CustomCheckbox'
 import CustomCheckboxGroup from '../components/CustomCheckboxGroup'
 import CustomInput from '../components/CustomInput'
 import CustomRadioGroup from '../components/CustomRadioGroup'
@@ -41,7 +41,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label="Sexo"
                         caption={{
-                            text: errors.sex?.message,
+                            text: errors.sex?.message as string,
                             category: 'danger',
                         }}
                     >
@@ -64,7 +64,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label="Edad"
                         caption={{
-                            text: errors.age?.message,
+                            text: errors.age?.message as string,
                             category: 'danger',
                         }}
                     >
@@ -87,7 +87,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label={'Peso vivo (kg)'}
                         caption={{
-                            text: errors.weight?.message,
+                            text: errors.weight?.message as string,
                             category: 'danger',
                         }}
                     >
@@ -107,7 +107,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label={'Longitud de fibra (cm)'}
                         caption={{
-                            text: errors.woolLength?.message,
+                            text: errors.woolLength?.message as string,
                             category: 'danger',
                         }}
                     >
@@ -127,7 +127,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label="Condición corporal"
                         caption={{
-                            text: errors.physicalCondition?.message,
+                            text: errors.physicalCondition?.message as string,
                             category: 'danger',
                         }}
                     >
@@ -150,7 +150,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label="Gestación"
                         caption={{
-                            text: errors.pregnancyStatus?.message,
+                            text: errors.pregnancyStatus?.message as string,
                             category: 'danger',
                         }}
                     >
@@ -192,7 +192,7 @@ const Form10Entry: React.FC = () => {
                         style={styles.field}
                         label="Sarna"
                         caption={{
-                            text: errors.mangeSeverity?.message,
+                            text: errors.mangeSeverity?.message as string,
                             category: 'danger',
                         }}
                     >
