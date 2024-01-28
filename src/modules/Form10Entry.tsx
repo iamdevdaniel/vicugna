@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
     Button,
+    IconProps,
     TopNavigation,
     TopNavigationAction,
 } from '@ui-kitten/components'
@@ -302,7 +303,13 @@ const Form10Entry: React.FC = () => {
                         </LabelWithCaption>
                     )}
                 />
-                <Button onPress={handleSubmit(onSubmit)} disabled={!isValid}>
+                <Button
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={!isValid}
+                    accessoryLeft={(props: IconProps) => (
+                        <Icon {...props} name="save" />
+                    )}
+                >
                     Guardar
                 </Button>
             </ScrollView>

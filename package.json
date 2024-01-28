@@ -6,7 +6,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
+    "web": "expo start --web -c",
     "lint:fix": "npx eslint . --fix",
     "prettier:fix": "npx prettier --write 'src/**/*.{ts,tsx}'",
     "lint:check": "npx eslint . --no-fix",
@@ -19,6 +19,7 @@
     "@eva-design/material": "^2.2.0",
     "@expo/metro-runtime": "^3.1.1",
     "@hookform/resolvers": "^3.3.4",
+    "@react-navigation/native": "^6.1.9",
     "@ui-kitten/components": "^5.3.1",
     "@ui-kitten/eva-icons": "^5.3.1",
     "expo": "~50.0.2",
@@ -29,10 +30,12 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.49.3",
     "react-native": "0.73.2",
-    "react-native-svg": "14.1.0",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0",
     "react-native-web": "~0.19.6",
-    "vicugna-types": "https://x-access-token:${NODE_AUTH_TOKEN}@github.com/iamdevdaniel/vicugna-types.git",
-    "yup": "^1.3.3"
+    "vicugna-types": "https://x-access-token:${NODE_AUTH_TOKEN}@github.com/iamdevdaniel/vicugna-types.git#task-20-store-form-data-locally",
+    "yup": "^1.3.3",
+    "expo-image": "~1.10.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -6,6 +6,7 @@ import {
     TopNavigation,
     TopNavigationAction,
     Icon,
+    IconProps,
     useTheme,
 } from '@ui-kitten/components'
 import React from 'react'
@@ -334,6 +335,9 @@ const Form10Header: React.FC = () => {
                     style={styles.button}
                     onPress={handleSubmit(onSubmit)}
                     disabled={!isValid}
+                    accessoryRight={(props: IconProps) => (
+                        <Icon {...props} name="save" />
+                    )}
                 >
                     Guardar
                 </Button>
