@@ -1,16 +1,17 @@
-import { Button, Icon, IconProps, Text } from '@ui-kitten/components'
+import { Button, Icon, IconProps } from '@ui-kitten/components'
 import React from 'react'
-import { View, Image, ScrollView, StyleSheet } from 'react-native'
+import { View, ScrollView, StyleSheet } from 'react-native'
 
-import emptyListImage from '../../assets/new-file-empty-state.png'
+import emptyListImage from '../../assets/paper-sheet.svg'
+import StateImage from '../components/StateImage'
 
 const ShearingEvenList: React.FC = () => (
     <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.imageContainer}>
-                <Image style={styles.image} source={emptyListImage} />
-            </View>
-            <Text>No tiene esquilas registradas</Text>
+            <StateImage
+                source={emptyListImage}
+                label={'Aún no tiene esquilas registradas'}
+            />
         </ScrollView>
         <Button
             style={styles.button}
@@ -32,15 +33,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    imageContainer: {
-        width: '100%',
-        alignItems: 'center',
-    },
-    image: {
-        width: 160,
-        height: 160,
-        // resizeMode: 'contain'
+        backgroundColor: '#272a52'
     },
     button: {
         marginBottom: 0,
