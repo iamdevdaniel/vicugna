@@ -1,43 +1,30 @@
 import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { Layout, useTheme } from '@ui-kitten/components'
 import React from 'react'
 
 import Form10Entry from './src/modules/Form10Entry'
-import Form10Header from './src/modules/Form10Header'
 import AppProviders from './src/providers/AppProviders'
 import { AppContext } from './src/providers/ContextProvider'
 import ShearingEventList from './src/views/ShearingEventList'
-
-const Stack = createStackNavigator()
 
 const App: React.FC = () => {
     React.useEffect(() => {
         document.title = 'vicugna'
     }, [])
 
-    const context = React.useContext(AppContext)
+    const { viewNames } = React.useContext(AppContext)
+    const Stack = createNativeStackNavigator()
+    const theme = useTheme()
 
     return (
         <AppProviders>
-            <ShearingEventList />
-            {/* <NavigationContainer>
-                <Stack.Navigator
-                    initialRouteName={context.viewNames.shearingEventList}
-                >
-                    <Stack.Screen
-                        name={context.viewNames.shearingEventList}
-                        component={ShearingEventList}
-                    />
-                    <Stack.Screen
-                        name={context.viewNames.form10Entry}
-                        component={Form10Header}
-                    />
-                    <Stack.Screen
-                        name={context.viewNames.form10Header}
-                        component={Form10Entry}
-                    />
+            {/* <Form10Entry /> */}
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen name="Home" component={Form10Entry} />
                 </Stack.Navigator>
-            </NavigationContainer> */}
+            </NavigationContainer>
         </AppProviders>
     )
 }
