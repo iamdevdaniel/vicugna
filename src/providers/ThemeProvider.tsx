@@ -1,4 +1,5 @@
 import * as eva from '@eva-design/eva'
+import { dark } from '@eva-design/material'
 import {
     ApplicationProvider,
     Layout,
@@ -15,7 +16,7 @@ type ThemeProviderProps = {
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => (
     <React.Fragment>
         <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider {...eva} theme={eva.light}>
+        <ApplicationProvider {...eva} theme={dark}>
             <Layout style={styles.layout}>{children}</Layout>
         </ApplicationProvider>
     </React.Fragment>
