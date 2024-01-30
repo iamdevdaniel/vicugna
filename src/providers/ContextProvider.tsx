@@ -1,20 +1,8 @@
 import React from 'react'
 
-interface IAppContext {
-    viewNames: {
-        shearingEventList: string
-        form10Header: string
-        form10Entry: string
-    }
-}
+interface IAppContext {}
 
-const context = {
-    viewNames: {
-        shearingEventList: 'ShearingEventList',
-        form10Header: 'Form10Header',
-        form10Entry: 'Form10Entry',
-    },
-}
+const context = {}
 
 export const AppContext = React.createContext<IAppContext>(context)
 
