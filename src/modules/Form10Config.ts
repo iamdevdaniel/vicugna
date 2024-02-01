@@ -37,7 +37,7 @@ export const fieldLabelsForm10Header = {
     regional: '2. Asociación Regional',
     community: '3. Comunidad Manejadora',
     coordiantes: {
-        main: '4. Coordinadas',
+        main: '4. Coordenadas',
         latitude: 'Latitud',
         longitude: 'Longitud',
     },

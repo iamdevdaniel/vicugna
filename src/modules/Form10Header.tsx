@@ -86,7 +86,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Departamento'}
+                            label={fieldLabels.department}
                             caption={{
                                 category: 'danger',
                                 text: errors.department?.message,
@@ -118,7 +118,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Asociación Regional'}
+                            label={fieldLabels.regional}
                             caption={{
                                 category: 'danger',
                                 text: errors.regional?.message,
@@ -152,7 +152,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Comunidad Manejadora'}
+                            label={fieldLabels.community}
                             caption={{
                                 category: 'danger',
                                 text: errors.community?.message,
@@ -167,7 +167,7 @@ const Form10Header: React.FC = () => {
                                 options={
                                     (communities[selectedDepartment] &&
                                         communities[selectedDepartment][
-                                            selectedRegional
+                                        selectedRegional
                                         ]) ||
                                     []
                                 }
@@ -187,7 +187,7 @@ const Form10Header: React.FC = () => {
                 />
 
                 <View style={styles.field}>
-                    <CustomLabel style={styles.subtitle} text={'Coordenadas'} />
+                    <CustomLabel style={styles.subtitle} text={fieldLabels.coordiantes.main} />
                     <View style={styles.coordinates}>
                         <Controller
                             name="latitude"
@@ -200,7 +200,7 @@ const Form10Header: React.FC = () => {
                                         styles.coordinatesField,
                                         styles.firstCoordinate,
                                     ]}
-                                    label={'Latitud'}
+                                    label={fieldLabels.coordiantes.latitude}
                                     caption={{
                                         category: 'danger',
                                         text: errors.latitude?.message,
@@ -224,7 +224,7 @@ const Form10Header: React.FC = () => {
                             }) => (
                                 <LabelWithCaption
                                     style={styles.coordinatesField}
-                                    label={'Longitud'}
+                                    label={fieldLabels.coordiantes.longitude}
                                     caption={{
                                         category: 'danger',
                                         text: errors.longitude?.message,
@@ -246,7 +246,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label="Sitio de captura"
+                            label={fieldLabels.captureSite}
                             caption={{
                                 category: 'danger',
                                 text: errors.captureSite?.message,
@@ -267,7 +267,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label="Fecha de captura"
+                            label={fieldLabels.captureDate}
                             caption={{
                                 category: 'danger',
                                 text: errors.captureDate?.message,
@@ -289,7 +289,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Número de repeticiones de arreo'}
+                            label={fieldLabels.herdingAttempts}
                             caption={{
                                 category: 'danger',
                                 text: errors.herdingAttempts?.message,
@@ -309,7 +309,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Codigo de autorización de esquila'}
+                            label={fieldLabels.authorizationCode}
                             caption={{
                                 category: 'danger',
                                 text: errors.authorizationCode?.message,
@@ -343,7 +343,7 @@ export default Form10Header
 const getStyles = (screenWidth: number) =>
     StyleSheet.create({
         container: {
-            width: '100%',
+            flex: 1
         },
         scrollContainer: {
             width: '100%',

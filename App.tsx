@@ -11,9 +11,6 @@ import { AppContext } from './src/providers/ContextProvider'
 import ShearingEventList from './src/views/ShearingEventList'
 
 const App: React.FC = () => {
-    React.useEffect(() => {
-        document.title = 'vicugna'
-    }, [])
 
     const Stack = createNativeStackNavigator<RootStackParamList>()
 
