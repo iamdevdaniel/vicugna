@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react'
 
-export const isGreaterThanMin = (min: number) => (value: string | undefined) =>
-    value ? parseFloat(value) >= min : false
-
-export const isLessThanMax = (max: number) => (value: string | undefined) =>
-    value ? parseFloat(value) <= max : false
-
 export const useFetch = (url: string) => {
     const [data, setData] = useState(null)
     const [loading, setLoading] = useState(true)

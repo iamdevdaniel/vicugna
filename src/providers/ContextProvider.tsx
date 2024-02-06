@@ -1,17 +1,26 @@
 import React from 'react'
+import { User } from 'vicugna-types'
 
-interface IAppContext {}
+interface IAppContext {
+    user: User
+}
 
-const context = {}
+const appContext: IAppContext = {
+    user: {
+        id: 'dev_dm',
+        name: 'Daniel Maydana',
+        role: 'admin'
+    }
+}
 
-export const AppContext = React.createContext<IAppContext>(context)
+export const AppContext = React.createContext<IAppContext>(appContext)
 
 type ContextProviderProps = {
     children: React.ReactNode
 }
 
 const ContextProvider: React.FC<ContextProviderProps> = ({ children }) => (
-    <AppContext.Provider value={context}>{children}</AppContext.Provider>
+    <AppContext.Provider value={appContext}>{children}</AppContext.Provider>
 )
 
 export default ContextProvider
