@@ -1,21 +1,21 @@
 import { Button, Icon, IconProps } from '@ui-kitten/components'
 import React from 'react'
-import { View, ScrollView, StyleSheet } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 
 import emptyListImage from '../../assets/paper-sheet.svg'
+import SafeLayout from '../components/SafeLayout'
 import StateImage from '../components/StateImage'
-import { useRoute, useNavigation } from '../hooks'
+import { useNavigation } from '../hooks'
 
 const ShearingEventList: React.FC = () => {
-    const route = useRoute<'ShearingEventList'>()
     const navigator = useNavigation()
 
     const handlePress = () => {
-        navigator.navigate('Form10Header')
+        navigator.navigate('Form10Entry')
     }
 
     return (
-        <View style={styles.container}>
+        <SafeLayout style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <StateImage
                     source={emptyListImage}
@@ -31,7 +31,7 @@ const ShearingEventList: React.FC = () => {
             >
                 Nueva Esquila
             </Button>
-        </View>
+        </SafeLayout>
     )
 }
 

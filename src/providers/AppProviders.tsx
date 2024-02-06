@@ -1,4 +1,5 @@
 import React from 'react'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import ContextProvider from './ContextProvider'
 import ThemeProvider from './ThemeProvider'
@@ -8,7 +9,7 @@ type AppProvidersProps = {
 }
 
 const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
-    const providers = [ContextProvider, ThemeProvider]
+    const providers = [ContextProvider, SafeAreaProvider, ThemeProvider]
 
     return providers.reduce(
         (previousValue, CurrentProvider) => (

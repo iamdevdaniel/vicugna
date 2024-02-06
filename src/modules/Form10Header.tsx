@@ -5,7 +5,6 @@ import {
     Icon,
     IconProps,
     IndexPath,
-    Layout,
     TopNavigation,
     TopNavigationAction,
     useTheme,
@@ -14,11 +13,12 @@ import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native'
 
-import StyleConstants from '../common/stylesConstants'
+import { StyleConstants } from '../common/stylesConstants'
 import CustomInput from '../components/CustomInput'
 import CustomLabel from '../components/CustomLabel'
 import CustomSelect from '../components/CustomSelect'
 import LabelWithCaption from '../components/LabelWithCaption'
+import SafeLayout from '../components/SafeLayout'
 import { getOptionListOf } from '../models/arcmv'
 
 import {
@@ -67,7 +67,7 @@ const Form10Header: React.FC = () => {
     const selectedRegional = watch('regional')
 
     return (
-        <Layout style={styles.container}>
+        <SafeLayout>
             <TopNavigation
                 accessoryLeft={() => <BackAction />}
                 title={() => (
@@ -167,7 +167,7 @@ const Form10Header: React.FC = () => {
                                 options={
                                     (communities[selectedDepartment] &&
                                         communities[selectedDepartment][
-                                        selectedRegional
+                                            selectedRegional
                                         ]) ||
                                     []
                                 }
@@ -187,7 +187,10 @@ const Form10Header: React.FC = () => {
                 />
 
                 <View style={styles.field}>
-                    <CustomLabel style={styles.subtitle} text={fieldLabels.coordiantes.main} />
+                    <CustomLabel
+                        style={styles.subtitle}
+                        text={fieldLabels.coordiantes.main}
+                    />
                     <View style={styles.coordinates}>
                         <Controller
                             name="latitude"
@@ -207,9 +210,10 @@ const Form10Header: React.FC = () => {
                                     }}
                                 >
                                     <CustomInput
+                                        keyboardType="numeric"
                                         value={value}
                                         onBlur={onBlur}
-                                        onChange={value => {
+                                        onChangeText={value => {
                                             onChange(value)
                                         }}
                                     />
@@ -231,9 +235,10 @@ const Form10Header: React.FC = () => {
                                     }}
                                 >
                                     <CustomInput
+                                        keyboardType="numeric"
                                         onBlur={onBlur}
                                         value={value}
-                                        onChange={value => onChange(value)}
+                                        onChangeText={value => onChange(value)}
                                     />
                                 </LabelWithCaption>
                             )}
@@ -255,7 +260,7 @@ const Form10Header: React.FC = () => {
                             <CustomInput
                                 value={value}
                                 onBlur={onBlur}
-                                onChange={value => onChange(value)}
+                                onChangeText={value => onChange(value)}
                             />
                         </LabelWithCaption>
                     )}
@@ -296,9 +301,10 @@ const Form10Header: React.FC = () => {
                             }}
                         >
                             <CustomInput
+                                keyboardType="numeric"
                                 value={value}
                                 onBlur={onBlur}
-                                onChange={value => onChange(value)}
+                                onChangeText={value => onChange(value)}
                             />
                         </LabelWithCaption>
                     )}
@@ -318,7 +324,7 @@ const Form10Header: React.FC = () => {
                             <CustomInput
                                 value={value}
                                 onBlur={onBlur}
-                                onChange={value => onChange(value)}
+                                onChangeText={value => onChange(value)}
                             />
                         </LabelWithCaption>
                     )}
@@ -334,7 +340,7 @@ const Form10Header: React.FC = () => {
             >
                 Guardar
             </Button>
-        </Layout>
+        </SafeLayout>
     )
 }
 
@@ -343,7 +349,7 @@ export default Form10Header
 const getStyles = (screenWidth: number) =>
     StyleSheet.create({
         container: {
-            flex: 1
+            flex: 1,
         },
         scrollContainer: {
             width: '100%',
@@ -351,7 +357,7 @@ const getStyles = (screenWidth: number) =>
             paddingTop: StyleConstants.spacing.s,
         },
         field: {
-            marginBottom: StyleConstants.spacing.m,
+            marginBottom: StyleConstants.spacing.s,
         },
         subtitle: {
             marginBottom: StyleConstants.spacing.s,

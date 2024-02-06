@@ -1,4 +1,4 @@
-const StyleConstants = {
+export const StyleConstants = {
     viewPadding: 8,
     spacing: {
         xs: 4,
@@ -8,5 +8,3 @@ const StyleConstants = {
         xl: 20,
     },
 }
-
-export default StyleConstants
