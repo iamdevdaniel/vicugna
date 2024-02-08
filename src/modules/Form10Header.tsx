@@ -12,6 +12,7 @@ import {
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native'
+import { Form10Header as FormValues } from 'vicugna-types'
 
 import { StyleConstants } from '../common/stylesConstants'
 import CustomInput from '../components/CustomInput'
@@ -41,7 +42,7 @@ const Form10Header: React.FC = () => {
         resolver: yupResolver(validationSchema),
     })
 
-    const onSubmit = (values: unknown) => {
+    const onSubmit = (values: FormValues) => {
         console.log(values)
     }
 
@@ -238,7 +239,7 @@ const Form10Header: React.FC = () => {
                                         keyboardType="numeric"
                                         onBlur={onBlur}
                                         value={value}
-                                        onChangeText={value => onChange(value)}
+                                        onChangeText={onChange}
                                     />
                                 </LabelWithCaption>
                             )}
@@ -260,7 +261,7 @@ const Form10Header: React.FC = () => {
                             <CustomInput
                                 value={value}
                                 onBlur={onBlur}
-                                onChangeText={value => onChange(value)}
+                                onChangeText={onChange}
                             />
                         </LabelWithCaption>
                     )}
@@ -282,7 +283,7 @@ const Form10Header: React.FC = () => {
                                 date={value}
                                 placement={'left end'}
                                 onBlur={onBlur}
-                                onSelect={value => onChange(value)}
+                                onSelect={onChange}
                             />
                         </LabelWithCaption>
                     )}
@@ -302,9 +303,9 @@ const Form10Header: React.FC = () => {
                         >
                             <CustomInput
                                 keyboardType="numeric"
-                                value={value}
+                                value={value as string}
                                 onBlur={onBlur}
-                                onChangeText={value => onChange(value)}
+                                onChangeText={onChange}
                             />
                         </LabelWithCaption>
                     )}
@@ -324,7 +325,7 @@ const Form10Header: React.FC = () => {
                             <CustomInput
                                 value={value}
                                 onBlur={onBlur}
-                                onChangeText={value => onChange(value)}
+                                onChangeText={onChange}
                             />
                         </LabelWithCaption>
                     )}

@@ -11,7 +11,7 @@ const ShearingEventList: React.FC = () => {
     const navigator = useNavigation()
 
     const handlePress = () => {
-        navigator.navigate('Form10Entry')
+        navigator.navigate('Form10Header')
     }
 
     return (

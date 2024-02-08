@@ -129,7 +129,7 @@ const Form10Entry: React.FC = () => {
                         >
                             <CustomInput
                                 value={value}
-                                onChange={val => onChange(val)}
+                                onChangeText={val => onChange(val)}
                                 onBlur={onBlur}
                             />
                         </LabelWithCaption>
@@ -149,7 +149,7 @@ const Form10Entry: React.FC = () => {
                         >
                             <CustomInput
                                 value={value}
-                                onChange={val => onChange(val)}
+                                onChangeText={val => onChange(val)}
                                 onBlur={onBlur}
                             />
                         </LabelWithCaption>
@@ -300,7 +300,7 @@ const Form10Entry: React.FC = () => {
                             <CustomInput
                                 multiline={true}
                                 value={value}
-                                onChange={value => onChange(value)}
+                                onChangeText={value => onChange(value)}
                             />
                         </LabelWithCaption>
                     )}

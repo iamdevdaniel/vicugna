@@ -125,14 +125,14 @@ export const validationSchemaForm10Header = object().shape({
     regional: string().required(errors.shouldRequireOption),
     community: string().required(errors.shouldRequireOption),
     captureSite: string()
-        .test('shouldRequireField', errors.shouldRequireField, value => !!value)
+        .required(errors.shouldRequireField)
         .test(
             'maxLength50',
             errors.shouldLimitCharLength(range.captureSiteNameChars.max),
             value => !!value && value.length <= range.captureSiteNameChars.max,
         ),
     latitude: string()
-        .test('shouldRequireField', errors.shouldRequireField, value => !!value)
+        .required(errors.shouldRequireField)
         .test(
             'isNumber',
             errors.shouldBeANumber,
@@ -142,6 +142,7 @@ export const validationSchemaForm10Header = object().shape({
             regex.isValidCoordinate(value),
         ),
     longitude: string()
+        .required(errors.shouldRequireField)
         .test('shouldRequireField', errors.shouldRequireField, value => !!value)
         .test(
             'isNumber',
@@ -153,7 +154,7 @@ export const validationSchemaForm10Header = object().shape({
         ),
     captureDate: string().required(errors.shouldRequireField),
     herdingAttempts: string()
-        .test('isNotEmpty', errors.shouldRequireField, value => !!value)
+        .required(errors.shouldRequireField)
         .test(
             'isNumber',
             errors.shouldBeANumber,

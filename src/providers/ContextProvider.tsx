@@ -9,8 +9,8 @@ const appContext: IAppContext = {
     user: {
         id: 'dev_dm',
         name: 'Daniel Maydana',
-        role: 'admin'
-    }
+        role: 'admin',
+    },
 }
 
 export const AppContext = React.createContext<IAppContext>(appContext)
