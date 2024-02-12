@@ -20,6 +20,7 @@ import CustomLabel from '../components/CustomLabel'
 import CustomSelect from '../components/CustomSelect'
 import LabelWithCaption from '../components/LabelWithCaption'
 import SafeLayout from '../components/SafeLayout'
+import { createFormHeader } from '../localDB/services/Form10Service'
 import { getOptionListOf } from '../models/arcmv'
 
 import {
@@ -42,8 +43,9 @@ const Form10Header: React.FC = () => {
         resolver: yupResolver(validationSchema),
     })
 
-    const onSubmit = (values: FormValues) => {
-        console.log(values)
+    const onSubmit = async (values: FormValues) => {
+        const id = await createFormHeader(values)
+        console.log('create new header', id)
     }
 
     const theme = useTheme()
@@ -168,7 +170,7 @@ const Form10Header: React.FC = () => {
                                 options={
                                     (communities[selectedDepartment] &&
                                         communities[selectedDepartment][
-                                            selectedRegional
+                                        selectedRegional
                                         ]) ||
                                     []
                                 }

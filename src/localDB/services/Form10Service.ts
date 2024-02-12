@@ -8,7 +8,7 @@ export const initForm10HeaderTable = async () => {
         const done = await createForm10HeaderTable()
         return done
     } catch (error) {
-        console.log(error)
+        console.log('Error when initializing Form10Header table:', error)
     }
 }
 
@@ -20,7 +20,7 @@ export const createFormHeader = async (data: Form10Header) => {
         )
         return userId
     } catch (error) {
-        console.log(error)
+        console.log('Error when creating a new Form10Header:', error)
     }
 }
 
@@ -32,6 +32,6 @@ export const getFormHeaderById = async (headerId: number) => {
         )
         return formHeader
     } catch (error) {
-        console.log(error)
+        console.log('Error when retrieving a Form10Header by id:', error)
     }
 }
