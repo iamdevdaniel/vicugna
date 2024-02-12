@@ -1,18 +1,32 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Datepicker, IndexPath } from '@ui-kitten/components'
+import {
+    Button,
+    Datepicker,
+    Icon,
+    IconProps,
+    IndexPath,
+    TopNavigation,
+    TopNavigationAction,
+    useTheme,
+} from '@ui-kitten/components'
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { StyleSheet, View, Dimensions } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native'
+import { Form10Header as FormValues } from 'vicugna-types'
 
+import { StyleConstants } from '../common/stylesConstants'
 import CustomInput from '../components/CustomInput'
 import CustomLabel from '../components/CustomLabel'
 import CustomSelect from '../components/CustomSelect'
 import LabelWithCaption from '../components/LabelWithCaption'
+import SafeLayout from '../components/SafeLayout'
+import { createFormHeader } from '../localDB/services/Form10Service'
 import { getOptionListOf } from '../models/arcmv'
 
 import {
     initialValuesForm10Header as initialValues,
     validationSchemaForm10Header as validationSchema,
+    fieldLabelsForm10Header as fieldLabels,
 } from './Form10Config'
 
 const Form10Header: React.FC = () => {
@@ -29,11 +43,25 @@ const Form10Header: React.FC = () => {
         resolver: yupResolver(validationSchema),
     })
 
-    const onSubmit = (values: unknown) => {
-        console.log(values)
-        console.log('isValid', isValid)
-        console.log('errors', errors)
+    const onSubmit = async (values: FormValues) => {
+        const id = await createFormHeader(values)
+        console.log('create new header', id)
     }
+
+    const theme = useTheme()
+
+    const BackAction = (): React.ReactElement => (
+        <TopNavigationAction
+            icon={props => (
+                <Icon
+                    {...props}
+                    name="arrow-back"
+                    fill={theme['text-control-color']}
+                />
+            )}
+            onPress={() => console.log('Go back!')}
+        />
+    )
 
     const departments = getOptionListOf.departments()
     const regionals = getOptionListOf.regionalsByDepartment()
@@ -42,15 +70,26 @@ const Form10Header: React.FC = () => {
     const selectedRegional = watch('regional')
 
     return (
-        <View style={styles.container}>
-            <View style={styles.fields}>
+        <SafeLayout>
+            <TopNavigation
+                accessoryLeft={() => <BackAction />}
+                title={() => (
+                    <Text style={{ color: theme['text-control-color'] }}>
+                        Nueva Esquila
+                    </Text>
+                )}
+                style={{
+                    backgroundColor: theme['color-primary-500'],
+                }}
+            />
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Controller
                     name="department"
                     control={control}
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Departamento'}
+                            label={fieldLabels.department}
                             caption={{
                                 category: 'danger',
                                 text: errors.department?.message,
@@ -82,7 +121,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Asociación Regional'}
+                            label={fieldLabels.regional}
                             caption={{
                                 category: 'danger',
                                 text: errors.regional?.message,
@@ -116,7 +155,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Comunidad Manejadora'}
+                            label={fieldLabels.community}
                             caption={{
                                 category: 'danger',
                                 text: errors.community?.message,
@@ -151,7 +190,10 @@ const Form10Header: React.FC = () => {
                 />
 
                 <View style={styles.field}>
-                    <CustomLabel style={styles.subtitle} text={'Coordenadas'} />
+                    <CustomLabel
+                        style={styles.subtitle}
+                        text={fieldLabels.coordiantes.main}
+                    />
                     <View style={styles.coordinates}>
                         <Controller
                             name="latitude"
@@ -164,16 +206,17 @@ const Form10Header: React.FC = () => {
                                         styles.coordinatesField,
                                         styles.firstCoordinate,
                                     ]}
-                                    label={'Latitud'}
+                                    label={fieldLabels.coordiantes.latitude}
                                     caption={{
                                         category: 'danger',
                                         text: errors.latitude?.message,
                                     }}
                                 >
                                     <CustomInput
+                                        keyboardType="numeric"
                                         value={value}
                                         onBlur={onBlur}
-                                        onChange={value => {
+                                        onChangeText={value => {
                                             onChange(value)
                                         }}
                                     />
@@ -188,16 +231,17 @@ const Form10Header: React.FC = () => {
                             }) => (
                                 <LabelWithCaption
                                     style={styles.coordinatesField}
-                                    label={'Longitud'}
+                                    label={fieldLabels.coordiantes.longitude}
                                     caption={{
                                         category: 'danger',
                                         text: errors.longitude?.message,
                                     }}
                                 >
                                     <CustomInput
+                                        keyboardType="numeric"
                                         onBlur={onBlur}
                                         value={value}
-                                        onChange={value => onChange(value)}
+                                        onChangeText={onChange}
                                     />
                                 </LabelWithCaption>
                             )}
@@ -210,7 +254,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label="Sitio de captura"
+                            label={fieldLabels.captureSite}
                             caption={{
                                 category: 'danger',
                                 text: errors.captureSite?.message,
@@ -219,7 +263,7 @@ const Form10Header: React.FC = () => {
                             <CustomInput
                                 value={value}
                                 onBlur={onBlur}
-                                onChange={value => onChange(value)}
+                                onChangeText={onChange}
                             />
                         </LabelWithCaption>
                     )}
@@ -231,7 +275,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label="Fecha de captura"
+                            label={fieldLabels.captureDate}
                             caption={{
                                 category: 'danger',
                                 text: errors.captureDate?.message,
@@ -241,7 +285,7 @@ const Form10Header: React.FC = () => {
                                 date={value}
                                 placement={'left end'}
                                 onBlur={onBlur}
-                                onSelect={value => onChange(value)}
+                                onSelect={onChange}
                             />
                         </LabelWithCaption>
                     )}
@@ -253,16 +297,17 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Número de repeticiones de arreo'}
+                            label={fieldLabels.herdingAttempts}
                             caption={{
                                 category: 'danger',
                                 text: errors.herdingAttempts?.message,
                             }}
                         >
                             <CustomInput
-                                value={value}
+                                keyboardType="numeric"
+                                value={value as string}
                                 onBlur={onBlur}
-                                onChange={value => onChange(value)}
+                                onChangeText={onChange}
                             />
                         </LabelWithCaption>
                     )}
@@ -273,7 +318,7 @@ const Form10Header: React.FC = () => {
                     render={({ field: { value, onChange, onBlur } }) => (
                         <LabelWithCaption
                             style={styles.field}
-                            label={'Codigo de autorización de esquila'}
+                            label={fieldLabels.authorizationCode}
                             caption={{
                                 category: 'danger',
                                 text: errors.authorizationCode?.message,
@@ -282,20 +327,23 @@ const Form10Header: React.FC = () => {
                             <CustomInput
                                 value={value}
                                 onBlur={onBlur}
-                                onChange={value => onChange(value)}
+                                onChangeText={onChange}
                             />
                         </LabelWithCaption>
                     )}
                 />
-            </View>
+            </ScrollView>
             <Button
                 style={styles.button}
                 onPress={handleSubmit(onSubmit)}
                 disabled={!isValid}
+                accessoryRight={(props: IconProps) => (
+                    <Icon {...props} name="save" />
+                )}
             >
                 Guardar
             </Button>
-        </View>
+        </SafeLayout>
     )
 }
 
@@ -304,31 +352,31 @@ export default Form10Header
 const getStyles = (screenWidth: number) =>
     StyleSheet.create({
         container: {
-            width: '100%',
-            height: '100%',
-            padding: 8,
             flex: 1,
-            justifyContent: 'space-between',
+        },
+        scrollContainer: {
+            width: '100%',
+            paddingHorizontal: StyleConstants.spacing.s,
+            paddingTop: StyleConstants.spacing.s,
         },
         field: {
-            marginBottom: 12,
+            marginBottom: StyleConstants.spacing.s,
         },
-        fields: { flex: 1 },
         subtitle: {
-            marginBottom: 8,
+            marginBottom: StyleConstants.spacing.s,
         },
         coordinates: {
             flexDirection: screenWidth <= 500 ? 'column' : 'row',
         },
         coordinatesField: {
             flex: 1,
-            marginBottom: screenWidth <= 500 ? 8 : 0,
+            marginBottom: screenWidth <= 500 ? StyleConstants.spacing.s : 0,
         },
         firstCoordinate: {
-            marginRight: screenWidth > 500 ? 8 : 0,
+            marginRight: screenWidth > 500 ? StyleConstants.spacing.s : 0,
         },
         button: {
-            marginTop: 8,
+            margin: StyleConstants.spacing.s,
         },
     })
 

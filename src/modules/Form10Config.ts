@@ -32,6 +32,36 @@ const regex = {
         value !== undefined && !/\.\d{3,}/.test(value),
 }
 
+export const fieldLabelsForm10Header = {
+    department: '1. Departamento',
+    regional: '2. Asociación Regional',
+    community: '3. Comunidad Manejadora',
+    coordiantes: {
+        main: '4. Coordenadas',
+        latitude: 'Latitud',
+        longitude: 'Longitud',
+    },
+    captureSite: '5. Sitio de captura',
+    captureDate: '6. Fecha de captura',
+    herdingAttempts: '7. Número de repeticiones de arreo',
+    authorizationCode: '8. Codigo de autorización de esquila',
+}
+
+export const fieldLabelsForm10Entry = {
+    sex: '1. Sexo',
+    age: '2. Edad',
+    weight: '3. Peso vivo (kg)',
+    woolLength: '4. Longitud de fibra (cm)',
+    physicalCondition: '5. Condición corporal',
+    pregnancyStatus: '6. Gestación',
+    externalParasites: '7. Parásitos externos',
+    mangeSeverity: '8. Sarna',
+    dandruff: '9. Caspa',
+    canShareWool: '10. Esquila',
+    isAlive: '11. Vicuña muerta',
+    observations: '12. Observaciones',
+}
+
 export const initialValuesForm10Header: Form10Header = {
     department: '',
     regional: '',
@@ -95,14 +125,14 @@ export const validationSchemaForm10Header = object().shape({
     regional: string().required(errors.shouldRequireOption),
     community: string().required(errors.shouldRequireOption),
     captureSite: string()
-        .test('shouldRequireField', errors.shouldRequireField, value => !!value)
+        .required(errors.shouldRequireField)
         .test(
             'maxLength50',
             errors.shouldLimitCharLength(range.captureSiteNameChars.max),
             value => !!value && value.length <= range.captureSiteNameChars.max,
         ),
     latitude: string()
-        .test('shouldRequireField', errors.shouldRequireField, value => !!value)
+        .required(errors.shouldRequireField)
         .test(
             'isNumber',
             errors.shouldBeANumber,
@@ -112,6 +142,7 @@ export const validationSchemaForm10Header = object().shape({
             regex.isValidCoordinate(value),
         ),
     longitude: string()
+        .required(errors.shouldRequireField)
         .test('shouldRequireField', errors.shouldRequireField, value => !!value)
         .test(
             'isNumber',
@@ -123,7 +154,7 @@ export const validationSchemaForm10Header = object().shape({
         ),
     captureDate: string().required(errors.shouldRequireField),
     herdingAttempts: string()
-        .test('isNotEmpty', errors.shouldRequireField, value => !!value)
+        .required(errors.shouldRequireField)
         .test(
             'isNumber',
             errors.shouldBeANumber,
