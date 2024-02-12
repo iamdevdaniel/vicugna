@@ -170,7 +170,7 @@ const Form10Header: React.FC = () => {
                                 options={
                                     (communities[selectedDepartment] &&
                                         communities[selectedDepartment][
-                                        selectedRegional
+                                            selectedRegional
                                         ]) ||
                                     []
                                 }
