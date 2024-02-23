@@ -1,26 +1,54 @@
 import { Button, Icon, IconProps } from '@ui-kitten/components'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
+import { Form10Header } from 'vicugna-types'
 
 import emptyListImage from '../../assets/paper-sheet.svg'
 import SafeLayout from '../components/SafeLayout'
+import ShearingEventListEntry from '../components/ShearingEventListEntry'
 import StateImage from '../components/StateImage'
 import { useNavigation } from '../hooks'
+import { getAllFormHeaders } from '../localDB/services/Form10Service'
 
 const ShearingEventList: React.FC = () => {
     const navigator = useNavigation()
+
+    const [headers, setHeaders] = React.useState<Array<Form10Header>>([])
+
+    const populateList = async () => {
+        const result = await getAllFormHeaders()
+        setHeaders(result)
+    }
+
+    useEffect(() => {
+        populateList()
+    }, [])
 
     const handlePress = () => {
         navigator.navigate('Form10Header')
     }
 
+    const hasEntries = Boolean(headers.length)
     return (
         <SafeLayout style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <StateImage
-                    source={emptyListImage}
-                    label={'Aún no tiene esquilas registradas'}
-                />
+                {!hasEntries ? (
+                    <StateImage
+                        source={emptyListImage}
+                        label={'Aún no tiene esquilas registradas'}
+                    />
+                ) : (
+                    headers.map(header => (
+                        <ShearingEventListEntry
+                            style={styles.listItem}
+                            key={header.id as number}
+                            id={header.id as number}
+                            regional={header.regional}
+                            community={header.community}
+                            captureDate={header.captureDate}
+                        />
+                    ))
+                )}
             </ScrollView>
             <Button
                 style={styles.button}
@@ -47,6 +75,9 @@ const styles = StyleSheet.create({
     },
     button: {
         marginBottom: 0,
+    },
+    listItem: {
+        marginBottom: 8,
     },
 })
 

@@ -42,3 +42,20 @@ export const queryDataFromTableById = (tableName: string, id: number) =>
             )
         })
     })
+
+export const queryAllDataFromTable = <T>(
+    tableName: string,
+): Promise<Array<T>> =>
+    new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                `SELECT * FROM ${tableName}`,
+                [],
+                (_, resultSet) => resolve(resultSet.rows._array as Array<T>),
+                (_, error) => {
+                    reject(error)
+                    return true
+                },
+            )
+        })
+    })
