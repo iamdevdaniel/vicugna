@@ -44,8 +44,7 @@ const Form10Header: React.FC = () => {
     })
 
     const onSubmit = async (values: FormValues) => {
-        const id = await createFormHeader(values)
-        console.log('create new header', id)
+        await createFormHeader(values)
     }
 
     const theme = useTheme()
