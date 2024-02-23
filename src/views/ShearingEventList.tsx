@@ -41,6 +41,7 @@ const ShearingEventList: React.FC = () => {
                     headers.map(header => (
                         <ShearingEventListEntry
                             style={styles.listItem}
+                            key={header.id as number}
                             id={header.id as number}
                             regional={header.regional}
                             community={header.community}
