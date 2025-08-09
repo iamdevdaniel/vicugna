@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "npx biome check ./app --write"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@biomejs/biome": "2.1.4",
     "@types/react": "~19.0.10",
     "typescript": "~5.8.3"
   },
