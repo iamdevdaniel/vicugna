@@ -14,7 +14,8 @@
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.maydanachi.vicugna"
     },
     "web": {
       "bundler": "metro",
@@ -23,11 +24,19 @@
     "plugins": [
       "expo-router",
       [
-        "expo-splash-screen",
+        "@morrowdigital/watermelondb-expo-plugin",
+        { "disableJsi": true }
+      ],
+      [
+        "expo-build-properties",
         {
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "android": {
+            "packagingOptions": {
+              "pickFirst": [
+                "**/libc++_shared.so"
+              ]
+            }
+          }
         }
       ]
     ],
