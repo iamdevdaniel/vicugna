@@ -1,140 +1,230 @@
-import { useState } from "react"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import {
-	Alert,
-	FlatList,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
 	View,
 } from "react-native"
-import { database } from "@/database"
-import type { Note } from "@/database/models/note"
+import * as yup from "yup"
 
-export default function Index() {
-	const [text, setText] = useState("")
-	const [notes, setNotes] = useState<Note[]>([])
+type WoolFormData = {
+	ficha: string
+	pesoFibraBruto: number
+	pesoVellonLimpio: number
+	pesoBraga: number
+	pesoTotalFibra: number
+	pesoFibraPredescerdada: number
+	pesoCerda: number
+	caspa: string
+	nombrePredescerdador: string
+}
 
-	const saveNote = async () => {
-		try {
-			await database.write(async () => {
-				const note = await database
-					.get<Note>("notes")
-					.create((note) => {
-						note.text = text
-					})
-				Alert.alert("Saved!", `Note saved with ID: ${note.id}`)
-			})
-			setText("") // Clear input after saving
-		} catch (error) {
-			Alert.alert("Error", `Failed to save: ${error}`)
-		}
+const schema = yup.object().shape({
+	ficha: yup.string().required("Requerido"),
+	pesoFibraBruto: yup
+		.number()
+		.typeError("Debe ser un número")
+		.positive("Debe ser positivo")
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		)
+		.required("Requerido"),
+	pesoVellonLimpio: yup
+		.number()
+		.typeError("Debe ser un número")
+		.positive("Debe ser positivo")
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		)
+		.required("Requerido"),
+	pesoBraga: yup
+		.number()
+		.typeError("Debe ser un número")
+		.positive("Debe ser positivo")
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		)
+		.required("Requerido"),
+	pesoTotalFibra: yup
+		.number()
+		.typeError("Debe ser un número")
+		.positive("Debe ser positivo")
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		)
+		.required("Requerido"),
+	pesoFibraPredescerdada: yup
+		.number()
+		.typeError("Debe ser un número")
+		.positive("Debe ser positivo")
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		)
+		.required("Requerido"),
+	pesoCerda: yup
+		.number()
+		.typeError("Debe ser un número")
+		.positive("Debe ser positivo")
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		)
+		.required("Requerido"),
+	caspa: yup.string().required("Requerido"),
+	nombrePredescerdador: yup.string().required("Requerido"),
+})
+
+export default function WoolForm() {
+	const {
+		reset,
+		control,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<WoolFormData>({
+		resolver: yupResolver(schema),
+	})
+
+	const onSubmit: SubmitHandler<WoolFormData> = (data) => {
+		// Save data locally
+		console.log(data)
 	}
 
-	const loadNotes = async () => {
-		try {
-			const allNotes = await database.get<Note>("notes").query().fetch()
-			setNotes(allNotes)
-			Alert.alert("Loaded!", `Found ${allNotes.length} notes`)
-		} catch (error) {
-			Alert.alert("Error", `Failed to load: ${error}`)
-		}
+	const clearErrorsAndForm = () => {
+		reset()
+		console.log("Form reset!")
 	}
 
-	const renderNote = ({ item }: { item: Note }) => (
-		<View style={styles.noteItem}>
-			<Text style={styles.noteText}>{item.text}</Text>
-			<Text style={styles.noteId}>ID: {item.id}</Text>
-		</View>
+	const renderInput = (
+		name: keyof WoolFormData,
+		label: string,
+		keyboardType: "default" | "numeric" = "default",
+	) => (
+		<Controller
+			control={control}
+			name={name}
+			render={({ field: { onChange, value } }) => (
+				<>
+					<Text>{label}</Text>
+					<TextInput
+						value={value ? String(value) : ""}
+						onChangeText={onChange}
+						keyboardType={keyboardType}
+						style={styles.input}
+					/>
+					{errors[name] && (
+						<Text style={styles.error}>
+							{errors[name]?.message}
+						</Text>
+					)}
+				</>
+			)}
+		/>
 	)
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>WatermelonDB Test</Text>
-			<TextInput
-				style={styles.input}
-				value={text}
-				onChangeText={setText}
-				placeholder="Type something..."
-				multiline
-			/>
-			<View style={styles.buttonContainer}>
-				<Pressable style={styles.button} onPress={saveNote}>
-					<Text style={styles.buttonText}>Save</Text>
+		<ScrollView
+			style={styles.scroll}
+			contentContainerStyle={styles.container}
+			keyboardShouldPersistTaps="handled"
+		>
+			{renderInput("ficha", "Nr. DE VELLÓN (FICHA)")}
+			{renderInput(
+				"pesoFibraBruto",
+				"PESO FIBRA EN BRUTO (Gramos)",
+				"numeric",
+			)}
+			{renderInput(
+				"pesoVellonLimpio",
+				"PESO VELLÓN LIMPIO (Gramos)",
+				"numeric",
+			)}
+			{renderInput("pesoBraga", "PESO BRAGA (Gramos)", "numeric")}
+			{renderInput(
+				"pesoTotalFibra",
+				"PESO TOTAL FIBRA (Gramos)",
+				"numeric",
+			)}
+			{renderInput(
+				"pesoFibraPredescerdada",
+				"PESO FIBRA PREDESCERDADA (Gramos)",
+				"numeric",
+			)}
+			{renderInput("pesoCerda", "PESO CERDA (Gramos)", "numeric")}
+			{renderInput("caspa", "PRESENCIA DE CASPA")}
+			{renderInput(
+				"nombrePredescerdador",
+				"NOMBRE DEL PREDESCERDADOR (A)",
+			)}
+			<View style={styles.buttonRow}>
+				<Pressable
+					style={[styles.pressable, styles.save]}
+					onPress={handleSubmit(onSubmit)}
+				>
+					<Text style={styles.pressableText}>Guardar</Text>
 				</Pressable>
-				<Pressable style={styles.button} onPress={loadNotes}>
-					<Text style={styles.buttonText}>Load All</Text>
+				<Pressable
+					style={[styles.pressable, styles.clear]}
+					onPress={clearErrorsAndForm}
+				>
+					<Text style={styles.pressableText}>Limpiar</Text>
 				</Pressable>
 			</View>
-			<Text style={styles.listTitle}>Notes ({notes.length}):</Text>
-			<FlatList
-				data={notes}
-				renderItem={renderNote}
-				keyExtractor={(item) => item.id}
-				style={styles.list}
-			/>
-		</View>
+		</ScrollView>
 	)
 }
 
 const styles = StyleSheet.create({
-	container: {
+	scroll: {
 		flex: 1,
-		padding: 20,
-		paddingTop: 60,
 	},
-	title: {
-		fontSize: 24,
+	container: {
+		padding: 20,
+		paddingBottom: 40,
+	},
+	inputGroup: {
+		marginBottom: 16,
+	},
+	label: {
+		marginBottom: 4,
 		fontWeight: "bold",
-		textAlign: "center",
-		marginBottom: 30,
 	},
 	input: {
 		borderWidth: 1,
 		borderColor: "#ccc",
-		padding: 15,
-		borderRadius: 8,
-		fontSize: 16,
-		minHeight: 100,
-		textAlignVertical: "top",
-		marginBottom: 20,
+		padding: 8,
+		borderRadius: 4,
+	},
+	error: {
+		color: "red",
+		marginTop: 4,
 	},
 	buttonContainer: {
+		marginTop: 24,
+		marginBottom: 24,
+	},
+	buttonRow: {
 		flexDirection: "row",
-		justifyContent: "space-around",
-		marginBottom: 20,
+		justifyContent: "space-between",
+		marginTop: 24,
+		marginBottom: 24,
 	},
-	button: {
-		backgroundColor: "#007AFF",
-		paddingVertical: 12,
-		paddingHorizontal: 30,
-		borderRadius: 8,
-	},
-	buttonText: {
-		color: "white",
-		fontSize: 16,
-		fontWeight: "bold",
-	},
-	listTitle: {
-		fontSize: 18,
-		fontWeight: "bold",
-		marginBottom: 10,
-	},
-	list: {
+	pressable: {
 		flex: 1,
+		padding: 12,
+		borderRadius: 6,
+		alignItems: "center",
+		marginHorizontal: 4,
 	},
-	noteItem: {
-		backgroundColor: "#f5f5f5",
-		padding: 15,
-		marginBottom: 10,
-		borderRadius: 8,
+	save: {
+		backgroundColor: "#007AFF",
 	},
-	noteText: {
-		fontSize: 16,
-		marginBottom: 5,
+	clear: {
+		backgroundColor: "#888",
 	},
-	noteId: {
-		fontSize: 12,
-		color: "#666",
+	pressableText: {
+		color: "#fff",
+		fontWeight: "bold",
 	},
 })
