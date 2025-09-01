@@ -96,11 +96,15 @@ export default function WoolForm() {
 		console.log("Form reset!")
 	}
 
-	const renderInput = (
-		name: keyof WoolFormData,
-		label: string,
-		keyboardType: "default" | "numeric" = "default",
-	) => (
+	const FormInput = ({
+		name,
+		label,
+		keyboardType = "default",
+	}: {
+		name: keyof WoolFormData
+		label: string
+		keyboardType?: "default" | "numeric"
+	}) => (
 		<Controller
 			control={control}
 			name={name}
@@ -129,34 +133,42 @@ export default function WoolForm() {
 			contentContainerStyle={styles.container}
 			keyboardShouldPersistTaps="handled"
 		>
-			{renderInput("ficha", "Nr. DE VELLÓN (FICHA)")}
-			{renderInput(
-				"pesoFibraBruto",
-				"PESO FIBRA EN BRUTO (Gramos)",
-				"numeric",
-			)}
-			{renderInput(
-				"pesoVellonLimpio",
-				"PESO VELLÓN LIMPIO (Gramos)",
-				"numeric",
-			)}
-			{renderInput("pesoBraga", "PESO BRAGA (Gramos)", "numeric")}
-			{renderInput(
-				"pesoTotalFibra",
-				"PESO TOTAL FIBRA (Gramos)",
-				"numeric",
-			)}
-			{renderInput(
-				"pesoFibraPredescerdada",
-				"PESO FIBRA PREDESCERDADA (Gramos)",
-				"numeric",
-			)}
-			{renderInput("pesoCerda", "PESO CERDA (Gramos)", "numeric")}
-			{renderInput("caspa", "PRESENCIA DE CASPA")}
-			{renderInput(
-				"nombrePredescerdador",
-				"NOMBRE DEL PREDESCERDADOR (A)",
-			)}
+			<FormInput name="ficha" label="Nr. DE VELLÓN (FICHA)" />
+			<FormInput
+				name="pesoFibraBruto"
+				label="PESO FIBRA EN BRUTO (Gramos)"
+				keyboardType="numeric"
+			/>
+			<FormInput
+				name="pesoVellonLimpio"
+				label="PESO VELLÓN LIMPIO (Gramos)"
+				keyboardType="numeric"
+			/>
+			<FormInput
+				name="pesoBraga"
+				label="PESO BRAGA (Gramos)"
+				keyboardType="numeric"
+			/>
+			<FormInput
+				name="pesoTotalFibra"
+				label="PESO TOTAL FIBRA (Gramos)"
+				keyboardType="numeric"
+			/>
+			<FormInput
+				name="pesoFibraPredescerdada"
+				label="PESO FIBRA PREDESCERDADA (Gramos)"
+				keyboardType="numeric"
+			/>
+			<FormInput
+				name="pesoCerda"
+				label="PESO CERDA (Gramos)"
+				keyboardType="numeric"
+			/>
+			<FormInput name="caspa" label="PRESENCIA DE CASPA" />
+			<FormInput
+				name="nombrePredescerdador"
+				label="NOMBRE DEL PREDESCERDADOR (A)"
+			/>
 			<View style={styles.buttonRow}>
 				<Pressable
 					style={[styles.pressable, styles.save]}
