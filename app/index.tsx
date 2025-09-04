@@ -5,9 +5,10 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
+	// TextInput,
 	View,
 } from "react-native"
+import { TextInput } from "react-native-paper"
 import * as yup from "yup"
 
 type WoolFormData = {
@@ -138,11 +139,7 @@ export default function WoolForm() {
 			contentContainerStyle={styles.container}
 			keyboardShouldPersistTaps="handled"
 		>
-			<FormInput
-				name="ficha"
-				label="Nr. DE VELLÓN"
-				labelSuffix="FICHA"
-			/>
+			<FormInput name="ficha" label="Nr. DE VELLÓN" labelSuffix="FICHA" />
 			<FormInput
 				name="pesoFibraBruto"
 				label="PESO FIBRA EN BRUTO"
@@ -233,8 +230,8 @@ const styles = StyleSheet.create({
 	input: {
 		borderWidth: 1,
 		borderColor: "#ccc",
-		padding: 8,
-		borderRadius: 4,
+		paddingHorizontal: 8,
+		// borderRadius: 8,
 	},
 	error: {
 		color: "red",
