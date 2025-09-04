@@ -99,32 +99,37 @@ export default function WoolForm() {
 	const FormInput = ({
 		name,
 		label,
+		labelSuffix,
 		keyboardType = "default",
 	}: {
 		name: keyof WoolFormData
 		label: string
+		labelSuffix?: string
 		keyboardType?: "default" | "numeric"
 	}) => (
-		<Controller
-			control={control}
-			name={name}
-			render={({ field: { onChange, value } }) => (
-				<>
-					<Text>{label}</Text>
+		<View style={{ marginBottom: 16 }}>
+			<View style={styles.labelRow}>
+				<Text style={styles.label}>{label}</Text>
+				{labelSuffix && (
+					<Text style={styles.labelSuffix}>{labelSuffix}</Text>
+				)}
+			</View>
+			<Controller
+				control={control}
+				name={name}
+				render={({ field: { onChange, value } }) => (
 					<TextInput
 						value={value ? String(value) : ""}
 						onChangeText={onChange}
 						keyboardType={keyboardType}
 						style={styles.input}
 					/>
-					{errors[name] && (
-						<Text style={styles.error}>
-							{errors[name]?.message}
-						</Text>
-					)}
-				</>
+				)}
+			/>
+			{errors[name] && (
+				<Text style={styles.error}>{errors[name].message}</Text>
 			)}
-		/>
+		</View>
 	)
 
 	return (
@@ -133,41 +138,52 @@ export default function WoolForm() {
 			contentContainerStyle={styles.container}
 			keyboardShouldPersistTaps="handled"
 		>
-			<FormInput name="ficha" label="Nr. DE VELLÓN (FICHA)" />
+			<FormInput
+				name="ficha"
+				label="Nr. DE VELLÓN"
+				labelSuffix="FICHA"
+			/>
 			<FormInput
 				name="pesoFibraBruto"
-				label="PESO FIBRA EN BRUTO (Gramos)"
+				label="PESO FIBRA EN BRUTO"
+				labelSuffix="GRAMOS"
 				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoVellonLimpio"
-				label="PESO VELLÓN LIMPIO (Gramos)"
+				label="PESO VELLÓN LIMPIO"
+				labelSuffix="GRAMOS"
 				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoBraga"
-				label="PESO BRAGA (Gramos)"
+				label="PESO BRAGA"
+				labelSuffix="GRAMOS"
 				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoTotalFibra"
-				label="PESO TOTAL FIBRA (Gramos)"
+				label="PESO TOTAL FIBRA"
+				labelSuffix="GRAMOS"
 				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoFibraPredescerdada"
-				label="PESO FIBRA PREDESCERDADA (Gramos)"
+				label="PESO FIBRA PREDESCERDADA"
+				labelSuffix="GRAMOS"
 				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoCerda"
-				label="PESO CERDA (Gramos)"
+				label="PESO CERDA"
+				labelSuffix="GRAMOS"
 				keyboardType="numeric"
 			/>
 			<FormInput name="caspa" label="PRESENCIA DE CASPA" />
 			<FormInput
 				name="nombrePredescerdador"
-				label="NOMBRE DEL PREDESCERDADOR (A)"
+				label="NOMBRE DEL PREDESCERDADOR"
+				labelSuffix="(A)"
 			/>
 			<View style={styles.buttonRow}>
 				<Pressable
@@ -198,9 +214,21 @@ const styles = StyleSheet.create({
 	inputGroup: {
 		marginBottom: 16,
 	},
-	label: {
+	labelRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
 		marginBottom: 4,
+	},
+	label: {
+		flex: 1,
+		textAlign: "left",
 		fontWeight: "bold",
+	},
+	labelSuffix: {
+		textAlign: "right",
+		color: "#888",
+		marginLeft: 8,
 	},
 	input: {
 		borderWidth: 1,

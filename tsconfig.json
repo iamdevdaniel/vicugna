@@ -3,10 +3,11 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "strict": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@components/*": ["app/components/*"],
+      "@screens/*": ["app/screens/*"],
+      "@utils/*": ["app/utils/*"]
     }
   },
   "include": [
