@@ -1,5 +1,5 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb'
-import { Note } from './models/note'
+import { Note } from './note'
 
 export const mySchema = appSchema({
     version: 1,

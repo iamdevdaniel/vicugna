@@ -5,9 +5,10 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["app/components/*"],
-      "@screens/*": ["app/screens/*"],
-      "@utils/*": ["app/utils/*"]
+      "@app": ["./app/index"],
+      "@types": ["./types/index"],
+      "@database": ["./database/index"],
+      "@components": ["./components/index"],
     }
   },
   "include": [
