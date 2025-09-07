@@ -1,15 +1,16 @@
-import { InputSelector } from "@components"
+import { InputSelector, type RadioOption } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
 import type { Form11Data } from "@types"
-import { Controller, type SubmitHandler, useForm } from "react-hook-form"
+import { type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { defaultValues, schema } from "./Form11-utils"
 
 type FormInputProps = {
 	name: keyof Form11Data
 	label: string
-	type: "text" | "number" | "boolean"
+	type: "text" | "number" | "boolean" | "radio"
 	labelSuffix?: string
+	options?: RadioOption[]
 }
 
 export const Form11 = () => {
@@ -37,6 +38,7 @@ export const Form11 = () => {
 		label,
 		labelSuffix,
 		type,
+		options,
 	}) => (
 		<View style={{ marginBottom: 16 }}>
 			<View
@@ -68,16 +70,12 @@ export const Form11 = () => {
 					</Text>
 				)}
 			</View>
-			<Controller
+
+			<InputSelector
+				type={type}
 				control={control}
 				name={name}
-				render={({ field: { onChange, value } }) => (
-					<InputSelector
-						type={type}
-						value={value}
-						onChange={onChange}
-					/>
-				)}
+				options={options}
 			/>
 			{errors[name] && (
 				<Text
@@ -134,13 +132,16 @@ export const Form11 = () => {
 				type="number"
 				labelSuffix="GRAMOS"
 			/>
+			<FormInput name="pesoCerda" label="PESO CERDA" type="number" />
 			<FormInput
-				name="pesoCerda"
-				label="PESO CERDA"
-				type="number"
-				labelSuffix="GRAMOS"
+				name="caspa"
+				type="radio"
+				label="TIENE CASPA"
+				options={[
+					{ label: "SI", value: "SI" },
+					{ label: "NO", value: "NO" },
+				]}
 			/>
-			<FormInput name="caspa" label="PRESENCIA DE CASPA" type="boolean" />
 			<FormInput
 				name="nombrePredescerdador"
 				label="NOMBRE DEL PREDESCERDADOR"

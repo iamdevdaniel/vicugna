@@ -6,6 +6,6 @@ export type Form11Data = {
 	pesoTotalFibra: string
 	pesoFibraPredescerdada: string
 	pesoCerda: string
-	caspa: boolean
+	caspa: "SI" | "NO"
 	nombrePredescerdador: string
 }

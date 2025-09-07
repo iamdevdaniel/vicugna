@@ -1,14 +1,13 @@
 import type React from "react"
 import { View } from "react-native"
-import {
-	RadioButton,
-	type RadioButtonGroupProps,
-	Text,
-} from "react-native-paper"
+import { RadioButton, type RadioButtonGroupProps } from "react-native-paper"
 
 export type RadioOption = { label: string; value: string }
 
-export type RadioGroupProps = Omit<RadioButtonGroupProps, "onValueChange"> & {
+export type RadioGroupProps = Omit<
+	RadioButtonGroupProps,
+	"onValueChange" | "children"
+> & {
 	value: string
 	onChange: (value: string) => void
 	options: RadioOption[]
@@ -20,14 +19,10 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
 	value,
 	onChange,
 	options,
-	label,
 	horizontal = true,
 	...groupProps
 }) => (
 	<View style={{ marginBottom: 16 }}>
-		{label && (
-			<Text style={{ fontWeight: "bold", marginBottom: 8 }}>{label}</Text>
-		)}
 		<RadioButton.Group
 			onValueChange={onChange}
 			value={value}

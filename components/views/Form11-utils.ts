@@ -1,3 +1,4 @@
+import type { Form11Data } from "@types"
 import * as yup from "yup"
 
 const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
@@ -70,11 +71,14 @@ export const schema = yup.object().shape({
 		.test("decimals", "Máximo 2 decimales", (val) =>
 			decimalNumberRegex.test(val || ""),
 		),
-	caspa: yup.boolean().required("Requerido"),
+	caspa: yup
+		.string()
+		.oneOf(["SI", "NO"], "Debe ser SI o NO")
+		.required("Requerido"),
 	nombrePredescerdador: yup.string().required("Requerido"),
 })
 
-export const defaultValues = {
+export const defaultValues: Form11Data = {
 	ficha: "",
 	pesoFibraBruto: "",
 	pesoVellonLimpio: "",
@@ -82,6 +86,6 @@ export const defaultValues = {
 	pesoTotalFibra: "",
 	pesoFibraPredescerdada: "",
 	pesoCerda: "",
-	caspa: false,
+	caspa: "NO",
 	nombrePredescerdador: "",
 }
