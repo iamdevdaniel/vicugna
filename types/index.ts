@@ -1,11 +1,11 @@
 export type Form11Data = {
 	ficha: string
-	pesoFibraBruto: number
-	pesoVellonLimpio: number
-	pesoBraga: number
-	pesoTotalFibra: number
-	pesoFibraPredescerdada: number
-	pesoCerda: number
-	caspa: string
+	pesoFibraBruto: string
+	pesoVellonLimpio: string
+	pesoBraga: string
+	pesoTotalFibra: string
+	pesoFibraPredescerdada: string
+	pesoCerda: string
+	caspa: boolean
 	nombrePredescerdador: string
 }

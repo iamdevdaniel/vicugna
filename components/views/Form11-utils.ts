@@ -1,55 +1,87 @@
 import * as yup from "yup"
 
+const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
+
 export const schema = yup.object().shape({
 	ficha: yup.string().required("Requerido"),
 	pesoFibraBruto: yup
-		.number()
-		.typeError("Debe ser un número")
-		.positive("Debe ser positivo")
-		.test("decimals", "Máximo 2 decimales", (val) =>
-			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		.string()
+		.required("Requerido")
+		.test(
+			"is-number",
+			"Debe ser un número",
+			(val) => !Number.isNaN(Number(val)),
 		)
-		.required("Requerido"),
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			decimalNumberRegex.test(val || ""),
+		),
 	pesoVellonLimpio: yup
-		.number()
-		.typeError("Debe ser un número")
-		.positive("Debe ser positivo")
-		.test("decimals", "Máximo 2 decimales", (val) =>
-			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		.string()
+		.required("Requerido")
+		.test(
+			"is-number",
+			"Debe ser un número",
+			(val) => !Number.isNaN(Number(val)),
 		)
-		.required("Requerido"),
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			decimalNumberRegex.test(val || ""),
+		),
 	pesoBraga: yup
-		.number()
-		.typeError("Debe ser un número")
-		.positive("Debe ser positivo")
-		.test("decimals", "Máximo 2 decimales", (val) =>
-			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		.string()
+		.required("Requerido")
+		.test(
+			"is-number",
+			"Debe ser un número",
+			(val) => !Number.isNaN(Number(val)),
 		)
-		.required("Requerido"),
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			decimalNumberRegex.test(val || ""),
+		),
 	pesoTotalFibra: yup
-		.number()
-		.typeError("Debe ser un número")
-		.positive("Debe ser positivo")
-		.test("decimals", "Máximo 2 decimales", (val) =>
-			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		.string()
+		.required("Requerido")
+		.test(
+			"is-number",
+			"Debe ser un número",
+			(val) => !Number.isNaN(Number(val)),
 		)
-		.required("Requerido"),
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			decimalNumberRegex.test(val || ""),
+		),
 	pesoFibraPredescerdada: yup
-		.number()
-		.typeError("Debe ser un número")
-		.positive("Debe ser positivo")
-		.test("decimals", "Máximo 2 decimales", (val) =>
-			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		.string()
+		.required("Requerido")
+		.test(
+			"is-number",
+			"Debe ser un número",
+			(val) => !Number.isNaN(Number(val)),
 		)
-		.required("Requerido"),
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			decimalNumberRegex.test(val || ""),
+		),
 	pesoCerda: yup
-		.number()
-		.typeError("Debe ser un número")
-		.positive("Debe ser positivo")
-		.test("decimals", "Máximo 2 decimales", (val) =>
-			/^\d+(\.\d{1,2})?$/.test(String(val)),
+		.string()
+		.required("Requerido")
+		.test(
+			"is-number",
+			"Debe ser un número",
+			(val) => !Number.isNaN(Number(val)),
 		)
-		.required("Requerido"),
-	caspa: yup.string().required("Requerido"),
+		.test("decimals", "Máximo 2 decimales", (val) =>
+			decimalNumberRegex.test(val || ""),
+		),
+	caspa: yup.boolean().required("Requerido"),
 	nombrePredescerdador: yup.string().required("Requerido"),
 })
+
+export const defaultValues = {
+	ficha: "",
+	pesoFibraBruto: "",
+	pesoVellonLimpio: "",
+	pesoBraga: "",
+	pesoTotalFibra: "",
+	pesoFibraPredescerdada: "",
+	pesoCerda: "",
+	caspa: false,
+	nombrePredescerdador: "",
+}

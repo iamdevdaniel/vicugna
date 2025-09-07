@@ -1,9 +1,16 @@
+import { InputSelector } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
+import type { Form11Data } from "@types"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, View } from "react-native"
-import { TextInput } from "react-native-paper"
-import { schema } from "./Form11-utils"
-import { type Form11Data } from '@types'
+import { defaultValues, schema } from "./Form11-utils"
+
+type FormInputProps = {
+	name: keyof Form11Data
+	label: string
+	type: "text" | "number" | "boolean"
+	labelSuffix?: string
+}
 
 export const Form11 = () => {
 	const {
@@ -13,6 +20,7 @@ export const Form11 = () => {
 		formState: { errors },
 	} = useForm<Form11Data>({
 		resolver: yupResolver(schema),
+		defaultValues: defaultValues,
 	})
 
 	const onSubmit: SubmitHandler<Form11Data> = (data) => {
@@ -24,16 +32,11 @@ export const Form11 = () => {
 		console.log("Form reset!")
 	}
 
-	const FormInput = ({
+	const FormInput: React.FC<FormInputProps> = ({
 		name,
 		label,
 		labelSuffix,
-		keyboardType = "default",
-	}: {
-		name: keyof Form11Data
-		label: string
-		labelSuffix?: string
-		keyboardType?: "default" | "numeric"
+		type,
 	}) => (
 		<View style={{ marginBottom: 16 }}>
 			<View
@@ -69,15 +72,10 @@ export const Form11 = () => {
 				control={control}
 				name={name}
 				render={({ field: { onChange, value } }) => (
-					<TextInput
-						value={value ? String(value) : ""}
-						onChangeText={onChange}
-						keyboardType={keyboardType}
-						style={{
-							borderWidth: 1,
-							borderColor: "#ccc",
-							paddingHorizontal: 8,
-						}}
+					<InputSelector
+						type={type}
+						value={value}
+						onChange={onChange}
 					/>
 				)}
 			/>
@@ -100,48 +98,53 @@ export const Form11 = () => {
 			contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
 			keyboardShouldPersistTaps="handled"
 		>
-			<FormInput name="ficha" label="Nr. DE VELLÓN" labelSuffix="FICHA" />
+			<FormInput
+				name="ficha"
+				label="Nr. DE VELLÓN"
+				type="text"
+				labelSuffix="FICHA"
+			/>
 			<FormInput
 				name="pesoFibraBruto"
 				label="PESO FIBRA EN BRUTO"
+				type="number"
 				labelSuffix="GRAMOS"
-				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoVellonLimpio"
 				label="PESO VELLÓN LIMPIO"
+				type="number"
 				labelSuffix="GRAMOS"
-				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoBraga"
 				label="PESO BRAGA"
+				type="number"
 				labelSuffix="GRAMOS"
-				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoTotalFibra"
 				label="PESO TOTAL FIBRA"
+				type="number"
 				labelSuffix="GRAMOS"
-				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoFibraPredescerdada"
 				label="PESO FIBRA PREDESCERDADA"
+				type="number"
 				labelSuffix="GRAMOS"
-				keyboardType="numeric"
 			/>
 			<FormInput
 				name="pesoCerda"
 				label="PESO CERDA"
+				type="number"
 				labelSuffix="GRAMOS"
-				keyboardType="numeric"
 			/>
-			<FormInput name="caspa" label="PRESENCIA DE CASPA" />
+			<FormInput name="caspa" label="PRESENCIA DE CASPA" type="boolean" />
 			<FormInput
 				name="nombrePredescerdador"
 				label="NOMBRE DEL PREDESCERDADOR"
-				labelSuffix=""
+				type="text"
 			/>
 			<View
 				style={{
