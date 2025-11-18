@@ -1,111 +1,9 @@
-import { InputSelector, type RadioOption } from "@components"
+import { LabeledInput } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
 import type { Form11Data } from "@types"
-import {
-	FormProvider,
-	type SubmitHandler,
-	useForm,
-	useFormContext,
-} from "react-hook-form"
+import { FormProvider, type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { defaultValues, schema } from "./Form11-utils"
-
-type FormInputProps = {
-	name: keyof Form11Data
-	label: string
-	type: "text" | "number" | "boolean" | "radio"
-	labelSuffix?: string
-	labelPrefix?: string
-	options?: RadioOption[]
-}
-
-const FormInput: React.FC<FormInputProps> = ({
-	name,
-	label,
-	labelPrefix,
-	labelSuffix,
-	type,
-	options,
-}) => {
-	const {
-		control,
-		formState: { errors },
-	} = useFormContext<Form11Data>()
-
-	return (
-		<View style={{ marginBottom: 16 }}>
-			<View
-				style={{
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					marginBottom: 4,
-				}}
-			>
-				{labelPrefix && (
-					<View
-						style={{
-							backgroundColor: errors[name] ? "red" : "blue",
-							width: 24,
-							height: 24,
-							borderRadius: 12,
-							justifyContent: "center",
-							alignItems: "center",
-							marginRight: 8,
-						}}
-					>
-						<Text
-							style={{
-								color: "white",
-								fontSize: 12,
-								fontWeight: "bold",
-							}}
-						>
-							{labelPrefix}
-						</Text>
-					</View>
-				)}
-				<Text
-					style={{
-						flex: 1,
-						textAlign: "left",
-						fontWeight: "bold",
-					}}
-				>
-					{label}
-				</Text>
-				{labelSuffix && (
-					<Text
-						style={{
-							textAlign: "right",
-							color: "#888",
-							marginLeft: 8,
-						}}
-					>
-						{labelSuffix}
-					</Text>
-				)}
-			</View>
-
-			<InputSelector
-				type={type}
-				control={control}
-				name={name}
-				options={options}
-			/>
-			{errors[name] && (
-				<Text
-					style={{
-						color: "red",
-						marginTop: 4,
-					}}
-				>
-					{errors[name].message}
-				</Text>
-			)}
-		</View>
-	)
-}
 
 export const Form11 = () => {
 	const formMethods = useForm<Form11Data>({
@@ -129,55 +27,55 @@ export const Form11 = () => {
 				contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
 				keyboardShouldPersistTaps="handled"
 			>
-				<FormInput
+				<LabeledInput
 					name="ficha"
 					label="Nr. DE VELLÓN"
 					type="text"
 					labelPrefix="1"
 					labelSuffix="FICHA"
 				/>
-				<FormInput
+				<LabeledInput
 					name="pesoFibraBruto"
 					label="PESO FIBRA EN BRUTO"
 					type="number"
 					labelPrefix="2"
 					labelSuffix="GRAMOS"
 				/>
-				<FormInput
+				<LabeledInput
 					name="pesoVellonLimpio"
 					label="PESO VELLÓN LIMPIO"
 					type="number"
 					labelPrefix="3"
 					labelSuffix="GRAMOS"
 				/>
-				<FormInput
+				<LabeledInput
 					name="pesoBraga"
 					label="PESO BRAGA"
 					type="number"
 					labelPrefix="4"
 					labelSuffix="GRAMOS"
 				/>
-				<FormInput
+				<LabeledInput
 					name="pesoTotalFibra"
 					label="PESO TOTAL FIBRA"
 					type="number"
 					labelPrefix="5"
 					labelSuffix="GRAMOS"
 				/>
-				<FormInput
+				<LabeledInput
 					name="pesoFibraPredescerdada"
 					label="PESO FIBRA PREDESCERDADA"
 					type="number"
 					labelPrefix="6"
 					labelSuffix="GRAMOS"
 				/>
-				<FormInput
+				<LabeledInput
 					name="pesoCerda"
 					label="PESO CERDA"
 					type="number"
 					labelPrefix="7"
 				/>
-				<FormInput
+				<LabeledInput
 					name="caspa"
 					type="radio"
 					label="TIENE CASPA"
@@ -187,7 +85,7 @@ export const Form11 = () => {
 						{ label: "NO", value: "NO" },
 					]}
 				/>
-				<FormInput
+				<LabeledInput
 					name="nombrePredescerdador"
 					label="NOMBRE DEL PREDESCERDADOR"
 					type="text"
@@ -218,7 +116,7 @@ export const Form11 = () => {
 								fontWeight: "bold",
 							}}
 						>
-							Guardar
+							GUARDAR
 						</Text>
 					</Pressable>
 					<Pressable
@@ -238,7 +136,7 @@ export const Form11 = () => {
 								fontWeight: "bold",
 							}}
 						>
-							Limpiar
+							LIMPIAR
 						</Text>
 					</Pressable>
 				</View>
