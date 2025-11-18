@@ -17,7 +17,13 @@ export default function RootLayout() {
 
 	return (
 		<PaperProvider theme={theme}>
-			<Stack />
+			<Stack>
+				<Stack.Screen name="index" options={{ headerShown: false }} />
+				<Stack.Screen
+					name="form11"
+					options={{ title: "Nuevo registro formulario 11" }}
+				/>
+			</Stack>
 		</PaperProvider>
 	)
 }

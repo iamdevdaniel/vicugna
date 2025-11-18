@@ -3,7 +3,7 @@ import * as yup from "yup"
 
 const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
 
-export const schema = yup.object().shape({
+export const schemaForm11 = yup.object().shape({
 	ficha: yup.string().required("Requerido"),
 	pesoFibraBruto: yup
 		.string()
@@ -78,7 +78,7 @@ export const schema = yup.object().shape({
 	nombrePredescerdador: yup.string().required("Requerido"),
 })
 
-export const defaultValues: Form11Data = {
+export const defaultValuesForm11: Form11Data = {
 	ficha: "",
 	pesoFibraBruto: "",
 	pesoVellonLimpio: "",

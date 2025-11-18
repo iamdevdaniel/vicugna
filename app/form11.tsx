@@ -1,11 +1,14 @@
-import { LabeledInput } from "@components"
+import {
+	defaultValuesForm11 as defaultValues,
+	LabeledInput,
+	schemaForm11 as schema,
+} from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
 import type { Form11Data } from "@types"
 import { FormProvider, type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, View } from "react-native"
-import { defaultValues, schema } from "./Form11-utils"
 
-export const Form11 = () => {
+export default function Form11() {
 	const formMethods = useForm<Form11Data>({
 		resolver: yupResolver(schema),
 		defaultValues: defaultValues,

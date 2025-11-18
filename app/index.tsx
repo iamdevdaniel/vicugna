@@ -1,5 +1,27 @@
-import { Form11 } from "@components"
+import { useRouter } from "expo-router"
+import { Pressable, Text, View } from "react-native"
 
-export default function App() {
-	return <Form11 />
+export default function Index() {
+	const router = useRouter()
+
+	return (
+		<View
+			style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+		>
+			<Pressable
+				style={{
+					backgroundColor: "#007AFF",
+					padding: 20,
+					borderRadius: 10,
+				}}
+				onPress={() => router.push("/form11")}
+			>
+				<Text
+					style={{ color: "white", fontSize: 18, fontWeight: "bold" }}
+				>
+					CREATE NEW RECORD
+				</Text>
+			</Pressable>
+		</View>
+	)
 }
