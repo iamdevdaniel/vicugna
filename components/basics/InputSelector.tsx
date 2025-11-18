@@ -26,8 +26,6 @@ export const InputSelector = <T extends FieldValues>({
 	options,
 	...props
 }: InputSelectorProps<T>) => {
-	console.log("options", options)
-
 	return (
 		<Controller
 			control={control}
@@ -45,8 +43,8 @@ export const InputSelector = <T extends FieldValues>({
 					case "number":
 						return (
 							<TextInput
-								value={value !== undefined ? String(value) : ""}
-								onChangeText={onChange}
+								value={value || ""}
+								onChangeText={onChange} // Keep it as string
 								keyboardType="numeric"
 								{...(props as TextInputProps)}
 							/>

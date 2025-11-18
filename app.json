@@ -3,6 +3,7 @@
     "name": "vicugna",
     "slug": "vicugna",
     "version": "1.0.0",
+	"icon": ".assets/images/vicugna-logo-day.png",
     "orientation": "portrait",
     "scheme": "vicugna",
     "userInterfaceStyle": "automatic",
