@@ -26,6 +26,12 @@
 			"semicolons":"asNeeded"
 		}
 	},
+	"json": {
+		"formatter": {
+			"indentStyle": "tab",
+			"indentWidth": 4
+		}
+	},
 	"assist": {
 		"enabled": true,
 		"actions": {

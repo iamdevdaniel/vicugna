@@ -8,7 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "npx biome check ./app ./components ./database ./types --write",
+    "lint": "npx biome check ./app ./components ./database ./assets ./types --write",
     "prepare": "husky"
   },
   "dependencies": {
