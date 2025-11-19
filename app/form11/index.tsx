@@ -1,5 +1,5 @@
 import regionales from "@assets/data/regionales.json"
-import { SimpleDropdown as Dropdown } from "@components"
+import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { View } from "react-native"
@@ -11,7 +11,12 @@ type FormData = {
 }
 
 export default function IndexForm11() {
-	const { control, watch, setValue } = useForm<FormData>({
+	const {
+		control,
+		watch,
+		setValue,
+		formState: { errors },
+	} = useForm<FormData>({
 		defaultValues: { departamento: "", regional: "", comunidad: "" },
 	})
 
@@ -68,52 +73,64 @@ export default function IndexForm11() {
 
 	return (
 		<View style={{ flex: 1, padding: 20 }}>
-			<Controller
-				control={control}
-				name="departamento"
-				render={({ field: { onChange, value } }) => (
-					<Dropdown
-						label="Departamento"
-						placeholder="Seleccionar departamento"
-						options={departamentoOptions}
-						value={value}
-						onSelect={onChange}
-						style={{ marginBottom: 16 }}
-					/>
-				)}
-			/>
+			<LabeledInput
+				label="Departamento"
+				labelPrefix="1"
+				error={errors.departamento?.message}
+			>
+				<Controller
+					control={control}
+					name="departamento"
+					render={({ field: { onChange, value } }) => (
+						<Dropdown
+							placeholder="Seleccionar departamento"
+							options={departamentoOptions}
+							value={value}
+							onSelect={onChange}
+						/>
+					)}
+				/>
+			</LabeledInput>
 
-			<Controller
-				control={control}
-				name="regional"
-				render={({ field: { onChange, value } }) => (
-					<Dropdown
-						label="Regional"
-						placeholder="Seleccionar regional"
-						options={regionalOptions}
-						value={value}
-						onSelect={onChange}
-						disabled={!selectedDepartamento}
-						style={{ marginBottom: 16 }}
-					/>
-				)}
-			/>
+			<LabeledInput
+				label="Regional"
+				labelPrefix="2"
+				error={errors.regional?.message}
+			>
+				<Controller
+					control={control}
+					name="regional"
+					render={({ field: { onChange, value } }) => (
+						<Dropdown
+							placeholder="Seleccionar regional"
+							options={regionalOptions}
+							value={value}
+							onSelect={onChange}
+							disabled={!selectedDepartamento}
+						/>
+					)}
+				/>
+			</LabeledInput>
 
-			<Controller
-				control={control}
-				name="comunidad"
-				render={({ field: { onChange, value } }) => (
-					<Dropdown
-						label="Comunidad"
-						placeholder="Seleccionar comunidad"
-						options={comunidadOptions}
-						value={value}
-						onSelect={onChange}
-						disabled={!selectedRegional}
-						style={{ marginBottom: 24 }}
-					/>
-				)}
-			/>
+			<LabeledInput
+				label="Comunidad"
+				labelPrefix="3"
+				error={errors.comunidad?.message}
+			>
+				<Controller
+					control={control}
+					name="comunidad"
+					render={({ field: { onChange, value } }) => (
+						<Dropdown
+							placeholder="Seleccionar comunidad"
+							options={comunidadOptions}
+							value={value}
+							onSelect={onChange}
+							disabled={!selectedRegional}
+						/>
+					)}
+				/>
+			</LabeledInput>
 		</View>
 	)
 }

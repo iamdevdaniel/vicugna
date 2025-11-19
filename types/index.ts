@@ -1,4 +1,16 @@
-export type Form11Data = {
+export type Form11Header = {
+	asociacionRegional: string
+	comunidadManejadora: string
+	sitioCaptura: string
+	fechaCaptura: string
+	codigoAutorizacion: string
+	fechaInicioPredescerdado: string
+	fechaFinPredescerdado: string
+	lugarPredescerdado: string
+	responsablesPredescerdado: string
+}
+
+export type Form11Body = {
 	ficha: string
 	pesoFibraBruto: string
 	pesoVellonLimpio: string

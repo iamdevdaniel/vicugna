@@ -1,29 +1,20 @@
-import { InputSelector, type RadioOption } from "@components"
-import { type FieldValues, type Path, useFormContext } from "react-hook-form"
 import { Text, View } from "react-native"
 
-type LabeledInputProps<T extends FieldValues> = {
-	name: Path<T>
+type LabeledInputProps = {
 	label: string
-	type: "text" | "number" | "boolean" | "radio"
-	labelSuffix?: string
 	labelPrefix?: string
-	options?: RadioOption[]
+	labelSuffix?: string
+	error?: string
+	children: React.ReactNode
 }
 
-export function LabeledInput<T extends FieldValues>({
-	name,
+export function LabeledInput({
 	label,
 	labelPrefix,
 	labelSuffix,
-	type,
-	options,
-}: LabeledInputProps<T>) {
-	const {
-		control,
-		formState: { errors },
-	} = useFormContext<T>()
-
+	error,
+	children,
+}: LabeledInputProps) {
 	return (
 		<View style={{ marginBottom: 16 }}>
 			<View
@@ -37,7 +28,7 @@ export function LabeledInput<T extends FieldValues>({
 				{labelPrefix && (
 					<View
 						style={{
-							backgroundColor: errors[name] ? "red" : "blue",
+							backgroundColor: error ? "red" : "blue",
 							width: 24,
 							height: 24,
 							borderRadius: 12,
@@ -58,11 +49,7 @@ export function LabeledInput<T extends FieldValues>({
 					</View>
 				)}
 				<Text
-					style={{
-						flex: 1,
-						textAlign: "left",
-						fontWeight: "bold",
-					}}
+					style={{ flex: 1, textAlign: "left", fontWeight: "bold" }}
 				>
 					{label}
 				</Text>
@@ -78,22 +65,9 @@ export function LabeledInput<T extends FieldValues>({
 					</Text>
 				)}
 			</View>
-
-			<InputSelector
-				type={type}
-				control={control}
-				name={name}
-				options={options}
-			/>
-			{errors[name] && (
-				<Text
-					style={{
-						color: "red",
-						marginTop: 4,
-					}}
-				>
-					{String(errors[name]?.message)}
-				</Text>
+			{children}
+			{error && (
+				<Text style={{ color: "red", marginTop: 4 }}>{error}</Text>
 			)}
 		</View>
 	)

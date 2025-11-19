@@ -1,20 +1,32 @@
-import { LabeledInput } from "@components"
+import { LabeledInput, RadioGroup } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
-import type { Form11Data } from "@types"
-import { FormProvider, type SubmitHandler, useForm } from "react-hook-form"
-import { Pressable, ScrollView, Text, View } from "react-native"
+import type { Form11Body } from "@types"
 import {
-	defaultValuesForm11 as defaultValues,
-	schemaForm11 as schema,
+	Controller,
+	FormProvider,
+	type SubmitHandler,
+	useForm,
+} from "react-hook-form"
+import { Pressable, ScrollView, Text, View } from "react-native"
+import { TextInput } from "react-native-paper"
+
+import {
+	defaultValuesForm11Body as defaultValues,
+	schemaForm11Body as schema,
 } from "./utils"
 
 export default function NewRegistry() {
-	const formMethods = useForm<Form11Data>({
+	const formMethods = useForm<Form11Body>({
 		resolver: yupResolver(schema),
 		defaultValues: defaultValues,
 	})
 
-	const onSubmit: SubmitHandler<Form11Data> = (data) => {
+	const {
+		control,
+		formState: { errors },
+	} = formMethods
+
+	const onSubmit: SubmitHandler<Form11Body> = (data) => {
 		console.log(data)
 	}
 
@@ -31,69 +43,165 @@ export default function NewRegistry() {
 				keyboardShouldPersistTaps="handled"
 			>
 				<LabeledInput
-					name="ficha"
 					label="Nr. DE VELLÓN"
-					type="text"
 					labelPrefix="1"
 					labelSuffix="FICHA"
-				/>
+					error={errors.ficha?.message}
+				>
+					<Controller
+						control={control}
+						name="ficha"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="pesoFibraBruto"
 					label="PESO FIBRA EN BRUTO"
-					type="number"
 					labelPrefix="2"
 					labelSuffix="GRAMOS"
-				/>
+					error={errors.pesoFibraBruto?.message}
+				>
+					<Controller
+						control={control}
+						name="pesoFibraBruto"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+								keyboardType="numeric"
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="pesoVellonLimpio"
 					label="PESO VELLÓN LIMPIO"
-					type="number"
 					labelPrefix="3"
 					labelSuffix="GRAMOS"
-				/>
+					error={errors.pesoVellonLimpio?.message}
+				>
+					<Controller
+						control={control}
+						name="pesoVellonLimpio"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+								keyboardType="numeric"
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="pesoBraga"
 					label="PESO BRAGA"
-					type="number"
 					labelPrefix="4"
 					labelSuffix="GRAMOS"
-				/>
+					error={errors.pesoBraga?.message}
+				>
+					<Controller
+						control={control}
+						name="pesoBraga"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+								keyboardType="numeric"
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="pesoTotalFibra"
 					label="PESO TOTAL FIBRA"
-					type="number"
 					labelPrefix="5"
 					labelSuffix="GRAMOS"
-				/>
+					error={errors.pesoTotalFibra?.message}
+				>
+					<Controller
+						control={control}
+						name="pesoTotalFibra"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+								keyboardType="numeric"
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="pesoFibraPredescerdada"
 					label="PESO FIBRA PREDESCERDADA"
-					type="number"
 					labelPrefix="6"
 					labelSuffix="GRAMOS"
-				/>
+					error={errors.pesoFibraPredescerdada?.message}
+				>
+					<Controller
+						control={control}
+						name="pesoFibraPredescerdada"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+								keyboardType="numeric"
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="pesoCerda"
 					label="PESO CERDA"
-					type="number"
 					labelPrefix="7"
-				/>
+					error={errors.pesoCerda?.message}
+				>
+					<Controller
+						control={control}
+						name="pesoCerda"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+								keyboardType="numeric"
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="caspa"
-					type="radio"
 					label="TIENE CASPA"
 					labelPrefix="8"
-					options={[
-						{ label: "SI", value: "SI" },
-						{ label: "NO", value: "NO" },
-					]}
-				/>
+					error={errors.caspa?.message}
+				>
+					<Controller
+						control={control}
+						name="caspa"
+						render={({ field }) => (
+							<RadioGroup
+								value={field.value}
+								onChange={field.onChange}
+								options={[
+									{ label: "SI", value: "SI" },
+									{ label: "NO", value: "NO" },
+								]}
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<LabeledInput
-					name="nombrePredescerdador"
 					label="NOMBRE DEL PREDESCERDADOR"
-					type="text"
 					labelPrefix="9"
-				/>
+					error={errors.nombrePredescerdador?.message}
+				>
+					<Controller
+						control={control}
+						name="nombrePredescerdador"
+						render={({ field }) => (
+							<TextInput
+								value={field.value}
+								onChangeText={field.onChange}
+							/>
+						)}
+					/>
+				</LabeledInput>
 				<View
 					style={{
 						flexDirection: "row",
