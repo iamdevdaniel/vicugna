@@ -1,7 +1,7 @@
 import { Stack } from "expo-router"
 import { useColorScheme } from "react-native"
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper"
-import { warm } from "../app/themes"
+import { warm } from "./themes"
 
 export default function RootLayout() {
 	const lightTheme = {

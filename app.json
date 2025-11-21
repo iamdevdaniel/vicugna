@@ -45,7 +45,9 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {},
+      "router": {
+		"ignoreFiles": ["**/*utils*", "**/*theme*", "**/util*"]
+	  },
       "eas": {
         "projectId": "a0de7245-1ed6-44cd-9495-86ecd499a78f"
       }
