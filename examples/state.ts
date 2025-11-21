@@ -1,7 +1,7 @@
-// import type { Form11Body } from "@types"
+// import type { Form11Record } from "@types"
 // import { create } from "zustand"
 
-// const initialFormState: Form11Body = {
+// const initialFormState: Form11Record = {
 //     ficha: "",
 //     pesoFibraBruto: "",
 //     pesoVellonLimpio: "",
@@ -14,15 +14,15 @@
 // }
 
 // type FormState = {
-// 	data: Form11Body
+// 	data: Form11Record
 // 	isDirty: boolean
 // 	showFade: boolean
 // }
 
 // type FormActions = {
-// 	setField: <K extends keyof Form11Body>(
+// 	setField: <K extends keyof Form11Record>(
 // 		key: K,
-// 		value: Form11Body[K],
+// 		value: Form11Record[K],
 // 	) => void
 // 	reset: () => void
 // 	setDirty: (dirty: boolean) => void

@@ -1,8 +1,10 @@
 import { useRouter } from "expo-router"
 import { Pressable, Text, View } from "react-native"
+import { enGB, registerTranslation } from "react-native-paper-dates"
 
 export default function Index() {
 	const router = useRouter()
+	registerTranslation("en-GB", enGB)
 
 	return (
 		<View
