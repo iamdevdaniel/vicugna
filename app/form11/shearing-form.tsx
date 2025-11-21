@@ -3,10 +3,13 @@ import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import type { Form11Shearing } from "@types"
+import {
+	defaultValuesForm11Shearing,
+	schemaForm11Shearing,
+} from "@utils/form11-schemas"
 import { useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
-import { defaultValuesForm11Shearing, schemaForm11Shearing } from "./utils"
 
 export default function ShearingForm() {
 	const {

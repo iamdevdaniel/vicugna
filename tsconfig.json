@@ -8,6 +8,7 @@
       "@app/*": ["./app/*"],
       "@types": ["./types/index"],
       "@assets/*": ["./assets/*"],
+      "@utils/*": ["./utils/*"],
       "@database": ["./database/index"],
       "@components": ["./components/index"],
     }

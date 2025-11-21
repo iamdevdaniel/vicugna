@@ -1,3 +1,21 @@
+export enum SyncStatus {
+	Unsynced = "unsynced",
+	Synced = "synced",
+	Failed = "failed",
+}
+
+export type SyncState = {
+	status: SyncStatus
+	timestamp: number
+	errorMessage?: string
+}
+
+export type ShearingRecord = {
+	id: string
+	data: Form11Shearing
+	sync: SyncState
+}
+
 export type Form11Shearing = {
 	departamento: string
 	asociacionRegional: string

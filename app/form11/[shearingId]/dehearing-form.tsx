@@ -1,10 +1,10 @@
-import {
-	defaultValuesForm11Dehearing,
-	schemaForm11Dehearing,
-} from "@app/form11/utils"
 import { LabeledInput } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
 import type { Form11Dehearing } from "@types"
+import {
+	defaultValuesForm11Dehearing,
+	schemaForm11Dehearing,
+} from "@utils/form11-schemas"
 import { Controller, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
 

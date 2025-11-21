@@ -1,10 +1,10 @@
-import {
-	defaultValuesForm11Record as defaultValues,
-	schemaForm11Record as schema,
-} from "@app/form11/utils"
 import { LabeledInput, RadioGroup } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
 import type { Form11Record } from "@types"
+import {
+	defaultValuesForm11Record as defaultValues,
+	schemaForm11Record as schema,
+} from "@utils/form11-schemas"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { TextInput } from "react-native-paper"
