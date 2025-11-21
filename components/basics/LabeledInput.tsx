@@ -67,7 +67,7 @@ export function LabeledInput({
 			</View>
 			{children}
 			{error && (
-				<Text style={{ color: "red", marginTop: 4 }}>{error}</Text>
+				<Text style={{ color: "red", marginTop: 2 }}>{error}</Text>
 			)}
 		</View>
 	)

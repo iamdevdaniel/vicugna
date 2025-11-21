@@ -1,5 +1,3 @@
-// components/basics/SimpleDropdown.tsx
-
 import { MaterialIcons } from "@expo/vector-icons"
 import type React from "react"
 import { useState } from "react"
@@ -108,7 +106,7 @@ export const SimpleDropdown: React.FC<SimpleDropdownProps> = ({
 
 const styles = StyleSheet.create({
 	container: {
-		marginBottom: 16,
+		marginBottom: 2,
 	},
 	label: {
 		fontSize: 16,
