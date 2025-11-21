@@ -1,11 +1,11 @@
 import regionales from "@assets/data/regionales.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
 import { yupResolver } from "@hookform/resolvers/yup"
+import DateTimePicker from "@react-native-community/datetimepicker"
 import type { Form11Shearing } from "@types"
 import { useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
-import { DatePickerModal } from "react-native-paper-dates"
 import { defaultValuesForm11Shearing, schemaForm11Shearing } from "./utils"
 
 export default function ShearingForm() {
@@ -21,8 +21,6 @@ export default function ShearingForm() {
 		resolver: yupResolver(schemaForm11Shearing),
 	})
 
-	const [datePickerOpen, setDatePickerOpen] = useState(false)
-
 	const [regionalOptions, setRegionalOptions] = useState<
 		Array<{ label: string; value: string }>
 	>([])
@@ -37,6 +35,8 @@ export default function ShearingForm() {
 		label: key,
 		value: key,
 	}))
+
+	const [datePickerOpen, setDatePickerOpen] = useState(false)
 
 	useEffect(() => {
 		if (selectedDepartamento) {
@@ -191,31 +191,35 @@ export default function ShearingForm() {
 								</Text>
 							</Pressable>
 
-							<DatePickerModal
-								locale="en-GB"
-								mode="single"
-								visible={datePickerOpen}
-								onDismiss={() => setDatePickerOpen(false)}
-								date={
-									value
-										? new Date(
-												value
-													.split("/")
-													.reverse()
-													.join("-"),
+							{datePickerOpen && (
+								<DateTimePicker
+									value={
+										value
+											? new Date(
+													value
+														.split("/")
+														.reverse()
+														.join("-"),
+												)
+											: new Date()
+									}
+									mode="date"
+									display="default"
+									onChange={(event, selectedDate) => {
+										setDatePickerOpen(false)
+										if (
+											event.type === "set" &&
+											selectedDate
+										) {
+											onChange(
+												selectedDate.toLocaleDateString(
+													"es-ES",
+												),
 											)
-										: undefined
-								}
-								onConfirm={(params) => {
-									setDatePickerOpen(false)
-									onChange(
-										params.date?.toLocaleDateString(
-											"es-ES",
-										) || "",
-									)
-								}}
-								presentationStyle="pageSheet"
-							/>
+										}
+									}}
+								/>
+							)}
 						</>
 					)}
 				/>
