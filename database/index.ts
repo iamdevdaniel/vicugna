@@ -1,14 +1,25 @@
 import { Database } from "@nozbe/watermelondb"
 import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite"
-import { Note } from "./note"
-import { mySchema } from "./schema"
+import {
+	Form11DehearingModel,
+	Form11RecordModel,
+	Form11ShearingModel,
+	Form11StorageModel,
+	SyncMetaModel,
+} from "./models"
+import { appDbSchema } from "./schemas"
 
 const adapter = new SQLiteAdapter({
-	schema: mySchema,
-	dbName: "vicugna.db",
+	schema: appDbSchema,
 })
 
 export const database = new Database({
 	adapter,
-	modelClasses: [Note],
+	modelClasses: [
+		Form11ShearingModel,
+		Form11DehearingModel,
+		Form11RecordModel,
+		SyncMetaModel,
+		Form11StorageModel,
+	],
 })

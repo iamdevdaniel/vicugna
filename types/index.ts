@@ -1,19 +1,23 @@
-export enum SyncStatus {
+export enum SyncStage {
 	Unsynced = "unsynced",
 	Synced = "synced",
 	Failed = "failed",
 }
 
-export type SyncState = {
-	status: SyncStatus
+export type SyncMeta = {
+	status: SyncStage
 	timestamp: number
 	errorMessage?: string
 }
 
-export type ShearingRecord = {
+export type Form11Storage = {
 	id: string
-	data: Form11Shearing
-	sync: SyncState
+	sync: SyncMeta
+	formData: {
+		shearing: Form11Shearing
+		dehearing: Form11Dehearing
+		record: Form11Record[]
+	}
 }
 
 export type Form11Shearing = {
