@@ -35,7 +35,7 @@ export class Form11RecordModel extends Model {
 
 export class SyncMetaModel extends Model {
 	static table = "sync_meta"
-	@text("status") status!: "unsynced" | "synced" | "failed"
+	@text("stage") stage!: "unsynced" | "synced" | "failed"
 	@field("timestamp") timestamp!: number
 	@text("errorMessage") errorMessage?: string
 }

@@ -41,7 +41,7 @@ export const appDbSchema = appSchema({
 		tableSchema({
 			name: "sync_meta",
 			columns: [
-				{ name: "status", type: "string" },
+				{ name: "stage", type: "string" },
 				{ name: "timestamp", type: "number" },
 				{ name: "errorMessage", type: "string", isOptional: true },
 			],

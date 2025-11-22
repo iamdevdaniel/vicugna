@@ -1,6 +1,6 @@
 import { LabeledInput, RadioGroup } from "@components"
+import type { Form11Record } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import type { Form11Record } from "@types"
 import {
 	defaultValuesForm11Record as defaultValues,
 	schemaForm11Record as schema,

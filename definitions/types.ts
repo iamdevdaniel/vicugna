@@ -1,26 +1,21 @@
-export enum SyncStage {
-	Unsynced = "unsynced",
-	Synced = "synced",
-	Failed = "failed",
-}
+import type { SyncStage } from "./enums"
 
 export type SyncMeta = {
-	status: SyncStage
+	stage: SyncStage
 	timestamp: number
 	errorMessage?: string
 }
 
 export type Form11Storage = {
-	id: string
+	id?: string
 	sync: SyncMeta
-	formData: {
-		shearing: Form11Shearing
-		dehearing: Form11Dehearing
-		record: Form11Record[]
-	}
+	shearing: Form11Shearing
+	dehearing: Form11Dehearing
+	records: Form11Record[]
 }
 
 export type Form11Shearing = {
+	id?: string
 	departamento: string
 	asociacionRegional: string
 	comunidadManejadora: string
@@ -30,6 +25,7 @@ export type Form11Shearing = {
 }
 
 export type Form11Dehearing = {
+	id?: string
 	fechaInicioPredescerdado: string
 	fechaFinPredescerdado: string
 	lugarPredescerdado: string
@@ -37,6 +33,7 @@ export type Form11Dehearing = {
 }
 
 export type Form11Record = {
+	id?: string
 	ficha: string
 	pesoFibraBruto: string
 	pesoVellonLimpio: string

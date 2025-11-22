@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@app/*": ["./app/*"],
-      "@types": ["./types/index"],
+      "@definitions/*": ["definitions/*"],
       "@assets/*": ["./assets/*"],
       "@utils/*": ["./utils/*"],
       "@database": ["./database/index"],

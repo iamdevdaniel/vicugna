@@ -1,8 +1,9 @@
 import regionales from "@assets/data/regionales.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
+import { createShearingForm } from "@database"
+import type { Form11Shearing } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
-import type { Form11Shearing } from "@types"
 import {
 	defaultValuesForm11Shearing,
 	schemaForm11Shearing,
@@ -77,8 +78,8 @@ export default function ShearingForm() {
 		}
 	}, [selectedRegional, selectedDepartamento, setValue])
 
-	const onSubmit: SubmitHandler<Form11Shearing> = (data) => {
-		console.log(data)
+	const onSubmit: SubmitHandler<Form11Shearing> = async (data) => {
+		await createShearingForm(data)
 	}
 
 	return (

@@ -1,6 +1,6 @@
 import { LabeledInput } from "@components"
+import type { Form11Dehearing } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import type { Form11Dehearing } from "@types"
 import {
 	defaultValuesForm11Dehearing,
 	schemaForm11Dehearing,
