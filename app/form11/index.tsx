@@ -2,7 +2,8 @@ import { readAllShearingForms } from "@database"
 import type { Form11Storage } from "@definitions/types"
 import { router, useFocusEffect } from "expo-router"
 import { useState } from "react"
-import { Pressable, Text, View } from "react-native"
+import { Text, View } from "react-native"
+import { Button } from "react-native-paper"
 
 export default function Form11Home() {
 	const handleNewShearing = () => {
@@ -17,22 +18,23 @@ export default function Form11Home() {
 
 	return (
 		<View style={{ flex: 1, padding: 20 }}>
-			<Pressable
-				style={{
-					backgroundColor: "#007AFF",
-					padding: 16,
-					borderRadius: 8,
-					alignItems: "center",
-					marginBottom: 20,
-				}}
+			<Button
+				mode="contained"
 				onPress={handleNewShearing}
+				style={{
+					marginBottom: 20,
+					borderRadius: 8,
+				}}
+				contentStyle={{
+					paddingVertical: 8,
+				}}
+				labelStyle={{
+					fontSize: 16,
+					fontWeight: "bold",
+				}}
 			>
-				<Text
-					style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}
-				>
-					+ NUEVA ESQUILA
-				</Text>
-			</Pressable>
+				+ NUEVA ESQUILA
+			</Button>
 
 			{forms.length === 0 ? (
 				<View

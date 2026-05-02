@@ -10,7 +10,15 @@ import {
 } from "@utils/form11-schemas"
 import { useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
+import {
+	KeyboardAvoidingView,
+	Pressable,
+	ScrollView,
+	Text,
+	TextInput,
+	View,
+} from "react-native"
+import { Button } from "react-native-paper"
 
 export default function ShearingForm() {
 	const {
@@ -18,9 +26,10 @@ export default function ShearingForm() {
 		watch,
 		setValue,
 		reset,
-		formState: { errors },
+		formState: { errors, isValid },
 		handleSubmit,
 	} = useForm<Form11Shearing>({
+		mode: "onChange",
 		defaultValues: defaultValuesForm11Shearing,
 		resolver: yupResolver(schemaForm11Shearing),
 	})
@@ -83,103 +92,85 @@ export default function ShearingForm() {
 	}
 
 	return (
-		<ScrollView
+		<KeyboardAvoidingView
 			style={{ flex: 1 }}
-			contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
-			keyboardShouldPersistTaps="handled"
+			behavior={"height"}
+			keyboardVerticalOffset={100}
 		>
-			<LabeledInput
-				label="Departamento"
-				labelPrefix="1"
-				error={errors.departamento?.message}
+			<ScrollView
+				style={{ flex: 1 }}
+				contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+				keyboardShouldPersistTaps="handled"
 			>
-				<Controller
-					control={control}
-					name="departamento"
-					render={({ field: { onChange, value } }) => (
-						<Dropdown
-							placeholder="Seleccionar departamento"
-							options={departamentoOptions}
-							value={value}
-							onSelect={onChange}
-						/>
-					)}
-				/>
-			</LabeledInput>
-			<LabeledInput
-				label="Asociación Regional"
-				labelPrefix="2"
-				error={errors.asociacionRegional?.message}
-			>
-				<Controller
-					control={control}
-					name="asociacionRegional"
-					render={({ field: { onChange, value } }) => (
-						<Dropdown
-							placeholder="Seleccionar regional"
-							options={regionalOptions}
-							value={value}
-							onSelect={onChange}
-							disabled={!selectedDepartamento}
-						/>
-					)}
-				/>
-			</LabeledInput>
-			<LabeledInput
-				label="Comunidad Manejadora"
-				labelPrefix="3"
-				error={errors.comunidadManejadora?.message}
-			>
-				<Controller
-					control={control}
-					name="comunidadManejadora"
-					render={({ field: { onChange, value } }) => (
-						<Dropdown
-							placeholder="Seleccionar comunidad"
-							options={comunidadOptions}
-							value={value}
-							onSelect={onChange}
-							disabled={!selectedRegional}
-						/>
-					)}
-				/>
-			</LabeledInput>
-			<LabeledInput
-				label="Sitio de Captura"
-				labelPrefix="4"
-				error={errors.sitioCaptura?.message}
-			>
-				<Controller
-					control={control}
-					name="sitioCaptura"
-					render={({ field: { onChange, value } }) => (
-						<TextInput
-							placeholder="Ingrese sitio de captura"
-							value={value}
-							onChangeText={onChange}
-							style={{
-								borderWidth: 1,
-								borderColor: "#ccc",
-								borderRadius: 4,
-								padding: 12,
-								backgroundColor: "#fff",
-							}}
-						/>
-					)}
-				/>
-			</LabeledInput>
-			<LabeledInput
-				label="Fecha de Captura"
-				labelPrefix="5"
-				error={errors.fechaCaptura?.message}
-			>
-				<Controller
-					control={control}
-					name="fechaCaptura"
-					render={({ field: { onChange, value } }) => (
-						<>
-							<Pressable
-								onPress={() => setDatePickerOpen(true)}
+				<LabeledInput
+					label="Departamento"
+					labelPrefix="1"
+					error={errors.departamento?.message}
+				>
+					<Controller
+						control={control}
+						name="departamento"
+						render={({ field: { onChange, value } }) => (
+							<Dropdown
+								placeholder="Seleccionar departamento"
+								options={departamentoOptions}
+								value={value}
+								onSelect={onChange}
+							/>
+						)}
+					/>
+				</LabeledInput>
+				<LabeledInput
+					label="Asociación Regional"
+					labelPrefix="2"
+					error={errors.asociacionRegional?.message}
+				>
+					<Controller
+						control={control}
+						name="asociacionRegional"
+						render={({ field: { onChange, value } }) => (
+							<Dropdown
+								placeholder="Seleccionar regional"
+								options={regionalOptions}
+								value={value}
+								onSelect={onChange}
+								disabled={!selectedDepartamento}
+							/>
+						)}
+					/>
+				</LabeledInput>
+				<LabeledInput
+					label="Comunidad Manejadora"
+					labelPrefix="3"
+					error={errors.comunidadManejadora?.message}
+				>
+					<Controller
+						control={control}
+						name="comunidadManejadora"
+						render={({ field: { onChange, value } }) => (
+							<Dropdown
+								placeholder="Seleccionar comunidad"
+								options={comunidadOptions}
+								value={value}
+								onSelect={onChange}
+								disabled={!selectedRegional}
+							/>
+						)}
+					/>
+				</LabeledInput>
+				<LabeledInput
+					label="Sitio de Captura"
+					labelPrefix="4"
+					error={errors.sitioCaptura?.message}
+				>
+					<Controller
+						control={control}
+						name="sitioCaptura"
+						render={({ field: { onChange, value } }) => (
+							<TextInput
+								placeholder="Ingrese sitio de captura"
+								value={value}
+								onChangeText={onChange}
 								style={{
 									borderWidth: 1,
 									borderColor: "#ccc",
@@ -187,120 +178,135 @@ export default function ShearingForm() {
 									padding: 12,
 									backgroundColor: "#fff",
 								}}
-							>
-								<Text
-									style={{ color: value ? "#000" : "#999" }}
-								>
-									{value || "DD/MM/YYYY"}
-								</Text>
-							</Pressable>
-
-							{datePickerOpen && (
-								<DateTimePicker
-									value={
-										value
-											? new Date(
-													value
-														.split("/")
-														.reverse()
-														.join("-"),
-												)
-											: new Date()
-									}
-									mode="date"
-									display="default"
-									onChange={(event, selectedDate) => {
-										setDatePickerOpen(false)
-										if (
-											event.type === "set" &&
-											selectedDate
-										) {
-											onChange(
-												selectedDate.toLocaleDateString(
-													"es-ES",
-												),
-											)
-										}
+							/>
+						)}
+					/>
+				</LabeledInput>
+				<LabeledInput
+					label="Fecha de Captura"
+					labelPrefix="5"
+					error={errors.fechaCaptura?.message}
+				>
+					<Controller
+						control={control}
+						name="fechaCaptura"
+						render={({ field: { onChange, value } }) => (
+							<>
+								<Pressable
+									onPress={() => setDatePickerOpen(true)}
+									style={{
+										borderWidth: 1,
+										borderColor: "#ccc",
+										borderRadius: 4,
+										padding: 12,
+										backgroundColor: "#fff",
 									}}
-								/>
-							)}
-						</>
-					)}
-				/>
-			</LabeledInput>
-			<LabeledInput
-				label="Código de Autorización"
-				labelPrefix="6"
-				error={errors.codigoAutorizacion?.message}
-			>
-				<Controller
-					control={control}
-					name="codigoAutorizacion"
-					render={({ field: { onChange, value } }) => (
-						<TextInput
-							placeholder="Ingrese código"
-							value={value}
-							onChangeText={onChange}
-							style={{
-								borderWidth: 1,
-								borderColor: "#ccc",
-								borderRadius: 4,
-								padding: 12,
-								backgroundColor: "#fff",
+								>
+									<Text
+										style={{
+											color: value ? "#000" : "#999",
+										}}
+									>
+										{value || "DD/MM/YYYY"}
+									</Text>
+								</Pressable>
+
+								{datePickerOpen && (
+									<DateTimePicker
+										value={
+											value
+												? new Date(
+														value
+															.split("/")
+															.reverse()
+															.join("-"),
+													)
+												: new Date()
+										}
+										mode="date"
+										display="default"
+										onChange={(event, selectedDate) => {
+											setDatePickerOpen(false)
+											if (
+												event.type === "set" &&
+												selectedDate
+											) {
+												onChange(
+													selectedDate.toLocaleDateString(
+														"es-ES",
+													),
+												)
+											}
+										}}
+									/>
+								)}
+							</>
+						)}
+					/>
+				</LabeledInput>
+				<LabeledInput
+					label="Código de Autorización"
+					labelPrefix="6"
+					error={errors.codigoAutorizacion?.message}
+				>
+					<Controller
+						control={control}
+						name="codigoAutorizacion"
+						render={({ field: { onChange, value } }) => (
+							<TextInput
+								placeholder="Ingrese código"
+								value={value}
+								onChangeText={onChange}
+								style={{
+									borderWidth: 1,
+									borderColor: "#ccc",
+									borderRadius: 4,
+									padding: 12,
+									backgroundColor: "#fff",
+								}}
+							/>
+						)}
+					/>
+				</LabeledInput>
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "space-between",
+						marginTop: 24,
+						marginBottom: 24,
+					}}
+				>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							alignItems: "center",
+							width: "100%",
+							marginTop: 24,
+							marginBottom: 24,
+						}}
+					>
+						<Button
+							mode="contained"
+							onPress={handleSubmit(onSubmit)}
+							disabled={!isValid}
+							style={{ flex: 1, marginHorizontal: 4 }}
+						>
+							GUARDAR
+						</Button>
+						<Button
+							mode="outlined"
+							onPress={() => {
+								console.log("cleaned")
+								reset()
 							}}
-						/>
-					)}
-				/>
-			</LabeledInput>
-			<View
-				style={{
-					flexDirection: "row",
-					justifyContent: "space-between",
-					marginTop: 24,
-					marginBottom: 24,
-				}}
-			>
-				<Pressable
-					style={{
-						flex: 1,
-						padding: 12,
-						borderRadius: 6,
-						alignItems: "center",
-						marginHorizontal: 4,
-						backgroundColor: "#007AFF",
-					}}
-					onPress={handleSubmit(onSubmit)}
-				>
-					<Text
-						style={{
-							color: "#fff",
-							fontWeight: "bold",
-						}}
-					>
-						GUARDAR
-					</Text>
-				</Pressable>
-				<Pressable
-					style={{
-						flex: 1,
-						padding: 12,
-						borderRadius: 6,
-						alignItems: "center",
-						marginHorizontal: 4,
-						backgroundColor: "#888",
-					}}
-					onPress={() => reset()}
-				>
-					<Text
-						style={{
-							color: "#fff",
-							fontWeight: "bold",
-						}}
-					>
-						LIMPIAR
-					</Text>
-				</Pressable>
-			</View>
-		</ScrollView>
+							style={{ flex: 1, marginHorizontal: 4 }}
+						>
+							<Text>LIMPIAR</Text>
+						</Button>
+					</View>
+				</View>
+			</ScrollView>
+		</KeyboardAvoidingView>
 	)
 }
