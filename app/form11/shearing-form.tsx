@@ -88,7 +88,13 @@ export default function ShearingForm() {
 	}, [selectedRegional, selectedDepartamento, setValue])
 
 	const onSubmit: SubmitHandler<Form11Shearing> = async (data) => {
-		await createShearingForm(data)
+		try {
+			await createShearingForm(data)
+			console.log("Form saved successfully!", data)
+			reset()
+		} catch (error) {
+			console.error("Error saving form:", error)
+		}
 	}
 
 	return (
