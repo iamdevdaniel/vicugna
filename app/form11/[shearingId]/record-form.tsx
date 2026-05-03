@@ -9,6 +9,7 @@ import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { TextInput } from "react-native-paper"
 
+// Route: /form11/[shearingId]/record-form
 export default function RecordForm() {
 	const {
 		control,

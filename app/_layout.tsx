@@ -1,7 +1,7 @@
+import { warm } from "@utils/themes"
 import { Stack } from "expo-router"
 import { useColorScheme } from "react-native"
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper"
-import { warm } from "./themes"
 
 export default function RootLayout() {
 	const lightTheme = {
@@ -20,7 +20,7 @@ export default function RootLayout() {
 			<Stack>
 				<Stack.Screen name="index" options={{ headerShown: false }} />
 				<Stack.Screen
-					name="form11"
+					name="form11/index"
 					options={{ title: "Nuevo registro formulario 11" }}
 				/>
 			</Stack>
