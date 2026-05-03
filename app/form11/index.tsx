@@ -1,35 +1,15 @@
-import regionales from "@assets/data/regionales.json"
 import { readAllShearingForms } from "@database"
-import type { Form11Shearing, Form11Storage } from "@definitions/types"
+import type { Form11Storage } from "@definitions/types"
 import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import { Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
-
-const getRegionalName = (form: Form11Shearing): string => {
-	return (
-		regionales[
-			form.departamento as keyof typeof regionales
-		].regionales.find((r) => r.id === form.asociacionRegional)?.nombre ||
-		"NA"
-	)
-}
-
-const getCommunityName = (form: Form11Shearing): string => {
-	const departamento =
-		regionales[form.departamento as keyof typeof regionales]
-	if (!departamento) return "NA"
-	const regional = departamento.regionales.find((r) =>
-		r.comunidades.some((c) => c.id === form.comunidadManejadora),
-	)
-	if (!regional) return "NA"
-	const comunidad = regional.comunidades.find(
-		(c) => c.id === form.comunidadManejadora,
-	)
-	return comunidad?.nombre || "NA"
-}
+import { getRegionalName, getCommunityName } from "@utils/regional-lookup"
 
 export default function Form11Home() {
+
+	const theme = useTheme()
+
 	const handleNewShearing = () => {
 		router.push("/form11/shearing-form")
 	}
@@ -41,10 +21,6 @@ export default function Form11Home() {
 			readAllShearingForms().then(setForms)
 		}, []),
 	)
-
-	console.log("-----------")
-
-	const theme = useTheme()
 
 	return (
 		<View style={{ flex: 1, padding: 20 }}>
