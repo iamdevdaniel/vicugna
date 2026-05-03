@@ -2,7 +2,8 @@ import { ROUTES } from "@utils/constants"
 import { type Route, useRouter } from "expo-router"
 import { Pressable, Text, View } from "react-native"
 
-export default function Index() {
+// Route: /
+export default function () {
 	const router = useRouter()
 
 	return (
