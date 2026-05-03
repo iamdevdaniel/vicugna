@@ -4,10 +4,12 @@ import { createShearingForm } from "@database"
 import type { Form11Shearing } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
+import { ROUTES } from "@utils/constants"
 import {
 	defaultValuesForm11Shearing,
 	schemaForm11Shearing,
 } from "@utils/form11-schemas"
+import { type Route, router } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import {
@@ -90,8 +92,8 @@ export default function ShearingForm() {
 	const onSubmit: SubmitHandler<Form11Shearing> = async (data) => {
 		try {
 			await createShearingForm(data)
-			console.log("Form saved successfully!", data)
 			reset()
+			router.push(ROUTES.FORM11.ROOT as Route)
 		} catch (error) {
 			console.error("Error saving form:", error)
 		}

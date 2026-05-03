@@ -1,4 +1,5 @@
-import { useRouter } from "expo-router"
+import { ROUTES } from "@utils/constants"
+import { type Route, useRouter } from "expo-router"
 import { Pressable, Text, View } from "react-native"
 
 export default function Index() {
@@ -14,7 +15,7 @@ export default function Index() {
 					padding: 20,
 					borderRadius: 10,
 				}}
-				onPress={() => router.push("/form11")}
+				onPress={() => router.push(ROUTES.FORM11.ROOT as Route)}
 			>
 				<Text
 					style={{ color: "white", fontSize: 18, fontWeight: "bold" }}

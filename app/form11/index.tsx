@@ -1,17 +1,17 @@
 import { readAllShearingForms } from "@database"
 import type { Form11Storage } from "@definitions/types"
-import { router, useFocusEffect } from "expo-router"
+import { ROUTES } from "@utils/constants"
+import { getCommunityName, getRegionalName } from "@utils/regional-lookup"
+import { type Route, router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
-import { Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
-import { getRegionalName, getCommunityName } from "@utils/regional-lookup"
 
 export default function Form11Home() {
-
 	const theme = useTheme()
 
 	const handleNewShearing = () => {
-		router.push("/form11/shearing-form")
+		router.push(ROUTES.FORM11.SHEARING as Route)
 	}
 
 	const [forms, setForms] = useState<Form11Storage[]>([])
@@ -23,7 +23,15 @@ export default function Form11Home() {
 	)
 
 	return (
-		<View style={{ flex: 1, padding: 20 }}>
+		<ScrollView
+			style={{ flex: 1 }}
+			contentContainerStyle={{
+				padding: 20,
+				paddingBottom: 40,
+				flexGrow: 1,
+			}}
+			keyboardShouldPersistTaps="handled"
+		>
 			<Button
 				mode="contained"
 				onPress={handleNewShearing}
@@ -63,7 +71,6 @@ export default function Form11Home() {
 						style={{
 							marginBottom: 20,
 							borderRadius: 16,
-							backgroundColor: theme.colors.surface,
 							elevation: 2,
 						}}
 					>
@@ -144,6 +151,6 @@ export default function Form11Home() {
 					</Card>
 				))
 			)}
-		</View>
+		</ScrollView>
 	)
 }
