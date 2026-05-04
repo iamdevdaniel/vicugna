@@ -68,6 +68,10 @@ export default function Form11Home() {
 				forms.map((form, idx) => (
 					<Card
 						key={form.id || idx}
+						onPress={() => {
+							console.log("to", form.id)
+							router.push(`/form11/${form.id || idx}` as Route)
+						}}
 						style={{
 							marginBottom: 20,
 							borderRadius: 16,
