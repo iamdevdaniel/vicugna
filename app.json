@@ -3,7 +3,7 @@
     "name": "vicugna",
     "slug": "vicugna",
     "version": "1.0.0",
-	"icon": "./assets/images/vicugna-logo-day.png",
+    "icon": "./assets/images/vicugna-logo-day.png",
     "orientation": "portrait",
     "scheme": "vicugna",
     "userInterfaceStyle": "automatic",
@@ -16,7 +16,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.maydanachi.vicugna" 
+      "package": "com.maydanachi.vicugna"
     },
     "web": {
       "bundler": "metro",
@@ -26,7 +26,9 @@
       "expo-router",
       [
         "@morrowdigital/watermelondb-expo-plugin",
-        { "experimentalJSI": true }
+        {
+          "experimentalJSI": true
+        }
       ],
       [
         "expo-build-properties",
@@ -39,15 +41,20 @@
             }
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {
-		"ignoreFiles": ["**/*utils*", "**/*theme*", "**/util*"]
-	  },
+        "ignoreFiles": [
+          "**/*utils*",
+          "**/*theme*",
+          "**/util*"
+        ]
+      },
       "eas": {
         "projectId": "a0de7245-1ed6-44cd-9495-86ecd499a78f"
       }

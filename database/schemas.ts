@@ -49,7 +49,7 @@ export const appDbSchema = appSchema({
 		tableSchema({
 			name: "form11_storage",
 			columns: [
-				{ name: "sync", type: "string" },
+				{ name: "syncId", type: "string" },
 				{ name: "shearingId", type: "string" },
 				{ name: "dehearingId", type: "string" },
 			],

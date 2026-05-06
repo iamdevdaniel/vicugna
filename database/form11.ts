@@ -36,7 +36,7 @@ export async function createShearingForm(
 		await database
 			.get<Form11StorageModel>("form11_storage")
 			.create((model: Form11StorageModel) => {
-				model.sync = sync.id
+				model.syncId = sync.id
 				model.shearingId = shearing.id
 				model.dehearingId = ""
 			})
@@ -65,7 +65,7 @@ export async function readShearingForm(
 		.find(storage.shearingId)
 	const sync = await database
 		.get<SyncMetaModel>("sync_meta")
-		.find(storage.sync)
+		.find(storage.syncId)
 
 	return {
 		id: storage.id,

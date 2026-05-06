@@ -42,7 +42,7 @@ export class SyncMetaModel extends Model {
 
 export class Form11StorageModel extends Model {
 	static table = "form11_storage"
-	@field("sync") sync!: string
+	@field("syncId") syncId!: string
 	@field("shearingId") shearingId!: string
 	@field("dehearingId") dehearingId!: string
 }

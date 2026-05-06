@@ -1,4 +1,8 @@
-import type { Form11Dehearing, Form11Record, Form11Shearing } from "@definitions/types"
+import type {
+	Form11Dehearing,
+	Form11Record,
+	Form11Shearing,
+} from "@definitions/types"
 import * as yup from "yup"
 
 const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
