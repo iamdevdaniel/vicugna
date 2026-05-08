@@ -8,7 +8,7 @@ import { ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
 
 // ROUTE form11
-export default function() {
+export default function () {
 	const theme = useTheme()
 
 	const handleNewShearing = () => {

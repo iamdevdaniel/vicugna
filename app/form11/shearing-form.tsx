@@ -9,7 +9,8 @@ import {
 	defaultValuesForm11Shearing,
 	schemaForm11Shearing,
 } from "@utils/form11-schemas"
-import { Stack, router } from "expo-router"
+import { useAppTheme } from "@utils/useAppTheme"
+import { router, Stack } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import {
@@ -20,20 +21,28 @@ import {
 	TextInput,
 	View,
 } from "react-native"
-import { Button, useTheme } from "react-native-paper"
+import { Button } from "react-native-paper"
 
 const StepIndicator = ({ currentStep }: { currentStep: number }) => {
-	const theme = useTheme()
+	const theme = useAppTheme()
 	const steps = [1, 2, 3]
 	return (
-		<View style={{ flexDirection: "row", alignItems: "center", marginRight: 12 }}>
+		<View
+			style={{
+				flexDirection: "row",
+				alignItems: "center",
+				marginRight: 12,
+			}}
+		>
 			{steps.map((step) => {
 				const isActive = step <= currentStep
 				return (
 					<View
 						key={step}
 						style={{
-							backgroundColor: isActive ? (theme.colors as any).custom.green : "#E0E0E0",
+							backgroundColor: isActive
+								? theme.colors.custom.green
+								: "#E0E0E0",
 							width: 24,
 							height: 24,
 							borderRadius: 4,
@@ -60,7 +69,7 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
 
 // ROUTE /form11/shearing-form
 export default function () {
-	const theme = useTheme()
+	const theme = useAppTheme()
 
 	const {
 		control,
@@ -156,11 +165,13 @@ export default function () {
 							}}
 						>
 							<StepIndicator currentStep={1} />
-							<Text style={{ 
-								fontWeight: "bold", 
-								fontSize: 18,
-								color: theme.colors.onSurface 
-							}}>
+							<Text
+								style={{
+									fontWeight: "bold",
+									fontSize: 18,
+									color: theme.colors.onSurface,
+								}}
+							>
 								Formulario de captura
 							</Text>
 						</View>
@@ -366,10 +377,7 @@ export default function () {
 						</Button>
 						<Button
 							mode="outlined"
-							onPress={() => {
-								console.log("cleaned")
-								reset()
-							}}
+							onPress={() => reset()}
 							style={{ flex: 1, marginHorizontal: 4 }}
 						>
 							<Text>LIMPIAR</Text>

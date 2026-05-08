@@ -1,3 +1,4 @@
+import { useAppTheme } from "@utils/useAppTheme"
 import { Text, View } from "react-native"
 
 type LabeledInputProps = {
@@ -15,6 +16,8 @@ export function LabeledInput({
 	error,
 	children,
 }: LabeledInputProps) {
+	const theme = useAppTheme()
+
 	return (
 		<View style={{ marginBottom: 16 }}>
 			<View
@@ -28,7 +31,9 @@ export function LabeledInput({
 				{labelPrefix && (
 					<View
 						style={{
-							backgroundColor: error ? "red" : "blue",
+							backgroundColor: error
+								? theme.colors.custom.crimson
+								: theme.colors.custom.blue,
 							width: 24,
 							height: 24,
 							borderRadius: 12,
@@ -39,7 +44,7 @@ export function LabeledInput({
 					>
 						<Text
 							style={{
-								color: "white",
+								color: theme.colors.onPrimary,
 								fontSize: 12,
 								fontWeight: "bold",
 							}}
@@ -49,7 +54,12 @@ export function LabeledInput({
 					</View>
 				)}
 				<Text
-					style={{ flex: 1, textAlign: "left", fontWeight: "bold" }}
+					style={{
+						flex: 1,
+						textAlign: "left",
+						fontWeight: "bold",
+						color: theme.colors.onSurface,
+					}}
 				>
 					{label}
 				</Text>
@@ -57,7 +67,7 @@ export function LabeledInput({
 					<Text
 						style={{
 							textAlign: "right",
-							color: "#888",
+							color: theme.colors.onSurfaceVariant,
 							marginLeft: 8,
 						}}
 					>
@@ -67,7 +77,11 @@ export function LabeledInput({
 			</View>
 			{children}
 			{error && (
-				<Text style={{ color: "red", marginTop: 2 }}>{error}</Text>
+				<Text
+					style={{ color: theme.colors.custom.crimson, marginTop: 2 }}
+				>
+					{error}
+				</Text>
 			)}
 		</View>
 	)

@@ -44,6 +44,7 @@ export const warm = {
 			green: "#4CAF50",
 			crimson: "#DC143C",
 			yellow: "#edeb87",
+			blue: "#257bb8",
 		},
 	},
 	dark: {
@@ -91,6 +92,7 @@ export const warm = {
 			green: "#4CAF50",
 			crimson: "#DC143C",
 			yellow: "#edeb87",
+			blue: "#257bb8",
 		},
 	},
 }
