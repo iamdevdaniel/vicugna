@@ -42,7 +42,7 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
 						style={{
 							backgroundColor: isActive
 								? theme.colors.custom.green
-								: "#E0E0E0",
+								: theme.colors.custom.lightGray,
 							width: 24,
 							height: 24,
 							borderRadius: 4,
@@ -53,7 +53,9 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
 					>
 						<Text
 							style={{
-								color: isActive ? "white" : "#757575",
+								color: isActive
+									? theme.colors.custom.white
+									: theme.colors.custom.darkGray,
 								fontSize: 12,
 								fontWeight: "bold",
 							}}
@@ -250,14 +252,18 @@ export default function () {
 						render={({ field: { onChange, value } }) => (
 							<TextInput
 								placeholder="Ingrese sitio de captura"
+								placeholderTextColor={
+									theme.colors.onSurfaceVariant
+								}
 								value={value}
 								onChangeText={onChange}
 								style={{
 									borderWidth: 1,
-									borderColor: "#ccc",
+									borderColor: theme.colors.outlineVariant,
 									borderRadius: 4,
 									padding: 12,
-									backgroundColor: "#fff",
+									backgroundColor: theme.colors.custom.white,
+									color: theme.colors.onSurface,
 								}}
 							/>
 						)}
@@ -277,15 +283,19 @@ export default function () {
 									onPress={() => setDatePickerOpen(true)}
 									style={{
 										borderWidth: 1,
-										borderColor: "#ccc",
+										borderColor:
+											theme.colors.outlineVariant,
 										borderRadius: 4,
 										padding: 12,
-										backgroundColor: "#fff",
+										backgroundColor:
+											theme.colors.custom.white,
 									}}
 								>
 									<Text
 										style={{
-											color: value ? "#000" : "#999",
+											color: value
+												? theme.colors.onSurface
+												: theme.colors.onSurfaceVariant,
 										}}
 									>
 										{value || "DD/MM/YYYY"}
@@ -336,14 +346,18 @@ export default function () {
 						render={({ field: { onChange, value } }) => (
 							<TextInput
 								placeholder="Ingrese código"
+								placeholderTextColor={
+									theme.colors.onSurfaceVariant
+								}
 								value={value}
 								onChangeText={onChange}
 								style={{
 									borderWidth: 1,
-									borderColor: "#ccc",
+									borderColor: theme.colors.outlineVariant,
 									borderRadius: 4,
 									padding: 12,
-									backgroundColor: "#fff",
+									backgroundColor: theme.colors.custom.white,
+									color: theme.colors.onSurface,
 								}}
 							/>
 						)}

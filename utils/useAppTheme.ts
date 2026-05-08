@@ -7,6 +7,9 @@ export type AppTheme = MD3Theme & {
 			crimson: string
 			yellow: string
 			blue: string
+			lightGray: string
+			darkGray: string
+			white: string
 		}
 	}
 }
