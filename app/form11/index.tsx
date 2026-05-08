@@ -1,4 +1,4 @@
-import { readAllShearingForms } from "@database"
+import { readAllForm11 } from "@database"
 import type { Form11Storage } from "@definitions/types"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/regional-lookup"
@@ -18,7 +18,7 @@ export default function Form11Home() {
 
 	useFocusEffect(
 		useCallback(() => {
-			readAllShearingForms().then(setForms)
+			readAllForm11().then(setForms)
 		}, []),
 	)
 
