@@ -9,7 +9,7 @@ import {
 	defaultValuesForm11Shearing,
 	schemaForm11Shearing,
 } from "@utils/form11-schemas"
-import { router } from "expo-router"
+import { Stack, router } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import {
@@ -20,9 +20,48 @@ import {
 	TextInput,
 	View,
 } from "react-native"
-import { Button } from "react-native-paper"
+import { Button, useTheme } from "react-native-paper"
 
-export default function ShearingForm() {
+const StepIndicator = ({ currentStep }: { currentStep: number }) => {
+	const theme = useTheme()
+	const steps = [1, 2, 3]
+	return (
+		<View style={{ flexDirection: "row", alignItems: "center", marginRight: 12 }}>
+			{steps.map((step) => {
+				const isActive = step <= currentStep
+				return (
+					<View
+						key={step}
+						style={{
+							backgroundColor: isActive ? (theme.colors as any).custom.green : "#E0E0E0",
+							width: 24,
+							height: 24,
+							borderRadius: 4,
+							justifyContent: "center",
+							alignItems: "center",
+							marginRight: step < 3 ? 6 : 0,
+						}}
+					>
+						<Text
+							style={{
+								color: isActive ? "white" : "#757575",
+								fontSize: 12,
+								fontWeight: "bold",
+							}}
+						>
+							{step}
+						</Text>
+					</View>
+				)
+			})}
+		</View>
+	)
+}
+
+// ROUTE /form11/shearing-form
+export default function () {
+	const theme = useTheme()
+
 	const {
 		control,
 		watch,
@@ -107,6 +146,27 @@ export default function ShearingForm() {
 			behavior={"height"}
 			keyboardVerticalOffset={100}
 		>
+			<Stack.Screen
+				options={{
+					headerTitle: () => (
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+							}}
+						>
+							<StepIndicator currentStep={1} />
+							<Text style={{ 
+								fontWeight: "bold", 
+								fontSize: 18,
+								color: theme.colors.onSurface 
+							}}>
+								Formulario de captura
+							</Text>
+						</View>
+					),
+				}}
+			/>
 			<ScrollView
 				style={{ flex: 1 }}
 				contentContainerStyle={{ padding: 20, paddingBottom: 40 }}

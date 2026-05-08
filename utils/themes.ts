@@ -40,6 +40,11 @@ export const warm = {
 		surfaceDisabled: "rgba(26, 28, 30, 0.12)",
 		onSurfaceDisabled: "rgba(26, 28, 30, 0.38)",
 		backdrop: "rgba(45, 49, 56, 0.4)",
+		custom: {
+			green: "#4CAF50",
+			crimson: "#DC143C",
+			yellow: "#edeb87",
+		},
 	},
 	dark: {
 		primary: "rgb(165, 200, 255)",
@@ -82,5 +87,10 @@ export const warm = {
 		surfaceDisabled: "rgba(227, 226, 230, 0.12)",
 		onSurfaceDisabled: "rgba(227, 226, 230, 0.38)",
 		backdrop: "rgba(45, 49, 56, 0.4)",
+		custom: {
+			green: "#4CAF50",
+			crimson: "#DC143C",
+			yellow: "#edeb87",
+		},
 	},
 }
