@@ -26,7 +26,7 @@ export const appDbSchema = appSchema({
 		tableSchema({
 			name: "form11_record",
 			columns: [
-				{ name: "storageId", type: "string" },
+				{ name: "form11StorageId", type: "string" },
 				{ name: "ficha", type: "string" },
 				{ name: "pesoFibraBruto", type: "string" },
 				{ name: "pesoVellonLimpio", type: "string" },
@@ -39,17 +39,8 @@ export const appDbSchema = appSchema({
 			],
 		}),
 		tableSchema({
-			name: "sync_meta",
-			columns: [
-				{ name: "stage", type: "string" },
-				{ name: "timestamp", type: "number" },
-				{ name: "errorMessage", type: "string", isOptional: true },
-			],
-		}),
-		tableSchema({
 			name: "form11_storage",
 			columns: [
-				{ name: "syncId", type: "string" },
 				{ name: "shearingId", type: "string" },
 				{ name: "dehearingId", type: "string" },
 			],

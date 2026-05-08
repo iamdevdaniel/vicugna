@@ -21,7 +21,7 @@ export class Form11DehearingModel extends Model {
 
 export class Form11RecordModel extends Model {
 	static table = "form11_record"
-	@field("storageId") storageId!: string
+	@field("form11StorageId") form11StorageId!: string
 	@text("ficha") ficha!: string
 	@text("pesoFibraBruto") pesoFibraBruto!: string
 	@text("pesoVellonLimpio") pesoVellonLimpio!: string
@@ -33,16 +33,8 @@ export class Form11RecordModel extends Model {
 	@text("nombrePredescerdador") nombrePredescerdador!: string
 }
 
-export class SyncMetaModel extends Model {
-	static table = "sync_meta"
-	@text("stage") stage!: "unsynced" | "synced" | "failed"
-	@field("timestamp") timestamp!: number
-	@text("errorMessage") errorMessage?: string
-}
-
 export class Form11StorageModel extends Model {
 	static table = "form11_storage"
-	@field("syncId") syncId!: string
 	@field("shearingId") shearingId!: string
 	@field("dehearingId") dehearingId!: string
 }

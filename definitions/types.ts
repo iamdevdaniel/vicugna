@@ -1,14 +1,5 @@
-import type { SyncStage } from "./enums"
-
-export type SyncMeta = {
-	stage: SyncStage
-	timestamp: number
-	errorMessage?: string
-}
-
 export type Form11Storage = {
 	id?: string
-	sync: SyncMeta
 	shearing: Form11Shearing
 	dehearing: Form11Dehearing
 	records: Form11Record[]

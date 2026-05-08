@@ -5,7 +5,6 @@ import {
 	Form11RecordModel,
 	Form11ShearingModel,
 	Form11StorageModel,
-	SyncMetaModel,
 } from "./models"
 import { appDbSchema } from "./schemas"
 
@@ -19,7 +18,6 @@ export const database = new Database({
 		Form11ShearingModel,
 		Form11DehearingModel,
 		Form11RecordModel,
-		SyncMetaModel,
 		Form11StorageModel,
 	],
 })
