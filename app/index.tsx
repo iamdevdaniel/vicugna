@@ -16,7 +16,7 @@ export default function () {
 					padding: 20,
 					borderRadius: 10,
 				}}
-				onPress={() => router.push(ROUTES.FORM11.ROOT as Route)}
+				onPress={() => router.push(ROUTES.FORM11.LIST as Route)}
 			>
 				<Text
 					style={{ color: "white", fontSize: 18, fontWeight: "bold" }}

@@ -7,12 +7,12 @@ import { useCallback, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
 
-// ROUTE form11
+// ROUTE form11/
 export default function () {
 	const theme = useTheme()
 
 	const handleNewShearing = () => {
-		router.push(ROUTES.FORM11.SHEARING as Route)
+		router.push(ROUTES.FORM11.NEW as Route)
 	}
 
 	const [forms, setForms] = useState<Form11Storage[]>([])

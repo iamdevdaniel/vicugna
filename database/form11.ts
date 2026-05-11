@@ -5,6 +5,7 @@ import type {
 	Form11Storage,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
+import { DB_ERRORS } from "@utils/constants"
 import type {
 	Form11DehearingModel,
 	Form11RecordModel,
@@ -14,56 +15,54 @@ import type {
 import { database } from "./setup"
 
 // CREATE full form11 (storage + shearing + dehearing)
-export async function createForm11(
-	shearingData: Form11Shearing,
-	dehearingData: Form11Dehearing,
-): Promise<void> {
+export async function createForm11(): Promise<Form11Storage> {
+	let storage: Form11StorageModel | undefined
 	await database.write(async () => {
 		const shearing = await database
 			.get<Form11ShearingModel>("form11_shearing")
 			.create((model: Form11ShearingModel) => {
-				model.departamento = shearingData.departamento
-				model.asociacionRegional = shearingData.asociacionRegional
-				model.comunidadManejadora = shearingData.comunidadManejadora
-				model.sitioCaptura = shearingData.sitioCaptura
-				model.fechaCaptura = shearingData.fechaCaptura
-				model.codigoAutorizacion = shearingData.codigoAutorizacion
+				model.departamento = ""
+				model.asociacionRegional = ""
+				model.comunidadManejadora = ""
+				model.sitioCaptura = ""
+				model.fechaCaptura = ""
+				model.codigoAutorizacion = ""
 			})
 
 		const dehearing = await database
 			.get<Form11DehearingModel>("form11_dehearing")
 			.create((model: Form11DehearingModel) => {
-				model.fechaInicioPredescerdado =
-					dehearingData.fechaInicioPredescerdado
-				model.fechaFinPredescerdado =
-					dehearingData.fechaFinPredescerdado
-				model.lugarPredescerdado = dehearingData.lugarPredescerdado
-				model.responsablesPredescerdado =
-					dehearingData.responsablesPredescerdado
+				model.fechaInicioPredescerdado = ""
+				model.fechaFinPredescerdado = ""
+				model.lugarPredescerdado = ""
+				model.responsablesPredescerdado = ""
 			})
-
-		await database
+		storage = await database
 			.get<Form11StorageModel>("form11_storage")
 			.create((model: Form11StorageModel) => {
 				model.shearingId = shearing.id
 				model.dehearingId = dehearing.id
 			})
 	})
+	if (!storage) throw new Error(DB_ERRORS.FORM11.FAILED_CREATE_STORAGE)
+	return readForm11(storage.id)
 }
 
 // UPDATE form11_shearing
 export async function updateShearingForm(
 	form11StorageId: string,
 	shearingData: Form11Shearing,
-): Promise<void> {
-	await database.write(async () => {
+): Promise<Form11ShearingModel> {
+	return await database.write(async () => {
 		const storage = await database
 			.get<Form11StorageModel>("form11_storage")
 			.find(form11StorageId)
+
 		const shearing = await database
 			.get<Form11ShearingModel>("form11_shearing")
 			.find(storage.shearingId)
-		shearing.update((model: Form11ShearingModel) => {
+
+		await shearing.update((model) => {
 			model.departamento = shearingData.departamento
 			model.asociacionRegional = shearingData.asociacionRegional
 			model.comunidadManejadora = shearingData.comunidadManejadora
@@ -71,6 +70,7 @@ export async function updateShearingForm(
 			model.fechaCaptura = shearingData.fechaCaptura
 			model.codigoAutorizacion = shearingData.codigoAutorizacion
 		})
+		return shearing
 	})
 }
 
