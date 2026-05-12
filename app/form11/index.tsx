@@ -1,8 +1,9 @@
-import { useReadAllForm11 } from "@database"
+import { createForm11, useReadAllForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/regional-lookup"
 import { type Route, router } from "expo-router"
-import { ScrollView, Text, View } from "react-native"
+import React from "react"
+import { Alert, ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
 
 // ROUTE form11/
@@ -10,8 +11,19 @@ export default function () {
 	const theme = useTheme()
 	const { data: forms } = useReadAllForm11()
 
+	const [creating, setCreating] = React.useState(false)
+
 	const handleNewShearing = () => {
-		router.push(ROUTES.FORM11.NEW as Route)
+		if (creating) return
+		setCreating(true)
+		createForm11()
+			.then((form) =>
+				router.push(
+					ROUTES.FORM11.OVERVIEW.replace("[id]", form.id) as Route,
+				),
+			)
+			.catch(() => Alert.alert("Error", "No se pudo crear la esquila"))
+			.finally(() => setCreating(false))
 	}
 
 	return (

@@ -1,5 +1,5 @@
 export type Form11Storage = {
-	id?: string
+	id: string
 	shearing: Form11Shearing
 	dehearing: Form11Dehearing
 	records: Form11Record[]

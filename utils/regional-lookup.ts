@@ -2,11 +2,12 @@ import regionales from "@assets/data/regionales.json"
 import type { Form11Shearing } from "@definitions/types"
 
 export const getRegionalName = (form: Form11Shearing): string => {
+	const departamento =
+		regionales[form.departamento as keyof typeof regionales]
+	if (!departamento) return "NA"
 	return (
-		regionales[
-			form.departamento as keyof typeof regionales
-		].regionales.find((r) => r.id === form.asociacionRegional)?.nombre ||
-		"NA"
+		departamento.regionales.find((r) => r.id === form.asociacionRegional)
+			?.nombre || "NA"
 	)
 }
 

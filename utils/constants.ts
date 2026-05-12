@@ -2,7 +2,6 @@ export const ROUTES = {
 	HOME: "/",
 	FORM11: {
 		LIST: "/form11",
-		NEW: "/form11/new",
 		OVERVIEW: "/form11/[id]",
 		SHEARING: {
 			NEW: "/form11/[id]/shearing/new",
