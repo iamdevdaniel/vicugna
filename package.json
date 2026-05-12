@@ -9,7 +9,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "npx biome check ./app ./components ./database ./assets ./definitions ./utils --write",
+    "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils --write",
     "prepare": "husky"
   },
   "dependencies": {
@@ -67,5 +67,11 @@
       }
     }
   },
-  "private": true
+  "private": true,
+  "lint-staged": {
+    "{app,components,database,assets,definitions,utils}/**/*.{ts,tsx}": [
+      "biome check --write --no-errors-on-unmatched",
+      "biome check --error-on-warnings --no-errors-on-unmatched"
+    ]
+  }
 }
