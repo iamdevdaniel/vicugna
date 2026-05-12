@@ -9,6 +9,7 @@ export class Form11ShearingModel extends Model {
 	@text("sitioCaptura") sitioCaptura!: string
 	@text("fechaCaptura") fechaCaptura!: string
 	@text("codigoAutorizacion") codigoAutorizacion!: string
+	@field("is_completed") isCompleted!: boolean
 }
 
 export class Form11DehearingModel extends Model {
@@ -17,6 +18,7 @@ export class Form11DehearingModel extends Model {
 	@text("fechaFinPredescerdado") fechaFinPredescerdado!: string
 	@text("lugarPredescerdado") lugarPredescerdado!: string
 	@text("responsablesPredescerdado") responsablesPredescerdado!: string
+	@field("is_completed") isCompleted!: boolean
 }
 
 export class Form11RecordModel extends Model {

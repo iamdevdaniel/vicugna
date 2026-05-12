@@ -1,8 +1,4 @@
-import type {
-	Form11Dehearing,
-	Form11Record,
-	Form11Shearing,
-} from "@definitions/types"
+import type { Form11Record } from "@definitions/types"
 import * as yup from "yup"
 
 const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
@@ -16,13 +12,14 @@ export const schemaForm11Shearing = yup.object().shape({
 	codigoAutorizacion: yup.string().required("Requerido"),
 })
 
-export const defaultValuesForm11Shearing: Form11Shearing = {
+export const defaultValuesForm11Shearing = {
 	departamento: "",
 	asociacionRegional: "",
 	comunidadManejadora: "",
 	sitioCaptura: "",
 	fechaCaptura: "",
 	codigoAutorizacion: "",
+	isCompleted: false,
 }
 
 export const schemaForm11Dehearing = yup.object().shape({
@@ -32,11 +29,12 @@ export const schemaForm11Dehearing = yup.object().shape({
 	responsablesPredescerdado: yup.string().required("Requerido"),
 })
 
-export const defaultValuesForm11Dehearing: Form11Dehearing = {
+export const defaultValuesForm11Dehearing = {
 	fechaInicioPredescerdado: "",
 	fechaFinPredescerdado: "",
 	lugarPredescerdado: "",
 	responsablesPredescerdado: "",
+	isCompleted: false,
 }
 
 export const schemaForm11Record = yup.object().shape({

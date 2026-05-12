@@ -12,6 +12,7 @@ export const appDbSchema = appSchema({
 				{ name: "sitioCaptura", type: "string" },
 				{ name: "fechaCaptura", type: "string" },
 				{ name: "codigoAutorizacion", type: "string" },
+				{ name: "is_completed", type: "boolean" },
 			],
 		}),
 		tableSchema({
@@ -21,6 +22,7 @@ export const appDbSchema = appSchema({
 				{ name: "fechaFinPredescerdado", type: "string" },
 				{ name: "lugarPredescerdado", type: "string" },
 				{ name: "responsablesPredescerdado", type: "string" },
+				{ name: "is_completed", type: "boolean" },
 			],
 		}),
 		tableSchema({

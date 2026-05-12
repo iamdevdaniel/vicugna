@@ -26,6 +26,7 @@ export function mapToForm11Storage(
 			sitioCaptura: shearing.sitioCaptura,
 			fechaCaptura: shearing.fechaCaptura,
 			codigoAutorizacion: shearing.codigoAutorizacion,
+			isCompleted: shearing.isCompleted,
 		},
 		dehearing: {
 			id: dehearing.id,
@@ -33,6 +34,7 @@ export function mapToForm11Storage(
 			fechaFinPredescerdado: dehearing.fechaFinPredescerdado,
 			lugarPredescerdado: dehearing.lugarPredescerdado,
 			responsablesPredescerdado: dehearing.responsablesPredescerdado,
+			isCompleted: dehearing.isCompleted,
 		},
 		records: [],
 	}
@@ -63,6 +65,7 @@ export function applyShearingToModel(
 	model.sitioCaptura = data.sitioCaptura
 	model.fechaCaptura = data.fechaCaptura
 	model.codigoAutorizacion = data.codigoAutorizacion
+	model.isCompleted = data.isCompleted
 }
 
 export function applyDehearingToModel(
@@ -73,4 +76,5 @@ export function applyDehearingToModel(
 	model.fechaFinPredescerdado = data.fechaFinPredescerdado
 	model.lugarPredescerdado = data.lugarPredescerdado
 	model.responsablesPredescerdado = data.responsablesPredescerdado
+	model.isCompleted = data.isCompleted
 }

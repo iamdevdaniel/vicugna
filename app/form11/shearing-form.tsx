@@ -1,6 +1,5 @@
 import regionales from "@assets/data/regionales.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
-import type { Form11Shearing } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import {
@@ -10,7 +9,7 @@ import {
 import { useAppTheme } from "@utils/useAppTheme"
 import { Stack } from "expo-router"
 import { useEffect, useState } from "react"
-import { Controller, type SubmitHandler, useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import {
 	KeyboardAvoidingView,
 	Pressable,
@@ -78,7 +77,7 @@ export default function () {
 		reset,
 		formState: { errors, isValid },
 		handleSubmit,
-	} = useForm<Form11Shearing>({
+	} = useForm({
 		mode: "onChange",
 		defaultValues: defaultValuesForm11Shearing,
 		resolver: yupResolver(schemaForm11Shearing),
@@ -137,7 +136,7 @@ export default function () {
 		}
 	}, [selectedRegional, selectedDepartamento, setValue])
 
-	const onSubmit: SubmitHandler<Form11Shearing> = () => {}
+	const onSubmit = () => {}
 
 	return (
 		<KeyboardAvoidingView

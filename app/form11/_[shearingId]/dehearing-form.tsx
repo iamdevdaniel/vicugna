@@ -1,5 +1,4 @@
 import { LabeledInput } from "@components"
-import type { Form11Dehearing } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
 	defaultValuesForm11Dehearing,
@@ -15,12 +14,17 @@ export default function () {
 		handleSubmit,
 		reset,
 		formState: { errors },
-	} = useForm<Form11Dehearing>({
+	} = useForm({
 		defaultValues: defaultValuesForm11Dehearing,
 		resolver: yupResolver(schemaForm11Dehearing),
 	})
 
-	const onSubmit = (data: Form11Dehearing) => {
+	const onSubmit = (data: {
+		fechaInicioPredescerdado: string
+		fechaFinPredescerdado: string
+		lugarPredescerdado: string
+		responsablesPredescerdado: string
+	}) => {
 		console.log(data)
 	}
 

@@ -13,6 +13,7 @@ export type Form11Shearing = {
 	sitioCaptura: string
 	fechaCaptura: string
 	codigoAutorizacion: string
+	isCompleted: boolean
 }
 
 export type Form11Dehearing = {
@@ -21,6 +22,7 @@ export type Form11Dehearing = {
 	fechaFinPredescerdado: string
 	lugarPredescerdado: string
 	responsablesPredescerdado: string
+	isCompleted: boolean
 }
 
 export type Form11Record = {
