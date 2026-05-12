@@ -1,27 +1,18 @@
-import { readAllForm11 } from "@database"
-import type { Form11Storage } from "@definitions/types"
+import { useReadAllForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/regional-lookup"
-import { type Route, router, useFocusEffect } from "expo-router"
-import { useCallback, useState } from "react"
+import { type Route, router } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
 
 // ROUTE form11/
 export default function () {
 	const theme = useTheme()
+	const { data: forms } = useReadAllForm11()
 
 	const handleNewShearing = () => {
 		router.push(ROUTES.FORM11.NEW as Route)
 	}
-
-	const [forms, setForms] = useState<Form11Storage[]>([])
-
-	useFocusEffect(
-		useCallback(() => {
-			readAllForm11().then(setForms)
-		}, []),
-	)
 
 	return (
 		<ScrollView

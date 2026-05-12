@@ -6,6 +6,13 @@ import type {
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
 import { DB_ERRORS } from "@utils/constants"
+import { useEffect, useReducer } from "react"
+import {
+	applyDehearingToModel,
+	applyShearingToModel,
+	mapToForm11Record,
+	mapToForm11Storage,
+} from "./mappers"
 import type {
 	Form11DehearingModel,
 	Form11RecordModel,
@@ -14,7 +21,129 @@ import type {
 } from "./models"
 import { database } from "./setup"
 
-// CREATE full form11 (storage + shearing + dehearing)
+//-------------------READ-------------------
+
+type StorageState = {
+	data: Form11Storage[]
+	loading: boolean
+	error: Error | null
+}
+
+type StorageAction =
+	| { type: "success"; data: Form11Storage[] }
+	| { type: "error"; error: Error }
+
+function storageReducer(
+	state: StorageState,
+	action: StorageAction,
+): StorageState {
+	switch (action.type) {
+		case "success":
+			return { data: action.data, loading: false, error: null }
+		case "error":
+			return { ...state, loading: false, error: action.error }
+	}
+}
+
+export function useReadAllForm11(): StorageState {
+	const [state, dispatch] = useReducer(storageReducer, {
+		data: [],
+		loading: true,
+		error: null,
+	})
+
+	useEffect(() => {
+		const subscription = database
+			.get<Form11StorageModel>("form11_storage")
+			.query()
+			.observe()
+			.subscribe(async (storageRecords) => {
+				try {
+					const mapped = await Promise.all(
+						storageRecords.map(async (storage) => {
+							const [shearing, dehearing] = await Promise.all([
+								database
+									.get<Form11ShearingModel>("form11_shearing")
+									.find(storage.shearingId),
+								database
+									.get<Form11DehearingModel>(
+										"form11_dehearing",
+									)
+									.find(storage.dehearingId),
+							])
+							return mapToForm11Storage(
+								storage,
+								shearing,
+								dehearing,
+							)
+						}),
+					)
+					dispatch({ type: "success", data: mapped })
+				} catch (e) {
+					dispatch({ type: "error", error: e as Error })
+				}
+			})
+
+		return () => subscription.unsubscribe()
+	}, [])
+
+	return state
+}
+
+type RecordsState = {
+	data: Form11Record[]
+	loading: boolean
+	error: Error | null
+}
+
+type RecordsAction =
+	| { type: "success"; data: Form11Record[] }
+	| { type: "error"; error: Error }
+
+function recordsReducer(
+	state: RecordsState,
+	action: RecordsAction,
+): RecordsState {
+	switch (action.type) {
+		case "success":
+			return { data: action.data, loading: false, error: null }
+		case "error":
+			return { ...state, loading: false, error: action.error }
+	}
+}
+
+export function useReadForm11Records(storageId: string): RecordsState {
+	const [state, dispatch] = useReducer(recordsReducer, {
+		data: [],
+		loading: true,
+		error: null,
+	})
+
+	useEffect(() => {
+		const subscription = database
+			.get<Form11RecordModel>("form11_record")
+			.query(Q.where("form11StorageId", storageId))
+			.observe()
+			.subscribe({
+				next: (records) => {
+					dispatch({
+						type: "success",
+						data: records.map(mapToForm11Record),
+					})
+				},
+				error: (e) => {
+					dispatch({ type: "error", error: e as Error })
+				},
+			})
+
+		return () => subscription.unsubscribe()
+	}, [storageId])
+
+	return state
+}
+
+//-------------------WRITE-------------------
+
 export async function createForm11(): Promise<Form11Storage> {
 	let storage: Form11StorageModel | undefined
 	await database.write(async () => {
@@ -37,6 +166,7 @@ export async function createForm11(): Promise<Form11Storage> {
 				model.lugarPredescerdado = ""
 				model.responsablesPredescerdado = ""
 			})
+
 		storage = await database
 			.get<Form11StorageModel>("form11_storage")
 			.create((model: Form11StorageModel) => {
@@ -45,15 +175,21 @@ export async function createForm11(): Promise<Form11Storage> {
 			})
 	})
 	if (!storage) throw new Error(DB_ERRORS.FORM11.FAILED_CREATE_STORAGE)
-	return readForm11(storage.id)
+	const s = storage as Form11StorageModel
+	const [shearing, dehearing] = await Promise.all([
+		database.get<Form11ShearingModel>("form11_shearing").find(s.shearingId),
+		database
+			.get<Form11DehearingModel>("form11_dehearing")
+			.find(s.dehearingId),
+	])
+	return mapToForm11Storage(s, shearing, dehearing)
 }
 
-// UPDATE form11_shearing
 export async function updateShearingForm(
 	form11StorageId: string,
 	shearingData: Form11Shearing,
-): Promise<Form11ShearingModel> {
-	return await database.write(async () => {
+): Promise<void> {
+	await database.write(async () => {
 		const storage = await database
 			.get<Form11StorageModel>("form11_storage")
 			.find(form11StorageId)
@@ -62,19 +198,12 @@ export async function updateShearingForm(
 			.get<Form11ShearingModel>("form11_shearing")
 			.find(storage.shearingId)
 
-		await shearing.update((model) => {
-			model.departamento = shearingData.departamento
-			model.asociacionRegional = shearingData.asociacionRegional
-			model.comunidadManejadora = shearingData.comunidadManejadora
-			model.sitioCaptura = shearingData.sitioCaptura
-			model.fechaCaptura = shearingData.fechaCaptura
-			model.codigoAutorizacion = shearingData.codigoAutorizacion
-		})
-		return shearing
+		await shearing.update((model) =>
+			applyShearingToModel(model, shearingData),
+		)
 	})
 }
 
-// UPDATE form11_dehearing
 export async function updateDehearingForm(
 	form11StorageId: string,
 	dehearingData: Form11Dehearing,
@@ -87,119 +216,8 @@ export async function updateDehearingForm(
 		const dehearing = await database
 			.get<Form11DehearingModel>("form11_dehearing")
 			.find(storage.dehearingId)
-		dehearing.update((model: Form11DehearingModel) => {
-			model.fechaInicioPredescerdado =
-				dehearingData.fechaInicioPredescerdado
-			model.fechaFinPredescerdado = dehearingData.fechaFinPredescerdado
-			model.lugarPredescerdado = dehearingData.lugarPredescerdado
-			model.responsablesPredescerdado =
-				dehearingData.responsablesPredescerdado
-		})
+		await dehearing.update((model) =>
+			applyDehearingToModel(model, dehearingData),
+		)
 	})
-}
-
-// READ form11 BY ID
-export async function readForm11(
-	form11StorageId: string,
-): Promise<Form11Storage> {
-	const storage = await database
-		.get<Form11StorageModel>("form11_storage")
-		.find(form11StorageId)
-
-	const [shearing, dehearing] = await Promise.all([
-		database
-			.get<Form11ShearingModel>("form11_shearing")
-			.find(storage.shearingId),
-		database
-			.get<Form11DehearingModel>("form11_dehearing")
-			.find(storage.dehearingId),
-	])
-
-	return {
-		id: storage.id,
-		shearing: {
-			id: shearing.id,
-			departamento: shearing.departamento,
-			asociacionRegional: shearing.asociacionRegional,
-			comunidadManejadora: shearing.comunidadManejadora,
-			sitioCaptura: shearing.sitioCaptura,
-			fechaCaptura: shearing.fechaCaptura,
-			codigoAutorizacion: shearing.codigoAutorizacion,
-		},
-		dehearing: {
-			id: dehearing.id,
-			fechaInicioPredescerdado: dehearing.fechaInicioPredescerdado,
-			fechaFinPredescerdado: dehearing.fechaFinPredescerdado,
-			lugarPredescerdado: dehearing.lugarPredescerdado,
-			responsablesPredescerdado: dehearing.responsablesPredescerdado,
-		},
-		records: [],
-	}
-}
-
-// READ ALL records for a specific form11_storage
-export async function readForm11Records(
-	form11StorageId: string,
-): Promise<Form11Record[]> {
-	const records = await database
-		.get<Form11RecordModel>("form11_record")
-		.query(Q.where("form11StorageId", form11StorageId))
-		.fetch()
-
-	return records.map((r) => ({
-		id: r.id,
-		ficha: r.ficha,
-		pesoFibraBruto: r.pesoFibraBruto,
-		pesoVellonLimpio: r.pesoVellonLimpio,
-		pesoBraga: r.pesoBraga,
-		pesoTotalFibra: r.pesoTotalFibra,
-		pesoFibraPredescerdada: r.pesoFibraPredescerdada,
-		pesoCerda: r.pesoCerda,
-		caspa: r.caspa,
-		nombrePredescerdador: r.nombrePredescerdador,
-	}))
-}
-
-// READ ALL form11 summaries
-export async function readAllForm11(): Promise<Form11Storage[]> {
-	const storageRecords = await database
-		.get<Form11StorageModel>("form11_storage")
-		.query()
-		.fetch()
-
-	return Promise.all(
-		storageRecords.map(async (storage) => {
-			const [shearing, dehearing] = await Promise.all([
-				database
-					.get<Form11ShearingModel>("form11_shearing")
-					.find(storage.shearingId),
-				database
-					.get<Form11DehearingModel>("form11_dehearing")
-					.find(storage.dehearingId),
-			])
-
-			return {
-				id: storage.id,
-				shearing: {
-					id: shearing.id,
-					departamento: shearing.departamento,
-					asociacionRegional: shearing.asociacionRegional,
-					comunidadManejadora: shearing.comunidadManejadora,
-					sitioCaptura: shearing.sitioCaptura,
-					fechaCaptura: shearing.fechaCaptura,
-					codigoAutorizacion: shearing.codigoAutorizacion,
-				},
-				dehearing: {
-					id: dehearing.id,
-					fechaInicioPredescerdado:
-						dehearing.fechaInicioPredescerdado,
-					fechaFinPredescerdado: dehearing.fechaFinPredescerdado,
-					lugarPredescerdado: dehearing.lugarPredescerdado,
-					responsablesPredescerdado:
-						dehearing.responsablesPredescerdado,
-				},
-				records: [],
-			}
-		}),
-	)
 }
