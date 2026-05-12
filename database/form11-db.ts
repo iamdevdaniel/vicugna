@@ -23,44 +23,41 @@ import { database } from "./setup"
 
 //-------------------READ-------------------
 
-type StorageState = {
-	data: Form11Storage[]
-	loading: boolean
-	error: Error | null
-}
-
-type StorageAction =
-	| { type: "success"; data: Form11Storage[] }
+type DbState<T> = { data: T; loading: boolean; error: Error | null }
+type DbAction<T> =
+	| { type: "success"; data: T }
 	| { type: "error"; error: Error }
 
-function storageReducer(
-	state: StorageState,
-	action: StorageAction,
-): StorageState {
-	switch (action.type) {
-		case "success":
-			return { data: action.data, loading: false, error: null }
-		case "error":
-			return { ...state, loading: false, error: action.error }
+function makeReducer<T>() {
+	return (state: DbState<T>, action: DbAction<T>): DbState<T> => {
+		switch (action.type) {
+			case "success":
+				return { data: action.data, loading: false, error: null }
+			case "error":
+				return { ...state, loading: false, error: action.error }
+		}
 	}
 }
 
-export function useReadAllForm11(): StorageState {
-	const [state, dispatch] = useReducer(storageReducer, {
-		data: [],
-		loading: true,
-		error: null,
-	})
+function makeInitial<T>(initial: T): DbState<T> {
+	return { data: initial, loading: true, error: null }
+}
+
+export function useReadAllForm11(): DbState<Form11Storage[]> {
+	const [state, dispatch] = useReducer(
+		makeReducer<Form11Storage[]>(),
+		makeInitial<Form11Storage[]>([]),
+	)
 
 	useEffect(() => {
-		const subscription = database
+		const sub = database
 			.get<Form11StorageModel>("form11_storage")
 			.query()
 			.observe()
-			.subscribe(async (storageRecords) => {
+			.subscribe(async (records) => {
 				try {
 					const mapped = await Promise.all(
-						storageRecords.map(async (storage) => {
+						records.map(async (storage) => {
 							const [shearing, dehearing] = await Promise.all([
 								database
 									.get<Form11ShearingModel>("form11_shearing")
@@ -83,61 +80,76 @@ export function useReadAllForm11(): StorageState {
 					dispatch({ type: "error", error: e as Error })
 				}
 			})
-
-		return () => subscription.unsubscribe()
+		return () => sub.unsubscribe()
 	}, [])
 
 	return state
 }
 
-type RecordsState = {
-	data: Form11Record[]
-	loading: boolean
-	error: Error | null
-}
-
-type RecordsAction =
-	| { type: "success"; data: Form11Record[] }
-	| { type: "error"; error: Error }
-
-function recordsReducer(
-	state: RecordsState,
-	action: RecordsAction,
-): RecordsState {
-	switch (action.type) {
-		case "success":
-			return { data: action.data, loading: false, error: null }
-		case "error":
-			return { ...state, loading: false, error: action.error }
-	}
-}
-
-export function useReadForm11Records(storageId: string): RecordsState {
-	const [state, dispatch] = useReducer(recordsReducer, {
-		data: [],
-		loading: true,
-		error: null,
-	})
+export function useReadForm11Records(
+	storageId: string,
+): DbState<Form11Record[]> {
+	const [state, dispatch] = useReducer(
+		makeReducer<Form11Record[]>(),
+		makeInitial<Form11Record[]>([]),
+	)
 
 	useEffect(() => {
-		const subscription = database
+		const sub = database
 			.get<Form11RecordModel>("form11_record")
 			.query(Q.where("form11StorageId", storageId))
 			.observe()
 			.subscribe({
-				next: (records) => {
+				next: (records) =>
 					dispatch({
 						type: "success",
 						data: records.map(mapToForm11Record),
-					})
-				},
-				error: (e) => {
-					dispatch({ type: "error", error: e as Error })
-				},
+					}),
+				error: (e) => dispatch({ type: "error", error: e as Error }),
 			})
-
-		return () => subscription.unsubscribe()
+		return () => sub.unsubscribe()
 	}, [storageId])
+
+	return state
+}
+
+export function useReadOneForm11(id: string): DbState<Form11Storage | null> {
+	const [state, dispatch] = useReducer(
+		makeReducer<Form11Storage | null>(),
+		makeInitial<Form11Storage | null>(null),
+	)
+
+	useEffect(() => {
+		const sub = database
+			.get<Form11StorageModel>("form11_storage")
+			.findAndObserve(id)
+			.subscribe({
+				next: async (storage) => {
+					try {
+						const [shearing, dehearing] = await Promise.all([
+							database
+								.get<Form11ShearingModel>("form11_shearing")
+								.find(storage.shearingId),
+							database
+								.get<Form11DehearingModel>("form11_dehearing")
+								.find(storage.dehearingId),
+						])
+						dispatch({
+							type: "success",
+							data: mapToForm11Storage(
+								storage,
+								shearing,
+								dehearing,
+							),
+						})
+					} catch (e) {
+						dispatch({ type: "error", error: e as Error })
+					}
+				},
+				error: (e) => dispatch({ type: "error", error: e as Error }),
+			})
+		return () => sub.unsubscribe()
+	}, [id])
 
 	return state
 }

@@ -10,7 +10,6 @@ import { Button, Card, useTheme } from "react-native-paper"
 export default function () {
 	const theme = useTheme()
 	const { data: forms } = useReadAllForm11()
-
 	const [creating, setCreating] = React.useState(false)
 
 	const handleNewShearing = () => {
