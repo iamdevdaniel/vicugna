@@ -205,8 +205,12 @@ export default function () {
 								value={value}
 								onSelect={(v) => {
 									onChange(v)
-									setValue("asociacionRegional", "")
-									setValue("comunidadManejadora", "")
+									setValue("asociacionRegional", "", {
+										shouldValidate: true,
+									})
+									setValue("comunidadManejadora", "", {
+										shouldValidate: true,
+									})
 								}}
 							/>
 						)}
@@ -227,7 +231,9 @@ export default function () {
 								value={value}
 								onSelect={(v) => {
 									onChange(v)
-									setValue("comunidadManejadora", "")
+									setValue("comunidadManejadora", "", {
+										shouldValidate: true,
+									})
 								}}
 								disabled={!selectedDepartamento}
 							/>
