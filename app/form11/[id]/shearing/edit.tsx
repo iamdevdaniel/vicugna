@@ -1,6 +1,6 @@
 import regionales from "@assets/data/regionales.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
-import { updateShearingForm } from "@database"
+import { updateShearingForm, useReadOneForm11 } from "@database"
 import type { Form11ShearingFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
@@ -102,6 +102,15 @@ export default function () {
 		value: key,
 	}))
 
+	const { data: form } = useReadOneForm11(id as string)
+
+	useEffect(() => {
+		if (form?.shearing) {
+			const { isCompleted: _, ...formData } = form.shearing
+			reset(formData)
+		}
+	}, [form, reset])
+
 	const [datePickerOpen, setDatePickerOpen] = useState(false)
 
 	useEffect(() => {
@@ -111,13 +120,11 @@ export default function () {
 			setRegionalOptions(
 				dept.regionales.map((r) => ({ label: r.nombre, value: r.id })),
 			)
-			setValue("asociacionRegional", "")
-			setValue("comunidadManejadora", "")
 		} else {
 			setRegionalOptions([])
 			setComunidadOptions([])
 		}
-	}, [selectedDepartamento, setValue])
+	}, [selectedDepartamento])
 
 	useEffect(() => {
 		if (selectedRegional && selectedDepartamento) {
@@ -134,11 +141,10 @@ export default function () {
 					})),
 				)
 			}
-			setValue("comunidadManejadora", "")
 		} else {
 			setComunidadOptions([])
 		}
-	}, [selectedRegional, selectedDepartamento, setValue])
+	}, [selectedRegional, selectedDepartamento])
 
 	const onSubmit = async (data: Form11ShearingFormData) => {
 		try {
@@ -197,7 +203,11 @@ export default function () {
 								placeholder="Seleccionar departamento"
 								options={departamentoOptions}
 								value={value}
-								onSelect={onChange}
+								onSelect={(v) => {
+									onChange(v)
+									setValue("asociacionRegional", "")
+									setValue("comunidadManejadora", "")
+								}}
 							/>
 						)}
 					/>
@@ -215,7 +225,10 @@ export default function () {
 								placeholder="Seleccionar regional"
 								options={regionalOptions}
 								value={value}
-								onSelect={onChange}
+								onSelect={(v) => {
+									onChange(v)
+									setValue("comunidadManejadora", "")
+								}}
 								disabled={!selectedDepartamento}
 							/>
 						)}
