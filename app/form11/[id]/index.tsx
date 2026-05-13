@@ -18,14 +18,17 @@ export default function Form11Overview() {
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
 			<Stack.Screen options={{ title: `Formulario ${id || ""}` }} />
 			<ScrollView
-				contentContainerStyle={{ padding: 20 }}
+				contentContainerStyle={{
+					padding: 20,
+					backgroundColor: "transparent",
+				}}
 				style={{ flex: 1 }}
 			>
 				<OverviewStep
 					number={1}
 					title="Formulario Captura"
 					state={shearingDone ? "done" : "ready"}
-					onPress={() =>
+					onAction={() =>
 						router.push(
 							ROUTES.FORM11.SHEARING.EDIT.replace(
 								"[id]",
@@ -74,7 +77,7 @@ export default function Form11Overview() {
 								? "done"
 								: "ready"
 					}
-					onPress={() =>
+					onAction={() =>
 						router.push(
 							ROUTES.FORM11.DEHEARING.OVERVIEW.replace(
 								"[id]",
@@ -87,7 +90,7 @@ export default function Form11Overview() {
 					number={3}
 					title="Formulario Esquila"
 					state={!dehearingDone ? "disabled" : "ready"}
-					onPress={() =>
+					onAction={() =>
 						router.push(
 							ROUTES.FORM11.RECORDS.LIST.replace(
 								"[id]",
