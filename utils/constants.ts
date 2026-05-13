@@ -4,20 +4,17 @@ export const ROUTES = {
 		LIST: "/form11",
 		OVERVIEW: "/form11/[id]",
 		SHEARING: {
-			NEW: "/form11/[id]/shearing/new",
 			OVERVIEW: "/form11/[id]/shearing",
-			UPDATE: "/form11/[id]/shearing/edit",
+			EDIT: "/form11/[id]/shearing/edit",
 		},
 		DEHEARING: {
-			NEW: "/form11/[id]/dehearing/new",
 			OVERVIEW: "/form11/[id]/dehearing",
-			UPDATE: "/form11/[id]/dehearing/edit",
+			EDIT: "/form11/[id]/dehearing/edit",
 		},
 		RECORDS: {
-			NEW: "/form11/[id]/records/new",
 			LIST: "/form11/[id]/records",
 			OVERVIEW: "/form11/[id]/records/[id]",
-			UPDATE: "/form11/[id]/records/[id]/edit",
+			EDIT: "/form11/[id]/records/[id]/edit",
 		},
 	},
 }

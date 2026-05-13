@@ -19,7 +19,6 @@ export const defaultValuesForm11Shearing = {
 	sitioCaptura: "",
 	fechaCaptura: "",
 	codigoAutorizacion: "",
-	isCompleted: false,
 }
 
 export const schemaForm11Dehearing = yup.object().shape({
@@ -34,7 +33,6 @@ export const defaultValuesForm11Dehearing = {
 	fechaFinPredescerdado: "",
 	lugarPredescerdado: "",
 	responsablesPredescerdado: "",
-	isCompleted: false,
 }
 
 export const schemaForm11Record = yup.object().shape({

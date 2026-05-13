@@ -25,6 +25,9 @@ export type Form11Dehearing = {
 	isCompleted: boolean
 }
 
+export type Form11ShearingFormData = Omit<Form11Shearing, "isCompleted">
+export type Form11DehearingFormData = Omit<Form11Dehearing, "isCompleted">
+
 export type Form11Record = {
 	id?: string
 	ficha: string

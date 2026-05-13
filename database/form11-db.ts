@@ -1,7 +1,7 @@
 import type {
-	Form11Dehearing,
+	Form11DehearingFormData,
 	Form11Record,
-	Form11Shearing,
+	Form11ShearingFormData,
 	Form11Storage,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
@@ -199,7 +199,8 @@ export async function createForm11(): Promise<Form11Storage> {
 
 export async function updateShearingForm(
 	form11StorageId: string,
-	shearingData: Form11Shearing,
+	shearingData: Form11ShearingFormData,
+	isCompleted: boolean,
 ): Promise<void> {
 	await database.write(async () => {
 		const storage = await database
@@ -211,14 +212,15 @@ export async function updateShearingForm(
 			.find(storage.shearingId)
 
 		await shearing.update((model) =>
-			applyShearingToModel(model, shearingData),
+			applyShearingToModel(model, shearingData, isCompleted),
 		)
 	})
 }
 
 export async function updateDehearingForm(
 	form11StorageId: string,
-	dehearingData: Form11Dehearing,
+	dehearingData: Form11DehearingFormData,
+	isCompleted: boolean,
 ): Promise<void> {
 	await database.write(async () => {
 		const storage = await database
@@ -229,7 +231,7 @@ export async function updateDehearingForm(
 			.get<Form11DehearingModel>("form11_dehearing")
 			.find(storage.dehearingId)
 		await dehearing.update((model) =>
-			applyDehearingToModel(model, dehearingData),
+			applyDehearingToModel(model, dehearingData, isCompleted),
 		)
 	})
 }

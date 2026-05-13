@@ -1,7 +1,7 @@
 import type {
-	Form11Dehearing,
+	Form11DehearingFormData,
 	Form11Record,
-	Form11Shearing,
+	Form11ShearingFormData,
 	Form11Storage,
 } from "@definitions/types"
 import type {
@@ -57,7 +57,8 @@ export function mapToForm11Record(r: Form11RecordModel): Form11Record {
 
 export function applyShearingToModel(
 	model: Form11ShearingModel,
-	data: Form11Shearing,
+	data: Form11ShearingFormData,
+	isCompleted: boolean,
 ): void {
 	model.departamento = data.departamento
 	model.asociacionRegional = data.asociacionRegional
@@ -65,16 +66,17 @@ export function applyShearingToModel(
 	model.sitioCaptura = data.sitioCaptura
 	model.fechaCaptura = data.fechaCaptura
 	model.codigoAutorizacion = data.codigoAutorizacion
-	model.isCompleted = data.isCompleted
+	model.isCompleted = isCompleted
 }
 
 export function applyDehearingToModel(
 	model: Form11DehearingModel,
-	data: Form11Dehearing,
+	data: Form11DehearingFormData,
+	isCompleted: boolean,
 ): void {
 	model.fechaInicioPredescerdado = data.fechaInicioPredescerdado
 	model.fechaFinPredescerdado = data.fechaFinPredescerdado
 	model.lugarPredescerdado = data.lugarPredescerdado
 	model.responsablesPredescerdado = data.responsablesPredescerdado
-	model.isCompleted = data.isCompleted
+	model.isCompleted = isCompleted
 }

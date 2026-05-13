@@ -1,5 +1,7 @@
 import regionales from "@assets/data/regionales.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
+import { updateShearingForm } from "@database"
+import type { Form11ShearingFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import {
@@ -7,10 +9,11 @@ import {
 	schemaForm11Shearing,
 } from "@utils/form11-schemas"
 import { useAppTheme } from "@utils/useAppTheme"
-import { Stack } from "expo-router"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import {
+	Alert,
 	KeyboardAvoidingView,
 	Pressable,
 	ScrollView,
@@ -66,10 +69,11 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
 	)
 }
 
-// ROUTE /form11/shearing-form
+// ROUTE /form11/[id]/shearing/edit
 export default function () {
 	const theme = useAppTheme()
-
+	const { id } = useLocalSearchParams()
+	const router = useRouter()
 	const {
 		control,
 		watch,
@@ -136,7 +140,15 @@ export default function () {
 		}
 	}, [selectedRegional, selectedDepartamento, setValue])
 
-	const onSubmit = () => {}
+	const onSubmit = async (data: Form11ShearingFormData) => {
+		try {
+			await updateShearingForm(id as string, data, true)
+		} catch {
+			Alert.alert("Error", "No se pudo guardar el formulario")
+		} finally {
+			router.back()
+		}
+	}
 
 	return (
 		<KeyboardAvoidingView

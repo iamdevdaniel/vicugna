@@ -1,71 +1,17 @@
+import { OverviewStep } from "@components"
+import { useReadOneForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { type Route, router, Stack, useLocalSearchParams } from "expo-router"
-import { Pressable, ScrollView, Text, View } from "react-native"
-
-const OverviewStep = ({
-	number,
-	title,
-	onPress,
-}: {
-	number: number
-	title: string
-	onPress: () => void
-}) => {
-	const theme = useAppTheme()
-	return (
-		<Pressable
-			onPress={onPress}
-			style={{
-				flexDirection: "row",
-				alignItems: "center",
-				backgroundColor: theme.colors.surface,
-				padding: 16,
-				borderRadius: 12,
-				marginBottom: 12,
-				borderWidth: 1,
-				borderColor: theme.colors.outlineVariant,
-			}}
-		>
-			<View
-				style={{
-					backgroundColor: theme.colors.custom.green,
-					width: 32,
-					height: 32,
-					borderRadius: 4,
-					justifyContent: "center",
-					alignItems: "center",
-					marginRight: 16,
-				}}
-			>
-				<Text
-					style={{
-						color: theme.colors.custom.white,
-						fontSize: 16,
-						fontWeight: "bold",
-					}}
-				>
-					{number}
-				</Text>
-			</View>
-			<Text
-				style={{
-					fontSize: 16,
-					fontWeight: "bold",
-					color: theme.colors.onSurface,
-					flex: 1,
-				}}
-			>
-				{title}
-			</Text>
-		</Pressable>
-	)
-}
+import { ScrollView, View } from "react-native"
 
 // ROUTE form11/[id]
 export default function Form11Overview() {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams()
+	const { data: form } = useReadOneForm11(id as string)
+	const shearingDone = form?.shearing.isCompleted ?? false
+	const dehearingDone = form?.dehearing.isCompleted ?? false
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -76,10 +22,10 @@ export default function Form11Overview() {
 			>
 				<OverviewStep
 					number={1}
-					title="Captura / Esquila"
+					title="Formulario Captura"
 					onPress={() =>
 						router.push(
-							ROUTES.FORM11.SHEARING.OVERVIEW.replace(
+							ROUTES.FORM11.SHEARING.EDIT.replace(
 								"[id]",
 								id as string,
 							) as Route,
@@ -88,7 +34,8 @@ export default function Form11Overview() {
 				/>
 				<OverviewStep
 					number={2}
-					title="Procesamiento / Predescerdado"
+					title="Formulario Predescerdado"
+					disabled={!shearingDone}
 					onPress={() =>
 						router.push(
 							ROUTES.FORM11.DEHEARING.OVERVIEW.replace(
@@ -100,7 +47,8 @@ export default function Form11Overview() {
 				/>
 				<OverviewStep
 					number={3}
-					title="Registros / Listado"
+					title="Formulario Esquila"
+					disabled={!dehearingDone}
 					onPress={() =>
 						router.push(
 							ROUTES.FORM11.RECORDS.LIST.replace(
