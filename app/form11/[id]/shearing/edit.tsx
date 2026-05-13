@@ -409,7 +409,7 @@ export default function () {
 						</Button>
 						<Button
 							mode="outlined"
-							onPress={() => reset()}
+							onPress={() => reset(defaultValuesForm11Shearing)}
 							style={{ flex: 1, marginHorizontal: 4 }}
 						>
 							<Text>LIMPIAR</Text>
