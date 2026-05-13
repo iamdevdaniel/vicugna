@@ -7,6 +7,7 @@ import type {
 import { Q } from "@nozbe/watermelondb"
 import { DB_ERRORS } from "@utils/constants"
 import { useEffect, useReducer } from "react"
+import { combineLatest, map, of, switchMap } from "rxjs"
 import {
 	applyDehearingToModel,
 	applyShearingToModel,
@@ -54,31 +55,31 @@ export function useReadAllForm11(): DbState<Form11Storage[]> {
 			.get<Form11StorageModel>("form11_storage")
 			.query()
 			.observe()
-			.subscribe(async (records) => {
-				try {
-					const mapped = await Promise.all(
-						records.map(async (storage) => {
-							const [shearing, dehearing] = await Promise.all([
-								database
-									.get<Form11ShearingModel>("form11_shearing")
-									.find(storage.shearingId),
-								database
-									.get<Form11DehearingModel>(
-										"form11_dehearing",
-									)
-									.find(storage.dehearingId),
-							])
-							return mapToForm11Storage(
-								storage,
-								shearing,
-								dehearing,
-							)
-						}),
-					)
-					dispatch({ type: "success", data: mapped })
-				} catch (e) {
-					dispatch({ type: "error", error: e as Error })
-				}
+			.pipe(
+				switchMap((storages) =>
+					storages.length === 0
+						? of([])
+						: combineLatest(
+								storages.map((storage) =>
+									combineLatest([
+										storage.shearing.observe(),
+										storage.dehearing.observe(),
+									]).pipe(
+										map(([shearing, dehearing]) =>
+											mapToForm11Storage(
+												storage,
+												shearing,
+												dehearing,
+											),
+										),
+									),
+								),
+							),
+				),
+			)
+			.subscribe({
+				next: (data) => dispatch({ type: "success", data }),
+				error: (e) => dispatch({ type: "error", error: e as Error }),
 			})
 		return () => sub.unsubscribe()
 	}, [])
@@ -123,29 +124,20 @@ export function useReadOneForm11(id: string): DbState<Form11Storage | null> {
 		const sub = database
 			.get<Form11StorageModel>("form11_storage")
 			.findAndObserve(id)
+			.pipe(
+				switchMap((storage) =>
+					combineLatest([
+						storage.shearing.observe(),
+						storage.dehearing.observe(),
+					]).pipe(
+						map(([shearing, dehearing]) =>
+							mapToForm11Storage(storage, shearing, dehearing),
+						),
+					),
+				),
+			)
 			.subscribe({
-				next: async (storage) => {
-					try {
-						const [shearing, dehearing] = await Promise.all([
-							database
-								.get<Form11ShearingModel>("form11_shearing")
-								.find(storage.shearingId),
-							database
-								.get<Form11DehearingModel>("form11_dehearing")
-								.find(storage.dehearingId),
-						])
-						dispatch({
-							type: "success",
-							data: mapToForm11Storage(
-								storage,
-								shearing,
-								dehearing,
-							),
-						})
-					} catch (e) {
-						dispatch({ type: "error", error: e as Error })
-					}
-				},
+				next: (data) => dispatch({ type: "success", data }),
 				error: (e) => dispatch({ type: "error", error: e as Error }),
 			})
 		return () => sub.unsubscribe()
@@ -182,17 +174,15 @@ export async function createForm11(): Promise<Form11Storage> {
 		storage = await database
 			.get<Form11StorageModel>("form11_storage")
 			.create((model: Form11StorageModel) => {
-				model.shearingId = shearing.id
-				model.dehearingId = dehearing.id
+				model.shearing.set(shearing)
+				model.dehearing.set(dehearing)
 			})
 	})
 	if (!storage) throw new Error(DB_ERRORS.FORM11.FAILED_CREATE_STORAGE)
 	const s = storage as Form11StorageModel
 	const [shearing, dehearing] = await Promise.all([
-		database.get<Form11ShearingModel>("form11_shearing").find(s.shearingId),
-		database
-			.get<Form11DehearingModel>("form11_dehearing")
-			.find(s.dehearingId),
+		s.shearing.fetch(),
+		s.dehearing.fetch(),
 	])
 	return mapToForm11Storage(s, shearing, dehearing)
 }
@@ -207,9 +197,7 @@ export async function updateShearingForm(
 			.get<Form11StorageModel>("form11_storage")
 			.find(form11StorageId)
 
-		const shearing = await database
-			.get<Form11ShearingModel>("form11_shearing")
-			.find(storage.shearingId)
+		const shearing = await storage.shearing.fetch()
 
 		await shearing.update((model) =>
 			applyShearingToModel(model, shearingData, isCompleted),
@@ -226,10 +214,8 @@ export async function updateDehearingForm(
 		const storage = await database
 			.get<Form11StorageModel>("form11_storage")
 			.find(form11StorageId)
-		if (!storage.dehearingId) return
-		const dehearing = await database
-			.get<Form11DehearingModel>("form11_dehearing")
-			.find(storage.dehearingId)
+		if (!storage.dehearing.id) return
+		const dehearing = await storage.dehearing.fetch()
 		await dehearing.update((model) =>
 			applyDehearingToModel(model, dehearingData, isCompleted),
 		)

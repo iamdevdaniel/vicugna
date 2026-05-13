@@ -1,5 +1,5 @@
-import { Model } from "@nozbe/watermelondb"
-import { field, text } from "@nozbe/watermelondb/decorators"
+import { Model, type Relation } from "@nozbe/watermelondb"
+import { field, relation, text } from "@nozbe/watermelondb/decorators"
 
 export class Form11ShearingModel extends Model {
 	static table = "form11_shearing"
@@ -37,6 +37,12 @@ export class Form11RecordModel extends Model {
 
 export class Form11StorageModel extends Model {
 	static table = "form11_storage"
-	@field("shearingId") shearingId!: string
-	@field("dehearingId") dehearingId!: string
+	static associations = {
+		form11_shearing: { type: "belongs_to" as const, key: "shearingId" },
+		form11_dehearing: { type: "belongs_to" as const, key: "dehearingId" },
+	}
+	@relation("form11_shearing", "shearingId")
+	shearing!: Relation<Form11ShearingModel>
+	@relation("form11_dehearing", "dehearingId")
+	dehearing!: Relation<Form11DehearingModel>
 }
