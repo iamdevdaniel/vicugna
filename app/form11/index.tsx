@@ -1,6 +1,6 @@
 import { createForm11, useReadAllForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
-import { getCommunityName, getRegionalName } from "@utils/regional-lookup"
+import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { type Route, router } from "expo-router"
 import React from "react"
 import { Alert, ScrollView, Text, View } from "react-native"

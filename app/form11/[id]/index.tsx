@@ -1,6 +1,7 @@
 import { OverviewStep } from "@components"
 import { useReadOneForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
+import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { useAppTheme } from "@utils/useAppTheme"
 import { type Route, router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, View } from "react-native"
@@ -23,6 +24,7 @@ export default function Form11Overview() {
 				<OverviewStep
 					number={1}
 					title="Formulario Captura"
+					state={shearingDone ? "done" : "ready"}
 					onPress={() =>
 						router.push(
 							ROUTES.FORM11.SHEARING.EDIT.replace(
@@ -31,11 +33,47 @@ export default function Form11Overview() {
 							) as Route,
 						)
 					}
+					details={
+						shearingDone && form?.shearing
+							? [
+									{
+										label: "Departamento",
+										value: form.shearing.departamento,
+									},
+									{
+										label: "Regional",
+										value: getRegionalName(form.shearing),
+									},
+									{
+										label: "Comunidad",
+										value: getCommunityName(form.shearing),
+									},
+									{
+										label: "Sitio",
+										value: form.shearing.sitioCaptura,
+									},
+									{
+										label: "Fecha",
+										value: form.shearing.fechaCaptura,
+									},
+									{
+										label: "Autorización",
+										value: form.shearing.codigoAutorizacion,
+									},
+								]
+							: undefined
+					}
 				/>
 				<OverviewStep
 					number={2}
 					title="Formulario Predescerdado"
-					disabled={!shearingDone}
+					state={
+						!shearingDone
+							? "disabled"
+							: dehearingDone
+								? "done"
+								: "ready"
+					}
 					onPress={() =>
 						router.push(
 							ROUTES.FORM11.DEHEARING.OVERVIEW.replace(
@@ -48,7 +86,7 @@ export default function Form11Overview() {
 				<OverviewStep
 					number={3}
 					title="Formulario Esquila"
-					disabled={!dehearingDone}
+					state={!dehearingDone ? "disabled" : "ready"}
 					onPress={() =>
 						router.push(
 							ROUTES.FORM11.RECORDS.LIST.replace(
