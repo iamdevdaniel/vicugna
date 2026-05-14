@@ -28,21 +28,14 @@ export default function Form11Overview() {
 					number={1}
 					title="Formulario Captura"
 					state={shearingDone ? "done" : "ready"}
-					onAction={() => {
-						console.log(
-							"edit",
-							ROUTES.FORM11.SHEARING.replace(
-								"[id]",
-								id as string,
-							),
-						)
+					onAction={() =>
 						router.push(
 							ROUTES.FORM11.SHEARING.replace(
 								"[id]",
 								id as string,
 							) as Route,
 						)
-					}}
+					}
 					details={
 						shearingDone && form?.shearing
 							? [
@@ -91,6 +84,32 @@ export default function Form11Overview() {
 								id as string,
 							) as Route,
 						)
+					}
+					details={
+						dehearingDone && form?.dehearing
+							? [
+									{
+										label: "Inicio",
+										value: form.dehearing
+											.fechaInicioPredescerdado,
+									},
+									{
+										label: "Fin",
+										value: form.dehearing
+											.fechaFinPredescerdado,
+									},
+									{
+										label: "Lugar",
+										value: form.dehearing
+											.lugarPredescerdado,
+									},
+									{
+										label: "Responsable",
+										value: form.dehearing
+											.responsablesPredescerdado,
+									},
+								]
+							: undefined
 					}
 				/>
 				<OverviewStep
