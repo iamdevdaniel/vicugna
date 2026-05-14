@@ -2,13 +2,27 @@ export const ROUTES = {
 	HOME: "/",
 	FORM11: {
 		LIST: "/form11",
-		OVERVIEW: "/form11/[id]",
-		SHEARING: "/form11/[id]/shearing",
-		DEHEARING: "/form11/[id]/dehearing",
+		OVERVIEW: (id: string) => ({
+			pathname: "/form11/[id]" as const,
+			params: { id },
+		}),
+		SHEARING: (id: string) => ({
+			pathname: "/form11/[id]/shearing" as const,
+			params: { id },
+		}),
+		DEHEARING: (id: string) => ({
+			pathname: "/form11/[id]/dehearing" as const,
+			params: { id },
+		}),
 		RECORDS: {
-			LIST: "/form11/[id]/records",
-			OVERVIEW: "/form11/[id]/records/[id]",
-			EDIT: "/form11/[id]/records/[id]/edit",
+			LIST: (id: string) => ({
+				pathname: "/form11/[id]/records" as const,
+				params: { id },
+			}),
+			EDIT: (id: string, recordId?: string) => ({
+				pathname: "/form11/[id]/records/edit" as const,
+				params: { id, ...(recordId ? { recordId } : {}) },
+			}),
 		},
 	},
 }

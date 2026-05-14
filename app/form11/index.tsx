@@ -1,7 +1,7 @@
 import { createForm11, useReadAllForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/name-lookup"
-import { type Route, router } from "expo-router"
+import { router } from "expo-router"
 import React from "react"
 import { Alert, ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
@@ -16,11 +16,7 @@ export default function () {
 		if (creating) return
 		setCreating(true)
 		createForm11()
-			.then((form) =>
-				router.push(
-					ROUTES.FORM11.OVERVIEW.replace("[id]", form.id) as Route,
-				),
-			)
+			.then((form) => router.push(ROUTES.FORM11.OVERVIEW(form.id)))
 			.catch(() => Alert.alert("Error", "No se pudo crear la esquila"))
 			.finally(() => setCreating(false))
 	}
@@ -73,12 +69,7 @@ export default function () {
 						key={form.id || idx}
 						onPress={() => {
 							console.log("to", form.id)
-							router.push(
-								ROUTES.FORM11.OVERVIEW.replace(
-									"[id]",
-									form.id,
-								) as Route,
-							)
+							router.push(ROUTES.FORM11.OVERVIEW(form.id))
 						}}
 						style={{
 							marginBottom: 20,

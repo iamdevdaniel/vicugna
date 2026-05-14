@@ -10,6 +10,7 @@ import { useEffect, useReducer } from "react"
 import { combineLatest, map, of, switchMap } from "rxjs"
 import {
 	applyDehearingToModel,
+	applyRecordToModel,
 	applyShearingToModel,
 	mapToForm11Record,
 	mapToForm11Storage,
@@ -104,33 +105,6 @@ export function useReadAllForm11(): DbState<Form11Storage[]> {
 	return state
 }
 
-export function useReadForm11Records(
-	storageId: string,
-): DbState<Form11Record[]> {
-	const [state, dispatch] = useReducer(
-		makeReducer<Form11Record[]>(),
-		makeInitial<Form11Record[]>([]),
-	)
-
-	useEffect(() => {
-		const sub = database
-			.get<Form11RecordModel>("form11_record")
-			.query(Q.where("form11StorageId", storageId))
-			.observe()
-			.subscribe({
-				next: (records) =>
-					dispatch({
-						type: "success",
-						data: records.map(mapToForm11Record),
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [storageId])
-
-	return state
-}
-
 export function useReadOneForm11(id: string): DbState<Form11Storage | null> {
 	const [state, dispatch] = useReducer(
 		makeReducer<Form11Storage | null>(),
@@ -168,6 +142,33 @@ export function useReadOneForm11(id: string): DbState<Form11Storage | null> {
 			})
 		return () => sub.unsubscribe()
 	}, [id])
+
+	return state
+}
+
+export function useReadForm11Records(
+	storageId: string,
+): DbState<Form11Record[]> {
+	const [state, dispatch] = useReducer(
+		makeReducer<Form11Record[]>(),
+		makeInitial<Form11Record[]>([]),
+	)
+
+	useEffect(() => {
+		const sub = database
+			.get<Form11RecordModel>("form11_record")
+			.query(Q.where("form11StorageId", storageId))
+			.observe()
+			.subscribe({
+				next: (records) =>
+					dispatch({
+						type: "success",
+						data: records.map(mapToForm11Record),
+					}),
+				error: (e) => dispatch({ type: "error", error: e as Error }),
+			})
+		return () => sub.unsubscribe()
+	}, [storageId])
 
 	return state
 }
@@ -245,5 +246,58 @@ export async function updateDehearingForm(
 		await dehearing.update((model) =>
 			applyDehearingToModel(model, dehearingData, isCompleted),
 		)
+	})
+}
+
+export function useReadOneForm11Record(
+	recordId: string | null,
+): DbState<Form11Record | null> {
+	const [state, dispatch] = useReducer(
+		makeReducer<Form11Record | null>(),
+		makeInitial<Form11Record | null>(null),
+	)
+
+	useEffect(() => {
+		if (!recordId) {
+			dispatch({ type: "success", data: null })
+			return
+		}
+		const sub = database
+			.get<Form11RecordModel>("form11_record")
+			.findAndObserve(recordId)
+			.subscribe({
+				next: (record) =>
+					dispatch({
+						type: "success",
+						data: mapToForm11Record(record),
+					}),
+				error: (e) => dispatch({ type: "error", error: e as Error }),
+			})
+		return () => sub.unsubscribe()
+	}, [recordId])
+
+	return state
+}
+
+export async function createForm11Record(
+	storageId: string,
+	data: Form11Record,
+): Promise<void> {
+	await database.write(async () => {
+		await database
+			.get<Form11RecordModel>("form11_record")
+			.create((model) => applyRecordToModel(model, data, storageId))
+	})
+}
+
+export async function updateForm11Record(
+	recordId: string,
+	data: Form11Record,
+): Promise<void> {
+	await database.write(async () => {
+		const record = await database
+			.get<Form11RecordModel>("form11_record")
+			.find(recordId)
+		await record.update((model) => applyRecordToModel(model, data))
 	})
 }

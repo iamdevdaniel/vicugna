@@ -4,10 +4,13 @@
 
 Readers are reactive hooks. Subscribe to WatermelonDB queries and automatically update when the DB changes. No manual re-fetching needed.
 
-- `useAllForm11()` - all form11 storage objects (no records)
-- `useForm11Records(storageId)` - records for a specific form11 storage
+All return `{ data, loading, error }`.
 
-Both return `{ data, loading, error }`.
+**`useReadAllForm11()`** — loads every form11. For each one it observes shearing, dehearing, and a record count. Does NOT load the actual record rows.
+
+**`useReadOneForm11(id)`** — same as above but for a single form. Observes shearing, dehearing, and record count reactively. Also does NOT load record rows.
+
+**`useReadForm11Records(storageId)`** — loads the full record rows for one form. Use this only on the records list screen.
 
 Writers are async functions for creating and updating data. Call these from components, wrap in try/catch there.
 

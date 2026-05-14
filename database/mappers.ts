@@ -81,3 +81,20 @@ export function applyDehearingToModel(
 	model.responsablesPredescerdado = data.responsablesPredescerdado
 	model.isCompleted = isCompleted
 }
+
+export function applyRecordToModel(
+	model: Form11RecordModel,
+	data: Form11Record,
+	storageId?: string,
+): void {
+	if (storageId) model.form11StorageId = storageId
+	model.ficha = data.ficha
+	model.pesoFibraBruto = data.pesoFibraBruto
+	model.pesoVellonLimpio = data.pesoVellonLimpio
+	model.pesoBraga = data.pesoBraga
+	model.pesoTotalFibra = data.pesoTotalFibra
+	model.pesoFibraPredescerdada = data.pesoFibraPredescerdada
+	model.pesoCerda = data.pesoCerda
+	model.caspa = data.caspa
+	model.nombrePredescerdador = data.nombrePredescerdador
+}

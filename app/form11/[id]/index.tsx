@@ -3,7 +3,7 @@ import { useReadOneForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { useAppTheme } from "@utils/useAppTheme"
-import { type Route, router, Stack, useLocalSearchParams } from "expo-router"
+import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, View } from "react-native"
 
 // ROUTE form11/[id]
@@ -29,12 +29,7 @@ export default function Form11Overview() {
 					title="Formulario Captura"
 					state={shearingDone ? "done" : "ready"}
 					onAction={() =>
-						router.push(
-							ROUTES.FORM11.SHEARING.replace(
-								"[id]",
-								id as string,
-							) as Route,
-						)
+						router.push(ROUTES.FORM11.SHEARING(id as string))
 					}
 					details={
 						shearingDone && form?.shearing
@@ -78,12 +73,7 @@ export default function Form11Overview() {
 								: "ready"
 					}
 					onAction={() =>
-						router.push(
-							ROUTES.FORM11.DEHEARING.replace(
-								"[id]",
-								id as string,
-							) as Route,
-						)
+						router.push(ROUTES.FORM11.DEHEARING(id as string))
 					}
 					details={
 						dehearingDone && form?.dehearing
@@ -117,12 +107,7 @@ export default function Form11Overview() {
 					title="Formulario Esquila"
 					state={!dehearingDone ? "disabled" : "ready"}
 					onAction={() =>
-						router.push(
-							ROUTES.FORM11.RECORDS.LIST.replace(
-								"[id]",
-								id as string,
-							) as Route,
-						)
+						router.push(ROUTES.FORM11.RECORDS.LIST(id as string))
 					}
 				/>
 			</ScrollView>
