@@ -3,14 +3,8 @@ export const ROUTES = {
 	FORM11: {
 		LIST: "/form11",
 		OVERVIEW: "/form11/[id]",
-		SHEARING: {
-			OVERVIEW: "/form11/[id]/shearing",
-			EDIT: "/form11/[id]/shearing/edit",
-		},
-		DEHEARING: {
-			OVERVIEW: "/form11/[id]/dehearing",
-			EDIT: "/form11/[id]/dehearing/edit",
-		},
+		SHEARING: "/form11/[id]/shearing",
+		DEHEARING: "/form11/[id]/dehearing",
 		RECORDS: {
 			LIST: "/form11/[id]/records",
 			OVERVIEW: "/form11/[id]/records/[id]",

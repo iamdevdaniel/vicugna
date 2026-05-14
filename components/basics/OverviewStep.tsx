@@ -79,8 +79,6 @@ export const OverviewStep = ({
 						/>
 					)}
 				</View>
-
-				{/* Details grid (done state only) */}
 				{done && details && details.length > 0 && (
 					<View
 						style={{
@@ -123,12 +121,10 @@ export const OverviewStep = ({
 						))}
 					</View>
 				)}
-
-				{/* Action button (ready/disabled states only) */}
 				{!done && (
 					<Button
 						mode="contained"
-						onPress={disabled ? undefined : onAction}
+						onPress={onAction}
 						disabled={disabled}
 						style={{ width: "100%", marginTop: 12 }}
 						buttonColor={theme.colors.custom.blue}

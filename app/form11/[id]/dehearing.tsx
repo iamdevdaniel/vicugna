@@ -7,7 +7,7 @@ import {
 import { Controller, useForm } from "react-hook-form"
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
 
-// ROUTE: /form11/[id]/dehearing-form
+// ROUTE: /form11/[id]/dehearing
 export default function () {
 	const {
 		control,
