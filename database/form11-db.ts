@@ -64,13 +64,30 @@ export function useReadAllForm11(): DbState<Form11Storage[]> {
 									combineLatest([
 										storage.shearing.observe(),
 										storage.dehearing.observe(),
+										database
+											.get<Form11RecordModel>(
+												"form11_record",
+											)
+											.query(
+												Q.where(
+													"form11StorageId",
+													storage.id,
+												),
+											)
+											.observeCount(),
 									]).pipe(
-										map(([shearing, dehearing]) =>
-											mapToForm11Storage(
-												storage,
+										map(
+											([
 												shearing,
 												dehearing,
-											),
+												recordCount,
+											]) =>
+												mapToForm11Storage(
+													storage,
+													shearing,
+													dehearing,
+													recordCount,
+												),
 										),
 									),
 								),
@@ -129,9 +146,18 @@ export function useReadOneForm11(id: string): DbState<Form11Storage | null> {
 					combineLatest([
 						storage.shearing.observe(),
 						storage.dehearing.observe(),
+						database
+							.get<Form11RecordModel>("form11_record")
+							.query(Q.where("form11StorageId", storage.id))
+							.observeCount(),
 					]).pipe(
-						map(([shearing, dehearing]) =>
-							mapToForm11Storage(storage, shearing, dehearing),
+						map(([shearing, dehearing, recordCount]) =>
+							mapToForm11Storage(
+								storage,
+								shearing,
+								dehearing,
+								recordCount,
+							),
 						),
 					),
 				),
@@ -184,7 +210,7 @@ export async function createForm11(): Promise<Form11Storage> {
 		s.shearing.fetch(),
 		s.dehearing.fetch(),
 	])
-	return mapToForm11Storage(s, shearing, dehearing)
+	return mapToForm11Storage(s, shearing, dehearing, 0)
 }
 
 export async function updateShearingForm(

@@ -2,7 +2,7 @@ export type Form11Storage = {
 	id: string
 	shearing: Form11Shearing
 	dehearing: Form11Dehearing
-	records: Form11Record[]
+	recordCount: number
 }
 
 export type Form11Shearing = {

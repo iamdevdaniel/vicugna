@@ -73,7 +73,12 @@ export default function () {
 						key={form.id || idx}
 						onPress={() => {
 							console.log("to", form.id)
-							router.push(`/form11/${form.id || idx}` as Route)
+							router.push(
+								ROUTES.FORM11.OVERVIEW.replace(
+									"[id]",
+									form.id,
+								) as Route,
+							)
 						}}
 						style={{
 							marginBottom: 20,
@@ -146,7 +151,7 @@ export default function () {
 												fontSize: 16,
 											}}
 										>
-											{form.records?.length || 0}
+											{form.recordCount}
 										</Text>
 									</View>
 									<Text style={{ fontSize: 12 }}>

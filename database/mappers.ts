@@ -15,6 +15,7 @@ export function mapToForm11Storage(
 	storage: Form11StorageModel,
 	shearing: Form11ShearingModel,
 	dehearing: Form11DehearingModel,
+	recordCount: number,
 ): Form11Storage {
 	return {
 		id: storage.id,
@@ -36,7 +37,7 @@ export function mapToForm11Storage(
 			responsablesPredescerdado: dehearing.responsablesPredescerdado,
 			isCompleted: dehearing.isCompleted,
 		},
-		records: [],
+		recordCount,
 	}
 }
 
