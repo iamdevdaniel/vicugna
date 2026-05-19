@@ -1,3 +1,11 @@
+export type AdminPermit = {
+	fechaCaptura: string
+	sitioCaptura: string
+	codigoAutorizacion: string
+}
+
+// FORM 11
+
 export type Form11Storage = {
 	id: string
 	shearing: Form11Shearing

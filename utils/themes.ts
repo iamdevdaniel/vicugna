@@ -48,6 +48,9 @@ export const warm = {
 			lightGray: "#E0E0E0",
 			darkGray: "#757575",
 			white: "#FFFFFF",
+			pastelGreen: "#e2efd9",
+			pastelBlue: "#D9E2F3",
+			pastelYellow: "#FFF2CC",
 		},
 	},
 	dark: {
@@ -99,6 +102,9 @@ export const warm = {
 			lightGray: "#E0E0E0",
 			darkGray: "#757575",
 			white: "#FFFFFF",
+			pastelGreen: "#e2efd9",
+			pastelBlue: "#D9E2F3",
+			pastelYellow: "#FFF2CC",
 		},
 	},
 }
