@@ -1,6 +1,7 @@
 import { StepList } from "@components"
+import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
-import { Stack, useLocalSearchParams } from "expo-router"
+import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, View } from "react-native"
 
 // Route: /[id]
@@ -23,7 +24,8 @@ export default function AdminPermitDetail() {
 						{
 							title: "Informacion Básica",
 							state: "ready",
-							onAction: () => {},
+							onAction: () =>
+								router.push(ROUTES.BASIC_INFO(id as string)),
 						},
 						{
 							title: "Participantes",

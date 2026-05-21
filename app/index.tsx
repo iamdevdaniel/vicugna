@@ -36,7 +36,7 @@ export default function () {
 						style={styles.item}
 						onPress={() =>
 							router.push(
-								ROUTES.PERMIT.DETAIL(item.codigoAutorizacion),
+								ROUTES.OVERVIEW(item.codigoAutorizacion),
 							)
 						}
 					>

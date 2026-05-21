@@ -1,48 +1,46 @@
 export const ROUTES = {
 	HOME: "/",
-	PERMIT: {
-		DETAIL: (id: string) => ({
-			pathname: "/[id]" as const,
+	OVERVIEW: (id: string) => ({
+		pathname: "/[id]" as const,
+		params: { id },
+	}),
+	BASIC_INFO: (id: string) => ({
+		pathname: "/[id]/basic-info" as const,
+		params: { id },
+	}),
+	PARTICIPANTS: {
+		LIST: (id: string) => ({
+			pathname: "/[id]/participantes" as const,
 			params: { id },
 		}),
-		BASIC_INFO: (id: string) => ({
-			pathname: "/[id]/basic-info" as const,
+		OVERVIEW: (id: string, pid: string) => ({
+			pathname: "/[id]/participantes/[pid]" as const,
+			params: { id, pid },
+		}),
+	},
+	SHEARING: {
+		OVERVIEW: (id: string) => ({
+			pathname: "/[id]/esquila" as const,
 			params: { id },
 		}),
-		PARTICIPANTES: {
-			LIST: (id: string) => ({
-				pathname: "/[id]/participantes" as const,
-				params: { id },
-			}),
-			DETAIL: (id: string, pid: string) => ({
-				pathname: "/[id]/participantes/[pid]" as const,
-				params: { id, pid },
-			}),
-		},
-		ESQUILA: {
-			OVERVIEW: (id: string) => ({
-				pathname: "/[id]/esquila" as const,
-				params: { id },
-			}),
-			FORM12: (id: string) => ({
-				pathname: "/[id]/esquila/form12" as const,
-				params: { id },
-			}),
-			FORM10: (id: string) => ({
-				pathname: "/[id]/esquila/form10" as const,
-				params: { id },
-			}),
-		},
-		LIMPIEZA: {
-			LIST: (id: string) => ({
-				pathname: "/[id]/limpieza" as const,
-				params: { id },
-			}),
-			DETAIL: (id: string, recordId: string) => ({
-				pathname: "/[id]/limpieza/[recordId]" as const,
-				params: { id, recordId },
-			}),
-		},
+		FORM12: (id: string) => ({
+			pathname: "/[id]/esquila/form12" as const,
+			params: { id },
+		}),
+		FORM10: (id: string) => ({
+			pathname: "/[id]/esquila/form10" as const,
+			params: { id },
+		}),
+	},
+	CLEANUP: {
+		LIST: (id: string) => ({
+			pathname: "/[id]/limpieza" as const,
+			params: { id },
+		}),
+		OVERVIEW: (id: string, recordId: string) => ({
+			pathname: "/[id]/limpieza/[recordId]" as const,
+			params: { id, recordId },
+		}),
 	},
 	FORM11: {
 		LIST: (permitId: string) => ({
