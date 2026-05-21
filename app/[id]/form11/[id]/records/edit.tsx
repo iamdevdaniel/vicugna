@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import {
 	defaultValuesForm11Record,
 	schemaForm11Record,
-} from "@utils/form11-schemas"
+} from "@utils/form11-yup"
 import { useAppTheme } from "@utils/useAppTheme"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"

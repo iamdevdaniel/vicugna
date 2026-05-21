@@ -1,26 +1,73 @@
 export const ROUTES = {
 	HOME: "/",
+	PERMIT: {
+		DETAIL: (id: string) => ({
+			pathname: "/[id]" as const,
+			params: { id },
+		}),
+		BASIC_INFO: (id: string) => ({
+			pathname: "/[id]/basic-info" as const,
+			params: { id },
+		}),
+		PARTICIPANTES: {
+			LIST: (id: string) => ({
+				pathname: "/[id]/participantes" as const,
+				params: { id },
+			}),
+			DETAIL: (id: string, pid: string) => ({
+				pathname: "/[id]/participantes/[pid]" as const,
+				params: { id, pid },
+			}),
+		},
+		ESQUILA: {
+			OVERVIEW: (id: string) => ({
+				pathname: "/[id]/esquila" as const,
+				params: { id },
+			}),
+			FORM12: (id: string) => ({
+				pathname: "/[id]/esquila/form12" as const,
+				params: { id },
+			}),
+			FORM10: (id: string) => ({
+				pathname: "/[id]/esquila/form10" as const,
+				params: { id },
+			}),
+		},
+		LIMPIEZA: {
+			LIST: (id: string) => ({
+				pathname: "/[id]/limpieza" as const,
+				params: { id },
+			}),
+			DETAIL: (id: string, recordId: string) => ({
+				pathname: "/[id]/limpieza/[recordId]" as const,
+				params: { id, recordId },
+			}),
+		},
+	},
 	FORM11: {
-		LIST: "/form11",
+		LIST: (permitId: string) => ({
+			pathname: "/[id]/form11" as const,
+			params: { id: permitId },
+		}),
 		OVERVIEW: (id: string) => ({
-			pathname: "/form11/[id]" as const,
+			pathname: "/[id]/form11/[id]" as const,
 			params: { id },
 		}),
 		SHEARING: (id: string) => ({
-			pathname: "/form11/[id]/shearing" as const,
+			pathname: "/[id]/form11/[id]/shearing" as const,
 			params: { id },
 		}),
 		DEHEARING: (id: string) => ({
-			pathname: "/form11/[id]/dehearing" as const,
+			pathname: "/[id]/form11/[id]/dehearing" as const,
 			params: { id },
 		}),
 		RECORDS: {
 			LIST: (id: string) => ({
-				pathname: "/form11/[id]/records" as const,
+				pathname: "/[id]/form11/[id]/records" as const,
 				params: { id },
 			}),
 			EDIT: (id: string, recordId?: string) => ({
-				pathname: "/form11/[id]/records/edit" as const,
+				pathname: "/[id]/form11/[id]/records/edit" as const,
 				params: { id, ...(recordId ? { recordId } : {}) },
 			}),
 		},

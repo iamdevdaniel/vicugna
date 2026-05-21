@@ -6,7 +6,7 @@ import DateTimePicker from "@react-native-community/datetimepicker"
 import {
 	defaultValuesForm11Dehearing,
 	schemaForm11Dehearing,
-} from "@utils/form11-schemas"
+} from "@utils/form11-yup"
 import { useAppTheme } from "@utils/useAppTheme"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react"

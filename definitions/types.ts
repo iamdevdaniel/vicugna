@@ -4,6 +4,20 @@ export type AdminPermit = {
 	codigoAutorizacion: string
 }
 
+// BASIC INFO
+
+export type BasicInfo = {
+	id?: string
+	asociacionRegional: string
+	comunidadManejadora: string
+	sitioCaptura: string
+	fechaCaptura: string
+	codigoAutorizacion: string
+	isCompleted: boolean
+}
+
+export type BasicInfoFormData = Omit<BasicInfo, "id" | "isCompleted">
+
 // FORM 11
 
 export type Form11Storage = {

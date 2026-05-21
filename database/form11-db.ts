@@ -53,7 +53,7 @@ export function useReadAllForm11(): DbState<Form11Storage[]> {
 
 	useEffect(() => {
 		const sub = database
-			.get<Form11StorageModel>("form11_storage")
+			.get<Form11StorageModel>("form11Storage")
 			.query()
 			.observe()
 			.pipe(
@@ -67,7 +67,7 @@ export function useReadAllForm11(): DbState<Form11Storage[]> {
 										storage.dehearing.observe(),
 										database
 											.get<Form11RecordModel>(
-												"form11_record",
+												"form11Record",
 											)
 											.query(
 												Q.where(
@@ -113,7 +113,7 @@ export function useReadOneForm11(id: string): DbState<Form11Storage | null> {
 
 	useEffect(() => {
 		const sub = database
-			.get<Form11StorageModel>("form11_storage")
+			.get<Form11StorageModel>("form11Storage")
 			.findAndObserve(id)
 			.pipe(
 				switchMap((storage) =>
@@ -121,7 +121,7 @@ export function useReadOneForm11(id: string): DbState<Form11Storage | null> {
 						storage.shearing.observe(),
 						storage.dehearing.observe(),
 						database
-							.get<Form11RecordModel>("form11_record")
+							.get<Form11RecordModel>("form11Record")
 							.query(Q.where("form11StorageId", storage.id))
 							.observeCount(),
 					]).pipe(
@@ -156,7 +156,7 @@ export function useReadForm11Records(
 
 	useEffect(() => {
 		const sub = database
-			.get<Form11RecordModel>("form11_record")
+			.get<Form11RecordModel>("form11Record")
 			.query(Q.where("form11StorageId", storageId))
 			.observe()
 			.subscribe({
@@ -179,7 +179,7 @@ export async function createForm11(): Promise<Form11Storage> {
 	let storage: Form11StorageModel | undefined
 	await database.write(async () => {
 		const shearing = await database
-			.get<Form11ShearingModel>("form11_shearing")
+			.get<Form11ShearingModel>("form11Shearing")
 			.create((model: Form11ShearingModel) => {
 				model.departamento = ""
 				model.asociacionRegional = ""
@@ -190,7 +190,7 @@ export async function createForm11(): Promise<Form11Storage> {
 			})
 
 		const dehearing = await database
-			.get<Form11DehearingModel>("form11_dehearing")
+			.get<Form11DehearingModel>("form11Dehearing")
 			.create((model: Form11DehearingModel) => {
 				model.fechaInicioPredescerdado = ""
 				model.fechaFinPredescerdado = ""
@@ -199,7 +199,7 @@ export async function createForm11(): Promise<Form11Storage> {
 			})
 
 		storage = await database
-			.get<Form11StorageModel>("form11_storage")
+			.get<Form11StorageModel>("form11Storage")
 			.create((model: Form11StorageModel) => {
 				model.shearing.set(shearing)
 				model.dehearing.set(dehearing)
@@ -221,7 +221,7 @@ export async function updateShearingForm(
 ): Promise<void> {
 	await database.write(async () => {
 		const storage = await database
-			.get<Form11StorageModel>("form11_storage")
+			.get<Form11StorageModel>("form11Storage")
 			.find(form11StorageId)
 
 		const shearing = await storage.shearing.fetch()
@@ -239,7 +239,7 @@ export async function updateDehearingForm(
 ): Promise<void> {
 	await database.write(async () => {
 		const storage = await database
-			.get<Form11StorageModel>("form11_storage")
+			.get<Form11StorageModel>("form11Storage")
 			.find(form11StorageId)
 		if (!storage.dehearing.id) return
 		const dehearing = await storage.dehearing.fetch()
@@ -263,7 +263,7 @@ export function useReadOneForm11Record(
 			return
 		}
 		const sub = database
-			.get<Form11RecordModel>("form11_record")
+			.get<Form11RecordModel>("form11Record")
 			.findAndObserve(recordId)
 			.subscribe({
 				next: (record) =>
@@ -285,7 +285,7 @@ export async function createForm11Record(
 ): Promise<void> {
 	await database.write(async () => {
 		await database
-			.get<Form11RecordModel>("form11_record")
+			.get<Form11RecordModel>("form11Record")
 			.create((model) => applyRecordToModel(model, data, storageId))
 	})
 }
@@ -296,7 +296,7 @@ export async function updateForm11Record(
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
-			.get<Form11RecordModel>("form11_record")
+			.get<Form11RecordModel>("form11Record")
 			.find(recordId)
 		await record.update((model) => applyRecordToModel(model, data))
 	})

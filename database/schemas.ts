@@ -4,7 +4,18 @@ export const appDbSchema = appSchema({
 	version: 1,
 	tables: [
 		tableSchema({
-			name: "form11_shearing",
+			name: "basicInfo",
+			columns: [
+				{ name: "asociacionRegional", type: "string" },
+				{ name: "comunidadManejadora", type: "string" },
+				{ name: "sitioCaptura", type: "string" },
+				{ name: "fechaCaptura", type: "string" },
+				{ name: "codigoAutorizacion", type: "string" },
+				{ name: "isCompleted", type: "boolean" },
+			],
+		}),
+		tableSchema({
+			name: "form11Shearing",
 			columns: [
 				{ name: "departamento", type: "string" },
 				{ name: "asociacionRegional", type: "string" },
@@ -12,21 +23,21 @@ export const appDbSchema = appSchema({
 				{ name: "sitioCaptura", type: "string" },
 				{ name: "fechaCaptura", type: "string" },
 				{ name: "codigoAutorizacion", type: "string" },
-				{ name: "is_completed", type: "boolean" },
+				{ name: "isCompleted", type: "boolean" },
 			],
 		}),
 		tableSchema({
-			name: "form11_dehearing",
+			name: "form11Dehearing",
 			columns: [
 				{ name: "fechaInicioPredescerdado", type: "string" },
 				{ name: "fechaFinPredescerdado", type: "string" },
 				{ name: "lugarPredescerdado", type: "string" },
 				{ name: "responsablesPredescerdado", type: "string" },
-				{ name: "is_completed", type: "boolean" },
+				{ name: "isCompleted", type: "boolean" },
 			],
 		}),
 		tableSchema({
-			name: "form11_record",
+			name: "form11Record",
 			columns: [
 				{ name: "form11StorageId", type: "string" },
 				{ name: "ficha", type: "string" },
@@ -41,7 +52,7 @@ export const appDbSchema = appSchema({
 			],
 		}),
 		tableSchema({
-			name: "form11_storage",
+			name: "form11Storage",
 			columns: [
 				{ name: "shearingId", type: "string" },
 				{ name: "dehearingId", type: "string" },
