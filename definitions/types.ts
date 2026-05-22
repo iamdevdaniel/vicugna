@@ -10,6 +10,7 @@ export type AdminPermit = {
 export type BasicInfo = {
 	id: string
 	permitId: string
+	departamento: string
 	asociacionRegional: string
 	comunidadManejadora: string
 	sitioCaptura: string

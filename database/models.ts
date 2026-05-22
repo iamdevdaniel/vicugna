@@ -4,11 +4,12 @@ import { field, relation, text } from "@nozbe/watermelondb/decorators"
 export class BasicInfoModel extends Model {
 	static table = "basicInfo"
 	@field("permitId") permitId!: string
+	@text("departamento") departamento!: string
 	@text("asociacionRegional") asociacionRegional!: string
 	@text("comunidadManejadora") comunidadManejadora!: string
 	@text("sitioCaptura") sitioCaptura!: string
 	@text("fechaCaptura") fechaCaptura!: string
-	@field("is_completed") isCompleted!: boolean
+	@field("isCompleted") isCompleted!: boolean
 }
 
 export class Form11ShearingModel extends Model {
@@ -19,7 +20,7 @@ export class Form11ShearingModel extends Model {
 	@text("sitioCaptura") sitioCaptura!: string
 	@text("fechaCaptura") fechaCaptura!: string
 	@text("codigoAutorizacion") codigoAutorizacion!: string
-	@field("is_completed") isCompleted!: boolean
+	@field("isCompleted") isCompleted!: boolean
 }
 
 export class Form11DehearingModel extends Model {
@@ -28,7 +29,7 @@ export class Form11DehearingModel extends Model {
 	@text("fechaFinPredescerdado") fechaFinPredescerdado!: string
 	@text("lugarPredescerdado") lugarPredescerdado!: string
 	@text("responsablesPredescerdado") responsablesPredescerdado!: string
-	@field("is_completed") isCompleted!: boolean
+	@field("isCompleted") isCompleted!: boolean
 }
 
 export class Form11RecordModel extends Model {

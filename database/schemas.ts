@@ -7,6 +7,7 @@ export const appDbSchema = appSchema({
 			name: "basicInfo",
 			columns: [
 				{ name: "permitId", type: "string", isIndexed: true },
+				{ name: "departamento", type: "string" },
 				{ name: "asociacionRegional", type: "string" },
 				{ name: "comunidadManejadora", type: "string" },
 				{ name: "sitioCaptura", type: "string" },

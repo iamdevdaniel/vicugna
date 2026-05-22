@@ -1,11 +1,12 @@
 import regionales from "@assets/data/regionales.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
+import { updateBasicInfo, useReadBasicInfo } from "@database"
 import type { BasicInfoFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { defaultValuesBasicInfo, schemaBasicInfo } from "@utils/basic-info-yup"
 import { useAppTheme } from "@utils/useAppTheme"
-import { Stack, useRouter } from "expo-router"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import {
@@ -21,8 +22,9 @@ import { Button } from "react-native-paper"
 // ROUTE /[id]/basic-info
 export default function () {
 	const theme = useAppTheme()
-	// const { id } = useLocalSearchParams()
 	const router = useRouter()
+	const { id } = useLocalSearchParams<{ id: string }>()
+	const { data, loading } = useReadBasicInfo(id)
 
 	const {
 		control,
@@ -37,7 +39,6 @@ export default function () {
 		resolver: yupResolver(schemaBasicInfo),
 	})
 
-	const [departamento, setDepartamento] = useState("")
 	const [regionalOptions, setRegionalOptions] = useState<
 		Array<{ label: string; value: string }>
 	>([])
@@ -46,7 +47,19 @@ export default function () {
 	>([])
 	const [datePickerOpen, setDatePickerOpen] = useState(false)
 
+	const selectedDepartamento = watch("departamento")
 	const selectedRegional = watch("asociacionRegional")
+
+	useEffect(() => {
+		if (loading || !data) return
+		reset({
+			departamento: data.departamento,
+			asociacionRegional: data.asociacionRegional,
+			comunidadManejadora: data.comunidadManejadora,
+			sitioCaptura: data.sitioCaptura,
+			fechaCaptura: data.fechaCaptura,
+		})
+	}, [loading, reset, data])
 
 	const departamentoOptions = Object.keys(regionales).map((key) => ({
 		label: key,
@@ -54,8 +67,9 @@ export default function () {
 	}))
 
 	useEffect(() => {
-		if (departamento) {
-			const dept = regionales[departamento as keyof typeof regionales]
+		if (selectedDepartamento) {
+			const dept =
+				regionales[selectedDepartamento as keyof typeof regionales]
 			setRegionalOptions(
 				dept.regionales.map((r) => ({ label: r.nombre, value: r.id })),
 			)
@@ -63,11 +77,12 @@ export default function () {
 			setRegionalOptions([])
 			setComunidadOptions([])
 		}
-	}, [departamento])
+	}, [selectedDepartamento])
 
 	useEffect(() => {
-		if (selectedRegional && departamento) {
-			const dept = regionales[departamento as keyof typeof regionales]
+		if (selectedRegional && selectedDepartamento) {
+			const dept =
+				regionales[selectedDepartamento as keyof typeof regionales]
 			const regional = dept.regionales.find(
 				(r) => r.id === selectedRegional,
 			)
@@ -82,11 +97,13 @@ export default function () {
 		} else {
 			setComunidadOptions([])
 		}
-	}, [selectedRegional, departamento])
+	}, [selectedRegional, selectedDepartamento])
 
-	const onSubmit = (_data: BasicInfoFormData) => {
-		// TODO: save to db
-		router.back()
+	const onSubmit = async (formData: BasicInfoFormData) => {
+		if (!data) return
+		await updateBasicInfo(data.id, formData).then(() => {
+			router.back()
+		})
 	}
 
 	const inputStyle = {
@@ -111,19 +128,25 @@ export default function () {
 				keyboardShouldPersistTaps="handled"
 			>
 				<LabeledInput label="Departamento" labelPrefix="1">
-					<Dropdown
-						placeholder="Seleccionar departamento"
-						options={departamentoOptions}
-						value={departamento}
-						onSelect={(v) => {
-							setDepartamento(v)
-							setValue("asociacionRegional", "", {
-								shouldValidate: true,
-							})
-							setValue("comunidadManejadora", "", {
-								shouldValidate: true,
-							})
-						}}
+					<Controller
+						control={control}
+						name="departamento"
+						render={({ field: { onChange, value } }) => (
+							<Dropdown
+								placeholder="Seleccionar departamento"
+								options={departamentoOptions}
+								value={value}
+								onSelect={(v) => {
+									onChange(v)
+									setValue("asociacionRegional", "", {
+										shouldValidate: true,
+									})
+									setValue("comunidadManejadora", "", {
+										shouldValidate: true,
+									})
+								}}
+							/>
+						)}
 					/>
 				</LabeledInput>
 
@@ -146,7 +169,7 @@ export default function () {
 										shouldValidate: true,
 									})
 								}}
-								disabled={!departamento}
+								disabled={!selectedDepartamento}
 							/>
 						)}
 					/>
@@ -281,7 +304,6 @@ export default function () {
 					<Button
 						mode="outlined"
 						onPress={() => {
-							setDepartamento("")
 							reset(defaultValuesBasicInfo)
 						}}
 						style={{ flex: 1, marginHorizontal: 4 }}

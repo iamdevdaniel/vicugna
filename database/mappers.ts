@@ -107,6 +107,7 @@ export function mapToBasicInfo(m: BasicInfoModel): BasicInfo {
 	return {
 		id: m.id,
 		permitId: m.permitId,
+		departamento: m.departamento,
 		asociacionRegional: m.asociacionRegional,
 		comunidadManejadora: m.comunidadManejadora,
 		sitioCaptura: m.sitioCaptura,
@@ -120,6 +121,7 @@ export function applyBasicInfoToModel(
 	data: BasicInfoFormData,
 	isCompleted: boolean,
 ): void {
+	model.departamento = data.departamento
 	model.asociacionRegional = data.asociacionRegional
 	model.comunidadManejadora = data.comunidadManejadora
 	model.sitioCaptura = data.sitioCaptura

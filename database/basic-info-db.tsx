@@ -44,6 +44,7 @@ export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
 			.get<BasicInfoModel>("basicInfo")
 			.create((model) => {
 				model.permitId = permitId
+				model.departamento = ""
 				model.asociacionRegional = ""
 				model.comunidadManejadora = ""
 				model.sitioCaptura = ""
@@ -72,6 +73,7 @@ export async function initializePermits(permitIds: string[]): Promise<void> {
 						.get<BasicInfoModel>("basicInfo")
 						.prepareCreate((model) => {
 							model.permitId = permitId
+							model.departamento = ""
 							model.asociacionRegional = ""
 							model.comunidadManejadora = ""
 							model.sitioCaptura = ""
