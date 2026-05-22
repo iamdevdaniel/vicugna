@@ -8,14 +8,12 @@ export const OverviewStep = ({
 	onAction,
 	state = "ready",
 	details,
-	actionLabel = "LLENAR",
 }: {
 	number: number
 	title: string
 	onAction: () => void
-	state?: "ready" | "done" | "disabled"
-	details?: Array<{ label: string; value: string }>
-	actionLabel?: string
+	state: "ready" | "done" | "disabled"
+	details: Array<{ label: string; value: string }>
 }) => {
 	const theme = useAppTheme()
 	const disabled = state === "disabled"
@@ -27,8 +25,7 @@ export const OverviewStep = ({
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						marginBottom:
-							done && details && details.length > 0 ? 8 : 0,
+						marginBottom: done && details.length > 0 ? 8 : 0,
 					}}
 				>
 					<View
@@ -79,7 +76,7 @@ export const OverviewStep = ({
 						/>
 					)}
 				</View>
-				{done && details && details.length > 0 && (
+				{done && details.length > 0 && (
 					<View
 						style={{
 							flexDirection: "row",
@@ -130,7 +127,7 @@ export const OverviewStep = ({
 						buttonColor={theme.colors.custom.blue}
 						textColor={theme.colors.custom.white}
 					>
-						{actionLabel}
+						LLENAR
 					</Button>
 				)}
 			</Card.Content>

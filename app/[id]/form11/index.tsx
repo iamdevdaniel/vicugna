@@ -1,6 +1,5 @@
 import { createForm11, useReadAllForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
-import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { router } from "expo-router"
 import React from "react"
 import { Alert, ScrollView, Text, View } from "react-native"
@@ -103,7 +102,7 @@ export default function () {
 										}}
 									>
 										Regional:{" "}
-										{getRegionalName(form.shearing)}
+										{/* {getRegionalName(form.shearing)} */}
 									</Text>
 									<Text
 										style={{
@@ -113,7 +112,7 @@ export default function () {
 										}}
 									>
 										Comunidad:{" "}
-										{getCommunityName(form.shearing)}
+										{/* {getCommunityName(form.shearing)} */}
 									</Text>
 								</View>
 								<View

@@ -2,10 +2,9 @@ import { OverviewStep } from "./OverviewStep"
 
 export interface StepConfig {
 	title: string
-	state?: "ready" | "done" | "disabled"
+	state: "ready" | "done" | "disabled"
 	onAction: () => void
-	details?: Array<{ label: string; value: string }>
-	actionLabel?: string
+	details: Array<{ label: string; value: string }>
 }
 
 export const StepList = ({ steps }: { steps: StepConfig[] }) => {
@@ -19,7 +18,6 @@ export const StepList = ({ steps }: { steps: StepConfig[] }) => {
 					state={step.state}
 					onAction={step.onAction}
 					details={step.details}
-					actionLabel={step.actionLabel}
 				/>
 			))}
 		</>

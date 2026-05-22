@@ -20,7 +20,14 @@ export function useReadBasicInfo(permitId: string): DbState<BasicInfo | null> {
 		const sub = database
 			.get<BasicInfoModel>("basicInfo")
 			.query(Q.where("permitId", permitId))
-			.observe()
+			.observeWithColumns([
+				"departamento",
+				"asociacionRegional",
+				"comunidadManejadora",
+				"sitioCaptura",
+				"fechaCaptura",
+				"isCompleted",
+			])
 			.subscribe({
 				next: (records) =>
 					dispatch({
@@ -36,24 +43,6 @@ export function useReadBasicInfo(permitId: string): DbState<BasicInfo | null> {
 }
 
 //-------------------WRITE-------------------
-
-export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
-	let record: BasicInfoModel | undefined
-	await database.write(async () => {
-		record = await database
-			.get<BasicInfoModel>("basicInfo")
-			.create((model) => {
-				model.permitId = permitId
-				model.departamento = ""
-				model.asociacionRegional = ""
-				model.comunidadManejadora = ""
-				model.sitioCaptura = ""
-				model.fechaCaptura = ""
-			})
-	})
-	if (!record) throw new Error("No se pudo crear el registro de info básica.")
-	return mapToBasicInfo(record)
-}
 
 export async function initializePermits(permitIds: string[]): Promise<void> {
 	if (initializingPermits) return
@@ -85,6 +74,24 @@ export async function initializePermits(permitIds: string[]): Promise<void> {
 	} finally {
 		initializingPermits = false
 	}
+}
+
+export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
+	let record: BasicInfoModel | undefined
+	await database.write(async () => {
+		record = await database
+			.get<BasicInfoModel>("basicInfo")
+			.create((model) => {
+				model.permitId = permitId
+				model.departamento = ""
+				model.asociacionRegional = ""
+				model.comunidadManejadora = ""
+				model.sitioCaptura = ""
+				model.fechaCaptura = ""
+			})
+	})
+	if (!record) throw new Error("No se pudo crear el registro de info básica.")
+	return mapToBasicInfo(record)
 }
 
 export async function updateBasicInfo(

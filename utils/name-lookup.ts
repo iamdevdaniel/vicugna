@@ -1,7 +1,7 @@
 import regionales from "@assets/data/regionales.json"
-import type { Form11Shearing } from "@definitions/types"
+import type { BasicInfo } from "@definitions/types"
 
-export const getRegionalName = (form: Form11Shearing): string => {
+export const getRegionalName = (form: BasicInfo): string => {
 	const departamento =
 		regionales[form.departamento as keyof typeof regionales]
 	if (!departamento) return "NA"
@@ -11,7 +11,7 @@ export const getRegionalName = (form: Form11Shearing): string => {
 	)
 }
 
-export const getCommunityName = (form: Form11Shearing): string => {
+export const getCommunityName = (form: BasicInfo): string => {
 	const departamento =
 		regionales[form.departamento as keyof typeof regionales]
 	if (!departamento) return "NA"
