@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { defaultValuesBasicInfo, schemaBasicInfo } from "@utils/basic-info-yup"
 import { useAppTheme } from "@utils/useAppTheme"
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { Stack, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import {
@@ -21,7 +21,7 @@ import { Button } from "react-native-paper"
 // ROUTE /[id]/basic-info
 export default function () {
 	const theme = useAppTheme()
-	const { id } = useLocalSearchParams()
+	// const { id } = useLocalSearchParams()
 	const router = useRouter()
 
 	const {
@@ -33,10 +33,7 @@ export default function () {
 		handleSubmit,
 	} = useForm<BasicInfoFormData>({
 		mode: "onChange",
-		defaultValues: {
-			...defaultValuesBasicInfo,
-			codigoAutorizacion: id as string,
-		},
+		defaultValues: defaultValuesBasicInfo,
 		resolver: yupResolver(schemaBasicInfo),
 	})
 
@@ -263,41 +260,6 @@ export default function () {
 					/>
 				</LabeledInput>
 
-				<LabeledInput
-					label="Código de Autorización de Esquila"
-					labelPrefix="6"
-				>
-					<View
-						style={{
-							flexDirection: "row",
-							alignItems: "center",
-							borderWidth: 1,
-							borderColor: theme.colors.outlineVariant,
-							borderRadius: 4,
-							padding: 12,
-							backgroundColor: theme.colors.surfaceVariant,
-							gap: 8,
-						}}
-					>
-						<Text
-							style={{
-								color: theme.colors.onSurfaceVariant,
-								fontSize: 16,
-							}}
-						>
-							🔒
-						</Text>
-						<Text
-							style={{
-								color: theme.colors.onSurfaceVariant,
-								flex: 1,
-							}}
-						>
-							{id}
-						</Text>
-					</View>
-				</LabeledInput>
-
 				<View
 					style={{
 						flexDirection: "row",
@@ -320,10 +282,7 @@ export default function () {
 						mode="outlined"
 						onPress={() => {
 							setDepartamento("")
-							reset({
-								...defaultValuesBasicInfo,
-								codigoAutorizacion: id as string,
-							})
+							reset(defaultValuesBasicInfo)
 						}}
 						style={{ flex: 1, marginHorizontal: 4 }}
 					>

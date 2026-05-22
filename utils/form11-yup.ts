@@ -1,4 +1,4 @@
-import type { Form11Record } from "@definitions/types"
+import type { Form11RecordFormData } from "@definitions/types"
 import * as yup from "yup"
 
 const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
@@ -110,7 +110,7 @@ export const schemaForm11Record = yup.object().shape({
 	nombrePredescerdador: yup.string().required("Requerido"),
 })
 
-export const defaultValuesForm11Record: Form11Record = {
+export const defaultValuesForm11Record: Form11RecordFormData = {
 	ficha: "",
 	pesoFibraBruto: "",
 	pesoVellonLimpio: "",

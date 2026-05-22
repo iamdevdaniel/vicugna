@@ -1,44 +1,31 @@
+import permits from "@assets/data/permits.json"
+import { initializePermits } from "@database"
 import type { AdminPermit } from "@definitions/types"
 import { ROUTES } from "@utils/constants"
 import { router } from "expo-router"
+import { useEffect } from "react"
 import { FlatList, StyleSheet } from "react-native"
 import { Card, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
-export const mockAdminPermit: AdminPermit[] = [
-	{
-		fechaCaptura: "2026-05-19",
-		sitioCaptura: "Sora Sora Sector Norte",
-		codigoAutorizacion: "AUT-2026-098A",
-	},
-	{
-		fechaCaptura: "2026-05-20",
-		sitioCaptura: "Cerro Calvario Alta",
-		codigoAutorizacion: "AUT-2026-104B",
-	},
-	{
-		fechaCaptura: "2026-05-22",
-		sitioCaptura: "Bofedal Central Chachacomani",
-		codigoAutorizacion: "AUT-2026-112C",
-	},
-]
+const mockAdminPermit: AdminPermit[] = permits
 
 // Route: /
 export default function () {
+	useEffect(() => {
+		initializePermits(mockAdminPermit.map((p) => p.id))
+	}, [])
+
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<FlatList
 				data={mockAdminPermit}
-				keyExtractor={(item) => item.codigoAutorizacion}
+				keyExtractor={(item) => item.id}
 				contentContainerStyle={styles.list}
 				renderItem={({ item }) => (
 					<Card
 						style={styles.item}
-						onPress={() =>
-							router.push(
-								ROUTES.OVERVIEW(item.codigoAutorizacion),
-							)
-						}
+						onPress={() => router.push(ROUTES.OVERVIEW(item.id))}
 					>
 						<Card.Content>
 							<Text variant="titleSmall">

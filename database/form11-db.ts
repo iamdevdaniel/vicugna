@@ -1,6 +1,7 @@
 import type {
 	Form11DehearingFormData,
 	Form11Record,
+	Form11RecordFormData,
 	Form11ShearingFormData,
 	Form11Storage,
 } from "@definitions/types"
@@ -22,28 +23,9 @@ import type {
 	Form11StorageModel,
 } from "./models"
 import { database } from "./setup"
+import { type DbState, makeInitial, makeReducer } from "./utils-db"
 
 //-------------------READ-------------------
-
-type DbState<T> = { data: T; loading: boolean; error: Error | null }
-type DbAction<T> =
-	| { type: "success"; data: T }
-	| { type: "error"; error: Error }
-
-function makeReducer<T>() {
-	return (state: DbState<T>, action: DbAction<T>): DbState<T> => {
-		switch (action.type) {
-			case "success":
-				return { data: action.data, loading: false, error: null }
-			case "error":
-				return { ...state, loading: false, error: action.error }
-		}
-	}
-}
-
-function makeInitial<T>(initial: T): DbState<T> {
-	return { data: initial, loading: true, error: null }
-}
 
 export function useReadAllForm11(): DbState<Form11Storage[]> {
 	const [state, dispatch] = useReducer(
@@ -281,7 +263,7 @@ export function useReadOneForm11Record(
 
 export async function createForm11Record(
 	storageId: string,
-	data: Form11Record,
+	data: Form11RecordFormData,
 ): Promise<void> {
 	await database.write(async () => {
 		await database
@@ -292,7 +274,7 @@ export async function createForm11Record(
 
 export async function updateForm11Record(
 	recordId: string,
-	data: Form11Record,
+	data: Form11RecordFormData,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database

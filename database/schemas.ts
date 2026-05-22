@@ -6,11 +6,11 @@ export const appDbSchema = appSchema({
 		tableSchema({
 			name: "basicInfo",
 			columns: [
+				{ name: "permitId", type: "string", isIndexed: true },
 				{ name: "asociacionRegional", type: "string" },
 				{ name: "comunidadManejadora", type: "string" },
 				{ name: "sitioCaptura", type: "string" },
 				{ name: "fechaCaptura", type: "string" },
-				{ name: "codigoAutorizacion", type: "string" },
 				{ name: "isCompleted", type: "boolean" },
 			],
 		}),

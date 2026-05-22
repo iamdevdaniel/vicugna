@@ -1,10 +1,14 @@
 import type {
+	BasicInfo,
+	BasicInfoFormData,
 	Form11DehearingFormData,
 	Form11Record,
+	Form11RecordFormData,
 	Form11ShearingFormData,
 	Form11Storage,
 } from "@definitions/types"
 import type {
+	BasicInfoModel,
 	Form11DehearingModel,
 	Form11RecordModel,
 	Form11ShearingModel,
@@ -84,7 +88,7 @@ export function applyDehearingToModel(
 
 export function applyRecordToModel(
 	model: Form11RecordModel,
-	data: Form11Record,
+	data: Form11RecordFormData,
 	storageId?: string,
 ): void {
 	if (storageId) model.form11StorageId = storageId
@@ -97,4 +101,28 @@ export function applyRecordToModel(
 	model.pesoCerda = data.pesoCerda
 	model.caspa = data.caspa
 	model.nombrePredescerdador = data.nombrePredescerdador
+}
+
+export function mapToBasicInfo(m: BasicInfoModel): BasicInfo {
+	return {
+		id: m.id,
+		permitId: m.permitId,
+		asociacionRegional: m.asociacionRegional,
+		comunidadManejadora: m.comunidadManejadora,
+		sitioCaptura: m.sitioCaptura,
+		fechaCaptura: m.fechaCaptura,
+		isCompleted: m.isCompleted,
+	}
+}
+
+export function applyBasicInfoToModel(
+	model: BasicInfoModel,
+	data: BasicInfoFormData,
+	isCompleted: boolean,
+): void {
+	model.asociacionRegional = data.asociacionRegional
+	model.comunidadManejadora = data.comunidadManejadora
+	model.sitioCaptura = data.sitioCaptura
+	model.fechaCaptura = data.fechaCaptura
+	model.isCompleted = isCompleted
 }

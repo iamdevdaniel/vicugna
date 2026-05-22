@@ -1,4 +1,5 @@
 export type AdminPermit = {
+	id: string
 	fechaCaptura: string
 	sitioCaptura: string
 	codigoAutorizacion: string
@@ -7,16 +8,19 @@ export type AdminPermit = {
 // BASIC INFO
 
 export type BasicInfo = {
-	id?: string
+	id: string
+	permitId: string
 	asociacionRegional: string
 	comunidadManejadora: string
 	sitioCaptura: string
 	fechaCaptura: string
-	codigoAutorizacion: string
 	isCompleted: boolean
 }
 
-export type BasicInfoFormData = Omit<BasicInfo, "id" | "isCompleted">
+export type BasicInfoFormData = Omit<
+	BasicInfo,
+	"id" | "isCompleted" | "permitId"
+>
 
 // FORM 11
 
@@ -28,7 +32,7 @@ export type Form11Storage = {
 }
 
 export type Form11Shearing = {
-	id?: string
+	id: string
 	departamento: string
 	asociacionRegional: string
 	comunidadManejadora: string
@@ -39,7 +43,7 @@ export type Form11Shearing = {
 }
 
 export type Form11Dehearing = {
-	id?: string
+	id: string
 	fechaInicioPredescerdado: string
 	fechaFinPredescerdado: string
 	lugarPredescerdado: string
@@ -47,11 +51,14 @@ export type Form11Dehearing = {
 	isCompleted: boolean
 }
 
-export type Form11ShearingFormData = Omit<Form11Shearing, "isCompleted">
-export type Form11DehearingFormData = Omit<Form11Dehearing, "isCompleted">
+export type Form11ShearingFormData = Omit<Form11Shearing, "id" | "isCompleted">
+export type Form11DehearingFormData = Omit<
+	Form11Dehearing,
+	"id" | "isCompleted"
+>
 
 export type Form11Record = {
-	id?: string
+	id: string
 	ficha: string
 	pesoFibraBruto: string
 	pesoVellonLimpio: string
@@ -62,3 +69,5 @@ export type Form11Record = {
 	caspa: "SI" | "NO"
 	nombrePredescerdador: string
 }
+
+export type Form11RecordFormData = Omit<Form11Record, "id">

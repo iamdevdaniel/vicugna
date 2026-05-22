@@ -4,7 +4,7 @@ import {
 	updateForm11Record,
 	useReadOneForm11Record,
 } from "@database"
-import type { Form11Record } from "@definitions/types"
+import type { Form11RecordFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
 	defaultValuesForm11Record,
@@ -40,7 +40,7 @@ export default function () {
 		reset,
 		formState: { errors, isValid },
 		handleSubmit,
-	} = useForm<Form11Record>({
+	} = useForm<Form11RecordFormData>({
 		mode: "onChange",
 		defaultValues: defaultValuesForm11Record,
 		resolver: yupResolver(schemaForm11Record),
@@ -59,7 +59,7 @@ export default function () {
 		color: theme.colors.onSurface,
 	}
 
-	const onSubmit = async (data: Form11Record) => {
+	const onSubmit = async (data: Form11RecordFormData) => {
 		try {
 			if (isEditing && recordId) {
 				await updateForm11Record(recordId, data)

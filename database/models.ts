@@ -3,11 +3,11 @@ import { field, relation, text } from "@nozbe/watermelondb/decorators"
 
 export class BasicInfoModel extends Model {
 	static table = "basicInfo"
+	@field("permitId") permitId!: string
 	@text("asociacionRegional") asociacionRegional!: string
 	@text("comunidadManejadora") comunidadManejadora!: string
 	@text("sitioCaptura") sitioCaptura!: string
 	@text("fechaCaptura") fechaCaptura!: string
-	@text("codigoAutorizacion") codigoAutorizacion!: string
 	@field("is_completed") isCompleted!: boolean
 }
 

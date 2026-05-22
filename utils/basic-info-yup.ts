@@ -5,7 +5,6 @@ export const schemaBasicInfo = yup.object().shape({
 	comunidadManejadora: yup.string().required("Requerido"),
 	sitioCaptura: yup.string().required("Requerido"),
 	fechaCaptura: yup.string().required("Requerido"),
-	codigoAutorizacion: yup.string().required("Requerido"),
 })
 
 export const defaultValuesBasicInfo = {
@@ -13,5 +12,4 @@ export const defaultValuesBasicInfo = {
 	comunidadManejadora: "",
 	sitioCaptura: "",
 	fechaCaptura: "",
-	codigoAutorizacion: "",
 }
