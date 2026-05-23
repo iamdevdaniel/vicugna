@@ -72,3 +72,18 @@ export type Form11Record = {
 }
 
 export type Form11RecordFormData = Omit<Form11Record, "id">
+
+// PARTICIPANTS
+
+export type Participant = {
+	id: string
+	permitId: string
+	nombre: string
+	apellidos: string
+	genero: string
+	cedulaIdentidad: string
+	firma: string
+	notas: string
+}
+
+export type ParticipantFormData = Omit<Participant, "id" | "permitId">

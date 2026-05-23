@@ -27,8 +27,7 @@ export default function AdminPermitDetail() {
 						{
 							title: "Informacion Básica",
 							state: basicInfo?.isCompleted ? "done" : "ready",
-							onAction: () =>
-								router.push(ROUTES.BASIC_INFO(id as string)),
+							onAction: () => router.push(ROUTES.BASIC_INFO(id)),
 							details: basicInfo?.isCompleted
 								? [
 										{
@@ -49,7 +48,8 @@ export default function AdminPermitDetail() {
 						{
 							title: "Participantes",
 							state: "ready",
-							onAction: () => {},
+							onAction: () =>
+								router.push(ROUTES.PARTICIPANTS.OVERVIEW(id)),
 							details: [],
 						},
 						{

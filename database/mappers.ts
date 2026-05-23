@@ -6,6 +6,8 @@ import type {
 	Form11RecordFormData,
 	Form11ShearingFormData,
 	Form11Storage,
+	Participant,
+	ParticipantFormData,
 } from "@definitions/types"
 import type {
 	BasicInfoModel,
@@ -13,6 +15,7 @@ import type {
 	Form11RecordModel,
 	Form11ShearingModel,
 	Form11StorageModel,
+	ParticipantModel,
 } from "./models"
 
 export function mapToForm11Storage(
@@ -127,4 +130,29 @@ export function applyBasicInfoToModel(
 	model.sitioCaptura = data.sitioCaptura
 	model.fechaCaptura = data.fechaCaptura
 	model.isCompleted = isCompleted
+}
+
+export function mapToParticipant(m: ParticipantModel): Participant {
+	return {
+		id: m.id,
+		permitId: m.permitId,
+		nombre: m.nombre,
+		apellidos: m.apellidos,
+		genero: m.genero,
+		cedulaIdentidad: m.cedulaIdentidad,
+		firma: m.firma,
+		notas: m.notas,
+	}
+}
+
+export function applyParticipantToModel(
+	model: ParticipantModel,
+	data: ParticipantFormData,
+): void {
+	model.nombre = data.nombre
+	model.apellidos = data.apellidos
+	model.genero = data.genero
+	model.cedulaIdentidad = data.cedulaIdentidad
+	model.firma = data.firma
+	model.notas = data.notas
 }

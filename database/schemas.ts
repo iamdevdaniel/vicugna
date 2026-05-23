@@ -59,5 +59,17 @@ export const appDbSchema = appSchema({
 				{ name: "dehearingId", type: "string" },
 			],
 		}),
+		tableSchema({
+			name: "participants",
+			columns: [
+				{ name: "permitId", type: "string", isIndexed: true },
+				{ name: "nombre", type: "string" },
+				{ name: "apellidos", type: "string" },
+				{ name: "genero", type: "string" },
+				{ name: "cedulaIdentidad", type: "string" },
+				{ name: "firma", type: "string" },
+				{ name: "notas", type: "string" },
+			],
+		}),
 	],
 })

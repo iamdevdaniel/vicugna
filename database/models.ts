@@ -57,3 +57,14 @@ export class Form11StorageModel extends Model {
 	@relation("form11Dehearing", "dehearingId")
 	dehearing!: Relation<Form11DehearingModel>
 }
+
+export class ParticipantModel extends Model {
+	static table = "participants"
+	@field("permitId") permitId!: string
+	@text("nombre") nombre!: string
+	@text("apellidos") apellidos!: string
+	@text("genero") genero!: string
+	@text("cedulaIdentidad") cedulaIdentidad!: string
+	@text("firma") firma!: string
+	@text("notas") notas!: string
+}

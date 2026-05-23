@@ -9,36 +9,36 @@ export const ROUTES = {
 		params: { id },
 	}),
 	PARTICIPANTS: {
-		LIST: (id: string) => ({
-			pathname: "/[id]/participantes" as const,
+		OVERVIEW: (id: string) => ({
+			pathname: "/[id]/participants" as const,
 			params: { id },
 		}),
-		OVERVIEW: (id: string, pid: string) => ({
-			pathname: "/[id]/participantes/[pid]" as const,
+		FORM: (id: string, pid: string) => ({
+			pathname: "/[id]/participants/[pid]" as const,
 			params: { id, pid },
 		}),
 	},
 	SHEARING: {
 		OVERVIEW: (id: string) => ({
-			pathname: "/[id]/esquila" as const,
+			pathname: "/[id]/shearing" as const,
 			params: { id },
 		}),
 		FORM12: (id: string) => ({
-			pathname: "/[id]/esquila/form12" as const,
+			pathname: "/[id]/shearing/form12" as const,
 			params: { id },
 		}),
 		FORM10: (id: string) => ({
-			pathname: "/[id]/esquila/form10" as const,
+			pathname: "/[id]/shearing/form10" as const,
 			params: { id },
 		}),
 	},
 	CLEANUP: {
 		LIST: (id: string) => ({
-			pathname: "/[id]/limpieza" as const,
+			pathname: "/[id]/cleanup" as const,
 			params: { id },
 		}),
 		OVERVIEW: (id: string, recordId: string) => ({
-			pathname: "/[id]/limpieza/[recordId]" as const,
+			pathname: "/[id]/cleanup/[recordId]" as const,
 			params: { id, recordId },
 		}),
 	},
