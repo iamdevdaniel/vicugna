@@ -4,7 +4,7 @@ import type { AdminPermit } from "@definitions/types"
 import { ROUTES } from "@utils/constants"
 import { router } from "expo-router"
 import { useEffect } from "react"
-import { FlatList, StyleSheet } from "react-native"
+import { FlatList } from "react-native"
 import { Card, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
@@ -21,10 +21,15 @@ export default function () {
 			<FlatList
 				data={mockAdminPermit}
 				keyExtractor={(item) => item.id}
-				contentContainerStyle={styles.list}
+				contentContainerStyle={{
+					padding: 16,
+					gap: 10,
+				}}
 				renderItem={({ item }) => (
 					<Card
-						style={styles.item}
+						style={{
+							marginBottom: 10,
+						}}
 						onPress={() => router.push(ROUTES.OVERVIEW(item.id))}
 					>
 						<Card.Content>
@@ -42,13 +47,3 @@ export default function () {
 		</SafeAreaView>
 	)
 }
-
-const styles = StyleSheet.create({
-	list: {
-		padding: 16,
-		gap: 10,
-	},
-	item: {
-		marginBottom: 10,
-	},
-})

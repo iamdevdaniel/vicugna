@@ -2,8 +2,8 @@ import { useReadParticipants } from "@database"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
-import { FlatList } from "react-native"
-import { Divider, FAB, List } from "react-native-paper"
+import { FlatList, Text, View } from "react-native"
+import { Card, Divider, FAB, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // PARTICIPANTS.OVERVIEW /[id]/participants
@@ -16,21 +16,38 @@ export default function ParticipantsListScreen() {
 	return (
 		<SafeAreaView
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
-			edges={[]}
 		>
 			<Stack.Screen options={{ title: "Participantes" }} />
 			<FlatList
 				data={participants}
 				keyExtractor={(item) => item.id}
+				contentContainerStyle={{
+					padding: 16,
+					gap: 10,
+				}}
 				ItemSeparatorComponent={() => <Divider />}
 				renderItem={({ item }) => (
-					<List.Item
-						title={`${item.nombre} ${item.apellidos}`}
-						description={item.cedulaIdentidad}
-						onPress={() =>
-							router.push(ROUTES.PARTICIPANTS.FORM(id, item.id))
-						}
-					/>
+					<Card mode="elevated" style={{ marginBottom: 10 }}>
+						<Card.Content style={{ flexDirection: "row" }}>
+							<View style={{ flex: 1 }}>
+								<Text>
+									{item.nombre} {item.apellidos}
+								</Text>
+								<Text>{item.cedulaIdentidad}</Text>
+							</View>
+							<IconButton
+								icon="pencil"
+								size={18}
+								iconColor={theme.colors.custom.green}
+								onPress={() =>
+									router.push(
+										ROUTES.PARTICIPANTS.FORM(id, item.id),
+									)
+								}
+								style={{ margin: 0 }}
+							/>
+						</Card.Content>
+					</Card>
 				)}
 			/>
 			<FAB
