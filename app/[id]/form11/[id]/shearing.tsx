@@ -69,7 +69,7 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
 	)
 }
 
-// ROUTE /form11/[id]/shearing/edit
+// FORM11.SHEARING /[id]/form11/[id]/shearing
 export default function () {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams()

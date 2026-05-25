@@ -22,7 +22,7 @@ import {
 } from "react-native"
 import { Button } from "react-native-paper"
 
-// ROUTE: /form11/[id]/dehearing
+// FORM11.DEHEARING /form11/[id]/dehearing
 export default function () {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams()

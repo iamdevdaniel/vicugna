@@ -19,7 +19,7 @@ import {
 } from "react-native"
 import { Button } from "react-native-paper"
 
-// ROUTE /[id]/basic-info
+// BASIC_INFO /[id]/basic-info
 export default function () {
 	const theme = useAppTheme()
 	const router = useRouter()

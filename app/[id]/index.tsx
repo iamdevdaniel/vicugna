@@ -6,8 +6,8 @@ import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, View } from "react-native"
 
-// Route: /[id]
-export default function AdminPermitDetail() {
+// OVERVIEW /[id]
+export default function () {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: basicInfo } = useReadBasicInfo(id)

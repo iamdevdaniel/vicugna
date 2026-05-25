@@ -6,7 +6,7 @@ import { FlatList } from "react-native"
 import { Divider, FAB, List } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
-// Route: /[id]/participants
+// PARTICIPANTS.OVERVIEW /[id]/participants
 export default function ParticipantsListScreen() {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()

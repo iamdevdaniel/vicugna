@@ -7,8 +7,8 @@ import { useAppTheme } from "@utils/useAppTheme"
 import { Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, View } from "react-native"
 
-// ROUTE form11/[id]
-export default function Form11Overview() {
+// FORM11.OVERVIEW /[id]/form11/[id]
+export default function () {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams()
 

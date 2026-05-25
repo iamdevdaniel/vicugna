@@ -5,7 +5,7 @@ import React from "react"
 import { Alert, ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
 
-// ROUTE form11/
+// FORM11.LIST /form11
 export default function () {
 	const theme = useTheme()
 	const { data: forms } = useReadAllForm11()

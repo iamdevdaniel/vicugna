@@ -7,8 +7,8 @@ import { ScrollView, View } from "react-native"
 import { Card, Chip, FAB, Surface, Text } from "react-native-paper"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-// ROUTE /form11/[id]/records
-export default function RecordsList() {
+// FORM11.RECORDS.LIST /form11/[id]/records
+export default function () {
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()

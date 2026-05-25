@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 
 const mockAdminPermit: AdminPermit[] = permits
 
-// Route: /
+// OVERVIEW /
 export default function () {
 	useEffect(() => {
 		initializePermits(mockAdminPermit.map((p) => p.id))

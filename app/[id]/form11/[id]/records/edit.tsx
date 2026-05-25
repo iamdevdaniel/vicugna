@@ -22,7 +22,7 @@ import {
 } from "react-native"
 import { Button } from "react-native-paper"
 
-// ROUTE /form11/[id]/records/edit
+// FORM11.RECORDS.EDIT /form11/[id]/records/edit
 // Query params: recordId (optional — omit for new record)
 export default function () {
 	const theme = useAppTheme()

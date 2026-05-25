@@ -22,8 +22,8 @@ const GENDER_OPTIONS = [
 	{ label: "Femenino", value: "F" },
 ]
 
-// Route: /[id]/participants/[pid]
-export default function ParticipantFormScreen() {
+// PARTICIPANTS.FORM /[id]/participants/[pid]
+export default function () {
 	const router = useRouter()
 	const { id, pid } = useLocalSearchParams<{ id: string; pid: string }>()
 	const { data, loading } = useReadOneParticipant(pid)
