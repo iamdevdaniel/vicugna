@@ -218,7 +218,11 @@ export default function ParticipantFormScreen() {
 									onChangeText={onChange}
 									onBlur={onBlur}
 									multiline
-									numberOfLines={4}
+									style={{ height: 100 }}
+									contentStyle={{
+										height: 115,
+										textAlignVertical: "top",
+									}}
 									error={!!errors.notas}
 								/>
 							)}
