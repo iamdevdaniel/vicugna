@@ -13,9 +13,9 @@ export const ROUTES = {
 			pathname: "/[id]/participants" as const,
 			params: { id },
 		}),
-		FORM: (id: string, pid: string) => ({
-			pathname: "/[id]/participants/[pid]" as const,
-			params: { id, pid },
+		FORM: (id: string, participantId: string) => ({
+			pathname: "/[id]/participants/[participantId]" as const,
+			params: { id, participantId },
 		}),
 	},
 	SHEARING: {
