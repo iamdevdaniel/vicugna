@@ -17,16 +17,14 @@ import { KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
-const GENDER_OPTIONS = [
-	{ label: "Masculino", value: "M" },
-	{ label: "Femenino", value: "F" },
-]
-
-// PARTICIPANTS.FORM /[id]/participants/[pid]
+// PARTICIPANTS.FORM /[id]/participants/[participantId]
 export default function () {
 	const router = useRouter()
-	const { id, pid } = useLocalSearchParams<{ id: string; pid: string }>()
-	const { data, loading } = useReadOneParticipant(pid)
+	const { id, participantId } = useLocalSearchParams<{
+		id: string
+		participantId: string
+	}>()
+	const { data, loading } = useReadOneParticipant(participantId)
 
 	const {
 		control,
@@ -52,16 +50,16 @@ export default function () {
 	}, [loading, reset, data])
 
 	const onSubmit = async (formData: ParticipantFormData) => {
-		if (pid === "new") {
+		if (participantId === "new") {
 			await createParticipant(id, formData)
 		} else {
-			await updateParticipant(pid, formData)
+			await updateParticipant(participantId, formData)
 		}
 		router.back()
 	}
 
 	// const onDelete = () => {
-	// 	if (pid === "new") return
+	// 	if (participantId === "new") return
 	// 	Alert.alert(
 	// 		"Eliminar participante",
 	// 		"¿Seguro que quieres eliminar este participante?",
@@ -71,7 +69,7 @@ export default function () {
 	// 				text: "Eliminar",
 	// 				style: "destructive",
 	// 				onPress: async () => {
-	// 					await deleteParticipant(pid)
+	// 					await deleteParticipant(participantId)
 	// 					router.back()
 	// 				},
 	// 			},
@@ -89,7 +87,7 @@ export default function () {
 				<Stack.Screen
 					options={{
 						title:
-							pid === "new"
+							participantId === "new"
 								? "Nuevo participante"
 								: "Editar participante",
 					}}
@@ -155,7 +153,10 @@ export default function () {
 								<RadioGroup
 									value={value}
 									onChange={onChange}
-									options={GENDER_OPTIONS}
+									options={[
+										{ label: "Masculino", value: "M" },
+										{ label: "Femenino", value: "F" },
+									]}
 								/>
 							)}
 						/>
@@ -242,7 +243,7 @@ export default function () {
 							disabled={!isValid}
 							style={{ flex: 1 }}
 						>
-							{pid === "new" ? "Guardar" : "Actualizar"}
+							{participantId === "new" ? "Guardar" : "Actualizar"}
 						</Button>
 
 						<Button

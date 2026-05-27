@@ -10,9 +10,7 @@ type SignaturePadProps = {
 	onChange: (value: string) => void
 }
 
-type PathEntry = { id: number; path: SkPath }
-
-let nextId = 0
+type PathEntry = { id: string; path: SkPath }
 
 export function SignaturePad({ value, onChange }: SignaturePadProps) {
 	const theme = useTheme()
@@ -34,7 +32,10 @@ export function SignaturePad({ value, onChange }: SignaturePadProps) {
 			const loaded = svgStrings
 				.map((s) => Skia.Path.MakeFromSVGString(s))
 				.filter((p): p is SkPath => p !== null)
-				.map((path) => ({ id: nextId++, path }))
+				.map((path) => ({
+					id: Math.random().toString(36).substring(7),
+					path,
+				}))
 			setCompletedPaths(loaded)
 		} catch {
 			// not valid JSON, ignore
@@ -57,7 +58,10 @@ export function SignaturePad({ value, onChange }: SignaturePadProps) {
 		.onEnd(() => {
 			const p = currentPathRef.current
 			if (p) {
-				const entry: PathEntry = { id: nextId++, path: p }
+				const entry: PathEntry = {
+					id: Math.random().toString(36).substring(7),
+					path: p,
+				}
 				const next = [...completedPaths, entry]
 				setCompletedPaths(next)
 				currentPathRef.current = null
@@ -94,7 +98,7 @@ export function SignaturePad({ value, onChange }: SignaturePadProps) {
 				>
 					{completedPaths.map((e) => (
 						<Path
-							key={e.id}
+							key={`path-${e.id}`}
 							path={e.path}
 							strokeWidth={2}
 							color="black"
@@ -105,6 +109,7 @@ export function SignaturePad({ value, onChange }: SignaturePadProps) {
 					))}
 					{currentPathRef.current !== null && (
 						<Path
+							key="active-drawing-path"
 							path={currentPathRef.current}
 							strokeWidth={2}
 							color="black"
