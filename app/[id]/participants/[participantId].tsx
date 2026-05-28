@@ -1,6 +1,7 @@
 import { LabeledInput, RadioGroup, SignaturePad } from "@components"
 import {
 	createParticipant,
+	deleteParticipant,
 	updateParticipant,
 	useReadOneParticipant,
 } from "@database"
@@ -10,21 +11,25 @@ import {
 	defaultValuesParticipant,
 	schemaParticipant,
 } from "@utils/participants-yup"
+import { useAppTheme } from "@utils/useAppTheme"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { KeyboardAvoidingView, ScrollView, View } from "react-native"
+import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // PARTICIPANTS.FORM /[id]/participants/[participantId]
 export default function () {
+	const theme = useAppTheme()
 	const router = useRouter()
 	const { id, participantId } = useLocalSearchParams<{
 		id: string
 		participantId: string
 	}>()
 	const { data, loading } = useReadOneParticipant(participantId)
+
+	const isEditForm = participantId !== "new"
 
 	const {
 		control,
@@ -50,32 +55,31 @@ export default function () {
 	}, [loading, reset, data])
 
 	const onSubmit = async (formData: ParticipantFormData) => {
-		if (participantId === "new") {
-			await createParticipant(id, formData)
-		} else {
+		if (isEditForm) {
 			await updateParticipant(participantId, formData)
+		} else {
+			await createParticipant(id, formData)
 		}
 		router.back()
 	}
 
-	// const onDelete = () => {
-	// 	if (participantId === "new") return
-	// 	Alert.alert(
-	// 		"Eliminar participante",
-	// 		"¿Seguro que quieres eliminar este participante?",
-	// 		[
-	// 			{ text: "Cancelar", style: "cancel" },
-	// 			{
-	// 				text: "Eliminar",
-	// 				style: "destructive",
-	// 				onPress: async () => {
-	// 					await deleteParticipant(participantId)
-	// 					router.back()
-	// 				},
-	// 			},
-	// 		],
-	// 	)
-	// }
+	const onDelete = () => {
+		Alert.alert(
+			"Eliminar participante",
+			"¿Seguro que quieres eliminar este participante?",
+			[
+				{ text: "Cancelar", style: "cancel" },
+				{
+					text: "Eliminar",
+					style: "destructive",
+					onPress: async () => {
+						await deleteParticipant(participantId)
+						router.back()
+					},
+				},
+			],
+		)
+	}
 
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -86,10 +90,9 @@ export default function () {
 			>
 				<Stack.Screen
 					options={{
-						title:
-							participantId === "new"
-								? "Nuevo participante"
-								: "Editar participante",
+						title: isEditForm
+							? "Editar participante"
+							: "Nuevo participante",
 					}}
 				/>
 				<ScrollView
@@ -243,7 +246,7 @@ export default function () {
 							disabled={!isValid}
 							style={{ flex: 1 }}
 						>
-							{participantId === "new" ? "Guardar" : "Actualizar"}
+							{isEditForm ? "Actualizar" : "Guardar"}
 						</Button>
 
 						<Button
@@ -254,6 +257,20 @@ export default function () {
 							Limpiar
 						</Button>
 					</View>
+					{isEditForm && (
+						<Button
+							mode="contained"
+							onPress={onDelete}
+							style={{
+								flex: 1,
+								backgroundColor: theme.colors.custom.crimson,
+								marginTop: 16,
+							}}
+							textColor={theme.colors.onError}
+						>
+							Borrar
+						</Button>
+					)}
 				</ScrollView>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
