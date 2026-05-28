@@ -28,7 +28,7 @@ export function mapToForm11Storage(
 		id: storage.id,
 		shearing: {
 			id: shearing.id,
-			departament: shearing.departament,
+			department: shearing.department,
 			regional: shearing.regional,
 			community: shearing.community,
 			site: shearing.site,
@@ -68,7 +68,7 @@ export function applyShearingToModel(
 	data: Form11ShearingFormData,
 	isCompleted: boolean,
 ): void {
-	model.departament = data.departament
+	model.department = data.department
 	model.regional = data.regional
 	model.community = data.community
 	model.site = data.site
@@ -110,7 +110,7 @@ export function mapToBasicInfo(m: BasicInfoModel): BasicInfo {
 	return {
 		id: m.id,
 		permitId: m.permitId,
-		departament: m.departament,
+		department: m.department,
 		regional: m.regional,
 		community: m.community,
 		site: m.site,
@@ -124,7 +124,7 @@ export function applyBasicInfoToModel(
 	data: BasicInfoFormData,
 	isCompleted: boolean,
 ): void {
-	model.departament = data.departament
+	model.department = data.department
 	model.regional = data.regional
 	model.community = data.community
 	model.site = data.site

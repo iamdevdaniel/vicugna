@@ -23,12 +23,12 @@ export const ROUTES = {
 			pathname: "/[id]/shearing" as const,
 			params: { id },
 		}),
-		FORM12: (id: string) => ({
-			pathname: "/[id]/shearing/form12" as const,
+		HEADER: (id: string) => ({
+			pathname: "/[id]/shearing/header" as const,
 			params: { id },
 		}),
-		FORM10: (id: string) => ({
-			pathname: "/[id]/shearing/form10" as const,
+		RECORD: (id: string) => ({
+			pathname: "/[id]/shearing/record" as const,
 			params: { id },
 		}),
 	},

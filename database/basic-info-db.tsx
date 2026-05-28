@@ -21,7 +21,7 @@ export function useReadBasicInfo(permitId: string): DbState<BasicInfo | null> {
 			.get<BasicInfoModel>("basicInfo")
 			.query(Q.where("permitId", permitId))
 			.observeWithColumns([
-				"departament",
+				"department",
 				"regional",
 				"community",
 				"site",
@@ -62,7 +62,7 @@ export async function initializePermits(permitIds: string[]): Promise<void> {
 						.get<BasicInfoModel>("basicInfo")
 						.prepareCreate((model) => {
 							model.permitId = permitId
-							model.departament = ""
+							model.department = ""
 							model.regional = ""
 							model.community = ""
 							model.site = ""
@@ -83,7 +83,7 @@ export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
 			.get<BasicInfoModel>("basicInfo")
 			.create((model) => {
 				model.permitId = permitId
-				model.departament = ""
+				model.department = ""
 				model.regional = ""
 				model.community = ""
 				model.site = ""

@@ -94,7 +94,7 @@ export default function () {
 		Array<{ label: string; value: string }>
 	>([])
 
-	const selectedDepartamento = watch("departament")
+	const selectedDepartamento = watch("department")
 	const selectedRegional = watch("regional")
 
 	const departamentoOptions = Object.keys(regionals).map((key) => ({
@@ -193,14 +193,14 @@ export default function () {
 				<LabeledInput
 					label="Departamento"
 					labelPrefix="1"
-					error={errors.departament?.message}
+					error={errors.department?.message}
 				>
 					<Controller
 						control={control}
-						name="departament"
+						name="department"
 						render={({ field: { onChange, value } }) => (
 							<Dropdown
-								placeholder="Seleccionar departament"
+								placeholder="Seleccionar department"
 								options={departamentoOptions}
 								value={value}
 								onSelect={(v) => {

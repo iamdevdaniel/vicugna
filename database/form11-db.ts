@@ -163,7 +163,7 @@ export async function createForm11(): Promise<Form11Storage> {
 		const shearing = await database
 			.get<Form11ShearingModel>("form11Shearing")
 			.create((model: Form11ShearingModel) => {
-				model.departament = ""
+				model.department = ""
 				model.regional = ""
 				model.community = ""
 				model.site = ""

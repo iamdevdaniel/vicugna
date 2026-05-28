@@ -10,7 +10,7 @@ export type AdminPermit = {
 export type BasicInfo = {
 	id: string
 	permitId: string
-	departament: string
+	department: string
 	regional: string
 	community: string
 	site: string
@@ -34,7 +34,7 @@ export type Form11Storage = {
 
 export type Form11Shearing = {
 	id: string
-	departament: string
+	department: string
 	regional: string
 	community: string
 	site: string

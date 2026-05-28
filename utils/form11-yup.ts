@@ -4,7 +4,7 @@ import * as yup from "yup"
 const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
 
 export const schemaForm11Shearing = yup.object().shape({
-	departament: yup.string().required("Requerido"),
+	department: yup.string().required("Requerido"),
 	regional: yup.string().required("Requerido"),
 	community: yup.string().required("Requerido"),
 	site: yup.string().required("Requerido"),
@@ -13,7 +13,7 @@ export const schemaForm11Shearing = yup.object().shape({
 })
 
 export const defaultValuesForm11Shearing = {
-	departament: "",
+	department: "",
 	regional: "",
 	community: "",
 	site: "",

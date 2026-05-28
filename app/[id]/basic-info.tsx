@@ -47,13 +47,13 @@ export default function () {
 	>([])
 	const [datePickerOpen, setDatePickerOpen] = useState(false)
 
-	const selectedDepartamento = watch("departament")
+	const selectedDepartamento = watch("department")
 	const selectedRegional = watch("regional")
 
 	useEffect(() => {
 		if (loading || !data) return
 		reset({
-			departament: data.departament,
+			department: data.department,
 			regional: data.regional,
 			community: data.community,
 			site: data.site,
@@ -130,7 +130,7 @@ export default function () {
 				<LabeledInput label="Departamento" labelPrefix="1">
 					<Controller
 						control={control}
-						name="departament"
+						name="department"
 						render={({ field: { onChange, value } }) => (
 							<Dropdown
 								placeholder="Seleccionar departamento"
