@@ -3,7 +3,7 @@ import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { FlatList, Text, View } from "react-native"
-import { Card, FAB, IconButton } from "react-native-paper"
+import { Button, Card, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // PARTICIPANTS.OVERVIEW /[id]/participants
@@ -73,26 +73,53 @@ export default function ParticipantsListScreen() {
 				contentContainerStyle={{
 					padding: 16,
 					gap: 10,
+					paddingBottom: 40 + insets.bottom,
 				}}
-				renderItem={({ item: participant }) => (
+				renderItem={({ item: participant, index }) => (
 					<Card
 						mode="elevated"
 						style={{
-							marginBottom: 10,
+							marginBottom: 0,
 							borderRadius: 8,
-							borderLeftWidth: 6,
-							borderLeftColor:
-								participant.genero === "M"
-									? theme.colors.custom.blue
-									: theme.colors.custom.pink,
+							borderLeftWidth: 0,
+							overflow: "hidden",
+							position: "relative",
 						}}
 					>
-						<Card.Content
+						<View
+							style={{
+								position: "absolute",
+								left: 0,
+								top: 0,
+								bottom: 0,
+								width: 32,
+								backgroundColor:
+									participant.genero === "M"
+										? theme.colors.custom.blue
+										: theme.colors.custom.pink,
+								justifyContent: "center",
+								alignItems: "center",
+								zIndex: 1,
+							}}
+						>
+							<Text
+								style={{
+									color: theme.colors.custom.white,
+									fontWeight: "bold",
+									fontSize: 16,
+									opacity: 0.8,
+								}}
+							>
+								{index + 1}
+							</Text>
+						</View>
+						<View
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
-								paddingHorizontal: 8,
-								paddingVertical: 8,
+								paddingLeft: 40,
+								paddingRight: 4,
+								paddingVertical: 6,
 							}}
 						>
 							<View style={{ flex: 1 }}>
@@ -115,19 +142,32 @@ export default function ParticipantsListScreen() {
 								}
 								style={{ margin: 0 }}
 							/>
-						</Card.Content>
+						</View>
 					</Card>
 				)}
 			/>
-			<FAB
-				icon="plus"
+			<View
 				style={{
 					position: "absolute",
-					bottom: 24 + insets.bottom,
-					right: 24,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					padding: 16,
+					paddingBottom: 16 + insets.bottom,
+					backgroundColor: theme.colors.background,
 				}}
-				onPress={() => router.push(ROUTES.PARTICIPANTS.FORM(id, "new"))}
-			/>
+			>
+				<Button
+					mode="contained"
+					icon="plus"
+					contentStyle={{ height: 48 }}
+					onPress={() =>
+						router.push(ROUTES.PARTICIPANTS.FORM(id, "new"))
+					}
+				>
+					Añadir participante
+				</Button>
+			</View>
 		</SafeAreaView>
 	)
 }
