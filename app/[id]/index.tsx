@@ -1,5 +1,5 @@
 import { StepList } from "@components"
-import { useReadBasicInfo } from "@database"
+import { useReadBasicInfo, useReadParticipants } from "@database"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { useAppTheme } from "@utils/useAppTheme"
@@ -11,6 +11,17 @@ export default function () {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: basicInfo } = useReadBasicInfo(id)
+	const { data: participants } = useReadParticipants(id)
+
+	const basicInfoState = basicInfo?.isCompleted ? "done" : "ready"
+	let participantsState: "disabled" | "ready" | "done"
+	if (basicInfoState !== "done") {
+		participantsState = "disabled"
+	} else if (participants.length) {
+		participantsState = "done"
+	} else {
+		participantsState = "ready"
+	}
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -26,7 +37,7 @@ export default function () {
 					steps={[
 						{
 							title: "Informacion Básica",
-							state: basicInfo?.isCompleted ? "done" : "ready",
+							state: basicInfoState,
 							onAction: () => router.push(ROUTES.BASIC_INFO(id)),
 							details: basicInfo?.isCompleted
 								? [
@@ -47,15 +58,21 @@ export default function () {
 						},
 						{
 							title: "Participantes",
-							state: "ready",
+							state: participantsState,
 							onAction: () =>
 								router.push(ROUTES.PARTICIPANTS.OVERVIEW(id)),
-							details: [],
+							details: [
+								{
+									label: "Total",
+									value: participants.length.toString(),
+								},
+							],
 						},
 						{
 							title: "Esquila",
 							state: "ready",
-							onAction: () => {},
+							onAction: () =>
+								router.push(ROUTES.SHEARING.OVERVIEW(id)),
 							details: [],
 						},
 						{
