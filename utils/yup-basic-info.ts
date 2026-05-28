@@ -1,6 +1,6 @@
 import * as yup from "yup"
 
-export const schemaBasicInfo = yup.object().shape({
+export const yupBasicInfo = yup.object().shape({
 	department: yup.string().required("Requerido"),
 	regional: yup.string().required("Requerido"),
 	community: yup.string().required("Requerido"),

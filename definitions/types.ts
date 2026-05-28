@@ -104,4 +104,7 @@ export interface ShearingHeader {
 	isCompleted: boolean
 }
 
-export type ShearingHeaderFormData = Omit<ShearingHeader, "id" | "permitId">
+export type ShearingHeaderFormData = Omit<
+	ShearingHeader,
+	"id" | "permitId" | "isCompleted"
+>

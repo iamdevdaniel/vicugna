@@ -7,11 +7,11 @@ import {
 } from "@database"
 import type { ParticipantFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesParticipant,
-	schemaParticipant,
-} from "@utils/participants-yup"
-import { useAppTheme } from "@utils/useAppTheme"
+	yupParticipant,
+} from "@utils/yup-participants"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -39,7 +39,7 @@ export default function () {
 	} = useForm<ParticipantFormData>({
 		mode: "onChange",
 		defaultValues: defaultValuesParticipant,
-		resolver: yupResolver(schemaParticipant),
+		resolver: yupResolver(yupParticipant),
 	})
 
 	useEffect(() => {

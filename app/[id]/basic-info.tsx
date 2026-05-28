@@ -4,8 +4,8 @@ import { updateBasicInfo, useReadBasicInfo } from "@database"
 import type { BasicInfoFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import DateTimePicker from "@react-native-community/datetimepicker"
-import { defaultValuesBasicInfo, schemaBasicInfo } from "@utils/basic-info-yup"
 import { useAppTheme } from "@utils/useAppTheme"
+import { defaultValuesBasicInfo, yupBasicInfo } from "@utils/yup-basic-info"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -36,7 +36,7 @@ export default function () {
 	} = useForm<BasicInfoFormData>({
 		mode: "onChange",
 		defaultValues: defaultValuesBasicInfo,
-		resolver: yupResolver(schemaBasicInfo),
+		resolver: yupResolver(yupBasicInfo),
 	})
 
 	const [regionalOptions, setRegionalOptions] = useState<

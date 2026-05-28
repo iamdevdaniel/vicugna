@@ -7,6 +7,7 @@ import { Button, Card, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // PARTICIPANTS.OVERVIEW /[id]/participants
+
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()

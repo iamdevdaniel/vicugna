@@ -9,6 +9,7 @@ import type {
 	Participant,
 	ParticipantFormData,
 	ShearingHeader,
+	ShearingHeaderFormData,
 } from "@definitions/types"
 import type {
 	BasicInfoModel,
@@ -177,14 +178,14 @@ export function mapToShearingHeader(
 
 export function applyShearingHeaderToModel(
 	model: ShearingHeaderModel,
-	data: ShearingHeader,
+	data: ShearingHeaderFormData,
+	isCompleted: boolean,
 ) {
-	model.permitId = data.permitId
 	model.site = data.site
 	model.latitude = data.latitude
 	model.longitude = data.longitude
 	model.roundupCount = data.roundupCount
 	model.startTime = data.startTime
 	model.endTime = data.endTime
-	model.isCompleted = data.isCompleted
+	model.isCompleted = isCompleted
 }
