@@ -16,6 +16,18 @@ export const appDbSchema = appSchema({
 			],
 		}),
 		tableSchema({
+			name: "participants",
+			columns: [
+				{ name: "permitId", type: "string", isIndexed: true },
+				{ name: "nombre", type: "string" },
+				{ name: "apellidos", type: "string" },
+				{ name: "genero", type: "string" },
+				{ name: "cedulaIdentidad", type: "string" },
+				{ name: "firma", type: "string" },
+				{ name: "notas", type: "string" },
+			],
+		}),
+		tableSchema({
 			name: "form11Shearing",
 			columns: [
 				{ name: "departamento", type: "string" },
@@ -57,18 +69,6 @@ export const appDbSchema = appSchema({
 			columns: [
 				{ name: "shearingId", type: "string" },
 				{ name: "dehearingId", type: "string" },
-			],
-		}),
-		tableSchema({
-			name: "participants",
-			columns: [
-				{ name: "permitId", type: "string", isIndexed: true },
-				{ name: "nombre", type: "string" },
-				{ name: "apellidos", type: "string" },
-				{ name: "genero", type: "string" },
-				{ name: "cedulaIdentidad", type: "string" },
-				{ name: "firma", type: "string" },
-				{ name: "notas", type: "string" },
 			],
 		}),
 	],
