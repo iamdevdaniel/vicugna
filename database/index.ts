@@ -1,9 +1,16 @@
 export {
 	createBasicInfo,
-	initializePermits,
 	updateBasicInfo,
 	useReadBasicInfo,
-} from "./basic-info-db"
+} from "./dal-basic-info"
+export {
+	createParticipant,
+	deleteParticipant,
+	updateParticipant,
+	useReadOneParticipant,
+	useReadParticipants,
+} from "./dal-participants"
+export { initializePermits } from "./dal-permit"
 export {
 	createForm11,
 	createForm11Record,
@@ -15,10 +22,3 @@ export {
 	useReadOneForm11,
 	useReadOneForm11Record,
 } from "./form11-db"
-export {
-	createParticipant,
-	deleteParticipant,
-	updateParticipant,
-	useReadOneParticipant,
-	useReadParticipants,
-} from "./participants-db"

@@ -6,8 +6,6 @@ import type { BasicInfoModel } from "./models"
 import { database } from "./setup"
 import { type DbState, makeInitial, makeReducer } from "./utils-db"
 
-let initializingPermits = false
-
 //-------------------READ-------------------
 
 export function useReadBasicInfo(permitId: string): DbState<BasicInfo | null> {
@@ -43,38 +41,6 @@ export function useReadBasicInfo(permitId: string): DbState<BasicInfo | null> {
 }
 
 //-------------------WRITE-------------------
-
-export async function initializePermits(permitIds: string[]): Promise<void> {
-	if (initializingPermits) return
-	initializingPermits = true
-	try {
-		const existing = await database
-			.get<BasicInfoModel>("basicInfo")
-			.query(Q.where("permitId", Q.oneOf(permitIds)))
-			.fetch()
-		const existingIds = new Set(existing.map((r) => r.permitId))
-		const missing = permitIds.filter((id) => !existingIds.has(id))
-		if (missing.length === 0) return
-		await database.write(async () => {
-			await database.batch(
-				...missing.map((permitId) =>
-					database
-						.get<BasicInfoModel>("basicInfo")
-						.prepareCreate((model) => {
-							model.permitId = permitId
-							model.department = ""
-							model.regional = ""
-							model.community = ""
-							model.site = ""
-							model.date = ""
-						}),
-				),
-			)
-		})
-	} finally {
-		initializingPermits = false
-	}
-}
 
 export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
 	let record: BasicInfoModel | undefined

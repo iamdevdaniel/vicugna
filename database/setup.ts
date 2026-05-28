@@ -7,6 +7,7 @@ import {
 	Form11ShearingModel,
 	Form11StorageModel,
 	ParticipantModel,
+	ShearingHeaderModel,
 } from "./models"
 import { appDbSchema } from "./schemas"
 
@@ -23,5 +24,6 @@ export const database = new Database({
 		Form11RecordModel,
 		Form11StorageModel,
 		ParticipantModel,
+		ShearingHeaderModel,
 	],
 })
