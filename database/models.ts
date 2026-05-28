@@ -4,38 +4,38 @@ import { field, relation, text } from "@nozbe/watermelondb/decorators"
 export class BasicInfoModel extends Model {
 	static table = "basicInfo"
 	@field("permitId") permitId!: string
-	@text("departamento") departamento!: string
-	@text("asociacionRegional") asociacionRegional!: string
-	@text("comunidadManejadora") comunidadManejadora!: string
-	@text("sitioCaptura") sitioCaptura!: string
-	@text("fechaCaptura") fechaCaptura!: string
+	@text("departament") departament!: string
+	@text("regional") regional!: string
+	@text("community") community!: string
+	@text("site") site!: string
+	@text("date") date!: string
 	@field("isCompleted") isCompleted!: boolean
 }
 
 export class Form11ShearingModel extends Model {
 	static table = "form11Shearing"
-	@text("departamento") departamento!: string
-	@text("asociacionRegional") asociacionRegional!: string
-	@text("comunidadManejadora") comunidadManejadora!: string
-	@text("sitioCaptura") sitioCaptura!: string
-	@text("fechaCaptura") fechaCaptura!: string
+	@text("departament") departament!: string
+	@text("regional") regional!: string
+	@text("community") community!: string
+	@text("site") site!: string
+	@text("date") date!: string
 	@text("codigoAutorizacion") codigoAutorizacion!: string
 	@field("isCompleted") isCompleted!: boolean
 }
 
 export class Form11DehearingModel extends Model {
 	static table = "form11Dehearing"
-	@text("fechaInicioPredescerdado") fechaInicioPredescerdado!: string
-	@text("fechaFinPredescerdado") fechaFinPredescerdado!: string
-	@text("lugarPredescerdado") lugarPredescerdado!: string
-	@text("responsablesPredescerdado") responsablesPredescerdado!: string
+	@text("startDate") startDate!: string
+	@text("endDate") endDate!: string
+	@text("site") site!: string
+	@text("supervisors") supervisors!: string
 	@field("isCompleted") isCompleted!: boolean
 }
 
 export class Form11RecordModel extends Model {
 	static table = "form11Record"
 	@field("form11StorageId") form11StorageId!: string
-	@text("ficha") ficha!: string
+	@text("tagId") tagId!: string
 	@text("pesoFibraBruto") pesoFibraBruto!: string
 	@text("pesoVellonLimpio") pesoVellonLimpio!: string
 	@text("pesoBraga") pesoBraga!: string
@@ -61,10 +61,10 @@ export class Form11StorageModel extends Model {
 export class ParticipantModel extends Model {
 	static table = "participants"
 	@field("permitId") permitId!: string
-	@text("nombre") nombre!: string
-	@text("apellidos") apellidos!: string
-	@text("genero") genero!: "F" | "M"
-	@text("cedulaIdentidad") cedulaIdentidad!: string
-	@text("firma") firma!: string
-	@text("notas") notas!: string
+	@text("name") name!: string
+	@text("lastNames") lastNames!: string
+	@text("gender") gender!: "F" | "M"
+	@text("identityNumber") identityNumber!: string
+	@text("signature") signature!: string
+	@text("notes") notes!: string
 }

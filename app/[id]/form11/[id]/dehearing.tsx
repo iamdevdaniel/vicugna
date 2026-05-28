@@ -75,11 +75,11 @@ export default function () {
 				<LabeledInput
 					label="Fecha Inicio Predescerdado"
 					labelPrefix="1"
-					error={errors.fechaInicioPredescerdado?.message}
+					error={errors.startDate?.message}
 				>
 					<Controller
 						control={control}
-						name="fechaInicioPredescerdado"
+						name="startDate"
 						render={({ field: { onChange, value } }) => (
 							<>
 								<Pressable
@@ -140,11 +140,11 @@ export default function () {
 				<LabeledInput
 					label="Fecha Fin Predescerdado"
 					labelPrefix="2"
-					error={errors.fechaFinPredescerdado?.message}
+					error={errors.endDate?.message}
 				>
 					<Controller
 						control={control}
-						name="fechaFinPredescerdado"
+						name="endDate"
 						render={({ field: { onChange, value } }) => (
 							<>
 								<Pressable
@@ -205,11 +205,11 @@ export default function () {
 				<LabeledInput
 					label="Lugar Predescerdado"
 					labelPrefix="3"
-					error={errors.lugarPredescerdado?.message}
+					error={errors.site?.message}
 				>
 					<Controller
 						control={control}
-						name="lugarPredescerdado"
+						name="site"
 						render={({ field: { onChange, value } }) => (
 							<TextInput
 								placeholder="Ingrese lugar"
@@ -233,11 +233,11 @@ export default function () {
 				<LabeledInput
 					label="Responsables Predescerdado"
 					labelPrefix="4"
-					error={errors.responsablesPredescerdado?.message}
+					error={errors.supervisors?.message}
 				>
 					<Controller
 						control={control}
-						name="responsablesPredescerdado"
+						name="supervisors"
 						render={({ field: { onChange, value } }) => (
 							<TextInput
 								placeholder="Ingrese responsables"

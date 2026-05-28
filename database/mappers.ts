@@ -28,20 +28,20 @@ export function mapToForm11Storage(
 		id: storage.id,
 		shearing: {
 			id: shearing.id,
-			departamento: shearing.departamento,
-			asociacionRegional: shearing.asociacionRegional,
-			comunidadManejadora: shearing.comunidadManejadora,
-			sitioCaptura: shearing.sitioCaptura,
-			fechaCaptura: shearing.fechaCaptura,
+			departament: shearing.departament,
+			regional: shearing.regional,
+			community: shearing.community,
+			site: shearing.site,
+			date: shearing.date,
 			codigoAutorizacion: shearing.codigoAutorizacion,
 			isCompleted: shearing.isCompleted,
 		},
 		dehearing: {
 			id: dehearing.id,
-			fechaInicioPredescerdado: dehearing.fechaInicioPredescerdado,
-			fechaFinPredescerdado: dehearing.fechaFinPredescerdado,
-			lugarPredescerdado: dehearing.lugarPredescerdado,
-			responsablesPredescerdado: dehearing.responsablesPredescerdado,
+			startDate: dehearing.startDate,
+			endDate: dehearing.endDate,
+			site: dehearing.site,
+			supervisors: dehearing.supervisors,
 			isCompleted: dehearing.isCompleted,
 		},
 		recordCount,
@@ -51,7 +51,7 @@ export function mapToForm11Storage(
 export function mapToForm11Record(r: Form11RecordModel): Form11Record {
 	return {
 		id: r.id,
-		ficha: r.ficha,
+		tagId: r.tagId,
 		pesoFibraBruto: r.pesoFibraBruto,
 		pesoVellonLimpio: r.pesoVellonLimpio,
 		pesoBraga: r.pesoBraga,
@@ -68,11 +68,11 @@ export function applyShearingToModel(
 	data: Form11ShearingFormData,
 	isCompleted: boolean,
 ): void {
-	model.departamento = data.departamento
-	model.asociacionRegional = data.asociacionRegional
-	model.comunidadManejadora = data.comunidadManejadora
-	model.sitioCaptura = data.sitioCaptura
-	model.fechaCaptura = data.fechaCaptura
+	model.departament = data.departament
+	model.regional = data.regional
+	model.community = data.community
+	model.site = data.site
+	model.date = data.date
 	model.codigoAutorizacion = data.codigoAutorizacion
 	model.isCompleted = isCompleted
 }
@@ -82,10 +82,10 @@ export function applyDehearingToModel(
 	data: Form11DehearingFormData,
 	isCompleted: boolean,
 ): void {
-	model.fechaInicioPredescerdado = data.fechaInicioPredescerdado
-	model.fechaFinPredescerdado = data.fechaFinPredescerdado
-	model.lugarPredescerdado = data.lugarPredescerdado
-	model.responsablesPredescerdado = data.responsablesPredescerdado
+	model.startDate = data.startDate
+	model.endDate = data.endDate
+	model.site = data.site
+	model.supervisors = data.supervisors
 	model.isCompleted = isCompleted
 }
 
@@ -95,7 +95,7 @@ export function applyRecordToModel(
 	storageId?: string,
 ): void {
 	if (storageId) model.form11StorageId = storageId
-	model.ficha = data.ficha
+	model.tagId = data.tagId
 	model.pesoFibraBruto = data.pesoFibraBruto
 	model.pesoVellonLimpio = data.pesoVellonLimpio
 	model.pesoBraga = data.pesoBraga
@@ -110,11 +110,11 @@ export function mapToBasicInfo(m: BasicInfoModel): BasicInfo {
 	return {
 		id: m.id,
 		permitId: m.permitId,
-		departamento: m.departamento,
-		asociacionRegional: m.asociacionRegional,
-		comunidadManejadora: m.comunidadManejadora,
-		sitioCaptura: m.sitioCaptura,
-		fechaCaptura: m.fechaCaptura,
+		departament: m.departament,
+		regional: m.regional,
+		community: m.community,
+		site: m.site,
+		date: m.date,
 		isCompleted: m.isCompleted,
 	}
 }
@@ -124,11 +124,11 @@ export function applyBasicInfoToModel(
 	data: BasicInfoFormData,
 	isCompleted: boolean,
 ): void {
-	model.departamento = data.departamento
-	model.asociacionRegional = data.asociacionRegional
-	model.comunidadManejadora = data.comunidadManejadora
-	model.sitioCaptura = data.sitioCaptura
-	model.fechaCaptura = data.fechaCaptura
+	model.departament = data.departament
+	model.regional = data.regional
+	model.community = data.community
+	model.site = data.site
+	model.date = data.date
 	model.isCompleted = isCompleted
 }
 
@@ -136,12 +136,12 @@ export function mapToParticipant(m: ParticipantModel): Participant {
 	return {
 		id: m.id,
 		permitId: m.permitId,
-		nombre: m.nombre,
-		apellidos: m.apellidos,
-		genero: m.genero,
-		cedulaIdentidad: m.cedulaIdentidad,
-		firma: m.firma,
-		notas: m.notas,
+		name: m.name,
+		lastNames: m.lastNames,
+		gender: m.gender,
+		identityNumber: m.identityNumber,
+		signature: m.signature,
+		notes: m.notes,
 	}
 }
 
@@ -149,10 +149,10 @@ export function applyParticipantToModel(
 	model: ParticipantModel,
 	data: ParticipantFormData,
 ): void {
-	model.nombre = data.nombre
-	model.apellidos = data.apellidos
-	model.genero = data.genero
-	model.cedulaIdentidad = data.cedulaIdentidad
-	model.firma = data.firma
-	model.notas = data.notas
+	model.name = data.name
+	model.lastNames = data.lastNames
+	model.gender = data.gender
+	model.identityNumber = data.identityNumber
+	model.signature = data.signature
+	model.notes = data.notes
 }

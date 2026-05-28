@@ -1,20 +1,20 @@
 [
 	{
 		"id": "permit-1",
-		"fechaCaptura": "2026-05-19",
-		"sitioCaptura": "Sora Sora Sector Norte",
+		"date": "2026-05-19",
+		"site": "Sora Sora Sector Norte",
 		"codigoAutorizacion": "AUT-2026-098A"
 	},
 	{
 		"id": "permit-2",
-		"fechaCaptura": "2026-05-20",
-		"sitioCaptura": "Cerro Calvario Alta",
+		"date": "2026-05-20",
+		"site": "Cerro Calvario Alta",
 		"codigoAutorizacion": "AUT-2026-104B"
 	},
 	{
 		"id": "permit-3",
-		"fechaCaptura": "2026-05-22",
-		"sitioCaptura": "Bofedal Central Chachacomani",
+		"date": "2026-05-22",
+		"site": "Bofedal Central Chachacomani",
 		"codigoAutorizacion": "AUT-2026-112C"
 	}
 ]

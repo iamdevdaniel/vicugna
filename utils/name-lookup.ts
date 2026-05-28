@@ -1,26 +1,21 @@
-import regionales from "@assets/data/regionales.json"
+import regionals from "@assets/data/regionals.json"
 import type { BasicInfo } from "@definitions/types"
 
 export const getRegionalName = (form: BasicInfo): string => {
-	const departamento =
-		regionales[form.departamento as keyof typeof regionales]
-	if (!departamento) return "NA"
+	const departament = regionals[form.departament as keyof typeof regionals]
+	if (!departament) return "NA"
 	return (
-		departamento.regionales.find((r) => r.id === form.asociacionRegional)
-			?.nombre || "NA"
+		departament.regionals.find((r) => r.id === form.regional)?.name || "NA"
 	)
 }
 
 export const getCommunityName = (form: BasicInfo): string => {
-	const departamento =
-		regionales[form.departamento as keyof typeof regionales]
-	if (!departamento) return "NA"
-	const regional = departamento.regionales.find((r) =>
-		r.comunidades.some((c) => c.id === form.comunidadManejadora),
+	const departament = regionals[form.departament as keyof typeof regionals]
+	if (!departament) return "NA"
+	const regional = departament.regionals.find((r) =>
+		r.communities.some((c) => c.id === form.community),
 	)
 	if (!regional) return "NA"
-	const comunidad = regional.comunidades.find(
-		(c) => c.id === form.comunidadManejadora,
-	)
-	return comunidad?.nombre || "NA"
+	const comunidad = regional.communities.find((c) => c.id === form.community)
+	return comunidad?.name || "NA"
 }

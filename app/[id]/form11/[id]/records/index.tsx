@@ -85,7 +85,7 @@ export default function () {
 										marginBottom: 6,
 									}}
 								>
-									#{idx + 1} · Ficha {record.ficha}
+									#{idx + 1} · Ficha {record.tagId}
 								</Text>
 								<View
 									style={{

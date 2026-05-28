@@ -21,11 +21,11 @@ export function useReadBasicInfo(permitId: string): DbState<BasicInfo | null> {
 			.get<BasicInfoModel>("basicInfo")
 			.query(Q.where("permitId", permitId))
 			.observeWithColumns([
-				"departamento",
-				"asociacionRegional",
-				"comunidadManejadora",
-				"sitioCaptura",
-				"fechaCaptura",
+				"departament",
+				"regional",
+				"community",
+				"site",
+				"date",
 				"isCompleted",
 			])
 			.subscribe({
@@ -62,11 +62,11 @@ export async function initializePermits(permitIds: string[]): Promise<void> {
 						.get<BasicInfoModel>("basicInfo")
 						.prepareCreate((model) => {
 							model.permitId = permitId
-							model.departamento = ""
-							model.asociacionRegional = ""
-							model.comunidadManejadora = ""
-							model.sitioCaptura = ""
-							model.fechaCaptura = ""
+							model.departament = ""
+							model.regional = ""
+							model.community = ""
+							model.site = ""
+							model.date = ""
 						}),
 				),
 			)
@@ -83,11 +83,11 @@ export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
 			.get<BasicInfoModel>("basicInfo")
 			.create((model) => {
 				model.permitId = permitId
-				model.departamento = ""
-				model.asociacionRegional = ""
-				model.comunidadManejadora = ""
-				model.sitioCaptura = ""
-				model.fechaCaptura = ""
+				model.departament = ""
+				model.regional = ""
+				model.community = ""
+				model.site = ""
+				model.date = ""
 			})
 	})
 	if (!record) throw new Error("No se pudo crear el registro de info básica.")

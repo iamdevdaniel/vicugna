@@ -4,39 +4,39 @@ import * as yup from "yup"
 const decimalNumberRegex = /^\d+(\.\d{1,2})?$/
 
 export const schemaForm11Shearing = yup.object().shape({
-	departamento: yup.string().required("Requerido"),
-	asociacionRegional: yup.string().required("Requerido"),
-	comunidadManejadora: yup.string().required("Requerido"),
-	sitioCaptura: yup.string().required("Requerido"),
-	fechaCaptura: yup.string().required("Requerido"),
+	departament: yup.string().required("Requerido"),
+	regional: yup.string().required("Requerido"),
+	community: yup.string().required("Requerido"),
+	site: yup.string().required("Requerido"),
+	date: yup.string().required("Requerido"),
 	codigoAutorizacion: yup.string().required("Requerido"),
 })
 
 export const defaultValuesForm11Shearing = {
-	departamento: "",
-	asociacionRegional: "",
-	comunidadManejadora: "",
-	sitioCaptura: "",
-	fechaCaptura: "",
+	departament: "",
+	regional: "",
+	community: "",
+	site: "",
+	date: "",
 	codigoAutorizacion: "",
 }
 
 export const schemaForm11Dehearing = yup.object().shape({
-	fechaInicioPredescerdado: yup.string().required("Requerido"),
-	fechaFinPredescerdado: yup.string().required("Requerido"),
-	lugarPredescerdado: yup.string().required("Requerido"),
-	responsablesPredescerdado: yup.string().required("Requerido"),
+	startDate: yup.string().required("Requerido"),
+	endDate: yup.string().required("Requerido"),
+	site: yup.string().required("Requerido"),
+	supervisors: yup.string().required("Requerido"),
 })
 
 export const defaultValuesForm11Dehearing = {
-	fechaInicioPredescerdado: "",
-	fechaFinPredescerdado: "",
-	lugarPredescerdado: "",
-	responsablesPredescerdado: "",
+	startDate: "",
+	endDate: "",
+	site: "",
+	supervisors: "",
 }
 
 export const schemaForm11Record = yup.object().shape({
-	ficha: yup.string().required("Requerido"),
+	tagId: yup.string().required("Requerido"),
 	pesoFibraBruto: yup
 		.string()
 		.required("Requerido")
@@ -111,7 +111,7 @@ export const schemaForm11Record = yup.object().shape({
 })
 
 export const defaultValuesForm11Record: Form11RecordFormData = {
-	ficha: "",
+	tagId: "",
 	pesoFibraBruto: "",
 	pesoVellonLimpio: "",
 	pesoBraga: "",

@@ -7,12 +7,12 @@ import { database } from "./setup"
 import { type DbState, makeInitial, makeReducer } from "./utils-db"
 
 const COLUMNS = [
-	"nombre",
-	"apellidos",
-	"genero",
-	"cedulaIdentidad",
-	"firma",
-	"notas",
+	"name",
+	"lastNames",
+	"gender",
+	"identityNumber",
+	"signature",
+	"notes",
 ]
 
 //-------------------READ-------------------

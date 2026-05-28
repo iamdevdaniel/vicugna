@@ -2,7 +2,7 @@
 // import { create } from "zustand"
 
 // const initialFormState: Form11Record = {
-//     ficha: "",
+//     tagId: "",
 //     pesoFibraBruto: "",
 //     pesoVellonLimpio: "",
 //     pesoBraga: "",

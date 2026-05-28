@@ -45,12 +45,12 @@ export default function () {
 	useEffect(() => {
 		if (loading || !data) return
 		reset({
-			nombre: data.nombre,
-			apellidos: data.apellidos,
-			genero: data.genero,
-			cedulaIdentidad: data.cedulaIdentidad,
-			firma: data.firma,
-			notas: data.notas,
+			name: data.name,
+			lastNames: data.lastNames,
+			gender: data.gender,
+			identityNumber: data.identityNumber,
+			signature: data.signature,
+			notes: data.notes,
 		})
 	}, [loading, reset, data])
 
@@ -103,11 +103,11 @@ export default function () {
 					<LabeledInput
 						label="Nombre"
 						labelPrefix="1"
-						error={errors.nombre?.message}
+						error={errors.name?.message}
 					>
 						<Controller
 							control={control}
-							name="nombre"
+							name="name"
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
@@ -116,7 +116,7 @@ export default function () {
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
-									error={!!errors.nombre}
+									error={!!errors.name}
 								/>
 							)}
 						/>
@@ -125,11 +125,11 @@ export default function () {
 					<LabeledInput
 						label="Apellidos"
 						labelPrefix="2"
-						error={errors.apellidos?.message}
+						error={errors.lastNames?.message}
 					>
 						<Controller
 							control={control}
-							name="apellidos"
+							name="lastNames"
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
@@ -138,7 +138,7 @@ export default function () {
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
-									error={!!errors.apellidos}
+									error={!!errors.lastNames}
 								/>
 							)}
 						/>
@@ -147,11 +147,11 @@ export default function () {
 					<LabeledInput
 						label="Género"
 						labelPrefix="3"
-						error={errors.genero?.message}
+						error={errors.gender?.message}
 					>
 						<Controller
 							control={control}
-							name="genero"
+							name="gender"
 							render={({ field: { onChange, value } }) => (
 								<RadioGroup
 									value={value}
@@ -168,11 +168,11 @@ export default function () {
 					<LabeledInput
 						label="Cédula de Identidad"
 						labelPrefix="4"
-						error={errors.cedulaIdentidad?.message}
+						error={errors.identityNumber?.message}
 					>
 						<Controller
 							control={control}
-							name="cedulaIdentidad"
+							name="identityNumber"
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
@@ -182,7 +182,7 @@ export default function () {
 									onChangeText={onChange}
 									onBlur={onBlur}
 									keyboardType="numeric"
-									error={!!errors.cedulaIdentidad}
+									error={!!errors.identityNumber}
 								/>
 							)}
 						/>
@@ -191,11 +191,11 @@ export default function () {
 					<LabeledInput
 						label="Firma"
 						labelPrefix="5"
-						error={errors.firma?.message}
+						error={errors.signature?.message}
 					>
 						<Controller
 							control={control}
-							name="firma"
+							name="signature"
 							render={({ field: { onChange, value } }) => (
 								<SignaturePad
 									value={value}
@@ -208,11 +208,11 @@ export default function () {
 					<LabeledInput
 						label="Notas"
 						labelPrefix="6"
-						error={errors.notas?.message}
+						error={errors.notes?.message}
 					>
 						<Controller
 							control={control}
-							name="notas"
+							name="notes"
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
@@ -227,7 +227,7 @@ export default function () {
 										height: 115,
 										textAlignVertical: "top",
 									}}
-									error={!!errors.notas}
+									error={!!errors.notes}
 								/>
 							)}
 						/>

@@ -43,7 +43,7 @@ export default function () {
 								? [
 										{
 											label: "Fecha",
-											value: basicInfo.fechaCaptura,
+											value: basicInfo.date,
 										},
 										{
 											label: "Regional",

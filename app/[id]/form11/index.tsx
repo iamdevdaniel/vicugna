@@ -92,7 +92,7 @@ export default function () {
 											marginBottom: 6,
 										}}
 									>
-										{form.shearing.fechaCaptura}
+										{form.shearing.date}
 									</Text>
 									<Text
 										style={{

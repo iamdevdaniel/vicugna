@@ -1,7 +1,7 @@
 export type AdminPermit = {
 	id: string
-	fechaCaptura: string
-	sitioCaptura: string
+	date: string
+	site: string
 	codigoAutorizacion: string
 }
 
@@ -10,11 +10,11 @@ export type AdminPermit = {
 export type BasicInfo = {
 	id: string
 	permitId: string
-	departamento: string
-	asociacionRegional: string
-	comunidadManejadora: string
-	sitioCaptura: string
-	fechaCaptura: string
+	departament: string
+	regional: string
+	community: string
+	site: string
+	date: string
 	isCompleted: boolean
 }
 
@@ -34,21 +34,21 @@ export type Form11Storage = {
 
 export type Form11Shearing = {
 	id: string
-	departamento: string
-	asociacionRegional: string
-	comunidadManejadora: string
-	sitioCaptura: string
-	fechaCaptura: string
+	departament: string
+	regional: string
+	community: string
+	site: string
+	date: string
 	codigoAutorizacion: string
 	isCompleted: boolean
 }
 
 export type Form11Dehearing = {
 	id: string
-	fechaInicioPredescerdado: string
-	fechaFinPredescerdado: string
-	lugarPredescerdado: string
-	responsablesPredescerdado: string
+	startDate: string
+	endDate: string
+	site: string
+	supervisors: string
 	isCompleted: boolean
 }
 
@@ -60,7 +60,7 @@ export type Form11DehearingFormData = Omit<
 
 export type Form11Record = {
 	id: string
-	ficha: string
+	tagId: string
 	pesoFibraBruto: string
 	pesoVellonLimpio: string
 	pesoBraga: string
@@ -80,12 +80,12 @@ export type Gender = "M" | "F"
 export type Participant = {
 	id: string
 	permitId: string
-	nombre: string
-	apellidos: string
-	genero: Gender
-	cedulaIdentidad: string
-	firma: string
-	notas: string
+	name: string
+	lastNames: string
+	gender: Gender
+	identityNumber: string
+	signature: string
+	notes: string
 }
 
 export type ParticipantFormData = Omit<Participant, "id" | "permitId">

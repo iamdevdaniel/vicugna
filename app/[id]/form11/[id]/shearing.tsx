@@ -1,4 +1,4 @@
-import regionales from "@assets/data/regionales.json"
+import regionals from "@assets/data/regionals.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
 import { updateShearingForm, useReadOneForm11 } from "@database"
 import type { Form11ShearingFormData } from "@definitions/types"
@@ -94,10 +94,10 @@ export default function () {
 		Array<{ label: string; value: string }>
 	>([])
 
-	const selectedDepartamento = watch("departamento")
-	const selectedRegional = watch("asociacionRegional")
+	const selectedDepartamento = watch("departament")
+	const selectedRegional = watch("regional")
 
-	const departamentoOptions = Object.keys(regionales).map((key) => ({
+	const departamentoOptions = Object.keys(regionals).map((key) => ({
 		label: key,
 		value: key,
 	}))
@@ -116,9 +116,9 @@ export default function () {
 	useEffect(() => {
 		if (selectedDepartamento) {
 			const dept =
-				regionales[selectedDepartamento as keyof typeof regionales]
+				regionals[selectedDepartamento as keyof typeof regionals]
 			setRegionalOptions(
-				dept.regionales.map((r) => ({ label: r.nombre, value: r.id })),
+				dept.regionals.map((r) => ({ label: r.name, value: r.id })),
 			)
 		} else {
 			setRegionalOptions([])
@@ -129,14 +129,14 @@ export default function () {
 	useEffect(() => {
 		if (selectedRegional && selectedDepartamento) {
 			const dept =
-				regionales[selectedDepartamento as keyof typeof regionales]
-			const regional = dept.regionales.find(
+				regionals[selectedDepartamento as keyof typeof regionals]
+			const regional = dept.regionals.find(
 				(r) => r.id === selectedRegional,
 			)
 			if (regional) {
 				setComunidadOptions(
-					regional.comunidades.map((c) => ({
-						label: c.nombre,
+					regional.communities.map((c) => ({
+						label: c.name,
 						value: c.id,
 					})),
 				)
@@ -193,22 +193,22 @@ export default function () {
 				<LabeledInput
 					label="Departamento"
 					labelPrefix="1"
-					error={errors.departamento?.message}
+					error={errors.departament?.message}
 				>
 					<Controller
 						control={control}
-						name="departamento"
+						name="departament"
 						render={({ field: { onChange, value } }) => (
 							<Dropdown
-								placeholder="Seleccionar departamento"
+								placeholder="Seleccionar departament"
 								options={departamentoOptions}
 								value={value}
 								onSelect={(v) => {
 									onChange(v)
-									setValue("asociacionRegional", "", {
+									setValue("regional", "", {
 										shouldValidate: true,
 									})
-									setValue("comunidadManejadora", "", {
+									setValue("community", "", {
 										shouldValidate: true,
 									})
 								}}
@@ -219,11 +219,11 @@ export default function () {
 				<LabeledInput
 					label="Asociación Regional"
 					labelPrefix="2"
-					error={errors.asociacionRegional?.message}
+					error={errors.regional?.message}
 				>
 					<Controller
 						control={control}
-						name="asociacionRegional"
+						name="regional"
 						render={({ field: { onChange, value } }) => (
 							<Dropdown
 								placeholder="Seleccionar regional"
@@ -231,7 +231,7 @@ export default function () {
 								value={value}
 								onSelect={(v) => {
 									onChange(v)
-									setValue("comunidadManejadora", "", {
+									setValue("community", "", {
 										shouldValidate: true,
 									})
 								}}
@@ -243,11 +243,11 @@ export default function () {
 				<LabeledInput
 					label="Comunidad Manejadora"
 					labelPrefix="3"
-					error={errors.comunidadManejadora?.message}
+					error={errors.community?.message}
 				>
 					<Controller
 						control={control}
-						name="comunidadManejadora"
+						name="community"
 						render={({ field: { onChange, value } }) => (
 							<Dropdown
 								placeholder="Seleccionar comunidad"
@@ -262,11 +262,11 @@ export default function () {
 				<LabeledInput
 					label="Sitio de Captura"
 					labelPrefix="4"
-					error={errors.sitioCaptura?.message}
+					error={errors.site?.message}
 				>
 					<Controller
 						control={control}
-						name="sitioCaptura"
+						name="site"
 						render={({ field: { onChange, value } }) => (
 							<TextInput
 								placeholder="Ingrese sitio de captura"
@@ -290,11 +290,11 @@ export default function () {
 				<LabeledInput
 					label="Fecha de Captura"
 					labelPrefix="5"
-					error={errors.fechaCaptura?.message}
+					error={errors.date?.message}
 				>
 					<Controller
 						control={control}
-						name="fechaCaptura"
+						name="date"
 						render={({ field: { onChange, value } }) => (
 							<>
 								<Pressable

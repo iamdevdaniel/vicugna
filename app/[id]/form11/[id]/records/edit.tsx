@@ -92,14 +92,14 @@ export default function () {
 				<LabeledInput
 					label="Ficha"
 					labelPrefix="1"
-					error={errors.ficha?.message}
+					error={errors.tagId?.message}
 				>
 					<Controller
 						control={control}
-						name="ficha"
+						name="tagId"
 						render={({ field: { onChange, value } }) => (
 							<TextInput
-								placeholder="Ingrese número de ficha"
+								placeholder="Ingrese número de tagId"
 								placeholderTextColor={
 									theme.colors.onSurfaceVariant
 								}
@@ -280,7 +280,7 @@ export default function () {
 						name="nombrePredescerdador"
 						render={({ field: { onChange, value } }) => (
 							<TextInput
-								placeholder="Ingrese nombre"
+								placeholder="Ingrese name"
 								placeholderTextColor={
 									theme.colors.onSurfaceVariant
 								}

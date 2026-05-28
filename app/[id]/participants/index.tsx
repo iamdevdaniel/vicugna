@@ -7,16 +7,16 @@ import { Button, Card, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // PARTICIPANTS.OVERVIEW /[id]/participants
-export default function ParticipantsListScreen() {
+export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: participants } = useReadParticipants(id)
 
 	const total = participants?.length || 0
-	const maleCount = participants?.filter((p) => p.genero === "M").length || 0
+	const maleCount = participants?.filter((p) => p.gender === "M").length || 0
 	const femaleCount =
-		participants?.filter((p) => p.genero === "F").length || 0
+		participants?.filter((p) => p.gender === "F").length || 0
 
 	return (
 		<SafeAreaView
@@ -94,7 +94,7 @@ export default function ParticipantsListScreen() {
 								bottom: 0,
 								width: 32,
 								backgroundColor:
-									participant.genero === "M"
+									participant.gender === "M"
 										? theme.colors.custom.blue
 										: theme.colors.custom.pink,
 								justifyContent: "center",
@@ -124,9 +124,9 @@ export default function ParticipantsListScreen() {
 						>
 							<View style={{ flex: 1 }}>
 								<Text style={{ fontWeight: "bold" }}>
-									{participant.nombre} {participant.apellidos}
+									{participant.name} {participant.lastNames}
 								</Text>
-								<Text>{participant.cedulaIdentidad}</Text>
+								<Text>{participant.identityNumber}</Text>
 							</View>
 							<IconButton
 								icon="pencil"

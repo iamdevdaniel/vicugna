@@ -36,10 +36,8 @@ export default function () {
 							<Text variant="titleSmall">
 								{item.codigoAutorizacion}
 							</Text>
-							<Text variant="bodyMedium">
-								{item.sitioCaptura}
-							</Text>
-							<Text variant="bodySmall">{item.fechaCaptura}</Text>
+							<Text variant="bodyMedium">{item.site}</Text>
+							<Text variant="bodySmall">{item.date}</Text>
 						</Card.Content>
 					</Card>
 				)}
