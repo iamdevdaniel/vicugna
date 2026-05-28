@@ -8,6 +8,7 @@ import type {
 	Form11Storage,
 	Participant,
 	ParticipantFormData,
+	ShearingHeader,
 } from "@definitions/types"
 import type {
 	BasicInfoModel,
@@ -16,6 +17,7 @@ import type {
 	Form11ShearingModel,
 	Form11StorageModel,
 	ParticipantModel,
+	ShearingHeaderModel,
 } from "./models"
 
 export function mapToForm11Storage(
@@ -155,4 +157,34 @@ export function applyParticipantToModel(
 	model.identityNumber = data.identityNumber
 	model.signature = data.signature
 	model.notes = data.notes
+}
+
+export function mapToShearingHeader(
+	model: ShearingHeaderModel,
+): ShearingHeader {
+	return {
+		id: model.id,
+		permitId: model.permitId,
+		site: model.site,
+		latitude: model.latitude,
+		longitude: model.longitude,
+		roundupCount: model.roundupCount,
+		startTime: model.startTime,
+		endTime: model.endTime,
+		isCompleted: model.isCompleted,
+	}
+}
+
+export function applyShearingHeaderToModel(
+	model: ShearingHeaderModel,
+	data: ShearingHeader,
+) {
+	model.permitId = data.permitId
+	model.site = data.site
+	model.latitude = data.latitude
+	model.longitude = data.longitude
+	model.roundupCount = data.roundupCount
+	model.startTime = data.startTime
+	model.endTime = data.endTime
+	model.isCompleted = data.isCompleted
 }

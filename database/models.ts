@@ -23,7 +23,7 @@ export class ParticipantModel extends Model {
 	@text("notes") notes!: string
 }
 
-export class ShearingHeader extends Model {
+export class ShearingHeaderModel extends Model {
 	static table = "shearingHeader"
 	@field("permitId") permitId!: string
 	@text("site") site!: string
@@ -35,7 +35,7 @@ export class ShearingHeader extends Model {
 	@field("isCompleted") isCompleted!: boolean
 }
 
-export class ShearingRecord extends Model {
+export class ShearingRecordModel extends Model {
 	static table = "shearingRecord"
 	@field("permitId") permitId!: string
 	@field("tagNumber") tagNumber!: number

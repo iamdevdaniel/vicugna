@@ -89,3 +89,19 @@ export type Participant = {
 }
 
 export type ParticipantFormData = Omit<Participant, "id" | "permitId">
+
+// SHEARING
+
+export interface ShearingHeader {
+	id: string
+	permitId: string
+	site: string
+	latitude: number
+	longitude: number
+	roundupCount: number
+	startTime: string
+	endTime: string
+	isCompleted: boolean
+}
+
+export type ShearingHeaderFormData = Omit<ShearingHeader, "id" | "permitId">
