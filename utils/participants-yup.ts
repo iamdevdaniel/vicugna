@@ -5,8 +5,9 @@ export const schemaParticipant = yup.object().shape({
 	nombre: yup.string().required("Requerido"),
 	apellidos: yup.string().required("Requerido"),
 	genero: yup
-		.string()
-		.test("genero", "Seleccionar M o F", (v) => v === "M" || v === "F")
+		.mixed<"M" | "F">()
+		.oneOf(["M", "F"], "Seleccionar M o F")
+		.defined()
 		.required("Requerido"),
 	cedulaIdentidad: yup.string().required("Requerido"),
 	firma: yup.string().required("Requerido"),
@@ -16,7 +17,7 @@ export const schemaParticipant = yup.object().shape({
 export const defaultValuesParticipant: ParticipantFormData = {
 	nombre: "",
 	apellidos: "",
-	genero: "",
+	genero: "M",
 	cedulaIdentidad: "",
 	firma: "",
 	notas: "",

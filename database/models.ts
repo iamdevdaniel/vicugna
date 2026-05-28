@@ -63,7 +63,7 @@ export class ParticipantModel extends Model {
 	@field("permitId") permitId!: string
 	@text("nombre") nombre!: string
 	@text("apellidos") apellidos!: string
-	@text("genero") genero!: string
+	@text("genero") genero!: "F" | "M"
 	@text("cedulaIdentidad") cedulaIdentidad!: string
 	@text("firma") firma!: string
 	@text("notas") notas!: string

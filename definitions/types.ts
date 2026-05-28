@@ -75,12 +75,14 @@ export type Form11RecordFormData = Omit<Form11Record, "id">
 
 // PARTICIPANTS
 
+export type Gender = "M" | "F"
+
 export type Participant = {
 	id: string
 	permitId: string
 	nombre: string
 	apellidos: string
-	genero: string
+	genero: Gender
 	cedulaIdentidad: string
 	firma: string
 	notas: string
