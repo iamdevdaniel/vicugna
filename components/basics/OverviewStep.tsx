@@ -1,4 +1,5 @@
 import { useAppTheme } from "@utils/useAppTheme"
+import type { ReactNode } from "react"
 import { Text, View } from "react-native"
 import { Button, Card, IconButton } from "react-native-paper"
 
@@ -13,11 +14,12 @@ export const OverviewStep = ({
 	title: string
 	onAction: () => void
 	state: "ready" | "done" | "disabled"
-	details: Array<{ label: string; value: string }>
+	details?: ReactNode
 }) => {
 	const theme = useAppTheme()
 	const disabled = state === "disabled"
 	const done = state === "done"
+	const hasDetails = !!details
 	return (
 		<Card mode="elevated" style={{ marginBottom: 20 }}>
 			<Card.Content>
@@ -25,7 +27,7 @@ export const OverviewStep = ({
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						marginBottom: done && details.length > 0 ? 8 : 0,
+						marginBottom: done && hasDetails ? 8 : 0,
 					}}
 				>
 					<View
@@ -76,48 +78,7 @@ export const OverviewStep = ({
 						/>
 					)}
 				</View>
-				{done && details.length > 0 && (
-					<View
-						style={{
-							flexDirection: "row",
-							flexWrap: "wrap",
-							gap: 4,
-							marginBottom: 4,
-						}}
-					>
-						{details.map(({ label, value }) => (
-							<View
-								key={label}
-								style={{
-									width: "48%",
-									flexDirection: "row",
-									gap: 4,
-									marginBottom: 2,
-								}}
-							>
-								<Text
-									style={{
-										fontSize: 12,
-										color: theme.colors.onSurfaceVariant,
-									}}
-								>
-									{label}:
-								</Text>
-								<Text
-									style={{
-										fontSize: 12,
-										fontWeight: "500",
-										color: theme.colors.onSurface,
-										flex: 1,
-									}}
-									numberOfLines={1}
-								>
-									{value}
-								</Text>
-							</View>
-						))}
-					</View>
-				)}
+				{done && hasDetails && <View>{details}</View>}
 				{!done && (
 					<Button
 						mode="contained"

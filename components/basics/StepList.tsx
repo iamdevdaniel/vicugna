@@ -1,10 +1,11 @@
+import type { ReactNode } from "react"
 import { OverviewStep } from "./OverviewStep"
 
 export interface StepConfig {
 	title: string
 	state: "ready" | "done" | "disabled"
 	onAction: () => void
-	details: Array<{ label: string; value: string }>
+	details?: ReactNode
 }
 
 export const StepList = ({ steps }: { steps: StepConfig[] }) => {

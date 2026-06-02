@@ -4,7 +4,7 @@ import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
-import { ScrollView, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 
 // OVERVIEW /[id]
 export default function () {
@@ -36,50 +36,38 @@ export default function () {
 				<StepList
 					steps={[
 						{
-							title: "Informacion Básica",
+							title: "Informacion Basica",
 							state: basicInfoState,
 							onAction: () => router.push(ROUTES.BASIC_INFO(id)),
-							details: basicInfo?.isCompleted
-								? [
-										{
-											label: "Fecha",
-											value: basicInfo.date,
-										},
-										{
-											label: "Regional",
-											value: getRegionalName(basicInfo),
-										},
-										{
-											label: "Comunidad",
-											value: getCommunityName(basicInfo),
-										},
-									]
-								: [],
+							details: basicInfo?.isCompleted ? (
+								<View style={{ gap: 4 }}>
+									<Text>Fecha: {basicInfo.date}</Text>
+									<Text>
+										Regional: {getRegionalName(basicInfo)}
+									</Text>
+									<Text>
+										Comunidad: {getCommunityName(basicInfo)}
+									</Text>
+								</View>
+							) : null,
 						},
 						{
 							title: "Participantes",
 							state: participantsState,
 							onAction: () =>
 								router.push(ROUTES.PARTICIPANTS.OVERVIEW(id)),
-							details: [
-								{
-									label: "Total",
-									value: participants.length.toString(),
-								},
-							],
+							details: <Text>Total: {participants.length}</Text>,
 						},
 						{
 							title: "Esquila",
 							state: "ready",
 							onAction: () =>
 								router.push(ROUTES.SHEARING.OVERVIEW(id)),
-							details: [],
 						},
 						{
 							title: "Limpieza",
 							state: "ready",
 							onAction: () => {},
-							details: [],
 						},
 					]}
 				/>

@@ -3,7 +3,7 @@ import { useReadShearingHeader, useReadShearingRecords } from "@database"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
-import { ScrollView, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { Button } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -16,8 +16,6 @@ export default function () {
 
 	const shearingStepState = shearingForm?.isCompleted ? "done" : "ready"
 	const shearingRecordsStepState = shearingRecords.length ? "done" : "ready"
-
-	console.log("records: ", shearingRecords.length)
 
 	return (
 		<SafeAreaView
@@ -39,19 +37,15 @@ export default function () {
 							state: shearingStepState,
 							onAction: () =>
 								router.push(ROUTES.SHEARING.HEADER(id)),
-							details: [],
 						},
 						{
 							title: "Registros de esquila",
 							state: shearingRecordsStepState,
 							onAction: () =>
 								router.push(ROUTES.SHEARING.RECORD(id)),
-							details: [
-								{
-									label: "Total",
-									value: shearingRecords.length.toString(),
-								},
-							],
+							details: (
+								<Text>Total: {shearingRecords.length}</Text>
+							),
 						},
 					]}
 				/>
