@@ -1,9 +1,10 @@
+import { AccentCard } from "@components"
 import { useReadParticipants } from "@database"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { FlatList, Text, View } from "react-native"
-import { Button, Card, IconButton } from "react-native-paper"
+import { Button, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // PARTICIPANTS.OVERVIEW /[id]/participants
@@ -77,48 +78,18 @@ export default function () {
 					paddingBottom: 40 + insets.bottom,
 				}}
 				renderItem={({ item: participant, index }) => (
-					<Card
-						mode="elevated"
-						style={{
-							marginBottom: 0,
-							borderRadius: 8,
-							borderLeftWidth: 0,
-							overflow: "hidden",
-							position: "relative",
-						}}
+					<AccentCard
+						accent={
+							participant.gender === "M"
+								? theme.colors.custom.blue
+								: theme.colors.custom.pink
+						}
+						prefix={index + 1}
 					>
-						<View
-							style={{
-								position: "absolute",
-								left: 0,
-								top: 0,
-								bottom: 0,
-								width: 32,
-								backgroundColor:
-									participant.gender === "M"
-										? theme.colors.custom.blue
-										: theme.colors.custom.pink,
-								justifyContent: "center",
-								alignItems: "center",
-								zIndex: 1,
-							}}
-						>
-							<Text
-								style={{
-									color: theme.colors.custom.white,
-									fontWeight: "bold",
-									fontSize: 16,
-									opacity: 0.8,
-								}}
-							>
-								{index + 1}
-							</Text>
-						</View>
 						<View
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
-								paddingLeft: 40,
 								paddingRight: 4,
 								paddingVertical: 6,
 							}}
@@ -144,7 +115,7 @@ export default function () {
 								style={{ margin: 0 }}
 							/>
 						</View>
-					</Card>
+					</AccentCard>
 				)}
 			/>
 			<View
