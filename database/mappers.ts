@@ -10,6 +10,8 @@ import type {
 	ParticipantFormData,
 	ShearingHeader,
 	ShearingHeaderFormData,
+	ShearingRecord,
+	ShearingRecordFormData,
 } from "@definitions/types"
 import type {
 	BasicInfoModel,
@@ -19,6 +21,7 @@ import type {
 	Form11StorageModel,
 	ParticipantModel,
 	ShearingHeaderModel,
+	ShearingRecordModel,
 } from "./models"
 
 export function mapToForm11Storage(
@@ -188,4 +191,47 @@ export function applyShearingHeaderToModel(
 	model.startTime = data.startTime
 	model.endTime = data.endTime
 	model.isCompleted = isCompleted
+}
+
+export function mapToShearingRecord(
+	model: ShearingRecordModel,
+): ShearingRecord {
+	return {
+		id: model.id,
+		permitId: model.permitId,
+		tagNumber: model.tagNumber,
+		sex: model.sex,
+		ageCategory: model.ageCategory,
+		liveWeight: model.liveWeight,
+		fiberLength: model.fiberLength,
+		bodyCondition: model.bodyCondition,
+		gestationStatus: model.gestationStatus,
+		externalParasites: model.externalParasites,
+		mangeSeverity: model.mangeSeverity,
+		hasDandruff: model.hasDandruff,
+		isSheared: model.isSheared,
+		isDead: model.isDead,
+		observations: model.observations,
+	}
+}
+
+export function applyShearingRecordToModel(
+	model: ShearingRecordModel,
+	data: ShearingRecordFormData,
+	permitId?: string,
+): void {
+	if (permitId) model.permitId = permitId
+	model.tagNumber = data.tagNumber
+	model.sex = data.sex
+	model.ageCategory = data.ageCategory
+	model.liveWeight = data.liveWeight
+	model.fiberLength = data.fiberLength
+	model.bodyCondition = data.bodyCondition
+	model.gestationStatus = data.gestationStatus
+	model.externalParasites = data.externalParasites
+	model.mangeSeverity = data.mangeSeverity
+	model.hasDandruff = data.hasDandruff
+	model.isSheared = data.isSheared
+	model.isDead = data.isDead
+	model.observations = data.observations
 }

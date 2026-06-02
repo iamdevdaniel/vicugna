@@ -1,4 +1,4 @@
-import { LabeledInput, RadioGroup } from "@components"
+import { LabeledInput, ToggleButtonGroup } from "@components"
 import {
 	createForm11Record,
 	updateForm11Record,
@@ -258,7 +258,7 @@ export default function () {
 						control={control}
 						name="caspa"
 						render={({ field: { onChange, value } }) => (
-							<RadioGroup
+							<ToggleButtonGroup
 								value={value}
 								onChange={onChange}
 								options={[

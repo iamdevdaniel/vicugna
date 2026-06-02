@@ -12,8 +12,13 @@ export {
 } from "./dal-participants"
 export { initializePermits } from "./dal-permit"
 export {
+	createShearingRecord,
+	deleteShearingRecord,
 	updateShearingHeader,
+	updateShearingRecord,
+	useReadOneShearingRecord,
 	useReadShearingHeader,
+	useReadShearingRecords,
 } from "./dal-shearing"
 export {
 	createForm11,

@@ -39,6 +39,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
 						key={opt.value}
 						label={opt.label}
 						value={opt.value}
+						position="leading"
 						style={horizontal ? { marginRight: 8 } : undefined}
 					/>
 				))}

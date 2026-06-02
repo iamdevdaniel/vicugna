@@ -1,4 +1,4 @@
-import { LabeledInput, RadioGroup, SignaturePad } from "@components"
+import { LabeledInput, SignaturePad, ToggleButtonGroup } from "@components"
 import {
 	createParticipant,
 	deleteParticipant,
@@ -153,7 +153,7 @@ export default function () {
 							control={control}
 							name="gender"
 							render={({ field: { onChange, value } }) => (
-								<RadioGroup
+								<ToggleButtonGroup
 									value={value}
 									onChange={onChange}
 									options={[

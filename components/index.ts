@@ -6,3 +6,9 @@ export { SimpleDropdown } from "./basics/SimpleDropdown"
 export type { StepConfig } from "./basics/StepList"
 export { StepList } from "./basics/StepList"
 export { TimeInput } from "./basics/TimeInput"
+export {
+	ToggleButtonGroup,
+	ToggleButtonGroupProps,
+	ToggleOption,
+} from "./basics/ToggleButtonGroup"
+export { VicugnaIcon } from "./icons/VicugnaIcon"
