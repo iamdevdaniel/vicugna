@@ -1,5 +1,6 @@
 import { StepList } from "@components"
-import { useReadBasicInfo, useReadParticipants } from "@database"
+import { useReadBasicInfo } from "@database"
+import { useBulkParticipants } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { useAppTheme } from "@utils/useAppTheme"
@@ -11,7 +12,7 @@ export default function () {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: basicInfo } = useReadBasicInfo(id)
-	const { data: participants } = useReadParticipants(id)
+	const { data: participants } = useBulkParticipants(id)
 
 	const basicInfoState = basicInfo?.isCompleted ? "done" : "ready"
 	let participantsState: "disabled" | "ready" | "done"

@@ -4,11 +4,11 @@ export {
 	useReadBasicInfo,
 } from "./dal-basic-info"
 export {
-	createParticipant,
-	deleteParticipant,
-	updateParticipant,
-	useReadOneParticipant,
-	useReadParticipants,
+	createSingleParticipant,
+	deleteSingleParticipant,
+	subscribeBulkParticipants,
+	subscribeSingleParticipant,
+	updateSingleParticipant,
 } from "./dal-participants"
 export { initializePermits } from "./dal-permit"
 export {

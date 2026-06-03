@@ -1,12 +1,7 @@
 import { LabeledInput, SignaturePad, ToggleButtonGroup } from "@components"
-import {
-	createParticipant,
-	deleteParticipant,
-	updateParticipant,
-	useReadOneParticipant,
-} from "@database"
 import type { ParticipantFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useSingleParticipant, useSingleParticipantActions } from "@hooks"
 import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesParticipant,
@@ -27,7 +22,14 @@ export default function () {
 		id: string
 		participantId: string
 	}>()
-	const { data, loading } = useReadOneParticipant(participantId)
+	const { data, loading } = useSingleParticipant(participantId)
+	const {
+		createSingleParticipant,
+		updateSingleParticipant,
+		deleteSingleParticipant,
+		saving,
+		deleting,
+	} = useSingleParticipantActions()
 
 	const isEditForm = participantId !== "new"
 
@@ -55,12 +57,14 @@ export default function () {
 	}, [loading, reset, data])
 
 	const onSubmit = async (formData: ParticipantFormData) => {
-		if (isEditForm) {
-			await updateParticipant(participantId, formData)
+		const ok = isEditForm
+			? await updateSingleParticipant(participantId, formData)
+			: await createSingleParticipant(id, formData)
+		if (ok) {
+			router.back()
 		} else {
-			await createParticipant(id, formData)
+			Alert.alert("Error", "No se pudo guardar el participante")
 		}
-		router.back()
 	}
 
 	const onDelete = () => {
@@ -73,8 +77,15 @@ export default function () {
 					text: "Eliminar",
 					style: "destructive",
 					onPress: async () => {
-						await deleteParticipant(participantId)
-						router.back()
+						const ok = await deleteSingleParticipant(participantId)
+						if (ok) {
+							router.back()
+						} else {
+							Alert.alert(
+								"Error",
+								"No se pudo eliminar el participante",
+							)
+						}
 					},
 				},
 			],
@@ -243,8 +254,9 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
-							disabled={!isValid}
+							disabled={!isValid || saving || deleting}
 							style={{ flex: 1 }}
+							loading={saving}
 						>
 							{isEditForm ? "Actualizar" : "Guardar"}
 						</Button>
@@ -261,12 +273,14 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={onDelete}
+							disabled={saving || deleting}
 							style={{
 								flex: 1,
 								backgroundColor: theme.colors.custom.crimson,
 								marginTop: 16,
 							}}
 							textColor={theme.colors.onError}
+							loading={deleting}
 						>
 							Borrar
 						</Button>

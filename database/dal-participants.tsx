@@ -1,10 +1,13 @@
 import type { Participant, ParticipantFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { useEffect, useReducer } from "react"
 import { applyParticipantToModel, mapToParticipant } from "./mappers"
 import type { ParticipantModel } from "./models"
 import { database } from "./setup"
-import { type DbState, makeInitial, makeReducer } from "./utils-db"
+
+type SubscriptionCallback<T> = {
+	onChange: (data: T) => void
+	onError: (error: Error) => void
+}
 
 const COLUMNS = [
 	"name",
@@ -17,62 +20,41 @@ const COLUMNS = [
 
 //-------------------READ-------------------
 
-export function useReadParticipants(permitId: string): DbState<Participant[]> {
-	const [state, dispatch] = useReducer(
-		makeReducer<Participant[]>(),
-		makeInitial<Participant[]>([]),
-	)
+export function subscribeBulkParticipants(
+	permitId: string,
+	callbacks: SubscriptionCallback<Participant[]>,
+): () => void {
+	const sub = database
+		.get<ParticipantModel>("participants")
+		.query(Q.where("permitId", permitId))
+		.observeWithColumns(COLUMNS)
+		.subscribe({
+			next: (records) =>
+				callbacks.onChange(records.map(mapToParticipant)),
+			error: (e) => callbacks.onError(e as Error),
+		})
 
-	useEffect(() => {
-		const sub = database
-			.get<ParticipantModel>("participants")
-			.query(Q.where("permitId", permitId))
-			.observeWithColumns(COLUMNS)
-			.subscribe({
-				next: (records) =>
-					dispatch({
-						type: "success",
-						data: records.map(mapToParticipant),
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [permitId])
-
-	return state
+	return () => sub.unsubscribe()
 }
 
-export function useReadOneParticipant(id: string): DbState<Participant | null> {
-	const [state, dispatch] = useReducer(
-		makeReducer<Participant | null>(),
-		makeInitial<Participant | null>(null),
-	)
+export function subscribeSingleParticipant(
+	participantId: string,
+	callbacks: SubscriptionCallback<Participant>,
+): () => void {
+	const sub = database
+		.get<ParticipantModel>("participants")
+		.findAndObserve(participantId)
+		.subscribe({
+			next: (record) => callbacks.onChange(mapToParticipant(record)),
+			error: (e) => callbacks.onError(e as Error),
+		})
 
-	useEffect(() => {
-		if (id === "new") {
-			dispatch({ type: "success", data: null })
-			return
-		}
-		const sub = database
-			.get<ParticipantModel>("participants")
-			.findAndObserve(id)
-			.subscribe({
-				next: (record) =>
-					dispatch({
-						type: "success",
-						data: mapToParticipant(record),
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [id])
-
-	return state
+	return () => sub.unsubscribe()
 }
 
 //-------------------WRITE-------------------
 
-export async function createParticipant(
+export async function createSingleParticipant(
 	permitId: string,
 	data: ParticipantFormData,
 ): Promise<Participant> {
@@ -89,25 +71,27 @@ export async function createParticipant(
 	return mapToParticipant(record)
 }
 
-export async function updateParticipant(
-	id: string,
+export async function updateSingleParticipant(
+	participantId: string,
 	data: ParticipantFormData,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ParticipantModel>("participants")
-			.find(id)
+			.find(participantId)
 		await record.update((model) => {
 			applyParticipantToModel(model, data)
 		})
 	})
 }
 
-export async function deleteParticipant(id: string): Promise<void> {
+export async function deleteSingleParticipant(
+	participantId: string,
+): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ParticipantModel>("participants")
-			.find(id)
+			.find(participantId)
 		await record.destroyPermanently()
 	})
 }
