@@ -403,7 +403,7 @@ export default function () {
 
 					<View
 						style={{
-							flexDirection: "row",
+							flexDirection: "column",
 							gap: 12,
 							marginTop: 16,
 						}}
@@ -416,28 +416,21 @@ export default function () {
 						>
 							{isEditForm ? "Actualizar" : "Guardar"}
 						</Button>
-						<Button
-							mode="outlined"
-							onPress={() => reset(defaultValuesShearingRecord)}
-							style={{ flex: 1 }}
-						>
-							Limpiar
-						</Button>
+						{isEditForm && (
+							<Button
+								mode="contained"
+								onPress={onDelete}
+								style={{
+									flex: 1,
+									backgroundColor:
+										theme.colors.custom.crimson,
+								}}
+								textColor={theme.colors.onError}
+							>
+								Borrar
+							</Button>
+						)}
 					</View>
-					{isEditForm && (
-						<Button
-							mode="contained"
-							onPress={onDelete}
-							style={{
-								flex: 1,
-								backgroundColor: theme.colors.custom.crimson,
-								marginTop: 16,
-							}}
-							textColor={theme.colors.onError}
-						>
-							Borrar
-						</Button>
-					)}
 				</ScrollView>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
