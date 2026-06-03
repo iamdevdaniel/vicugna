@@ -19,7 +19,7 @@ function reducer<T>(state: DbState<T>, action: DbAction<T>): DbState<T> {
 	}
 }
 
-export function useSingleShearingHeader(
+export function useReadSingleShearingHeader(
 	permitId: string,
 ): DbState<ShearingHeader | null> {
 	const [state, dispatch] = useReducer(

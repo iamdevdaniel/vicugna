@@ -1,5 +1,5 @@
 import { AccentCard } from "@components"
-import { useBulkParticipants } from "@hooks"
+import { useReadBulkParticipants } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
@@ -13,7 +13,7 @@ export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: participants } = useBulkParticipants(id)
+	const { data: participants } = useReadBulkParticipants(id)
 
 	const total = participants?.length || 0
 	const maleCount = participants?.filter((p) => p.gender === "M").length || 0

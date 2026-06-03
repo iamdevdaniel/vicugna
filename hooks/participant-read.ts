@@ -23,7 +23,7 @@ function reducer<T>(state: DbState<T>, action: DbAction<T>): DbState<T> {
 	}
 }
 
-export function useBulkParticipants(
+export function useReadBulkParticipants(
 	permitId: string,
 ): DbState<Participant[]> {
 	const [state, dispatch] = useReducer(
@@ -42,7 +42,7 @@ export function useBulkParticipants(
 	return state
 }
 
-export function useSingleParticipant(
+export function useReadSingleParticipant(
 	participantId?: string,
 ): DbState<Participant | null> {
 	const [state, dispatch] = useReducer(

@@ -2,8 +2,8 @@ import { LabeledInput, ToggleButtonGroup } from "@components"
 import type { ShearingRecordFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
+	useReadSingleShearingRecordFormData,
 	useSingleShearingRecordActions,
-	useSingleShearingRecordFormData,
 } from "@hooks"
 import { useAppTheme } from "@utils/useAppTheme"
 import {
@@ -35,7 +35,7 @@ export default function () {
 	}>()
 	const isEditForm = !!recordId
 	const { data, loading: loadingData } =
-		useSingleShearingRecordFormData(recordId)
+		useReadSingleShearingRecordFormData(recordId)
 	const {
 		createSingleShearingRecord,
 		updateSingleShearingRecord,

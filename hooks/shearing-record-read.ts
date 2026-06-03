@@ -26,7 +26,7 @@ function reducer<T>(state: DbState<T>, action: DbAction<T>): DbState<T> {
 	}
 }
 
-export function useBulkShearingRecords(
+export function useReadBulkShearingRecords(
 	permitId: string,
 ): DbState<ShearingRecord[]> {
 	const [state, dispatch] = useReducer(
@@ -45,7 +45,7 @@ export function useBulkShearingRecords(
 	return state
 }
 
-export function useSingleShearingRecordFormData(
+export function useReadSingleShearingRecordFormData(
 	recordId?: string,
 ): DbState<ShearingRecordFormData | null> {
 	const [state, dispatch] = useReducer(

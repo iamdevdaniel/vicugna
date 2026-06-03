@@ -1,5 +1,5 @@
 import { StepList } from "@components"
-import { useBulkParticipants, useSingleBasicInfo } from "@hooks"
+import { useReadBulkParticipants, useReadSingleBasicInfo } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName, getRegionalName } from "@utils/name-lookup"
 import { useAppTheme } from "@utils/useAppTheme"
@@ -10,8 +10,8 @@ import { ScrollView, Text, View } from "react-native"
 export default function () {
 	const theme = useAppTheme()
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: basicInfo } = useSingleBasicInfo(id)
-	const { data: participants } = useBulkParticipants(id)
+	const { data: basicInfo } = useReadSingleBasicInfo(id)
+	const { data: participants } = useReadBulkParticipants(id)
 
 	const basicInfoState = basicInfo?.isCompleted ? "done" : "ready"
 	let participantsState: "disabled" | "ready" | "done"

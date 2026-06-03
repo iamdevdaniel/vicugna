@@ -1,7 +1,10 @@
 import { LabeledInput, TimeInput } from "@components"
 import type { ShearingHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useSingleShearingHeader, useSingleShearingHeaderActions } from "@hooks"
+import {
+	useReadSingleShearingHeader,
+	useSingleShearingHeaderActions,
+} from "@hooks"
 import {
 	defaultValuesShearingHeader,
 	yupShearingHeader,
@@ -19,7 +22,7 @@ export default function () {
 		id: string
 		headerId: string
 	}>()
-	const { data, loading } = useSingleShearingHeader(id)
+	const { data, loading } = useReadSingleShearingHeader(id)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
 
 	const {

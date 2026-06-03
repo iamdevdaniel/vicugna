@@ -19,7 +19,7 @@ function reducer<T>(state: DbState<T>, action: DbAction<T>): DbState<T> {
 	}
 }
 
-export function useSingleBasicInfo(
+export function useReadSingleBasicInfo(
 	permitId: string,
 ): DbState<BasicInfo | null> {
 	const [state, dispatch] = useReducer(

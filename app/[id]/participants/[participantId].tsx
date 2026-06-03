@@ -1,7 +1,7 @@
 import { LabeledInput, SignaturePad, ToggleButtonGroup } from "@components"
 import type { ParticipantFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useSingleParticipant, useSingleParticipantActions } from "@hooks"
+import { useReadSingleParticipant, useSingleParticipantActions } from "@hooks"
 import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesParticipant,
@@ -22,7 +22,7 @@ export default function () {
 		id: string
 		participantId: string
 	}>()
-	const { data, loading } = useSingleParticipant(participantId)
+	const { data, loading } = useReadSingleParticipant(participantId)
 	const {
 		createSingleParticipant,
 		updateSingleParticipant,

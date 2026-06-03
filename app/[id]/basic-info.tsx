@@ -2,7 +2,7 @@ import regionals from "@assets/data/regionals.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
 import type { BasicInfoFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useSingleBasicInfo, useSingleBasicInfoActions } from "@hooks"
+import { useReadSingleBasicInfo, useSingleBasicInfoActions } from "@hooks"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useAppTheme } from "@utils/useAppTheme"
 import { defaultValuesBasicInfo, yupBasicInfo } from "@utils/yup-basic-info"
@@ -24,7 +24,7 @@ export default function () {
 	const theme = useAppTheme()
 	const router = useRouter()
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data, loading } = useSingleBasicInfo(id)
+	const { data, loading } = useReadSingleBasicInfo(id)
 	const { updateSingleBasicInfo, saving } = useSingleBasicInfoActions()
 
 	const {
