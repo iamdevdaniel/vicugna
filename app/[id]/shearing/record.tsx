@@ -1,14 +1,21 @@
 import { LabeledInput, ToggleButtonGroup } from "@components"
-import { createShearingRecord } from "@database"
+import {
+	createShearingRecord,
+	deleteShearingRecord,
+	updateShearingRecord,
+	useReadOneShearingRecordFormData,
+} from "@database"
 import type { ShearingRecordFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesShearingRecord,
 	yupShearingRecord,
 } from "@utils/yup-shearing-record"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { KeyboardAvoidingView, ScrollView, View } from "react-native"
+import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
@@ -23,7 +30,13 @@ function parseNumber(value: string) {
 // SHEARING.RECORD /[id]/shearing/record
 export default function () {
 	const router = useRouter()
-	const { id } = useLocalSearchParams<{ id: string }>()
+	const theme = useAppTheme()
+	const { id, recordId } = useLocalSearchParams<{
+		id: string
+		recordId?: string
+	}>()
+	const isEditForm = !!recordId
+	const { data } = useReadOneShearingRecordFormData(recordId)
 
 	const {
 		control,
@@ -36,8 +49,39 @@ export default function () {
 		resolver: yupResolver(yupShearingRecord),
 	})
 
+	useEffect(() => {
+		if (!data) return
+		console.log("loaded", data)
+		reset(data)
+	}, [data, reset])
+
 	const onSubmit = async (formData: ShearingRecordFormData) => {
-		createShearingRecord(id, formData).then(() => router.back())
+		if (recordId) {
+			await updateShearingRecord(recordId, formData)
+		} else {
+			await createShearingRecord(id, formData)
+		}
+		console.log("save record", formData)
+		router.back()
+	}
+
+	const onDelete = () => {
+		if (!recordId) return
+		Alert.alert(
+			"Eliminar registro",
+			"Seguro que quieres eliminar este registro?",
+			[
+				{ text: "Cancelar", style: "cancel" },
+				{
+					text: "Eliminar",
+					style: "destructive",
+					onPress: async () => {
+						await deleteShearingRecord(recordId)
+						router.back()
+					},
+				},
+			],
+		)
 	}
 
 	return (
@@ -230,16 +274,13 @@ export default function () {
 							name="externalParasites"
 							render={({ field: { onChange, value } }) => (
 								<ToggleButtonGroup
-									value={value ?? "none"}
-									onChange={(selected) =>
-										onChange(
-											selected === "none"
-												? null
-												: selected,
-										)
-									}
+									value={value}
+									onChange={onChange}
 									options={[
-										{ label: "Ninguno", value: "none" },
+										{
+											label: "Ninguno",
+											value: "Ninguno",
+										},
 										{
 											label: "Garrapata",
 											value: "Garrapata",
@@ -261,16 +302,13 @@ export default function () {
 							name="mangeSeverity"
 							render={({ field: { onChange, value } }) => (
 								<ToggleButtonGroup
-									value={value ?? "none"}
-									onChange={(selected) =>
-										onChange(
-											selected === "none"
-												? null
-												: selected,
-										)
-									}
+									value={value}
+									onChange={onChange}
 									options={[
-										{ label: "Ninguna", value: "none" },
+										{
+											label: "Ninguna",
+											value: "Ninguna",
+										},
 										{ label: "Leve", value: "Leve" },
 										{
 											label: "Moderado",
@@ -376,7 +414,7 @@ export default function () {
 							disabled={!isValid}
 							style={{ flex: 1 }}
 						>
-							Guardar
+							{isEditForm ? "Actualizar" : "Guardar"}
 						</Button>
 						<Button
 							mode="outlined"
@@ -386,6 +424,20 @@ export default function () {
 							Limpiar
 						</Button>
 					</View>
+					{isEditForm && (
+						<Button
+							mode="contained"
+							onPress={onDelete}
+							style={{
+								flex: 1,
+								backgroundColor: theme.colors.custom.crimson,
+								marginTop: 16,
+							}}
+							textColor={theme.colors.onError}
+						>
+							Borrar
+						</Button>
+					)}
 				</ScrollView>
 			</KeyboardAvoidingView>
 		</SafeAreaView>

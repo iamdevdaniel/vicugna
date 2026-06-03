@@ -38,7 +38,11 @@ export default function () {
 						{
 							title: "Informacion Basica",
 							state: basicInfoState,
-							onAction: () => router.push(ROUTES.BASIC_INFO(id)),
+							action: {
+								icon: "pencil",
+								onPress: () =>
+									router.push(ROUTES.BASIC_INFO(id)),
+							},
 							details: basicInfo?.isCompleted ? (
 								<View style={{ gap: 4 }}>
 									<Text>Fecha: {basicInfo.date}</Text>
@@ -54,20 +58,27 @@ export default function () {
 						{
 							title: "Participantes",
 							state: participantsState,
-							onAction: () =>
-								router.push(ROUTES.PARTICIPANTS.OVERVIEW(id)),
+							action: {
+								icon: "pencil",
+								onPress: () =>
+									router.push(
+										ROUTES.PARTICIPANTS.OVERVIEW(id),
+									),
+							},
 							details: <Text>Total: {participants.length}</Text>,
 						},
 						{
 							title: "Esquila",
 							state: "ready",
-							onAction: () =>
-								router.push(ROUTES.SHEARING.OVERVIEW(id)),
+							action: {
+								icon: "pencil",
+								onPress: () =>
+									router.push(ROUTES.SHEARING.OVERVIEW(id)),
+							},
 						},
 						{
 							title: "Limpieza",
 							state: "ready",
-							onAction: () => {},
 						},
 					]}
 				/>

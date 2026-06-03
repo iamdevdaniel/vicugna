@@ -45,8 +45,15 @@ export class ShearingRecordModel extends Model {
 	@field("fiberLength") fiberLength!: number
 	@text("bodyCondition") bodyCondition!: "Malo" | "Regular" | "Bueno"
 	@text("gestationStatus") gestationStatus!: "No" | "Si" | "Si ultimo tercio"
-	@text("externalParasites") externalParasites!: "Garrapata" | "Piojos" | null
-	@text("mangeSeverity") mangeSeverity!: "Leve" | "Moderado" | "Severo" | null
+	@text("externalParasites") externalParasites!:
+		| "Ninguno"
+		| "Garrapata"
+		| "Piojos"
+	@text("mangeSeverity") mangeSeverity!:
+		| "Ninguna"
+		| "Leve"
+		| "Moderado"
+		| "Severo"
 	@field("hasDandruff") hasDandruff!: boolean
 	@field("isSheared") isSheared!: boolean
 	@field("isDead") isDead!: boolean

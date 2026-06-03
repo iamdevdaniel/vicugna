@@ -119,8 +119,8 @@ export type ShearingRecord = {
 	fiberLength: number
 	bodyCondition: "Malo" | "Regular" | "Bueno"
 	gestationStatus: "No" | "Si" | "Si ultimo tercio"
-	externalParasites: "Garrapata" | "Piojos" | null
-	mangeSeverity: "Leve" | "Moderado" | "Severo" | null
+	externalParasites: "Ninguno" | "Garrapata" | "Piojos"
+	mangeSeverity: "Ninguna" | "Leve" | "Moderado" | "Severo"
 	hasDandruff: boolean
 	isSheared: boolean
 	isDead: boolean

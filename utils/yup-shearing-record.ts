@@ -9,8 +9,8 @@ export const defaultValuesShearingRecord: ShearingRecordFormData = {
 	fiberLength: 0,
 	bodyCondition: "Bueno",
 	gestationStatus: "No",
-	externalParasites: null,
-	mangeSeverity: null,
+	externalParasites: "Ninguno",
+	mangeSeverity: "Ninguna",
 	hasDandruff: false,
 	isSheared: false,
 	isDead: false,
@@ -55,14 +55,15 @@ export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
 			.defined()
 			.required("Campo requerido"),
 		externalParasites: yup
-			.mixed<"Garrapata" | "Piojos">()
-			.oneOf(["Garrapata", "Piojos"], "Selecciona una opcion")
-			.nullable()
+			.mixed<"Ninguno" | "Garrapata" | "Piojos">()
+			.oneOf(["Ninguno", "Garrapata", "Piojos"], "Selecciona una opcion")
 			.defined(),
 		mangeSeverity: yup
-			.mixed<"Leve" | "Moderado" | "Severo">()
-			.oneOf(["Leve", "Moderado", "Severo"], "Selecciona una opcion")
-			.nullable()
+			.mixed<"Ninguna" | "Leve" | "Moderado" | "Severo">()
+			.oneOf(
+				["Ninguna", "Leve", "Moderado", "Severo"],
+				"Selecciona una opcion",
+			)
 			.defined(),
 		hasDandruff: yup.boolean().defined().required("Campo requerido"),
 		isSheared: yup.boolean().defined().required("Campo requerido"),

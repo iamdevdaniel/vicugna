@@ -2,17 +2,23 @@ import { useAppTheme } from "@utils/useAppTheme"
 import type { ReactNode } from "react"
 import { Text, View } from "react-native"
 import { Button, Card, IconButton } from "react-native-paper"
+import type { IconSource } from "react-native-paper/lib/typescript/components/Icon"
+
+export type OverviewStepAction = {
+	icon: IconSource
+	onPress: () => void
+}
 
 export const OverviewStep = ({
 	number,
 	title,
-	onAction,
+	action,
 	state = "ready",
 	details,
 }: {
 	number: number
 	title: string
-	onAction: () => void
+	action?: OverviewStepAction
 	state: "ready" | "done" | "disabled"
 	details?: ReactNode
 }) => {
@@ -68,12 +74,12 @@ export const OverviewStep = ({
 					>
 						{title}
 					</Text>
-					{done && (
+					{done && action && (
 						<IconButton
-							icon="pencil"
+							icon={action.icon}
 							size={18}
 							iconColor={theme.colors.custom.green}
-							onPress={onAction}
+							onPress={action.onPress}
 							style={{ margin: 0 }}
 						/>
 					)}
@@ -82,11 +88,12 @@ export const OverviewStep = ({
 				{!done && (
 					<Button
 						mode="contained"
-						onPress={onAction}
-						disabled={disabled}
+						onPress={action?.onPress}
+						disabled={disabled || !action}
 						style={{ width: "100%", marginTop: 12 }}
 						buttonColor={theme.colors.custom.blue}
 						textColor={theme.colors.custom.white}
+						icon={action?.icon}
 					>
 						LLENAR
 					</Button>

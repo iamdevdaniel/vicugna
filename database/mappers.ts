@@ -215,6 +215,26 @@ export function mapToShearingRecord(
 	}
 }
 
+export function mapToShearingRecordFormData(
+	model: ShearingRecordModel,
+): ShearingRecordFormData {
+	return {
+		tagNumber: model.tagNumber,
+		sex: model.sex,
+		ageCategory: model.ageCategory,
+		liveWeight: model.liveWeight,
+		fiberLength: model.fiberLength,
+		bodyCondition: model.bodyCondition,
+		gestationStatus: model.gestationStatus,
+		externalParasites: model.externalParasites,
+		mangeSeverity: model.mangeSeverity,
+		hasDandruff: model.hasDandruff,
+		isSheared: model.isSheared,
+		isDead: model.isDead,
+		observations: model.observations,
+	}
+}
+
 export function applyShearingRecordToModel(
 	model: ShearingRecordModel,
 	data: ShearingRecordFormData,

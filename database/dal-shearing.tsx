@@ -11,6 +11,7 @@ import {
 	applyShearingRecordToModel,
 	mapToShearingHeader,
 	mapToShearingRecord,
+	mapToShearingRecordFormData,
 } from "./mappers"
 import type { ShearingHeaderModel, ShearingRecordModel } from "./models"
 import { database } from "./setup"
@@ -113,6 +114,37 @@ export function useReadOneShearingRecord(
 					dispatch({
 						type: "success",
 						data: mapToShearingRecord(record),
+					}),
+				error: (e) => dispatch({ type: "error", error: e as Error }),
+			})
+		return () => sub.unsubscribe()
+	}, [id])
+
+	return state
+}
+
+export function useReadOneShearingRecordFormData(
+	id?: string,
+): DbState<ShearingRecordFormData | null> {
+	const [state, dispatch] = useReducer(
+		makeReducer<ShearingRecordFormData | null>(),
+		makeInitial<ShearingRecordFormData | null>(null),
+	)
+
+	useEffect(() => {
+		if (!id) {
+			dispatch({ type: "success", data: null })
+			return
+		}
+
+		const sub = database
+			.get<ShearingRecordModel>("shearingRecord")
+			.findAndObserve(id)
+			.subscribe({
+				next: (record) =>
+					dispatch({
+						type: "success",
+						data: mapToShearingRecordFormData(record),
 					}),
 				error: (e) => dispatch({ type: "error", error: e as Error }),
 			})

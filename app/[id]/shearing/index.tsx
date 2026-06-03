@@ -1,10 +1,10 @@
-import { StepList, VicugnaIcon } from "@components"
+import { AccentCard, StepList } from "@components"
 import { useReadShearingHeader, useReadShearingRecords } from "@database"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
-import { Button } from "react-native-paper"
+import { Button, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 export default function () {
@@ -21,7 +21,6 @@ export default function () {
 		<SafeAreaView
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<VicugnaIcon />
 			<Stack.Screen options={{ title: `Permiso ${id || ""}` }} />
 			<ScrollView
 				contentContainerStyle={{
@@ -35,16 +34,62 @@ export default function () {
 						{
 							title: "Datos de esquila",
 							state: shearingStepState,
-							onAction: () =>
-								router.push(ROUTES.SHEARING.HEADER(id)),
+							action: {
+								icon: "pencil",
+								onPress: () =>
+									router.push(ROUTES.SHEARING.HEADER(id)),
+							},
 						},
 						{
 							title: "Registros de esquila",
 							state: shearingRecordsStepState,
-							onAction: () =>
-								router.push(ROUTES.SHEARING.RECORD(id)),
 							details: (
-								<Text>Total: {shearingRecords.length}</Text>
+								<View style={{ gap: 8 }}>
+									<Text>Total: {shearingRecords.length}</Text>
+									{shearingRecords.map((record, index) => (
+										<AccentCard
+											key={record.id}
+											accent={theme.colors.custom.green}
+											prefix={index + 1}
+											style={{
+												backgroundColor:
+													theme.colors.surfaceVariant,
+											}}
+										>
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													paddingRight: 4,
+													paddingVertical: 6,
+												}}
+											>
+												<View style={{ flex: 1 }}>
+													<Text>
+														{record.liveWeight} kg
+													</Text>
+												</View>
+												<IconButton
+													icon="pencil"
+													size={18}
+													iconColor={
+														theme.colors.custom
+															.green
+													}
+													onPress={() =>
+														router.push(
+															ROUTES.SHEARING.RECORD(
+																id,
+																record.id,
+															),
+														)
+													}
+													style={{ margin: 0 }}
+												/>
+											</View>
+										</AccentCard>
+									))}
+								</View>
 							),
 						},
 					]}

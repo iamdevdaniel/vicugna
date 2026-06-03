@@ -1,10 +1,10 @@
 import type { ReactNode } from "react"
-import { OverviewStep } from "./OverviewStep"
+import { OverviewStep, type OverviewStepAction } from "./OverviewStep"
 
 export interface StepConfig {
 	title: string
 	state: "ready" | "done" | "disabled"
-	onAction: () => void
+	action?: OverviewStepAction
 	details?: ReactNode
 }
 
@@ -17,7 +17,7 @@ export const StepList = ({ steps }: { steps: StepConfig[] }) => {
 					number={index + 1}
 					title={step.title}
 					state={step.state}
-					onAction={step.onAction}
+					action={step.action}
 					details={step.details}
 				/>
 			))}
