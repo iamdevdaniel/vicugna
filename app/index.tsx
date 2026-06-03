@@ -1,6 +1,6 @@
 import permits from "@assets/data/permits.json"
-import { initializePermits } from "@database"
 import type { AdminPermit } from "@definitions/types"
+import { usePermitActions } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { router } from "expo-router"
 import { useEffect } from "react"
@@ -12,9 +12,11 @@ const mockAdminPermit: AdminPermit[] = permits
 
 // OVERVIEW /
 export default function () {
+	const { initializePermits } = usePermitActions()
+
 	useEffect(() => {
 		initializePermits(mockAdminPermit.map((p) => p.id))
-	}, [])
+	}, [initializePermits])
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
