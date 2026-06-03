@@ -1,7 +1,7 @@
 export {
-	createBasicInfo,
-	updateBasicInfo,
-	useReadBasicInfo,
+	createSingleBasicInfo,
+	subscribeSingleBasicInfo,
+	updateSingleBasicInfo,
 } from "./dal-basic-info"
 export {
 	createSingleParticipant,

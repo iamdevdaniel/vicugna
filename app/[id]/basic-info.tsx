@@ -1,8 +1,8 @@
 import regionals from "@assets/data/regionals.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
-import { updateBasicInfo, useReadBasicInfo } from "@database"
 import type { BasicInfoFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useSingleBasicInfo, useSingleBasicInfoActions } from "@hooks"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useAppTheme } from "@utils/useAppTheme"
 import { defaultValuesBasicInfo, yupBasicInfo } from "@utils/yup-basic-info"
@@ -24,7 +24,8 @@ export default function () {
 	const theme = useAppTheme()
 	const router = useRouter()
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data, loading } = useReadBasicInfo(id)
+	const { data, loading } = useSingleBasicInfo(id)
+	const { updateSingleBasicInfo, saving } = useSingleBasicInfoActions()
 
 	const {
 		control,
@@ -101,9 +102,10 @@ export default function () {
 
 	const onSubmit = async (formData: BasicInfoFormData) => {
 		if (!data) return
-		await updateBasicInfo(data.id, formData).then(() => {
+		const ok = await updateSingleBasicInfo(data.id, formData)
+		if (ok) {
 			router.back()
-		})
+		}
 	}
 
 	const inputStyle = {
@@ -296,8 +298,9 @@ export default function () {
 					<Button
 						mode="contained"
 						onPress={handleSubmit(onSubmit)}
-						disabled={!isValid}
+						disabled={!isValid || saving}
 						style={{ flex: 1, marginHorizontal: 4 }}
+						loading={saving}
 					>
 						GUARDAR
 					</Button>

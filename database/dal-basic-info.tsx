@@ -1,48 +1,47 @@
 import type { BasicInfo, BasicInfoFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { useEffect, useReducer } from "react"
 import { applyBasicInfoToModel, mapToBasicInfo } from "./mappers"
 import type { BasicInfoModel } from "./models"
 import { database } from "./setup"
-import { type DbState, makeInitial, makeReducer } from "./utils-db"
+
+type SubscriptionCallback<T> = {
+	onChange: (data: T) => void
+	onError: (error: Error) => void
+}
 
 //-------------------READ-------------------
 
-export function useReadBasicInfo(permitId: string): DbState<BasicInfo | null> {
-	const [state, dispatch] = useReducer(
-		makeReducer<BasicInfo | null>(),
-		makeInitial<BasicInfo | null>(null),
-	)
+export function subscribeSingleBasicInfo(
+	permitId: string,
+	callbacks: SubscriptionCallback<BasicInfo | null>,
+): () => void {
+	const sub = database
+		.get<BasicInfoModel>("basicInfo")
+		.query(Q.where("permitId", permitId))
+		.observeWithColumns([
+			"department",
+			"regional",
+			"community",
+			"site",
+			"date",
+			"isCompleted",
+		])
+		.subscribe({
+			next: (records) =>
+				callbacks.onChange(
+					records[0] ? mapToBasicInfo(records[0]) : null,
+				),
+			error: (e) => callbacks.onError(e as Error),
+		})
 
-	useEffect(() => {
-		const sub = database
-			.get<BasicInfoModel>("basicInfo")
-			.query(Q.where("permitId", permitId))
-			.observeWithColumns([
-				"department",
-				"regional",
-				"community",
-				"site",
-				"date",
-				"isCompleted",
-			])
-			.subscribe({
-				next: (records) =>
-					dispatch({
-						type: "success",
-						data: records[0] ? mapToBasicInfo(records[0]) : null,
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [permitId])
-
-	return state
+	return () => sub.unsubscribe()
 }
 
 //-------------------WRITE-------------------
 
-export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
+export async function createSingleBasicInfo(
+	permitId: string,
+): Promise<BasicInfo> {
 	let record: BasicInfoModel | undefined
 	await database.write(async () => {
 		record = await database
@@ -60,12 +59,14 @@ export async function createBasicInfo(permitId: string): Promise<BasicInfo> {
 	return mapToBasicInfo(record)
 }
 
-export async function updateBasicInfo(
-	id: string,
+export async function updateSingleBasicInfo(
+	basicInfoId: string,
 	data: BasicInfoFormData,
 ): Promise<void> {
 	await database.write(async () => {
-		const record = await database.get<BasicInfoModel>("basicInfo").find(id)
+		const record = await database
+			.get<BasicInfoModel>("basicInfo")
+			.find(basicInfoId)
 		await record.update((model) => applyBasicInfoToModel(model, data, true))
 	})
 }
