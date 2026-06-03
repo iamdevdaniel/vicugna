@@ -1,7 +1,7 @@
 import { LabeledInput, TimeInput } from "@components"
-import { updateShearingHeader, useReadShearingHeader } from "@database"
 import type { ShearingHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useSingleShearingHeader, useSingleShearingHeaderActions } from "@hooks"
 import {
 	defaultValuesShearingHeader,
 	yupShearingHeader,
@@ -19,7 +19,8 @@ export default function () {
 		id: string
 		headerId: string
 	}>()
-	const { data, loading } = useReadShearingHeader(id)
+	const { data, loading } = useSingleShearingHeader(id)
+	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
 
 	const {
 		control,
@@ -46,9 +47,10 @@ export default function () {
 
 	const onSubmit = async (formData: ShearingHeaderFormData) => {
 		if (data) {
-			updateShearingHeader(data.id, formData).then(() => {
+			const ok = await updateShearingHeader(data.id, formData)
+			if (ok) {
 				router.back()
-			})
+			}
 		}
 	}
 
@@ -208,8 +210,9 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
-							disabled={!isValid}
+							disabled={!isValid || saving}
 							style={{ flex: 1 }}
+							loading={saving}
 						>
 							Guardar
 						</Button>

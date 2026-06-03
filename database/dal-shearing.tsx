@@ -5,7 +5,6 @@ import type {
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { useEffect, useReducer } from "react"
 import {
 	applyShearingHeaderToModel,
 	applyShearingRecordToModel,
@@ -15,7 +14,6 @@ import {
 } from "./mappers"
 import type { ShearingHeaderModel, ShearingRecordModel } from "./models"
 import { database } from "./setup"
-import { type DbState, makeInitial, makeReducer } from "./utils-db"
 
 type SubscriptionCallback<T> = {
 	onChange: (data: T) => void
@@ -24,41 +22,31 @@ type SubscriptionCallback<T> = {
 
 //-------------------READ-------------------
 
-export function useReadShearingHeader(
+export function subscribeSingleShearingHeader(
 	permitId: string,
-): DbState<ShearingHeader | null> {
-	const [state, dispatch] = useReducer(
-		makeReducer<ShearingHeader | null>(),
-		makeInitial<ShearingHeader | null>(null),
-	)
+	callbacks: SubscriptionCallback<ShearingHeader | null>,
+): () => void {
+	const sub = database
+		.get<ShearingHeaderModel>("shearingHeader")
+		.query(Q.where("permitId", permitId))
+		.observeWithColumns([
+			"site",
+			"latitude",
+			"longitude",
+			"roundupCount",
+			"startTime",
+			"endTime",
+			"isCompleted",
+		])
+		.subscribe({
+			next: (records) =>
+				callbacks.onChange(
+					records[0] ? mapToShearingHeader(records[0]) : null,
+				),
+			error: (e) => callbacks.onError(e as Error),
+		})
 
-	useEffect(() => {
-		const sub = database
-			.get<ShearingHeaderModel>("shearingHeader")
-			.query(Q.where("permitId", permitId))
-			.observeWithColumns([
-				"site",
-				"latitude",
-				"longitude",
-				"roundupCount",
-				"startTime",
-				"endTime",
-				"isCompleted",
-			])
-			.subscribe({
-				next: (records) =>
-					dispatch({
-						type: "success",
-						data: records[0]
-							? mapToShearingHeader(records[0])
-							: null,
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [permitId])
-
-	return state
+	return () => sub.unsubscribe()
 }
 
 export function subscribeBulkShearingRecords(
