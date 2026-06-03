@@ -10,6 +10,7 @@
       "@utils/*": ["./utils/*"],
       "@database": ["./database/index"],
       "@components": ["./components/index"],
+      "@hooks": ["./hooks/index"],
     }
   },
   "include": [

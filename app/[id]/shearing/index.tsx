@@ -1,5 +1,6 @@
 import { AccentCard, StepList } from "@components"
-import { useReadShearingHeader, useReadShearingRecords } from "@database"
+import { useReadShearingHeader } from "@database"
+import { useBulkShearingRecords } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
@@ -12,7 +13,7 @@ export default function () {
 	const insets = useSafeAreaInsets()
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: shearingForm } = useReadShearingHeader(id)
-	const { data: shearingRecords } = useReadShearingRecords(id)
+	const { data: shearingRecords } = useBulkShearingRecords(id)
 
 	const shearingStepState = shearingForm?.isCompleted ? "done" : "ready"
 	const shearingRecordsStepState = shearingRecords.length ? "done" : "ready"

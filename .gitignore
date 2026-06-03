@@ -43,3 +43,6 @@ app-example
 # Native build folders
 /android/
 /ios/
+
+# AI
+AGENTS.md

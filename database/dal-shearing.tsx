@@ -17,6 +17,11 @@ import type { ShearingHeaderModel, ShearingRecordModel } from "./models"
 import { database } from "./setup"
 import { type DbState, makeInitial, makeReducer } from "./utils-db"
 
+type SubscriptionCallback<T> = {
+	onChange: (data: T) => void
+	onError: (error: Error) => void
+}
+
 //-------------------READ-------------------
 
 export function useReadShearingHeader(
@@ -56,102 +61,51 @@ export function useReadShearingHeader(
 	return state
 }
 
-export function useReadShearingRecords(
+export function subscribeBulkShearingRecords(
 	permitId: string,
-): DbState<ShearingRecord[]> {
-	const [state, dispatch] = useReducer(
-		makeReducer<ShearingRecord[]>(),
-		makeInitial<ShearingRecord[]>([]),
-	)
+	callbacks: SubscriptionCallback<ShearingRecord[]>,
+): () => void {
+	const sub = database
+		.get<ShearingRecordModel>("shearingRecord")
+		.query(Q.where("permitId", permitId))
+		.observeWithColumns([
+			"tagNumber",
+			"sex",
+			"ageCategory",
+			"liveWeight",
+			"fiberLength",
+			"bodyCondition",
+			"gestationStatus",
+			"externalParasites",
+			"mangeSeverity",
+			"hasDandruff",
+			"isSheared",
+			"isDead",
+			"observations",
+		])
+		.subscribe({
+			next: (records) =>
+				callbacks.onChange(records.map(mapToShearingRecord)),
+			error: (e) => callbacks.onError(e as Error),
+		})
 
-	useEffect(() => {
-		const sub = database
-			.get<ShearingRecordModel>("shearingRecord")
-			.query(Q.where("permitId", permitId))
-			.observeWithColumns([
-				"tagNumber",
-				"sex",
-				"ageCategory",
-				"liveWeight",
-				"fiberLength",
-				"bodyCondition",
-				"gestationStatus",
-				"externalParasites",
-				"mangeSeverity",
-				"hasDandruff",
-				"isSheared",
-				"isDead",
-				"observations",
-			])
-			.subscribe({
-				next: (records) =>
-					dispatch({
-						type: "success",
-						data: records.map(mapToShearingRecord),
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [permitId])
-
-	return state
+	return () => sub.unsubscribe()
 }
 
-export function useReadOneShearingRecord(
-	id: string,
-): DbState<ShearingRecord | null> {
-	const [state, dispatch] = useReducer(
-		makeReducer<ShearingRecord | null>(),
-		makeInitial<ShearingRecord | null>(null),
-	)
+export function subscribeSingleShearingRecordFormData(
+	recordId: string,
+	callbacks: SubscriptionCallback<ShearingRecordFormData>,
+): () => void {
+	const sub = database
+		.get<ShearingRecordModel>("shearingRecord")
+		.findAndObserve(recordId)
+		.subscribe({
+			next: (record) =>
+				callbacks.onChange(mapToShearingRecordFormData(record)),
+			error: (e) => callbacks.onError(e as Error),
+		})
 
-	useEffect(() => {
-		const sub = database
-			.get<ShearingRecordModel>("shearingRecord")
-			.findAndObserve(id)
-			.subscribe({
-				next: (record) =>
-					dispatch({
-						type: "success",
-						data: mapToShearingRecord(record),
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [id])
-
-	return state
-}
-
-export function useReadOneShearingRecordFormData(
-	id?: string,
-): DbState<ShearingRecordFormData | null> {
-	const [state, dispatch] = useReducer(
-		makeReducer<ShearingRecordFormData | null>(),
-		makeInitial<ShearingRecordFormData | null>(null),
-	)
-
-	useEffect(() => {
-		if (!id) {
-			dispatch({ type: "success", data: null })
-			return
-		}
-
-		const sub = database
-			.get<ShearingRecordModel>("shearingRecord")
-			.findAndObserve(id)
-			.subscribe({
-				next: (record) =>
-					dispatch({
-						type: "success",
-						data: mapToShearingRecordFormData(record),
-					}),
-				error: (e) => dispatch({ type: "error", error: e as Error }),
-			})
-		return () => sub.unsubscribe()
-	}, [id])
-
-	return state
+	return () => sub.unsubscribe()
 }
 
 //-------------------WRITE-------------------
@@ -170,7 +124,7 @@ export async function updateShearingHeader(
 	})
 }
 
-export async function createShearingRecord(
+export async function createSingleShearingRecord(
 	permitId: string,
 	data: ShearingRecordFormData,
 ): Promise<ShearingRecord> {
@@ -186,25 +140,27 @@ export async function createShearingRecord(
 	return mapToShearingRecord(record)
 }
 
-export async function updateShearingRecord(
-	id: string,
+export async function updateSingleShearingRecord(
+	recordId: string,
 	data: ShearingRecordFormData,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ShearingRecordModel>("shearingRecord")
-			.find(id)
+			.find(recordId)
 		await record.update((model) => {
 			applyShearingRecordToModel(model, data)
 		})
 	})
 }
 
-export async function deleteShearingRecord(id: string): Promise<void> {
+export async function deleteSingleShearingRecord(
+	recordId: string,
+): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ShearingRecordModel>("shearingRecord")
-			.find(id)
+			.find(recordId)
 		await record.destroyPermanently()
 	})
 }

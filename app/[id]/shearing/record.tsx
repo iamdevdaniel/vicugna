@@ -1,12 +1,10 @@
 import { LabeledInput, ToggleButtonGroup } from "@components"
-import {
-	createShearingRecord,
-	deleteShearingRecord,
-	updateShearingRecord,
-	useReadOneShearingRecordFormData,
-} from "@database"
 import type { ShearingRecordFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import {
+	useSingleShearingRecordActions,
+	useSingleShearingRecordFormData,
+} from "@hooks"
 import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesShearingRecord,
@@ -36,7 +34,16 @@ export default function () {
 		recordId?: string
 	}>()
 	const isEditForm = !!recordId
-	const { data } = useReadOneShearingRecordFormData(recordId)
+	const { data, loading: loadingData } =
+		useSingleShearingRecordFormData(recordId)
+	const {
+		createSingleShearingRecord,
+		updateSingleShearingRecord,
+		deleteSingleShearingRecord,
+		saving,
+		deleting,
+	} = useSingleShearingRecordActions()
+	const isWaitingForEditData = isEditForm && (loadingData || !data)
 
 	const {
 		control,
@@ -51,18 +58,18 @@ export default function () {
 
 	useEffect(() => {
 		if (!data) return
-		console.log("loaded", data)
 		reset(data)
 	}, [data, reset])
 
 	const onSubmit = async (formData: ShearingRecordFormData) => {
-		if (recordId) {
-			await updateShearingRecord(recordId, formData)
+		const ok = recordId
+			? await updateSingleShearingRecord(recordId, formData)
+			: await createSingleShearingRecord(id, formData)
+		if (ok) {
+			router.back()
 		} else {
-			await createShearingRecord(id, formData)
+			Alert.alert("Error", "No se pudo guardar el registro")
 		}
-		console.log("save record", formData)
-		router.back()
 	}
 
 	const onDelete = () => {
@@ -76,8 +83,15 @@ export default function () {
 					text: "Eliminar",
 					style: "destructive",
 					onPress: async () => {
-						await deleteShearingRecord(recordId)
-						router.back()
+						const ok = await deleteSingleShearingRecord(recordId)
+						if (ok) {
+							router.back()
+						} else {
+							Alert.alert(
+								"Error",
+								"No se pudo eliminar el registro",
+							)
+						}
 					},
 				},
 			],
@@ -411,8 +425,14 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
-							disabled={!isValid}
+							disabled={
+								!isValid ||
+								isWaitingForEditData ||
+								saving ||
+								deleting
+							}
 							style={{ flex: 1 }}
+							loading={saving}
 						>
 							{isEditForm ? "Actualizar" : "Guardar"}
 						</Button>
@@ -420,12 +440,14 @@ export default function () {
 							<Button
 								mode="contained"
 								onPress={onDelete}
+								disabled={saving || deleting}
 								style={{
 									flex: 1,
 									backgroundColor:
 										theme.colors.custom.crimson,
 								}}
 								textColor={theme.colors.onError}
+								loading={deleting}
 							>
 								Borrar
 							</Button>
