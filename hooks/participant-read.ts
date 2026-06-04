@@ -5,30 +5,14 @@ import {
 } from "@database"
 import type { Participant } from "@definitions/types"
 import { useEffect, useReducer } from "react"
-
-type DbAction<T> =
-	| { type: "success"; data: T }
-	| { type: "error"; error: Error }
-
-function makeInitial<T>(data: T): DbState<T> {
-	return { data, loading: true, error: null }
-}
-
-function reducer<T>(state: DbState<T>, action: DbAction<T>): DbState<T> {
-	switch (action.type) {
-		case "success":
-			return { data: action.data, loading: false, error: null }
-		case "error":
-			return { ...state, loading: false, error: action.error }
-	}
-}
+import { makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkParticipants(
 	permitId: string,
 ): DbState<Participant[]> {
 	const [state, dispatch] = useReducer(
-		reducer<Participant[]>,
-		makeInitial<Participant[]>([]),
+		readReducer<Participant[]>,
+		makeReadInitial<Participant[]>([]),
 	)
 
 	useEffect(() => {
@@ -46,8 +30,8 @@ export function useReadSingleParticipant(
 	participantId?: string,
 ): DbState<Participant | null> {
 	const [state, dispatch] = useReducer(
-		reducer<Participant | null>,
-		makeInitial<Participant | null>(null),
+		readReducer<Participant | null>,
+		makeReadInitial<Participant | null>(null),
 	)
 
 	useEffect(() => {

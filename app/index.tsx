@@ -14,6 +14,7 @@ const mockAdminPermit: AdminPermit[] = permits
 export default function () {
 	const { initializePermits } = usePermitActions()
 
+	// TODO: implement path for permit init failure
 	useEffect(() => {
 		initializePermits(mockAdminPermit.map((p) => p.id))
 	}, [initializePermits])

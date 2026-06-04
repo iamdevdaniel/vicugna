@@ -53,6 +53,7 @@ export async function createSingleBasicInfo(
 				model.community = ""
 				model.site = ""
 				model.date = ""
+				model.isCompleted = false
 			})
 	})
 	if (!record) throw new Error("No se pudo crear el registro de info básica.")

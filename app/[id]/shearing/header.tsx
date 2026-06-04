@@ -12,7 +12,7 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { KeyboardAvoidingView, ScrollView, View } from "react-native"
+import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
@@ -53,6 +53,11 @@ export default function () {
 			const ok = await updateShearingHeader(data.id, formData)
 			if (ok) {
 				router.back()
+			} else {
+				Alert.alert(
+					"Error",
+					"No se pudo actualizar la información básica",
+				)
 			}
 		}
 	}

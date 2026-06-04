@@ -2,11 +2,11 @@ import { initializePermits as initializePermitsData } from "@database"
 import { useCallback, useState } from "react"
 
 export function usePermitActions() {
-	const [saving, setSaving] = useState(false)
+	const [initializing , setInitializing] = useState(false)
 	const [error, setError] = useState<Error | null>(null)
 
 	const initializePermits = useCallback(async (permitIds: string[]) => {
-		setSaving(true)
+		setInitializing(true)
 		setError(null)
 		try {
 			await initializePermitsData(permitIds)
@@ -15,7 +15,7 @@ export function usePermitActions() {
 			setError(e as Error)
 			return false
 		} finally {
-			setSaving(false)
+			setInitializing(false)
 		}
 	}, [])
 
@@ -23,7 +23,7 @@ export function usePermitActions() {
 
 	return {
 		initializePermits,
-		saving,
+		initializing ,
 		error,
 		clearError,
 	}

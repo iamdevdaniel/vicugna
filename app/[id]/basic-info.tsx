@@ -10,6 +10,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import {
+	Alert,
 	KeyboardAvoidingView,
 	Pressable,
 	ScrollView,
@@ -105,6 +106,8 @@ export default function () {
 		const ok = await updateSingleBasicInfo(data.id, formData)
 		if (ok) {
 			router.back()
+		} else {
+			Alert.alert("Error", "No se pudo actualizar la información básica")
 		}
 	}
 
