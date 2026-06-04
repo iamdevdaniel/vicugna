@@ -6,12 +6,12 @@ import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 
-// OVERVIEW /[id]
+// OVERVIEW /[permitId]
 export default function () {
 	const theme = useAppTheme()
-	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: basicInfo } = useReadSingleBasicInfo(id)
-	const { data: participants } = useReadBulkParticipants(id)
+	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { data: basicInfo } = useReadSingleBasicInfo(permitId)
+	const { data: participants } = useReadBulkParticipants(permitId)
 
 	const basicInfoState = basicInfo?.isCompleted ? "done" : "ready"
 	let participantsState: "disabled" | "ready" | "done"
@@ -25,7 +25,7 @@ export default function () {
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-			<Stack.Screen options={{ title: `Permiso ${id || ""}` }} />
+			<Stack.Screen options={{ title: `Permiso ${permitId || ""}` }} />
 			<ScrollView
 				contentContainerStyle={{
 					padding: 20,
@@ -41,7 +41,7 @@ export default function () {
 							action: {
 								icon: "pencil",
 								onPress: () =>
-									router.push(ROUTES.BASIC_INFO(id)),
+									router.push(ROUTES.BASIC_INFO(permitId)),
 							},
 							details: basicInfo?.isCompleted ? (
 								<View style={{ gap: 4 }}>
@@ -62,7 +62,7 @@ export default function () {
 								icon: "pencil",
 								onPress: () =>
 									router.push(
-										ROUTES.PARTICIPANTS.OVERVIEW(id),
+										ROUTES.PARTICIPANTS.OVERVIEW(permitId),
 									),
 							},
 							details: <Text>Total: {participants.length}</Text>,
@@ -73,7 +73,9 @@ export default function () {
 							action: {
 								icon: "pencil",
 								onPress: () =>
-									router.push(ROUTES.SHEARING.OVERVIEW(id)),
+									router.push(
+										ROUTES.SHEARING.OVERVIEW(permitId),
+									),
 							},
 						},
 						{

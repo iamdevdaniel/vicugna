@@ -10,9 +10,9 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: shearingForm } = useReadSingleShearingHeader(id)
-	const { data: shearingRecords } = useReadBulkShearingRecords(id)
+	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { data: shearingForm } = useReadSingleShearingHeader(permitId)
+	const { data: shearingRecords } = useReadBulkShearingRecords(permitId)
 
 	const shearingStepState = shearingForm?.isCompleted ? "done" : "ready"
 	const shearingRecordsStepState = shearingRecords.length ? "done" : "ready"
@@ -21,7 +21,7 @@ export default function () {
 		<SafeAreaView
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen options={{ title: `Permiso ${id || ""}` }} />
+			<Stack.Screen options={{ title: `Permiso ${permitId || ""}` }} />
 			<ScrollView
 				contentContainerStyle={{
 					paddingHorizontal: 20,
@@ -37,7 +37,9 @@ export default function () {
 							action: {
 								icon: "pencil",
 								onPress: () =>
-									router.push(ROUTES.SHEARING.HEADER(id)),
+									router.push(
+										ROUTES.SHEARING.HEADER(permitId),
+									),
 							},
 						},
 						{
@@ -79,7 +81,7 @@ export default function () {
 													onPress={() =>
 														router.push(
 															ROUTES.SHEARING.RECORD(
-																id,
+																permitId,
 																record.id,
 															),
 														)
@@ -110,7 +112,9 @@ export default function () {
 					mode="contained"
 					icon="plus"
 					contentStyle={{ height: 48 }}
-					onPress={() => router.push(ROUTES.SHEARING.RECORD(id))}
+					onPress={() =>
+						router.push(ROUTES.SHEARING.RECORD(permitId))
+					}
 				>
 					Añadir registro
 				</Button>

@@ -25,12 +25,12 @@ function parseNumber(value: string) {
 	return value === "" ? 0 : Number(value)
 }
 
-// SHEARING.RECORD /[id]/shearing/record
+// SHEARING.RECORD /[permitId]/shearing/record
 export default function () {
 	const router = useRouter()
 	const theme = useAppTheme()
-	const { id, recordId } = useLocalSearchParams<{
-		id: string
+	const { permitId, recordId } = useLocalSearchParams<{
+		permitId: string
 		recordId?: string
 	}>()
 	const isEditForm = !!recordId
@@ -64,7 +64,7 @@ export default function () {
 	const onSubmit = async (formData: ShearingRecordFormData) => {
 		const ok = recordId
 			? await updateSingleShearingRecord(recordId, formData)
-			: await createSingleShearingRecord(id, formData)
+			: await createSingleShearingRecord(permitId, formData)
 		if (ok) {
 			router.back()
 		} else {

@@ -9,13 +9,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 // FORM11.RECORDS.LIST /form11/[id]/records
 export default function () {
-	const { id } = useLocalSearchParams<{ id: string }>()
+	const { permitId, id } = useLocalSearchParams<{
+		permitId: string
+		id: string
+	}>()
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
 	const { data: records, loading } = useReadForm11Records(id)
 
 	const navigateToEdit = (recordId?: string) => {
-		router.push(ROUTES.FORM11.RECORDS.EDIT(id, recordId))
+		router.push(ROUTES.FORM11.RECORDS.EDIT(permitId, id, recordId))
 	}
 
 	const totalFibra = useMemo(

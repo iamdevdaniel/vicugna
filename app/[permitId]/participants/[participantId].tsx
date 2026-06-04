@@ -14,12 +14,12 @@ import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
-// PARTICIPANTS.FORM /[id]/participants/[participantId]
+// PARTICIPANTS.FORM /[permitId]/participants/[participantId]
 export default function () {
 	const theme = useAppTheme()
 	const router = useRouter()
-	const { id, participantId } = useLocalSearchParams<{
-		id: string
+	const { permitId, participantId } = useLocalSearchParams<{
+		permitId: string
 		participantId: string
 	}>()
 	const { data, loading } = useReadSingleParticipant(participantId)
@@ -59,7 +59,7 @@ export default function () {
 	const onSubmit = async (formData: ParticipantFormData) => {
 		const ok = isEditForm
 			? await updateSingleParticipant(participantId, formData)
-			: await createSingleParticipant(id, formData)
+			: await createSingleParticipant(permitId, formData)
 		if (ok) {
 			router.back()
 		} else {

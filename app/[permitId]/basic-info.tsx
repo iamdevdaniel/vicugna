@@ -20,12 +20,12 @@ import {
 } from "react-native"
 import { Button } from "react-native-paper"
 
-// BASIC_INFO /[id]/basic-info
+// BASIC_INFO /[permitId]/basic-info
 export default function () {
 	const theme = useAppTheme()
 	const router = useRouter()
-	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data, loading } = useReadSingleBasicInfo(id)
+	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { data, loading } = useReadSingleBasicInfo(permitId)
 	const { updateSingleBasicInfo, saving } = useSingleBasicInfoActions()
 
 	const {

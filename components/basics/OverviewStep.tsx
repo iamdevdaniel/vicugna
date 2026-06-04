@@ -26,6 +26,7 @@ export const OverviewStep = ({
 	const disabled = state === "disabled"
 	const done = state === "done"
 	const hasDetails = !!details
+	const showActionButton = !done && !!action
 	return (
 		<Card mode="elevated" style={{ marginBottom: 20 }}>
 			<Card.Content>
@@ -85,15 +86,15 @@ export const OverviewStep = ({
 					)}
 				</View>
 				{done && hasDetails && <View>{details}</View>}
-				{!done && (
+				{showActionButton && (
 					<Button
 						mode="contained"
-						onPress={action?.onPress}
-						disabled={disabled || !action}
+						onPress={action.onPress}
+						disabled={disabled}
 						style={{ width: "100%", marginTop: 12 }}
 						buttonColor={theme.colors.custom.blue}
 						textColor={theme.colors.custom.white}
-						icon={action?.icon}
+						icon={action.icon}
 					>
 						LLENAR
 					</Button>

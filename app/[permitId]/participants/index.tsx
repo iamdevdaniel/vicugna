@@ -7,13 +7,13 @@ import { FlatList, Text, View } from "react-native"
 import { Button, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
-// PARTICIPANTS.OVERVIEW /[id]/participants
+// PARTICIPANTS.OVERVIEW /[permitId]/participants
 
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: participants } = useReadBulkParticipants(id)
+	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { data: participants } = useReadBulkParticipants(permitId)
 
 	const total = participants?.length || 0
 	const maleCount = participants?.filter((p) => p.gender === "M").length || 0
@@ -107,7 +107,7 @@ export default function () {
 								onPress={() =>
 									router.push(
 										ROUTES.PARTICIPANTS.FORM(
-											id,
+											permitId,
 											participant.id,
 										),
 									)
@@ -134,7 +134,7 @@ export default function () {
 					icon="plus"
 					contentStyle={{ height: 48 }}
 					onPress={() =>
-						router.push(ROUTES.PARTICIPANTS.FORM(id, "new"))
+						router.push(ROUTES.PARTICIPANTS.FORM(permitId, "new"))
 					}
 				>
 					Añadir participante

@@ -18,11 +18,11 @@ import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function () {
 	const router = useRouter()
-	const { id } = useLocalSearchParams<{
-		id: string
+	const { permitId } = useLocalSearchParams<{
+		permitId: string
 		headerId: string
 	}>()
-	const { data, loading } = useReadSingleShearingHeader(id)
+	const { data, loading } = useReadSingleShearingHeader(permitId)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
 
 	const {

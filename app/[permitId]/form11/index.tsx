@@ -1,6 +1,6 @@
 import { createForm11, useReadAllForm11 } from "@database"
 import { ROUTES } from "@utils/constants"
-import { router } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import React from "react"
 import { Alert, ScrollView, Text, View } from "react-native"
 import { Button, Card, useTheme } from "react-native-paper"
@@ -8,6 +8,7 @@ import { Button, Card, useTheme } from "react-native-paper"
 // FORM11.LIST /form11
 export default function () {
 	const theme = useTheme()
+	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: forms } = useReadAllForm11()
 	const [creating, setCreating] = React.useState(false)
 
@@ -15,7 +16,9 @@ export default function () {
 		if (creating) return
 		setCreating(true)
 		createForm11()
-			.then((form) => router.push(ROUTES.FORM11.OVERVIEW(form.id)))
+			.then((form) =>
+				router.push(ROUTES.FORM11.OVERVIEW(permitId, form.id)),
+			)
 			.catch(() => Alert.alert("Error", "No se pudo crear la esquila"))
 			.finally(() => setCreating(false))
 	}
@@ -68,7 +71,9 @@ export default function () {
 						key={form.id || idx}
 						onPress={() => {
 							console.log("to", form.id)
-							router.push(ROUTES.FORM11.OVERVIEW(form.id))
+							router.push(
+								ROUTES.FORM11.OVERVIEW(permitId, form.id),
+							)
 						}}
 						style={{
 							marginBottom: 20,

@@ -1,72 +1,72 @@
 export const ROUTES = {
 	HOME: "/",
-	OVERVIEW: (id: string) => ({
-		pathname: "/[id]" as const,
-		params: { id },
+	OVERVIEW: (permitId: string) => ({
+		pathname: "/[permitId]" as const,
+		params: { permitId },
 	}),
-	BASIC_INFO: (id: string) => ({
-		pathname: "/[id]/basic-info" as const,
-		params: { id },
+	BASIC_INFO: (permitId: string) => ({
+		pathname: "/[permitId]/basic-info" as const,
+		params: { permitId },
 	}),
 	PARTICIPANTS: {
-		OVERVIEW: (id: string) => ({
-			pathname: "/[id]/participants" as const,
-			params: { id },
+		OVERVIEW: (permitId: string) => ({
+			pathname: "/[permitId]/participants" as const,
+			params: { permitId },
 		}),
-		FORM: (id: string, participantId: string) => ({
-			pathname: "/[id]/participants/[participantId]" as const,
-			params: { id, participantId },
+		FORM: (permitId: string, participantId: string) => ({
+			pathname: "/[permitId]/participants/[participantId]" as const,
+			params: { permitId, participantId },
 		}),
 	},
 	SHEARING: {
-		OVERVIEW: (id: string) => ({
-			pathname: "/[id]/shearing" as const,
-			params: { id },
+		OVERVIEW: (permitId: string) => ({
+			pathname: "/[permitId]/shearing" as const,
+			params: { permitId },
 		}),
-		HEADER: (id: string) => ({
-			pathname: "/[id]/shearing/header" as const,
-			params: { id },
+		HEADER: (permitId: string) => ({
+			pathname: "/[permitId]/shearing/header" as const,
+			params: { permitId },
 		}),
-		RECORD: (id: string, recordId?: string) => ({
-			pathname: "/[id]/shearing/record" as const,
-			params: { id, ...(recordId ? { recordId } : {}) },
+		RECORD: (permitId: string, recordId?: string) => ({
+			pathname: "/[permitId]/shearing/record" as const,
+			params: { permitId, ...(recordId ? { recordId } : {}) },
 		}),
 	},
 	CLEANUP: {
-		LIST: (id: string) => ({
-			pathname: "/[id]/cleanup" as const,
-			params: { id },
+		LIST: (permitId: string) => ({
+			pathname: "/[permitId]/cleanup" as const,
+			params: { permitId },
 		}),
-		OVERVIEW: (id: string, recordId: string) => ({
-			pathname: "/[id]/cleanup/[recordId]" as const,
-			params: { id, recordId },
+		OVERVIEW: (permitId: string) => ({
+			pathname: "/[permitId]/cleanup" as const,
+			params: { permitId },
 		}),
 	},
 	FORM11: {
 		LIST: (permitId: string) => ({
-			pathname: "/[id]/form11" as const,
-			params: { id: permitId },
+			pathname: "/[permitId]/form11" as const,
+			params: { permitId },
 		}),
-		OVERVIEW: (id: string) => ({
-			pathname: "/[id]/form11/[id]" as const,
-			params: { id },
+		OVERVIEW: (permitId: string, id: string) => ({
+			pathname: "/[permitId]/form11/[id]" as const,
+			params: { permitId, id },
 		}),
-		SHEARING: (id: string) => ({
-			pathname: "/[id]/form11/[id]/shearing" as const,
-			params: { id },
+		SHEARING: (permitId: string, id: string) => ({
+			pathname: "/[permitId]/form11/[id]/shearing" as const,
+			params: { permitId, id },
 		}),
-		DEHEARING: (id: string) => ({
-			pathname: "/[id]/form11/[id]/dehearing" as const,
-			params: { id },
+		DEHEARING: (permitId: string, id: string) => ({
+			pathname: "/[permitId]/form11/[id]/dehearing" as const,
+			params: { permitId, id },
 		}),
 		RECORDS: {
-			LIST: (id: string) => ({
-				pathname: "/[id]/form11/[id]/records" as const,
-				params: { id },
+			LIST: (permitId: string, id: string) => ({
+				pathname: "/[permitId]/form11/[id]/records" as const,
+				params: { permitId, id },
 			}),
-			EDIT: (id: string, recordId?: string) => ({
-				pathname: "/[id]/form11/[id]/records/edit" as const,
-				params: { id, ...(recordId ? { recordId } : {}) },
+			EDIT: (permitId: string, id: string, recordId?: string) => ({
+				pathname: "/[permitId]/form11/[id]/records/edit" as const,
+				params: { permitId, id, ...(recordId ? { recordId } : {}) },
 			}),
 		},
 	},
