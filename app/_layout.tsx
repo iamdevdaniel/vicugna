@@ -24,10 +24,6 @@ export default function RootLayout() {
 						name="index"
 						options={{ headerShown: false }}
 					/>
-					<Stack.Screen
-						name="form11/index"
-						// options={{ title: "Nuevo registro formulario 11" }}
-					/>
 				</Stack>
 			</PaperProvider>
 		</GestureHandlerRootView>

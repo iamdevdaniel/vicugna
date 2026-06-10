@@ -1,8 +1,8 @@
 import {
 	subscribeBulkShearingRecords,
 	subscribeSingleShearingRecordFormData,
-	type DbState,
 } from "@database"
+import { type DbState } from './utils'
 import type {
 	ShearingRecord,
 	ShearingRecordFormData,

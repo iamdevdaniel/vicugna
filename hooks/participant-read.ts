@@ -1,8 +1,8 @@
 import {
 	subscribeBulkParticipants,
-	subscribeSingleParticipant,
-	type DbState,
+	subscribeSingleParticipant
 } from "@database"
+import { type DbState } from './utils'
 import type { Participant } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { makeReadInitial, readReducer } from "./utils"

@@ -59,49 +59,5 @@ export const appDbSchema = appSchema({
 				{ name: "observations", type: "string" },
 			],
 		}),
-		tableSchema({
-			name: "form11Shearing",
-			columns: [
-				{ name: "department", type: "string" },
-				{ name: "regional", type: "string" },
-				{ name: "community", type: "string" },
-				{ name: "site", type: "string" },
-				{ name: "date", type: "string" },
-				{ name: "codigoAutorizacion", type: "string" },
-				{ name: "isCompleted", type: "boolean" },
-			],
-		}),
-		tableSchema({
-			name: "form11Dehearing",
-			columns: [
-				{ name: "startDate", type: "string" },
-				{ name: "endDate", type: "string" },
-				{ name: "site", type: "string" },
-				{ name: "supervisors", type: "string" },
-				{ name: "isCompleted", type: "boolean" },
-			],
-		}),
-		tableSchema({
-			name: "form11Record",
-			columns: [
-				{ name: "form11StorageId", type: "string" },
-				{ name: "tagId", type: "string" },
-				{ name: "pesoFibraBruto", type: "string" },
-				{ name: "pesoVellonLimpio", type: "string" },
-				{ name: "pesoBraga", type: "string" },
-				{ name: "pesoTotalFibra", type: "string" },
-				{ name: "pesoFibraPredescerdada", type: "string" },
-				{ name: "pesoCerda", type: "string" },
-				{ name: "caspa", type: "string" },
-				{ name: "nombrePredescerdador", type: "string" },
-			],
-		}),
-		tableSchema({
-			name: "form11Storage",
-			columns: [
-				{ name: "shearingId", type: "string" },
-				{ name: "dehearingId", type: "string" },
-			],
-		}),
 	],
 })

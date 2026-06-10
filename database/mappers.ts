@@ -1,11 +1,6 @@
 import type {
 	BasicInfo,
 	BasicInfoFormData,
-	Form11DehearingFormData,
-	Form11Record,
-	Form11RecordFormData,
-	Form11ShearingFormData,
-	Form11Storage,
 	Participant,
 	ParticipantFormData,
 	ShearingHeader,
@@ -15,102 +10,10 @@ import type {
 } from "@definitions/types"
 import type {
 	BasicInfoModel,
-	Form11DehearingModel,
-	Form11RecordModel,
-	Form11ShearingModel,
-	Form11StorageModel,
 	ParticipantModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
-
-export function mapToForm11Storage(
-	storage: Form11StorageModel,
-	shearing: Form11ShearingModel,
-	dehearing: Form11DehearingModel,
-	recordCount: number,
-): Form11Storage {
-	return {
-		id: storage.id,
-		shearing: {
-			id: shearing.id,
-			department: shearing.department,
-			regional: shearing.regional,
-			community: shearing.community,
-			site: shearing.site,
-			date: shearing.date,
-			codigoAutorizacion: shearing.codigoAutorizacion,
-			isCompleted: shearing.isCompleted,
-		},
-		dehearing: {
-			id: dehearing.id,
-			startDate: dehearing.startDate,
-			endDate: dehearing.endDate,
-			site: dehearing.site,
-			supervisors: dehearing.supervisors,
-			isCompleted: dehearing.isCompleted,
-		},
-		recordCount,
-	}
-}
-
-export function mapToForm11Record(r: Form11RecordModel): Form11Record {
-	return {
-		id: r.id,
-		tagId: r.tagId,
-		pesoFibraBruto: r.pesoFibraBruto,
-		pesoVellonLimpio: r.pesoVellonLimpio,
-		pesoBraga: r.pesoBraga,
-		pesoTotalFibra: r.pesoTotalFibra,
-		pesoFibraPredescerdada: r.pesoFibraPredescerdada,
-		pesoCerda: r.pesoCerda,
-		caspa: r.caspa,
-		nombrePredescerdador: r.nombrePredescerdador,
-	}
-}
-
-export function applyShearingToModel(
-	model: Form11ShearingModel,
-	data: Form11ShearingFormData,
-	isCompleted: boolean,
-): void {
-	model.department = data.department
-	model.regional = data.regional
-	model.community = data.community
-	model.site = data.site
-	model.date = data.date
-	model.codigoAutorizacion = data.codigoAutorizacion
-	model.isCompleted = isCompleted
-}
-
-export function applyDehearingToModel(
-	model: Form11DehearingModel,
-	data: Form11DehearingFormData,
-	isCompleted: boolean,
-): void {
-	model.startDate = data.startDate
-	model.endDate = data.endDate
-	model.site = data.site
-	model.supervisors = data.supervisors
-	model.isCompleted = isCompleted
-}
-
-export function applyRecordToModel(
-	model: Form11RecordModel,
-	data: Form11RecordFormData,
-	storageId?: string,
-): void {
-	if (storageId) model.form11StorageId = storageId
-	model.tagId = data.tagId
-	model.pesoFibraBruto = data.pesoFibraBruto
-	model.pesoVellonLimpio = data.pesoVellonLimpio
-	model.pesoBraga = data.pesoBraga
-	model.pesoTotalFibra = data.pesoTotalFibra
-	model.pesoFibraPredescerdada = data.pesoFibraPredescerdada
-	model.pesoCerda = data.pesoCerda
-	model.caspa = data.caspa
-	model.nombrePredescerdador = data.nombrePredescerdador
-}
 
 export function mapToBasicInfo(m: BasicInfoModel): BasicInfo {
 	return {

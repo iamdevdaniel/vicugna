@@ -1,6 +1,7 @@
-import { subscribeSingleBasicInfo, type DbState } from "@database"
+import { subscribeSingleBasicInfo } from "@database"
 import type { BasicInfo } from "@definitions/types"
 import { useEffect, useReducer } from "react"
+import { type DbState } from './utils'
 import { makeReadInitial, readReducer } from "./utils"
 
 export function useReadSingleBasicInfo(

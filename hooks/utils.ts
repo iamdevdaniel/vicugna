@@ -1,4 +1,4 @@
-import type { DbState } from "@database"
+export type DbState<T> = { data: T; loading: boolean; error: Error | null }
 
 type DbAction<T> =
 	| { type: "success"; data: T }

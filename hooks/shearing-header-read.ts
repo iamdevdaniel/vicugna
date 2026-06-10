@@ -1,4 +1,5 @@
-import { subscribeSingleShearingHeader, type DbState } from "@database"
+import { subscribeSingleShearingHeader } from "@database"
+import { type DbState } from './utils'
 import type { ShearingHeader } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { makeReadInitial, readReducer } from "./utils"
