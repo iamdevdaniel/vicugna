@@ -3,6 +3,7 @@ import type {
 	BasicInfoFormData,
 	CleaningHeader,
 	CleaningHeaderFormData,
+	CleaningRecord,
 	Participant,
 	ParticipantFormData,
 	ShearingHeader,
@@ -13,6 +14,7 @@ import type {
 import type {
 	BasicInfoModel,
 	CleaningHeaderModel,
+	CleaningRecordModel,
 	ParticipantModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
@@ -186,4 +188,16 @@ export function applyCleaningHeaderToModel(
 	model.site = data.site
 	model.supervisors = data.supervisors
 	model.isCompleted = isCompleted
+}
+
+export function mapToCleaningRecord(
+	model: CleaningRecordModel,
+): CleaningRecord {
+	return {
+		id: model.id,
+		permitId: model.permitId,
+		fleeceNumber: model.fleeceNumber,
+		grossWeight: model.grossWeight,
+		type: model.type,
+	}
 }

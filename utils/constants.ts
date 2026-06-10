@@ -41,5 +41,9 @@ export const ROUTES = {
 			pathname: "/[permitId]/cleanup/header" as const,
 			params: { permitId },
 		}),
+		RECORD: (permitId: string, recordId?: string) => ({
+			pathname: "/[permitId]/cleanup/record" as const,
+			params: { permitId, ...(recordId ? { recordId } : {}) },
+		}),
 	},
 }

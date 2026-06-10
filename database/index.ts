@@ -4,6 +4,7 @@ export {
 	updateSingleBasicInfo,
 } from "./dal-basic-info"
 export {
+	subscribeBulkCleaningRecords,
 	subscribeSingleCleaningHeader,
 	updateSingleCleaningHeader,
 } from "./dal-cleaning"

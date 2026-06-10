@@ -1,7 +1,15 @@
-import type { CleaningHeader, CleaningHeaderFormData } from "@definitions/types"
+import type {
+	CleaningHeader,
+	CleaningHeaderFormData,
+	CleaningRecord,
+} from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { applyCleaningHeaderToModel, mapToCleaningHeader } from "./mappers"
-import type { CleaningHeaderModel } from "./models"
+import {
+	applyCleaningHeaderToModel,
+	mapToCleaningHeader,
+	mapToCleaningRecord,
+} from "./mappers"
+import type { CleaningHeaderModel, CleaningRecordModel } from "./models"
 import { database } from "./setup"
 
 type SubscriptionCallback<T> = {
@@ -30,6 +38,23 @@ export function subscribeSingleCleaningHeader(
 				callbacks.onChange(
 					records[0] ? mapToCleaningHeader(records[0]) : null,
 				),
+			error: (e) => callbacks.onError(e as Error),
+		})
+
+	return () => sub.unsubscribe()
+}
+
+export function subscribeBulkCleaningRecords(
+	permitId: string,
+	callbacks: SubscriptionCallback<CleaningRecord[]>,
+): () => void {
+	const sub = database
+		.get<CleaningRecordModel>("cleaningRecord")
+		.query(Q.where("permitId", permitId))
+		.observeWithColumns(["fleeceNumber", "grossWeight", "type"])
+		.subscribe({
+			next: (records) =>
+				callbacks.onChange(records.map(mapToCleaningRecord)),
 			error: (e) => callbacks.onError(e as Error),
 		})
 

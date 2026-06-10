@@ -96,7 +96,7 @@ export default function () {
 								icon: "pencil",
 								onPress: () =>
 									router.push(
-										ROUTES.CLEANUP.HEADER(permitId),
+										ROUTES.CLEANUP.OVERVIEW(permitId),
 									),
 							},
 						},
