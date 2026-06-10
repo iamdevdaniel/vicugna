@@ -1,6 +1,8 @@
 import type {
 	BasicInfo,
 	BasicInfoFormData,
+	CleaningHeader,
+	CleaningHeaderFormData,
 	Participant,
 	ParticipantFormData,
 	ShearingHeader,
@@ -10,6 +12,7 @@ import type {
 } from "@definitions/types"
 import type {
 	BasicInfoModel,
+	CleaningHeaderModel,
 	ParticipantModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
@@ -157,4 +160,30 @@ export function applyShearingRecordToModel(
 	model.isSheared = data.isSheared
 	model.isDead = data.isDead
 	model.observations = data.observations
+}
+
+export function mapToCleaningHeader(
+	model: CleaningHeaderModel,
+): CleaningHeader {
+	return {
+		id: model.id,
+		permitId: model.permitId,
+		startDate: model.startDate,
+		endDate: model.endDate,
+		site: model.site,
+		supervisors: model.supervisors,
+		isCompleted: model.isCompleted,
+	}
+}
+
+export function applyCleaningHeaderToModel(
+	model: CleaningHeaderModel,
+	data: CleaningHeaderFormData,
+	isCompleted: boolean,
+): void {
+	model.startDate = data.startDate
+	model.endDate = data.endDate
+	model.site = data.site
+	model.supervisors = data.supervisors
+	model.isCompleted = isCompleted
 }

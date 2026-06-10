@@ -37,5 +37,9 @@ export const ROUTES = {
 			pathname: "/[permitId]/cleanup" as const,
 			params: { permitId },
 		}),
+		HEADER: (permitId: string) => ({
+			pathname: "/[permitId]/cleanup/header" as const,
+			params: { permitId },
+		}),
 	},
 }

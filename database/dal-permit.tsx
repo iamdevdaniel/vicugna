@@ -1,5 +1,9 @@
 import { type Model, Q } from "@nozbe/watermelondb"
-import type { BasicInfoModel, ShearingHeaderModel } from "./models"
+import type {
+	BasicInfoModel,
+	CleaningHeaderModel,
+	ShearingHeaderModel,
+} from "./models"
 import { database } from "./setup"
 
 let initializingPermits = false
@@ -24,7 +28,24 @@ export async function initializePermits(permitIds: string[]): Promise<void> {
 			(id) => !existingHeaderIds.has(id),
 		)
 
-		if (missingBasic.length === 0 && missingHeader.length === 0) return
+		const existingCleaningHeader = await database
+			.get<CleaningHeaderModel>("cleaningHeader")
+			.query(Q.where("permitId", Q.oneOf(permitIds)))
+			.fetch()
+		const existingCleaningHeaderIds = new Set(
+			existingCleaningHeader.map((r) => r.permitId),
+		)
+		const missingCleaningHeader = permitIds.filter(
+			(id) => !existingCleaningHeaderIds.has(id),
+		)
+
+		if (
+			missingBasic.length === 0 &&
+			missingHeader.length === 0 &&
+			missingCleaningHeader.length === 0
+		) {
+			return
+		}
 
 		await database.write(async () => {
 			const batchOps: Model[] = []
@@ -57,6 +78,21 @@ export async function initializePermits(permitIds: string[]): Promise<void> {
 							model.roundupCount = 0
 							model.startTime = ""
 							model.endTime = ""
+							model.isCompleted = false
+						}),
+				)
+			})
+
+			missingCleaningHeader.forEach((permitId) => {
+				batchOps.push(
+					database
+						.get<CleaningHeaderModel>("cleaningHeader")
+						.prepareCreate((model) => {
+							model.permitId = permitId
+							model.startDate = ""
+							model.endDate = ""
+							model.site = ""
+							model.supervisors = ""
 							model.isCompleted = false
 						}),
 				)
