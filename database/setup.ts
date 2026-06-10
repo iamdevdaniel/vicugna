@@ -2,7 +2,11 @@ import { Database } from "@nozbe/watermelondb"
 import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite"
 import {
 	BasicInfoModel,
+	CleaningHeaderModel,
+	CleaningRecordModel,
+	DehearingRecordModel,
 	ParticipantModel,
+	PrecleaningRecordModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
@@ -19,5 +23,9 @@ export const database = new Database({
 		ParticipantModel,
 		ShearingHeaderModel,
 		ShearingRecordModel,
+		CleaningHeaderModel,
+		CleaningRecordModel,
+		PrecleaningRecordModel,
+		DehearingRecordModel,
 	],
 })

@@ -59,5 +59,45 @@ export const appDbSchema = appSchema({
 				{ name: "observations", type: "string" },
 			],
 		}),
+		tableSchema({
+			name: "cleaningHeader",
+			columns: [
+				{ name: "permitId", type: "string", isIndexed: true },
+				{ name: "startDate", type: "string" },
+				{ name: "endDate", type: "string" },
+				{ name: "site", type: "string" },
+				{ name: "supervisors", type: "string" },
+				{ name: "isCompleted", type: "boolean" },
+			],
+		}),
+		tableSchema({
+			name: "cleaningRecord",
+			columns: [
+				{ name: "permitId", type: "string", isIndexed: true },
+				{ name: "fleeceNumber", type: "string" },
+				{ name: "grossWeight", type: "number" },
+				{ name: "type", type: "string" },
+			],
+		}),
+		tableSchema({
+			name: "precleaningRecord",
+			columns: [
+				{ name: "cleaningRecordId", type: "string", isIndexed: true },
+				{ name: "cleanWeight", type: "number" },
+				{ name: "dirtyWeight", type: "number" },
+				{ name: "totalWeight", type: "number" },
+			],
+		}),
+		tableSchema({
+			name: "dehearingRecord",
+			columns: [
+				{ name: "cleaningRecordId", type: "string", isIndexed: true },
+				{ name: "dehairedWeight", type: "number" },
+				{ name: "bristleWeight", type: "number" },
+				{ name: "hasDandruff", type: "boolean" },
+				{ name: "dehairerName", type: "string" },
+				{ name: "signature", type: "string" },
+			],
+		}),
 	],
 })

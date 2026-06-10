@@ -59,3 +59,39 @@ export class ShearingRecordModel extends Model {
 	@field("isDead") isDead!: boolean
 	@text("observations") observations!: string
 }
+
+export class CleaningHeaderModel extends Model {
+	static table = "cleaningHeader"
+	@field("permitId") permitId!: string
+	@text("startDate") startDate!: string
+	@text("endDate") endDate!: string
+	@text("site") site!: string
+	@text("supervisors") supervisors!: string
+	@field("isCompleted") isCompleted!: boolean
+}
+
+export class CleaningRecordModel extends Model {
+	static table = "cleaningRecord"
+	@field("permitId") permitId!: string
+	@text("fleeceNumber") fleeceNumber!: string
+	@field("grossWeight") grossWeight!: number
+	@text("type") type!: "precleaning" | "dehearing"
+}
+
+export class PrecleaningRecordModel extends Model {
+	static table = "precleaningRecord"
+	@field("cleaningRecordId") cleaningRecordId!: string
+	@field("cleanWeight") cleanWeight!: number
+	@field("dirtyWeight") dirtyWeight!: number
+	@field("totalWeight") totalWeight!: number
+}
+
+export class DehearingRecordModel extends Model {
+	static table = "dehearingRecord"
+	@field("cleaningRecordId") cleaningRecordId!: string
+	@field("dehairedWeight") dehairedWeight!: number
+	@field("bristleWeight") bristleWeight!: number
+	@field("hasDandruff") hasDandruff!: boolean
+	@text("dehairerName") dehairerName!: string
+	@text("signature") signature!: string
+}

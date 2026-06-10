@@ -78,3 +78,60 @@ export type ShearingRecord = {
 }
 
 export type ShearingRecordFormData = Omit<ShearingRecord, "id" | "permitId">
+
+// CLEANING
+
+export type CleaningHeader = {
+	id: string
+	permitId: string
+	startDate: string
+	endDate: string
+	site: string
+	supervisors: string
+	isCompleted: boolean
+}
+
+export type CleaningHeaderFormData = Omit<
+	CleaningHeader,
+	"id" | "permitId" | "isCompleted"
+>
+
+export type CleaningRecordType = "precleaning" | "dehearing"
+
+export type CleaningRecord = {
+	id: string
+	permitId: string
+	fleeceNumber: string
+	grossWeight: number
+	type: CleaningRecordType
+}
+
+export type CleaningRecordFormData = Omit<CleaningRecord, "id" | "permitId">
+
+export type PrecleaningRecord = {
+	id: string
+	cleaningRecordId: string
+	cleanWeight: number
+	dirtyWeight: number
+	totalWeight: number
+}
+
+export type PrecleaningRecordFormData = Omit<
+	PrecleaningRecord,
+	"id" | "cleaningRecordId"
+>
+
+export type DehearingRecord = {
+	id: string
+	cleaningRecordId: string
+	dehairedWeight: number
+	bristleWeight: number
+	hasDandruff: boolean
+	dehairerName: string
+	signature: string
+}
+
+export type DehearingRecordFormData = Omit<
+	DehearingRecord,
+	"id" | "cleaningRecordId"
+>
