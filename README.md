@@ -1,30 +1,28 @@
-# Vicugna - Offline-First Mobile App
+# Vicugna
 
-React Native app built with Expo + TypeScript for Android.
+## app
 
-## Tech Stack
+Expo Router screens live here. Screens handle navigation, user interaction, and calling hooks.
 
-- **Framework:** Expo (managed workflow) + TypeScript
-- **Database:** WatermelonDB + expo-sqlite (offline-first)
-- **Sync:** expo-task-manager + expo-background-fetch
-- **Styling:** NativeWind (Tailwind CSS)
-- **Navigation:** React Navigation + Expo Router
-- **State:** Zustand
-- **Storage:** expo-secure-store + expo-file-system
+## hooks
 
-## Development
+React state lives here. Hooks call database DAL functions and expose state to screens.
 
-1. **Install:**
-   ```bash
-   npm install
+- Read hooks subscribe to DAL read functions and return `{ data, loading, error }`.
+- Write hooks call DAL mutations and return actions plus saving/deleting/error state.
 
-2. **Run on Android**
-``` npm run Android
+## database
 
-## Upgrade Notes
+WatermelonDB setup, schemas, models, mappers, and DAL functions live here. React code should not live in this folder.
 
-- Expo doctor looks good.
-- The only warning left is WatermelonDB not being tested on the New Architecture.
-- I removed `@react-native-vector-icons/material-design-icons` because we were not using it.
-- I ignored `@nozbe/simdjson` because it was just a package metadata warning.
-- Next: run the app and test DB create, edit, delete, and reload.
+## components
+
+Reusable UI components live here. Components should stay dumb and receive data/actions through props.
+
+## definitions
+
+Shared TypeScript app types live here. These types describe app data, not WatermelonDB models.
+
+## assets
+
+Static data, images, and fonts live here. Screens and helpers can read these as fixed app resources.

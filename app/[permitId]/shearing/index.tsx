@@ -51,7 +51,7 @@ export default function () {
 									{shearingRecords.map((record, index) => (
 										<AccentCard
 											key={record.id}
-											accent={theme.colors.custom.green}
+											accent={theme.colors.tertiary}
 											prefix={index + 1}
 											style={{
 												backgroundColor:
