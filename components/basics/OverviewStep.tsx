@@ -56,7 +56,7 @@ export const OverviewStep = ({
 						<Text
 							style={{
 								color: theme.colors.custom.white,
-								fontSize: done ? 13 : 16,
+								fontSize: done ? 14 : 16,
 								fontWeight: "bold",
 							}}
 						>
@@ -65,7 +65,7 @@ export const OverviewStep = ({
 					</View>
 					<Text
 						style={{
-							fontSize: done ? 13 : 16,
+							fontSize: done ? 14 : 16,
 							fontWeight: done ? "500" : "bold",
 							color: disabled
 								? theme.colors.onSurfaceVariant

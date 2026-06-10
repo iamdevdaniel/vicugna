@@ -32,7 +32,7 @@ export default function () {
 				<StepList
 					steps={[
 						{
-							title: "Datos de esquila",
+							title: "Información general",
 							state: shearingStepState,
 							action: {
 								icon: "pencil",

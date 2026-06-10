@@ -1,7 +1,15 @@
-import { StepList } from "@components"
-import { useReadBulkParticipants, useReadSingleBasicInfo } from "@hooks"
+import { StepList, type StepState } from "@components"
+import {
+	useReadBulkParticipants,
+	useReadBulkShearingRecords,
+	useReadSingleBasicInfo,
+} from "@hooks"
 import { ROUTES } from "@utils/constants"
-import { getCommunityName, getRegionalName } from "@utils/name-lookup"
+import {
+	getCommunityName,
+	getDependentStepState,
+	getRegionalName,
+} from "@utils/misc"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
@@ -12,16 +20,18 @@ export default function () {
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: basicInfo } = useReadSingleBasicInfo(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
+	const { data: records } = useReadBulkShearingRecords(permitId)
 
-	const basicInfoState = basicInfo?.isCompleted ? "done" : "ready"
-	let participantsState: "disabled" | "ready" | "done"
-	if (basicInfoState !== "done") {
-		participantsState = "disabled"
-	} else if (participants.length) {
-		participantsState = "done"
-	} else {
-		participantsState = "ready"
-	}
+	const basicInfoState: StepState = basicInfo?.isCompleted ? "done" : "ready"
+	const participantsState = getDependentStepState(
+		basicInfoState === "done",
+		participants.length > 0,
+	)
+	const shearingState = getDependentStepState(
+		participantsState === "done",
+		records.length > 0,
+	)
+	const cleaningState = getDependentStepState(shearingState === "done", false)
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -69,7 +79,7 @@ export default function () {
 						},
 						{
 							title: "Esquila",
-							state: "ready",
+							state: shearingState,
 							action: {
 								icon: "pencil",
 								onPress: () =>
@@ -77,10 +87,18 @@ export default function () {
 										ROUTES.SHEARING.OVERVIEW(permitId),
 									),
 							},
+							details: <Text>Total: {records.length}</Text>,
 						},
 						{
 							title: "Limpieza",
-							state: "ready",
+							state: cleaningState,
+							action: {
+								icon: "pencil",
+								onPress: () =>
+									router.push(
+										ROUTES.SHEARING.OVERVIEW(permitId),
+									),
+							},
 						},
 					]}
 				/>

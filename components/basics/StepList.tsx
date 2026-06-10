@@ -1,9 +1,11 @@
 import type { ReactNode } from "react"
 import { OverviewStep, type OverviewStepAction } from "./OverviewStep"
 
+export type StepState = "ready" | "done" | "disabled"
+
 export interface StepConfig {
 	title: string
-	state: "ready" | "done" | "disabled"
+	state: StepState
 	action?: OverviewStepAction
 	details?: ReactNode
 }

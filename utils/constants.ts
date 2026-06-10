@@ -33,10 +33,6 @@ export const ROUTES = {
 		}),
 	},
 	CLEANUP: {
-		LIST: (permitId: string) => ({
-			pathname: "/[permitId]/cleanup" as const,
-			params: { permitId },
-		}),
 		OVERVIEW: (permitId: string) => ({
 			pathname: "/[permitId]/cleanup" as const,
 			params: { permitId },
