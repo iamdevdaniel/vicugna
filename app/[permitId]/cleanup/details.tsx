@@ -1,4 +1,10 @@
-import { LabeledInput, SignaturePad, ToggleButtonGroup } from "@components"
+import {
+	CleaningCommonSummary,
+	DehearingFields,
+	GroomingFields,
+	LabeledInput,
+	ToggleButtonGroup,
+} from "@components"
 import type { DehearingFormData, GroomingFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -19,27 +25,12 @@ import {
 } from "@utils/yup-cleaning-record"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
-import { Controller, useForm } from "react-hook-form"
-import {
-	Alert,
-	KeyboardAvoidingView,
-	ScrollView,
-	Text,
-	View,
-} from "react-native"
-import { Button, Divider, IconButton, TextInput } from "react-native-paper"
+import { useForm } from "react-hook-form"
+import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
+import { Button, Divider } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 type CleaningDetailKind = "grooming" | "dehearing"
-
-function formatNumber(value: number) {
-	return Number.isFinite(value) ? value.toString() : ""
-}
-
-function parseNumber(value: string) {
-	const digits = value.replace(/\D/g, "")
-	return digits === "" ? Number.NaN : Number(digits)
-}
 
 export default function () {
 	const theme = useAppTheme()
@@ -234,76 +225,15 @@ export default function () {
 					contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
 					keyboardShouldPersistTaps="handled"
 				>
-					<View
-						style={{
-							paddingVertical: 10,
-							borderBottomWidth: 1,
-							borderBottomColor: theme.colors.outlineVariant,
-							gap: 6,
-						}}
-					>
-						<View
-							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								justifyContent: "space-between",
-							}}
-						>
-							<View style={{ flex: 1 }}>
-								<Text
-									style={{
-										color: theme.colors.onSurfaceVariant,
-										fontSize: 12,
-									}}
-								>
-									Vellon
-								</Text>
-								<Text
-									style={{
-										color: theme.colors.onSurface,
-										fontSize: 18,
-										fontWeight: "700",
-									}}
-								>
-									{commonData?.fleeceNumber}
-								</Text>
-							</View>
-
-							<View style={{ flex: 1 }}>
-								<Text
-									style={{
-										color: theme.colors.onSurfaceVariant,
-										fontSize: 12,
-									}}
-								>
-									Peso bruto
-								</Text>
-								<Text
-									style={{
-										color: theme.colors.onSurface,
-										fontSize: 18,
-										fontWeight: "700",
-									}}
-								>
-									{commonData?.grossWeight} gramos
-								</Text>
-							</View>
-
-							<IconButton
-								icon="pencil"
-								mode="outlined"
-								size={18}
-								onPress={() =>
-									router.push(
-										ROUTES.CLEANUP.RECORD(
-											permitId,
-											recordId,
-										),
-									)
-								}
-							/>
-						</View>
-					</View>
+					<CleaningCommonSummary
+						fleeceNumber={commonData?.fleeceNumber}
+						grossWeight={commonData?.grossWeight}
+						onEdit={() =>
+							router.push(
+								ROUTES.CLEANUP.RECORD(permitId, recordId),
+							)
+						}
+					/>
 
 					{commonData && (
 						<View style={{ marginTop: 20, gap: 16 }}>
@@ -335,270 +265,17 @@ export default function () {
 
 							{detailKind === "grooming" ? (
 								<View key="grooming">
-									<LabeledInput
-										label="Peso vellon limpio"
-										labelPrefix="2"
-										labelSuffix="gramos"
-										error={
-											groomingErrors.cleanWeight?.message
-										}
-									>
-										<Controller
-											control={groomingControl}
-											name="cleanWeight"
-											render={({
-												field: {
-													onChange,
-													onBlur,
-													value,
-												},
-											}) => (
-												<TextInput
-													mode="outlined"
-													value={formatNumber(value)}
-													onChangeText={(text) =>
-														onChange(
-															parseNumber(text),
-														)
-													}
-													onBlur={onBlur}
-													keyboardType="numeric"
-													error={
-														!!groomingErrors.cleanWeight
-													}
-												/>
-											)}
-										/>
-									</LabeledInput>
-
-									<LabeledInput
-										label="Peso braga"
-										labelPrefix="3"
-										labelSuffix="gramos"
-										error={
-											groomingErrors.dirtyWeight?.message
-										}
-									>
-										<Controller
-											control={groomingControl}
-											name="dirtyWeight"
-											render={({
-												field: {
-													onChange,
-													onBlur,
-													value,
-												},
-											}) => (
-												<TextInput
-													mode="outlined"
-													value={formatNumber(value)}
-													onChangeText={(text) =>
-														onChange(
-															parseNumber(text),
-														)
-													}
-													onBlur={onBlur}
-													keyboardType="numeric"
-													error={
-														!!groomingErrors.dirtyWeight
-													}
-												/>
-											)}
-										/>
-									</LabeledInput>
-
-									<LabeledInput
-										label="Peso total fibra"
-										labelPrefix="4"
-										labelSuffix="gramos"
-										error={
-											groomingErrors.totalWeight?.message
-										}
-									>
-										<Controller
-											control={groomingControl}
-											name="totalWeight"
-											render={({
-												field: {
-													onChange,
-													onBlur,
-													value,
-												},
-											}) => (
-												<TextInput
-													mode="outlined"
-													value={formatNumber(value)}
-													onChangeText={(text) =>
-														onChange(
-															parseNumber(text),
-														)
-													}
-													onBlur={onBlur}
-													keyboardType="numeric"
-													error={
-														!!groomingErrors.totalWeight
-													}
-												/>
-											)}
-										/>
-									</LabeledInput>
+									<GroomingFields
+										control={groomingControl}
+										errors={groomingErrors}
+									/>
 								</View>
 							) : (
 								<View key="dehearing">
-									<LabeledInput
-										label="Peso fibra predescerdada"
-										labelPrefix="2"
-										labelSuffix="gramos"
-										error={
-											dehearingErrors.dehairedWeight
-												?.message
-										}
-									>
-										<Controller
-											control={dehearingControl}
-											name="dehairedWeight"
-											render={({
-												field: {
-													onChange,
-													onBlur,
-													value,
-												},
-											}) => (
-												<TextInput
-													mode="outlined"
-													value={formatNumber(value)}
-													onChangeText={(text) =>
-														onChange(
-															parseNumber(text),
-														)
-													}
-													onBlur={onBlur}
-													keyboardType="numeric"
-													error={
-														!!dehearingErrors.dehairedWeight
-													}
-												/>
-											)}
-										/>
-									</LabeledInput>
-
-									<LabeledInput
-										label="Peso cerda"
-										labelPrefix="3"
-										labelSuffix="gramos"
-										error={
-											dehearingErrors.bristleWeight
-												?.message
-										}
-									>
-										<Controller
-											control={dehearingControl}
-											name="bristleWeight"
-											render={({
-												field: {
-													onChange,
-													onBlur,
-													value,
-												},
-											}) => (
-												<TextInput
-													mode="outlined"
-													value={formatNumber(value)}
-													onChangeText={(text) =>
-														onChange(
-															parseNumber(text),
-														)
-													}
-													onBlur={onBlur}
-													keyboardType="numeric"
-													error={
-														!!dehearingErrors.bristleWeight
-													}
-												/>
-											)}
-										/>
-									</LabeledInput>
-
-									<LabeledInput label="Caspa" labelPrefix="4">
-										<Controller
-											control={dehearingControl}
-											name="hasDandruff"
-											render={({
-												field: { onChange, value },
-											}) => (
-												<ToggleButtonGroup
-													value={value ? "Si" : "No"}
-													onChange={(nextValue) =>
-														onChange(
-															nextValue === "Si",
-														)
-													}
-													options={[
-														{
-															label: "No",
-															value: "No",
-														},
-														{
-															label: "Si",
-															value: "Si",
-														},
-													]}
-												/>
-											)}
-										/>
-									</LabeledInput>
-
-									<LabeledInput
-										label="Nombre del predescerdador (a)"
-										labelPrefix="5"
-										error={
-											dehearingErrors.dehairerName
-												?.message
-										}
-									>
-										<Controller
-											control={dehearingControl}
-											name="dehairerName"
-											render={({
-												field: {
-													onChange,
-													onBlur,
-													value,
-												},
-											}) => (
-												<TextInput
-													mode="outlined"
-													value={value}
-													onChangeText={onChange}
-													onBlur={onBlur}
-													error={
-														!!dehearingErrors.dehairerName
-													}
-												/>
-											)}
-										/>
-									</LabeledInput>
-
-									<LabeledInput
-										label="Firma"
-										labelPrefix="6"
-										error={
-											dehearingErrors.signature?.message
-										}
-									>
-										<Controller
-											control={dehearingControl}
-											name="signature"
-											render={({
-												field: { onChange, value },
-											}) => (
-												<SignaturePad
-													value={value}
-													onChange={onChange}
-												/>
-											)}
-										/>
-									</LabeledInput>
+									<DehearingFields
+										control={dehearingControl}
+										errors={dehearingErrors}
+									/>
 								</View>
 							)}
 						</View>

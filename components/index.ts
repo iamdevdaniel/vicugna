@@ -12,4 +12,7 @@ export {
 	ToggleButtonGroupProps,
 	ToggleOption,
 } from "./basics/ToggleButtonGroup"
+export { CleaningCommonSummary } from "./cleanup/CleaningCommonSummary"
+export { DehearingFields } from "./cleanup/DehearingFields"
+export { GroomingFields } from "./cleanup/GroomingFields"
 export { VicugnaIcon } from "./icons/VicugnaIcon"
