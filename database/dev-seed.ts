@@ -20,11 +20,11 @@ export async function seedPermitBeforeCleaningRecords(
 			.fetch()
 		for (const record of basicInfo) {
 			await record.update((model) => {
-				model.department = "La Paz"
-				model.regional = "Altiplano"
-				model.community = "Chacaltaya"
+				model.department = "COCHABAMBA"
+				model.regional = "huaripucara-region-altamachi"
+				model.community = "incacasani-villavinto"
 				model.site = "Manejo Norte"
-				model.date = "2026-06-11"
+				model.date = "11/06/2026"
 				model.isCompleted = true
 			})
 		}

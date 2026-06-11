@@ -1,9 +1,13 @@
-import regionals from "@assets/data/regionals.json"
 import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
 import type { BasicInfoFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useReadSingleBasicInfo, useSingleBasicInfoActions } from "@hooks"
 import DateTimePicker from "@react-native-community/datetimepicker"
+import {
+	getCommunityOptions,
+	getDepartmentOptions,
+	getRegionalOptions,
+} from "@utils/misc"
 import { useAppTheme } from "@utils/useAppTheme"
 import { defaultValuesBasicInfo, yupBasicInfo } from "@utils/yup-basic-info"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
@@ -63,18 +67,11 @@ export default function () {
 		})
 	}, [loading, reset, data])
 
-	const departamentoOptions = Object.keys(regionals).map((key) => ({
-		label: key,
-		value: key,
-	}))
+	const departamentoOptions = getDepartmentOptions()
 
 	useEffect(() => {
 		if (selectedDepartamento) {
-			const dept =
-				regionals[selectedDepartamento as keyof typeof regionals]
-			setRegionalOptions(
-				dept.regionals.map((r) => ({ label: r.name, value: r.id })),
-			)
+			setRegionalOptions(getRegionalOptions(selectedDepartamento))
 		} else {
 			setRegionalOptions([])
 			setComunidadOptions([])
@@ -83,19 +80,9 @@ export default function () {
 
 	useEffect(() => {
 		if (selectedRegional && selectedDepartamento) {
-			const dept =
-				regionals[selectedDepartamento as keyof typeof regionals]
-			const regional = dept.regionals.find(
-				(r) => r.id === selectedRegional,
+			setComunidadOptions(
+				getCommunityOptions(selectedDepartamento, selectedRegional),
 			)
-			if (regional) {
-				setComunidadOptions(
-					regional.communities.map((c) => ({
-						label: c.name,
-						value: c.id,
-					})),
-				)
-			}
 		} else {
 			setComunidadOptions([])
 		}
