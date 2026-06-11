@@ -85,6 +85,7 @@ export const appDbSchema = appSchema({
 				{ name: "cleanWeight", type: "number" },
 				{ name: "dirtyWeight", type: "number" },
 				{ name: "totalWeight", type: "number" },
+				{ name: "isCompleted", type: "boolean" },
 			],
 		}),
 		tableSchema({
@@ -96,6 +97,7 @@ export const appDbSchema = appSchema({
 				{ name: "hasDandruff", type: "boolean" },
 				{ name: "dehairerName", type: "string" },
 				{ name: "signature", type: "string" },
+				{ name: "isCompleted", type: "boolean" },
 			],
 		}),
 	],

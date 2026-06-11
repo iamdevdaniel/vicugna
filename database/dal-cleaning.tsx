@@ -98,7 +98,12 @@ export function subscribeSingleGrooming(
 	const sub = database
 		.get<GroomingModel>("grooming")
 		.query(Q.where("cleaningCommonId", cleaningCommonId))
-		.observeWithColumns(["cleanWeight", "dirtyWeight", "totalWeight"])
+		.observeWithColumns([
+			"cleanWeight",
+			"dirtyWeight",
+			"totalWeight",
+			"isCompleted",
+		])
 		.subscribe({
 			next: (records) =>
 				callbacks.onChange(
@@ -123,6 +128,7 @@ export function subscribeSingleDehearing(
 			"hasDandruff",
 			"dehairerName",
 			"signature",
+			"isCompleted",
 		])
 		.subscribe({
 			next: (records) =>

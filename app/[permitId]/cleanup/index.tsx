@@ -1,11 +1,64 @@
 import { AccentCard, StepList } from "@components"
-import { useReadBulkCleaningCommon, useReadSingleCleaningHeader } from "@hooks"
+import type { CleaningCommon } from "@definitions/types"
+import {
+	useReadBulkCleaningCommon,
+	useReadSingleCleaningHeader,
+	useReadSingleDehearing,
+	useReadSingleGrooming,
+} from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { Button } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
+
+function CleaningRecordCard({
+	index,
+	permitId,
+	record,
+}: {
+	index: number
+	permitId: string
+	record: CleaningCommon
+}) {
+	const theme = useAppTheme()
+	const { data: grooming } = useReadSingleGrooming(record.id)
+	const { data: dehearing } = useReadSingleDehearing(record.id)
+	const isCompleted =
+		grooming?.isCompleted === true || dehearing?.isCompleted === true
+	const accent = isCompleted ? theme.colors.tertiary : theme.colors.primary
+
+	return (
+		<AccentCard
+			key={record.id}
+			accent={accent}
+			prefix={index + 1}
+			style={{
+				backgroundColor: theme.colors.surfaceVariant,
+			}}
+		>
+			<View
+				style={{
+					paddingRight: 4,
+					paddingVertical: 6,
+					gap: 8,
+				}}
+			>
+				<Text>{record.fleeceNumber}</Text>
+				<Button
+					mode="outlined"
+					compact
+					onPress={() =>
+						router.push(ROUTES.CLEANUP.DETAILS(permitId, record.id))
+					}
+				>
+					{isCompleted ? "Editar" : "Continuar"}
+				</Button>
+			</View>
+		</AccentCard>
+	)
+}
 
 export default function () {
 	const theme = useAppTheme()
@@ -64,26 +117,12 @@ export default function () {
 								<View style={{ gap: 8 }}>
 									<Text>Total: {cleaningCommon.length}</Text>
 									{cleaningCommon.map((record, index) => (
-										<AccentCard
+										<CleaningRecordCard
 											key={record.id}
-											accent={theme.colors.tertiary}
-											prefix={index + 1}
-											style={{
-												backgroundColor:
-													theme.colors.surfaceVariant,
-											}}
-										>
-											<View
-												style={{
-													paddingRight: 4,
-													paddingVertical: 6,
-												}}
-											>
-												<Text>
-													Registro {index + 1}
-												</Text>
-											</View>
-										</AccentCard>
+											index={index}
+											permitId={permitId}
+											record={record}
+										/>
 									))}
 								</View>
 							),

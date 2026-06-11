@@ -3,21 +3,36 @@ import type { AdminPermit } from "@definitions/types"
 import { usePermitActions } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { router } from "expo-router"
-import { useEffect } from "react"
-import { FlatList } from "react-native"
-import { Card, Text } from "react-native-paper"
+import { useEffect, useState } from "react"
+import { Alert, FlatList, View } from "react-native"
+import { Button, Card, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { seedPermitBeforeCleaningRecords } from "../database/dev-seed"
 
 const mockAdminPermit: AdminPermit[] = permits
 
 // OVERVIEW /
 export default function () {
 	const { initializePermits } = usePermitActions()
+	const [seeding, setSeeding] = useState(false)
 
 	// TODO: implement path for permit init failure
 	useEffect(() => {
 		initializePermits(mockAdminPermit.map((p) => p.id))
 	}, [initializePermits])
+
+	const onSeed = async () => {
+		setSeeding(true)
+		try {
+			await initializePermits(mockAdminPermit.map((p) => p.id))
+			await seedPermitBeforeCleaningRecords(mockAdminPermit[0].id)
+			Alert.alert("Seed listo", `Permiso ${mockAdminPermit[0].id}`)
+		} catch {
+			Alert.alert("Error", "No se pudo crear la data de prueba")
+		} finally {
+			setSeeding(false)
+		}
+	}
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
@@ -45,6 +60,26 @@ export default function () {
 					</Card>
 				)}
 			/>
+			{__DEV__ && (
+				<View
+					style={{
+						position: "absolute",
+						right: 16,
+						bottom: 16,
+					}}
+				>
+					<Button
+						mode="contained-tonal"
+						compact
+						icon="database-plus"
+						loading={seeding}
+						disabled={seeding}
+						onPress={onSeed}
+					>
+						Seed
+					</Button>
+				</View>
+			)}
 		</SafeAreaView>
 	)
 }

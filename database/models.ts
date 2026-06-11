@@ -83,6 +83,7 @@ export class GroomingModel extends Model {
 	@field("cleanWeight") cleanWeight!: number
 	@field("dirtyWeight") dirtyWeight!: number
 	@field("totalWeight") totalWeight!: number
+	@field("isCompleted") isCompleted!: boolean
 }
 
 export class DehearingModel extends Model {
@@ -93,4 +94,5 @@ export class DehearingModel extends Model {
 	@field("hasDandruff") hasDandruff!: boolean
 	@text("dehairerName") dehairerName!: string
 	@text("signature") signature!: string
+	@field("isCompleted") isCompleted!: boolean
 }

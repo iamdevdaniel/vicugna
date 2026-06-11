@@ -111,9 +111,13 @@ export type Grooming = {
 	cleanWeight: number
 	dirtyWeight: number
 	totalWeight: number
+	isCompleted: boolean
 }
 
-export type GroomingFormData = Omit<Grooming, "id" | "cleaningCommonId">
+export type GroomingFormData = Omit<
+	Grooming,
+	"id" | "cleaningCommonId" | "isCompleted"
+>
 
 export type Dehearing = {
 	id: string
@@ -123,6 +127,10 @@ export type Dehearing = {
 	hasDandruff: boolean
 	dehairerName: string
 	signature: string
+	isCompleted: boolean
 }
 
-export type DehearingFormData = Omit<Dehearing, "id" | "cleaningCommonId">
+export type DehearingFormData = Omit<
+	Dehearing,
+	"id" | "cleaningCommonId" | "isCompleted"
+>

@@ -225,6 +225,7 @@ export function mapToGrooming(model: GroomingModel): Grooming {
 		cleanWeight: model.cleanWeight,
 		dirtyWeight: model.dirtyWeight,
 		totalWeight: model.totalWeight,
+		isCompleted: model.isCompleted,
 	}
 }
 
@@ -237,6 +238,7 @@ export function applyGroomingToModel(
 	model.cleanWeight = data.cleanWeight
 	model.dirtyWeight = data.dirtyWeight
 	model.totalWeight = data.totalWeight
+	model.isCompleted = true
 }
 
 export function mapToDehearing(model: DehearingModel): Dehearing {
@@ -248,6 +250,7 @@ export function mapToDehearing(model: DehearingModel): Dehearing {
 		hasDandruff: model.hasDandruff,
 		dehairerName: model.dehairerName,
 		signature: model.signature,
+		isCompleted: model.isCompleted,
 	}
 }
 
@@ -262,4 +265,5 @@ export function applyDehearingToModel(
 	model.hasDandruff = data.hasDandruff
 	model.dehairerName = data.dehairerName
 	model.signature = data.signature
+	model.isCompleted = true
 }
