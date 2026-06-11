@@ -7,18 +7,18 @@ import * as yup from "yup"
 
 export const defaultValuesCleaningCommon: CleaningCommonFormData = {
 	fleeceNumber: "",
-	grossWeight: 0,
+	grossWeight: Number.NaN,
 }
 
 export const defaultValuesGrooming: GroomingFormData = {
-	cleanWeight: 0,
-	dirtyWeight: 0,
-	totalWeight: 0,
+	cleanWeight: Number.NaN,
+	dirtyWeight: Number.NaN,
+	totalWeight: Number.NaN,
 }
 
 export const defaultValuesDehearing: DehearingFormData = {
-	dehairedWeight: 0,
-	bristleWeight: 0,
+	dehairedWeight: Number.NaN,
+	bristleWeight: Number.NaN,
 	hasDandruff: false,
 	dehairerName: "",
 	signature: "",

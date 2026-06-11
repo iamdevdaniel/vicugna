@@ -25,9 +25,17 @@ function CleaningRecordCard({
 	const theme = useAppTheme()
 	const { data: grooming } = useReadSingleGrooming(record.id)
 	const { data: dehearing } = useReadSingleDehearing(record.id)
-	const isCompleted =
-		grooming?.isCompleted === true || dehearing?.isCompleted === true
-	const accent = isCompleted ? theme.colors.tertiary : theme.colors.primary
+	const isGroomingCompleted = grooming?.isCompleted === true
+	const isDehearingCompleted = dehearing?.isCompleted === true
+	const isCompleted = isGroomingCompleted || isDehearingCompleted
+	const accent = isCompleted
+		? theme.colors.custom.green
+		: theme.colors.custom.blue
+	const status = isGroomingCompleted
+		? "LIMPIADO"
+		: isDehearingCompleted
+			? "PREDESCERDADO"
+			: "PENDIENTE"
 
 	return (
 		<AccentCard
@@ -40,21 +48,74 @@ function CleaningRecordCard({
 		>
 			<View
 				style={{
-					paddingRight: 4,
+					minHeight: 48,
+					paddingLeft: 4,
+					paddingRight: 6,
 					paddingVertical: 6,
-					gap: 8,
+					flexDirection: "row",
+					alignItems: "center",
 				}}
 			>
-				<Text>{record.fleeceNumber}</Text>
-				<Button
-					mode="outlined"
-					compact
-					onPress={() =>
-						router.push(ROUTES.CLEANUP.DETAILS(permitId, record.id))
-					}
+				<View
+					style={{
+						flex: 1,
+						flexDirection: "row",
+						alignItems: "center",
+					}}
 				>
-					{isCompleted ? "Editar" : "Continuar"}
-				</Button>
+					<Text
+						style={{
+							flex: 1,
+							textAlign: "center",
+							color: theme.colors.onSurface,
+						}}
+					>
+						{record.fleeceNumber}
+					</Text>
+					<Text
+						style={{
+							flex: 1,
+							textAlign: "center",
+							color: accent,
+							fontSize: 11,
+							fontWeight: "600",
+						}}
+					>
+						{status}
+					</Text>
+				</View>
+				<View style={{ width: 86, alignItems: "flex-end" }}>
+					<Button
+						mode="outlined"
+						compact
+						textColor={accent}
+						style={{
+							width: 74,
+							borderColor: accent,
+							borderRadius: 6,
+						}}
+						contentStyle={{
+							height: 32,
+							paddingHorizontal: 0,
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+						labelStyle={{
+							fontSize: 11,
+							fontWeight: "700",
+							marginHorizontal: 0,
+							marginVertical: 0,
+							lineHeight: 14,
+						}}
+						onPress={() =>
+							router.push(
+								ROUTES.CLEANUP.DETAILS(permitId, record.id),
+							)
+						}
+					>
+						{isCompleted ? "Editar" : "Seguir"}
+					</Button>
+				</View>
 			</View>
 		</AccentCard>
 	)

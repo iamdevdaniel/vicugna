@@ -33,11 +33,12 @@ import { SafeAreaView } from "react-native-safe-area-context"
 type CleaningDetailKind = "grooming" | "dehearing"
 
 function formatNumber(value: number) {
-	return value ? value.toString() : ""
+	return Number.isFinite(value) ? value.toString() : ""
 }
 
 function parseNumber(value: string) {
-	return value === "" ? 0 : Number(value)
+	const digits = value.replace(/\D/g, "")
+	return digits === "" ? Number.NaN : Number(digits)
 }
 
 export default function () {
@@ -53,18 +54,23 @@ export default function () {
 		useReadSingleCleaningCommon(recordId)
 	const { data: groomingData } = useReadSingleGrooming(recordId)
 	const { data: dehearingData } = useReadSingleDehearing(recordId)
+	const [isTypeUnlocked, setIsTypeUnlocked] = useState(false)
 
-	const { deleteSingleCleaningCommon, deleting } =
+	const { deleteSingleCleaningCommon, deleting: deletingCommon } =
 		useSingleCleaningCommonActions()
 	const {
 		createSingleGrooming,
 		updateSingleGrooming,
+		deleteSingleGrooming,
 		saving: savingGrooming,
+		deleting: deletingGrooming,
 	} = useSingleGroomingActions()
 	const {
 		createSingleDehearing,
 		updateSingleDehearing,
+		deleteSingleDehearing,
 		saving: savingDehearing,
+		deleting: deletingDehearing,
 	} = useSingleDehearingActions()
 
 	const {
@@ -112,11 +118,14 @@ export default function () {
 	}, [dehearingData, resetDehearing])
 
 	const isWaitingForData = loadingCommon || !commonData
-	const detailLocked = !!groomingData || !!dehearingData
+	const hasSavedDetail = !!groomingData || !!dehearingData
+	const detailLocked = hasSavedDetail && !isTypeUnlocked
 	const savingDetail = savingGrooming || savingDehearing
+	const deletingDetail = deletingGrooming || deletingDehearing
 	const isSavingGrooming = detailKind === "grooming"
 	const saveDisabled =
-		deleting ||
+		deletingCommon ||
+		deletingDetail ||
 		savingDetail ||
 		isWaitingForData ||
 		(isSavingGrooming && !isGroomingValid) ||
@@ -152,6 +161,39 @@ export default function () {
 			return
 		}
 		handleDehearingSubmit(onSubmitDehearing)()
+	}
+
+	const onChangeType = (nextType: CleaningDetailKind) => {
+		if (!groomingData && !dehearingData) return
+		if (nextType === detailKind) return
+
+		Alert.alert(
+			"Cambiar tipo",
+			"Cambiar el tipo borrará los datos guardados",
+			[
+				{ text: "Cancelar", style: "cancel" },
+				{
+					text: "Cambiar tipo",
+					style: "destructive",
+					onPress: async () => {
+						const ok = groomingData
+							? await deleteSingleGrooming(groomingData.id)
+							: dehearingData
+								? await deleteSingleDehearing(dehearingData.id)
+								: false
+
+						if (!ok) {
+							Alert.alert("Error", "No se pudo cambiar el tipo")
+							return
+						}
+						resetGrooming(defaultValuesGrooming)
+						resetDehearing(defaultValuesDehearing)
+						setDetailKind(nextType)
+						setIsTypeUnlocked(true)
+					},
+				},
+			],
+		)
 	}
 
 	const onDelete = () => {
@@ -269,12 +311,15 @@ export default function () {
 							<LabeledInput label="Tipo" labelPrefix="1">
 								<ToggleButtonGroup
 									value={detailKind}
-									onChange={(value) =>
-										setDetailKind(
-											value as CleaningDetailKind,
-										)
-									}
-									disabled={detailLocked}
+									onChange={(value) => {
+										const nextType =
+											value as CleaningDetailKind
+										if (detailLocked) {
+											onChangeType(nextType)
+											return
+										}
+										setDetailKind(nextType)
+									}}
 									options={[
 										{
 											label: "Limpiado",
@@ -289,7 +334,7 @@ export default function () {
 							</LabeledInput>
 
 							{detailKind === "grooming" ? (
-								<View>
+								<View key="grooming">
 									<LabeledInput
 										label="Peso vellon limpio"
 										labelPrefix="2"
@@ -399,7 +444,7 @@ export default function () {
 									</LabeledInput>
 								</View>
 							) : (
-								<View>
+								<View key="dehearing">
 									<LabeledInput
 										label="Peso fibra predescerdada"
 										labelPrefix="2"
@@ -570,8 +615,10 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={onDelete}
-							disabled={savingDetail || deleting}
-							loading={deleting}
+							disabled={
+								savingDetail || deletingDetail || deletingCommon
+							}
+							loading={deletingCommon}
 							textColor={theme.colors.onError}
 							style={{
 								flex: 1,

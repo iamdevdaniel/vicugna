@@ -17,11 +17,12 @@ import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 function formatNumber(value: number) {
-	return value ? value.toString() : ""
+	return Number.isFinite(value) ? value.toString() : ""
 }
 
 function parseNumber(value: string) {
-	return value === "" ? 0 : Number(value)
+	const digits = value.replace(/\D/g, "")
+	return digits === "" ? Number.NaN : Number(digits)
 }
 
 export default function () {
