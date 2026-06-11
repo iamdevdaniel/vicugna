@@ -1,5 +1,5 @@
 import { AccentCard, StepList } from "@components"
-import { useReadBulkCleaningRecords, useReadSingleCleaningHeader } from "@hooks"
+import { useReadBulkCleaningCommon, useReadSingleCleaningHeader } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
@@ -12,10 +12,10 @@ export default function () {
 	const insets = useSafeAreaInsets()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
-	const { data: cleaningRecords } = useReadBulkCleaningRecords(permitId)
+	const { data: cleaningCommon } = useReadBulkCleaningCommon(permitId)
 
 	const headerState = cleaningHeader?.isCompleted ? "done" : "ready"
-	const recordsState = cleaningRecords.length ? "done" : "ready"
+	const recordsState = cleaningCommon.length ? "done" : "ready"
 
 	return (
 		<SafeAreaView
@@ -62,8 +62,8 @@ export default function () {
 							state: recordsState,
 							details: (
 								<View style={{ gap: 8 }}>
-									<Text>Total: {cleaningRecords.length}</Text>
-									{cleaningRecords.map((record, index) => (
+									<Text>Total: {cleaningCommon.length}</Text>
+									{cleaningCommon.map((record, index) => (
 										<AccentCard
 											key={record.id}
 											accent={theme.colors.tertiary}

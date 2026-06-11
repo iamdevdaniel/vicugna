@@ -1,9 +1,14 @@
 import type {
 	BasicInfo,
 	BasicInfoFormData,
+	CleaningCommon,
+	CleaningCommonFormData,
 	CleaningHeader,
 	CleaningHeaderFormData,
-	CleaningRecord,
+	Dehearing,
+	DehearingFormData,
+	Grooming,
+	GroomingFormData,
 	Participant,
 	ParticipantFormData,
 	ShearingHeader,
@@ -13,8 +18,10 @@ import type {
 } from "@definitions/types"
 import type {
 	BasicInfoModel,
+	CleaningCommonModel,
 	CleaningHeaderModel,
-	CleaningRecordModel,
+	DehearingModel,
+	GroomingModel,
 	ParticipantModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
@@ -190,14 +197,69 @@ export function applyCleaningHeaderToModel(
 	model.isCompleted = isCompleted
 }
 
-export function mapToCleaningRecord(
-	model: CleaningRecordModel,
-): CleaningRecord {
+export function mapToCleaningCommon(
+	model: CleaningCommonModel,
+): CleaningCommon {
 	return {
 		id: model.id,
 		permitId: model.permitId,
 		fleeceNumber: model.fleeceNumber,
 		grossWeight: model.grossWeight,
-		type: model.type,
 	}
+}
+
+export function applyCleaningCommonToModel(
+	model: CleaningCommonModel,
+	data: CleaningCommonFormData,
+	permitId?: string,
+): void {
+	if (permitId) model.permitId = permitId
+	model.fleeceNumber = data.fleeceNumber
+	model.grossWeight = data.grossWeight
+}
+
+export function mapToGrooming(model: GroomingModel): Grooming {
+	return {
+		id: model.id,
+		cleaningCommonId: model.cleaningCommonId,
+		cleanWeight: model.cleanWeight,
+		dirtyWeight: model.dirtyWeight,
+		totalWeight: model.totalWeight,
+	}
+}
+
+export function applyGroomingToModel(
+	model: GroomingModel,
+	data: GroomingFormData,
+	cleaningCommonId?: string,
+): void {
+	if (cleaningCommonId) model.cleaningCommonId = cleaningCommonId
+	model.cleanWeight = data.cleanWeight
+	model.dirtyWeight = data.dirtyWeight
+	model.totalWeight = data.totalWeight
+}
+
+export function mapToDehearing(model: DehearingModel): Dehearing {
+	return {
+		id: model.id,
+		cleaningCommonId: model.cleaningCommonId,
+		dehairedWeight: model.dehairedWeight,
+		bristleWeight: model.bristleWeight,
+		hasDandruff: model.hasDandruff,
+		dehairerName: model.dehairerName,
+		signature: model.signature,
+	}
+}
+
+export function applyDehearingToModel(
+	model: DehearingModel,
+	data: DehearingFormData,
+	cleaningCommonId?: string,
+): void {
+	if (cleaningCommonId) model.cleaningCommonId = cleaningCommonId
+	model.dehairedWeight = data.dehairedWeight
+	model.bristleWeight = data.bristleWeight
+	model.hasDandruff = data.hasDandruff
+	model.dehairerName = data.dehairerName
+	model.signature = data.signature
 }

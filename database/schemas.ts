@@ -71,27 +71,26 @@ export const appDbSchema = appSchema({
 			],
 		}),
 		tableSchema({
-			name: "cleaningRecord",
+			name: "cleaningCommon",
 			columns: [
 				{ name: "permitId", type: "string", isIndexed: true },
 				{ name: "fleeceNumber", type: "string" },
 				{ name: "grossWeight", type: "number" },
-				{ name: "type", type: "string" },
 			],
 		}),
 		tableSchema({
-			name: "precleaningRecord",
+			name: "grooming",
 			columns: [
-				{ name: "cleaningRecordId", type: "string", isIndexed: true },
+				{ name: "cleaningCommonId", type: "string", isIndexed: true },
 				{ name: "cleanWeight", type: "number" },
 				{ name: "dirtyWeight", type: "number" },
 				{ name: "totalWeight", type: "number" },
 			],
 		}),
 		tableSchema({
-			name: "dehearingRecord",
+			name: "dehearing",
 			columns: [
-				{ name: "cleaningRecordId", type: "string", isIndexed: true },
+				{ name: "cleaningCommonId", type: "string", isIndexed: true },
 				{ name: "dehairedWeight", type: "number" },
 				{ name: "bristleWeight", type: "number" },
 				{ name: "hasDandruff", type: "boolean" },

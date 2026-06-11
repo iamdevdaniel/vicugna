@@ -70,25 +70,24 @@ export class CleaningHeaderModel extends Model {
 	@field("isCompleted") isCompleted!: boolean
 }
 
-export class CleaningRecordModel extends Model {
-	static table = "cleaningRecord"
+export class CleaningCommonModel extends Model {
+	static table = "cleaningCommon"
 	@field("permitId") permitId!: string
 	@text("fleeceNumber") fleeceNumber!: string
 	@field("grossWeight") grossWeight!: number
-	@text("type") type!: "precleaning" | "dehearing"
 }
 
-export class PrecleaningRecordModel extends Model {
-	static table = "precleaningRecord"
-	@field("cleaningRecordId") cleaningRecordId!: string
+export class GroomingModel extends Model {
+	static table = "grooming"
+	@field("cleaningCommonId") cleaningCommonId!: string
 	@field("cleanWeight") cleanWeight!: number
 	@field("dirtyWeight") dirtyWeight!: number
 	@field("totalWeight") totalWeight!: number
 }
 
-export class DehearingRecordModel extends Model {
-	static table = "dehearingRecord"
-	@field("cleaningRecordId") cleaningRecordId!: string
+export class DehearingModel extends Model {
+	static table = "dehearing"
+	@field("cleaningCommonId") cleaningCommonId!: string
 	@field("dehairedWeight") dehairedWeight!: number
 	@field("bristleWeight") bristleWeight!: number
 	@field("hasDandruff") hasDandruff!: boolean

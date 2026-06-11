@@ -96,34 +96,28 @@ export type CleaningHeaderFormData = Omit<
 	"id" | "permitId" | "isCompleted"
 >
 
-export type CleaningRecordType = "precleaning" | "dehearing"
-
-export type CleaningRecord = {
+export type CleaningCommon = {
 	id: string
 	permitId: string
 	fleeceNumber: string
 	grossWeight: number
-	type: CleaningRecordType
 }
 
-export type CleaningRecordFormData = Omit<CleaningRecord, "id" | "permitId">
+export type CleaningCommonFormData = Omit<CleaningCommon, "id" | "permitId">
 
-export type PrecleaningRecord = {
+export type Grooming = {
 	id: string
-	cleaningRecordId: string
+	cleaningCommonId: string
 	cleanWeight: number
 	dirtyWeight: number
 	totalWeight: number
 }
 
-export type PrecleaningRecordFormData = Omit<
-	PrecleaningRecord,
-	"id" | "cleaningRecordId"
->
+export type GroomingFormData = Omit<Grooming, "id" | "cleaningCommonId">
 
-export type DehearingRecord = {
+export type Dehearing = {
 	id: string
-	cleaningRecordId: string
+	cleaningCommonId: string
 	dehairedWeight: number
 	bristleWeight: number
 	hasDandruff: boolean
@@ -131,7 +125,4 @@ export type DehearingRecord = {
 	signature: string
 }
 
-export type DehearingRecordFormData = Omit<
-	DehearingRecord,
-	"id" | "cleaningRecordId"
->
+export type DehearingFormData = Omit<Dehearing, "id" | "cleaningCommonId">
