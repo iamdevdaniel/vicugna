@@ -4,8 +4,8 @@ import { usePermitActions } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { router } from "expo-router"
 import { useEffect, useState } from "react"
-import { Alert, FlatList, View } from "react-native"
-import { Button, Card, Text } from "react-native-paper"
+import { Alert, FlatList } from "react-native"
+import { Card, FAB, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { seedPermitBeforeCleaningRecords } from "../database/dev-seed"
 
@@ -41,6 +41,7 @@ export default function () {
 				keyExtractor={(item) => item.id}
 				contentContainerStyle={{
 					padding: 16,
+					paddingBottom: 80,
 					gap: 10,
 				}}
 				renderItem={({ item }) => (
@@ -61,24 +62,18 @@ export default function () {
 				)}
 			/>
 			{__DEV__ && (
-				<View
+				<FAB
+					icon="database-plus"
+					label="Seed"
+					loading={seeding}
+					disabled={seeding}
+					onPress={onSeed}
 					style={{
 						position: "absolute",
 						right: 16,
-						bottom: 16,
+						bottom: 64,
 					}}
-				>
-					<Button
-						mode="contained-tonal"
-						compact
-						icon="database-plus"
-						loading={seeding}
-						disabled={seeding}
-						onPress={onSeed}
-					>
-						Seed
-					</Button>
-				</View>
+				/>
 			)}
 		</SafeAreaView>
 	)
