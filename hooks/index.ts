@@ -7,9 +7,9 @@ export {
 	useReadSingleCleaningCommon,
 } from "./cleaning-common-read"
 export { useSingleCleaningCommonActions } from "./cleaning-common-write"
-export { useReadSingleDehearing } from "./dehearing-read"
+export { useReadBulkDehearing, useReadSingleDehearing } from "./dehearing-read"
 export { useSingleDehearingActions } from "./dehearing-write"
-export { useReadSingleGrooming } from "./grooming-read"
+export { useReadBulkGrooming, useReadSingleGrooming } from "./grooming-read"
 export { useSingleGroomingActions } from "./grooming-write"
 export {
 	useReadBulkParticipants,

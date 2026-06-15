@@ -1,8 +1,12 @@
 import { StepList, type StepState } from "@components"
 import {
+	useReadBulkCleaningCommon,
+	useReadBulkDehearing,
+	useReadBulkGrooming,
 	useReadBulkParticipants,
 	useReadBulkShearingRecords,
 	useReadSingleBasicInfo,
+	useReadSingleCleaningHeader,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import {
@@ -21,6 +25,11 @@ export default function () {
 	const { data: basicInfo } = useReadSingleBasicInfo(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const { data: records } = useReadBulkShearingRecords(permitId)
+	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
+	const { data: cleaningRecords } = useReadBulkCleaningCommon(permitId)
+	const cleaningRecordIds = cleaningRecords.map((record) => record.id)
+	const { data: groomingRecords } = useReadBulkGrooming(cleaningRecordIds)
+	const { data: dehearingRecords } = useReadBulkDehearing(cleaningRecordIds)
 
 	const basicInfoState: StepState = basicInfo?.isCompleted ? "done" : "ready"
 	const participantsState = getDependentStepState(
@@ -31,7 +40,23 @@ export default function () {
 		participantsState === "done",
 		records.length > 0,
 	)
-	const cleaningState = getDependentStepState(shearingState === "done", false)
+	const completedCleaningRecordIds = new Set([
+		...groomingRecords
+			.filter((record) => record.isCompleted)
+			.map((record) => record.cleaningCommonId),
+		...dehearingRecords
+			.filter((record) => record.isCompleted)
+			.map((record) => record.cleaningCommonId),
+	])
+	const cleaningRecordsCompleted =
+		cleaningRecords.length > 0 &&
+		cleaningRecords.every((record) =>
+			completedCleaningRecordIds.has(record.id),
+		)
+	const cleaningState = getDependentStepState(
+		shearingState === "done",
+		cleaningHeader?.isCompleted === true && cleaningRecordsCompleted,
+	)
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -99,6 +124,9 @@ export default function () {
 										ROUTES.CLEANUP.OVERVIEW(permitId),
 									),
 							},
+							details: (
+								<Text>Total: {cleaningRecords.length}</Text>
+							),
 						},
 					]}
 				/>

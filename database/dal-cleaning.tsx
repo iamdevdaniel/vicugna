@@ -115,6 +115,32 @@ export function subscribeSingleGrooming(
 	return () => sub.unsubscribe()
 }
 
+export function subscribeBulkGrooming(
+	cleaningCommonIds: string[],
+	callbacks: SubscriptionCallback<Grooming[]>,
+): () => void {
+	if (cleaningCommonIds.length === 0) {
+		callbacks.onChange([])
+		return () => {}
+	}
+
+	const sub = database
+		.get<GroomingModel>("grooming")
+		.query(Q.where("cleaningCommonId", Q.oneOf(cleaningCommonIds)))
+		.observeWithColumns([
+			"cleanWeight",
+			"dirtyWeight",
+			"totalWeight",
+			"isCompleted",
+		])
+		.subscribe({
+			next: (records) => callbacks.onChange(records.map(mapToGrooming)),
+			error: (e) => callbacks.onError(e as Error),
+		})
+
+	return () => sub.unsubscribe()
+}
+
 export function subscribeSingleDehearing(
 	cleaningCommonId: string,
 	callbacks: SubscriptionCallback<Dehearing | null>,
@@ -135,6 +161,34 @@ export function subscribeSingleDehearing(
 				callbacks.onChange(
 					records[0] ? mapToDehearing(records[0]) : null,
 				),
+			error: (e) => callbacks.onError(e as Error),
+		})
+
+	return () => sub.unsubscribe()
+}
+
+export function subscribeBulkDehearing(
+	cleaningCommonIds: string[],
+	callbacks: SubscriptionCallback<Dehearing[]>,
+): () => void {
+	if (cleaningCommonIds.length === 0) {
+		callbacks.onChange([])
+		return () => {}
+	}
+
+	const sub = database
+		.get<DehearingModel>("dehearing")
+		.query(Q.where("cleaningCommonId", Q.oneOf(cleaningCommonIds)))
+		.observeWithColumns([
+			"dehairedWeight",
+			"bristleWeight",
+			"hasDandruff",
+			"dehairerName",
+			"signature",
+			"isCompleted",
+		])
+		.subscribe({
+			next: (records) => callbacks.onChange(records.map(mapToDehearing)),
 			error: (e) => callbacks.onError(e as Error),
 		})
 

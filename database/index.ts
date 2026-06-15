@@ -11,6 +11,8 @@ export {
 	deleteSingleDehearing,
 	deleteSingleGrooming,
 	subscribeBulkCleaningCommon,
+	subscribeBulkDehearing,
+	subscribeBulkGrooming,
 	subscribeSingleCleaningCommon,
 	subscribeSingleCleaningHeader,
 	subscribeSingleDehearing,

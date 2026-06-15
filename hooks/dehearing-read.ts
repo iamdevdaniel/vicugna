@@ -1,7 +1,26 @@
-import { subscribeSingleDehearing } from "@database"
+import { subscribeBulkDehearing, subscribeSingleDehearing } from "@database"
 import type { Dehearing } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
+
+export function useReadBulkDehearing(
+	cleaningCommonIds: string[],
+): DbState<Dehearing[]> {
+	const [state, dispatch] = useReducer(
+		readReducer<Dehearing[]>,
+		makeReadInitial<Dehearing[]>([]),
+	)
+	const cleaningCommonIdsKey = cleaningCommonIds.join("|")
+
+	useEffect(() => {
+		return subscribeBulkDehearing(cleaningCommonIds, {
+			onChange: (records) => dispatch({ type: "success", data: records }),
+			onError: (error) => dispatch({ type: "error", error }),
+		})
+	}, [cleaningCommonIdsKey])
+
+	return state
+}
 
 export function useReadSingleDehearing(
 	cleaningCommonId?: string,
