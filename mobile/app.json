@@ -27,7 +27,7 @@
       [
         "@morrowdigital/watermelondb-expo-plugin",
         {
-          "experimentalJSI": true
+          "disableJsi": true
         }
       ],
       [

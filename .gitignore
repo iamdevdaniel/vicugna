@@ -41,7 +41,7 @@ yarn-error.*
 app-example
 
 # Native build folders
-/android/
+/mobile/android/
 /ios/
 
 # AI
