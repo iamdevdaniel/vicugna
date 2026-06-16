@@ -1,6 +1,6 @@
 import regionals from "@assets/data/regionals.json"
 import type { StepState } from "@components"
-import type { BasicInfo } from "@definitions/types"
+import type { BasicInfoData } from "@definitions/types"
 
 type DropdownOption = {
 	label: string
@@ -42,7 +42,7 @@ export const getCommunityOptions = (
 	}))
 }
 
-export const getRegionalName = (form: BasicInfo): string => {
+export const getRegionalName = (form: BasicInfoData): string => {
 	const department = getDepartment(form.department)
 	if (!department) return "NA"
 	return (
@@ -50,7 +50,7 @@ export const getRegionalName = (form: BasicInfo): string => {
 	)
 }
 
-export const getCommunityName = (form: BasicInfo): string => {
+export const getCommunityName = (form: BasicInfoData): string => {
 	const department = getDepartment(form.department)
 	if (!department) return "NA"
 	const regional = department.regionals.find((r) =>

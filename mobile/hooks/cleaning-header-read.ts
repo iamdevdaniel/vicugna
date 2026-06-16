@@ -1,14 +1,14 @@
 import { subscribeSingleCleaningHeader } from "@database"
-import type { CleaningHeader } from "@definitions/types"
+import type { CleaningHeaderData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadSingleCleaningHeader(
 	permitId: string,
-): DbState<CleaningHeader | null> {
+): DbState<CleaningHeaderData | null> {
 	const [state, dispatch] = useReducer(
-		readReducer<CleaningHeader | null>,
-		makeReadInitial<CleaningHeader | null>(null),
+		readReducer<CleaningHeaderData | null>,
+		makeReadInitial<CleaningHeaderData | null>(null),
 	)
 
 	useEffect(() => {

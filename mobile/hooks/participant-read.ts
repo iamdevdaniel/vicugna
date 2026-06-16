@@ -3,16 +3,16 @@ import {
 	subscribeSingleParticipant
 } from "@database"
 import { type DbState } from './utils'
-import type { Participant } from "@definitions/types"
+import type { ParticipantData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkParticipants(
 	permitId: string,
-): DbState<Participant[]> {
+): DbState<ParticipantData[]> {
 	const [state, dispatch] = useReducer(
-		readReducer<Participant[]>,
-		makeReadInitial<Participant[]>([]),
+		readReducer<ParticipantData[]>,
+		makeReadInitial<ParticipantData[]>([]),
 	)
 
 	useEffect(() => {
@@ -28,10 +28,10 @@ export function useReadBulkParticipants(
 
 export function useReadSingleParticipant(
 	participantId?: string,
-): DbState<Participant | null> {
+): DbState<ParticipantData | null> {
 	const [state, dispatch] = useReducer(
-		readReducer<Participant | null>,
-		makeReadInitial<Participant | null>(null),
+		readReducer<ParticipantData | null>,
+		makeReadInitial<ParticipantData | null>(null),
 	)
 
 	useEffect(() => {

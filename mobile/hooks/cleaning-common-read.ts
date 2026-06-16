@@ -2,16 +2,16 @@ import {
 	subscribeBulkCleaningCommon,
 	subscribeSingleCleaningCommon,
 } from "@database"
-import type { CleaningCommon } from "@definitions/types"
+import type { CleaningCommonData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkCleaningCommon(
 	permitId: string,
-): DbState<CleaningCommon[]> {
+): DbState<CleaningCommonData[]> {
 	const [state, dispatch] = useReducer(
-		readReducer<CleaningCommon[]>,
-		makeReadInitial<CleaningCommon[]>([]),
+		readReducer<CleaningCommonData[]>,
+		makeReadInitial<CleaningCommonData[]>([]),
 	)
 
 	useEffect(() => {
@@ -27,10 +27,10 @@ export function useReadBulkCleaningCommon(
 
 export function useReadSingleCleaningCommon(
 	cleaningCommonId?: string,
-): DbState<CleaningCommon | null> {
+): DbState<CleaningCommonData | null> {
 	const [state, dispatch] = useReducer(
-		readReducer<CleaningCommon | null>,
-		makeReadInitial<CleaningCommon | null>(null),
+		readReducer<CleaningCommonData | null>,
+		makeReadInitial<CleaningCommonData | null>(null),
 	)
 
 	useEffect(() => {

@@ -1,14 +1,14 @@
 import { subscribeBulkGrooming, subscribeSingleGrooming } from "@database"
-import type { Grooming } from "@definitions/types"
+import type { GroomingData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkGrooming(
 	cleaningCommonIds: string[],
-): DbState<Grooming[]> {
+): DbState<GroomingData[]> {
 	const [state, dispatch] = useReducer(
-		readReducer<Grooming[]>,
-		makeReadInitial<Grooming[]>([]),
+		readReducer<GroomingData[]>,
+		makeReadInitial<GroomingData[]>([]),
 	)
 	const cleaningCommonIdsKey = cleaningCommonIds.join("|")
 
@@ -24,10 +24,10 @@ export function useReadBulkGrooming(
 
 export function useReadSingleGrooming(
 	cleaningCommonId?: string,
-): DbState<Grooming | null> {
+): DbState<GroomingData | null> {
 	const [state, dispatch] = useReducer(
-		readReducer<Grooming | null>,
-		makeReadInitial<Grooming | null>(null),
+		readReducer<GroomingData | null>,
+		makeReadInitial<GroomingData | null>(null),
 	)
 
 	useEffect(() => {

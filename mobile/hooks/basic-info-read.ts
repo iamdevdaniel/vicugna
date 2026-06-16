@@ -1,15 +1,15 @@
 import { subscribeSingleBasicInfo } from "@database"
-import type { BasicInfo } from "@definitions/types"
+import type { BasicInfoData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { type DbState } from './utils'
 import { makeReadInitial, readReducer } from "./utils"
 
 export function useReadSingleBasicInfo(
 	permitId: string,
-): DbState<BasicInfo | null> {
+): DbState<BasicInfoData | null> {
 	const [state, dispatch] = useReducer(
-		readReducer<BasicInfo | null>,
-		makeReadInitial<BasicInfo | null>(null),
+		readReducer<BasicInfoData | null>,
+		makeReadInitial<BasicInfoData | null>(null),
 	)
 
 	useEffect(() => {

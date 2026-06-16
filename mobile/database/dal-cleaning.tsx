@@ -1,11 +1,11 @@
 import type {
-	CleaningCommon,
+	CleaningCommonData,
 	CleaningCommonFormData,
-	CleaningHeader,
+	CleaningHeaderData,
 	CleaningHeaderFormData,
-	Dehearing,
+	DehearingData,
 	DehearingFormData,
-	Grooming,
+	GroomingData,
 	GroomingFormData,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
@@ -36,7 +36,7 @@ type SubscriptionCallback<T> = {
 
 export function subscribeSingleCleaningHeader(
 	permitId: string,
-	callbacks: SubscriptionCallback<CleaningHeader | null>,
+	callbacks: SubscriptionCallback<CleaningHeaderData | null>,
 ): () => void {
 	const sub = database
 		.get<CleaningHeaderModel>("cleaningHeader")
@@ -61,7 +61,7 @@ export function subscribeSingleCleaningHeader(
 
 export function subscribeBulkCleaningCommon(
 	permitId: string,
-	callbacks: SubscriptionCallback<CleaningCommon[]>,
+	callbacks: SubscriptionCallback<CleaningCommonData[]>,
 ): () => void {
 	const sub = database
 		.get<CleaningCommonModel>("cleaningCommon")
@@ -78,7 +78,7 @@ export function subscribeBulkCleaningCommon(
 
 export function subscribeSingleCleaningCommon(
 	cleaningCommonId: string,
-	callbacks: SubscriptionCallback<CleaningCommon>,
+	callbacks: SubscriptionCallback<CleaningCommonData>,
 ): () => void {
 	const sub = database
 		.get<CleaningCommonModel>("cleaningCommon")
@@ -93,7 +93,7 @@ export function subscribeSingleCleaningCommon(
 
 export function subscribeSingleGrooming(
 	cleaningCommonId: string,
-	callbacks: SubscriptionCallback<Grooming | null>,
+	callbacks: SubscriptionCallback<GroomingData | null>,
 ): () => void {
 	const sub = database
 		.get<GroomingModel>("grooming")
@@ -117,7 +117,7 @@ export function subscribeSingleGrooming(
 
 export function subscribeBulkGrooming(
 	cleaningCommonIds: string[],
-	callbacks: SubscriptionCallback<Grooming[]>,
+	callbacks: SubscriptionCallback<GroomingData[]>,
 ): () => void {
 	if (cleaningCommonIds.length === 0) {
 		callbacks.onChange([])
@@ -143,7 +143,7 @@ export function subscribeBulkGrooming(
 
 export function subscribeSingleDehearing(
 	cleaningCommonId: string,
-	callbacks: SubscriptionCallback<Dehearing | null>,
+	callbacks: SubscriptionCallback<DehearingData | null>,
 ): () => void {
 	const sub = database
 		.get<DehearingModel>("dehearing")
@@ -169,7 +169,7 @@ export function subscribeSingleDehearing(
 
 export function subscribeBulkDehearing(
 	cleaningCommonIds: string[],
-	callbacks: SubscriptionCallback<Dehearing[]>,
+	callbacks: SubscriptionCallback<DehearingData[]>,
 ): () => void {
 	if (cleaningCommonIds.length === 0) {
 		callbacks.onChange([])
@@ -214,7 +214,7 @@ export async function updateSingleCleaningHeader(
 export async function createSingleCleaningCommon(
 	permitId: string,
 	data: CleaningCommonFormData,
-): Promise<CleaningCommon> {
+): Promise<CleaningCommonData> {
 	let record: CleaningCommonModel | undefined
 	await database.write(async () => {
 		record = await database
@@ -270,7 +270,7 @@ export async function deleteSingleCleaningCommon(
 export async function createSingleGrooming(
 	cleaningCommonId: string,
 	data: GroomingFormData,
-): Promise<Grooming> {
+): Promise<GroomingData> {
 	let record: GroomingModel | undefined
 	await database.write(async () => {
 		record = await database
@@ -309,7 +309,7 @@ export async function deleteSingleGrooming(groomingId: string): Promise<void> {
 export async function createSingleDehearing(
 	cleaningCommonId: string,
 	data: DehearingFormData,
-): Promise<Dehearing> {
+): Promise<DehearingData> {
 	let record: DehearingModel | undefined
 	await database.write(async () => {
 		record = await database

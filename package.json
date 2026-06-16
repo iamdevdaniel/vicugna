@@ -1,0 +1,9 @@
+{
+  "name": "vicugna-workspace",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "mobile",
+    "packages/shared"
+  ]
+}

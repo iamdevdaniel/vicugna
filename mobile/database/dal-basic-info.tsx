@@ -1,4 +1,4 @@
-import type { BasicInfo, BasicInfoFormData } from "@definitions/types"
+import type { BasicInfoData, BasicInfoFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
 import { applyBasicInfoToModel, mapToBasicInfo } from "./mappers"
 import type { BasicInfoModel } from "./models"
@@ -13,7 +13,7 @@ type SubscriptionCallback<T> = {
 
 export function subscribeSingleBasicInfo(
 	permitId: string,
-	callbacks: SubscriptionCallback<BasicInfo | null>,
+	callbacks: SubscriptionCallback<BasicInfoData | null>,
 ): () => void {
 	const sub = database
 		.get<BasicInfoModel>("basicInfo")
@@ -41,7 +41,7 @@ export function subscribeSingleBasicInfo(
 
 export async function createSingleBasicInfo(
 	permitId: string,
-): Promise<BasicInfo> {
+): Promise<BasicInfoData> {
 	let record: BasicInfoModel | undefined
 	await database.write(async () => {
 		record = await database

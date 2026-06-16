@@ -1,7 +1,7 @@
 import type {
-	ShearingHeader,
+	ShearingHeaderData,
 	ShearingHeaderFormData,
-	ShearingRecord,
+	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
@@ -24,7 +24,7 @@ type SubscriptionCallback<T> = {
 
 export function subscribeSingleShearingHeader(
 	permitId: string,
-	callbacks: SubscriptionCallback<ShearingHeader | null>,
+	callbacks: SubscriptionCallback<ShearingHeaderData | null>,
 ): () => void {
 	const sub = database
 		.get<ShearingHeaderModel>("shearingHeader")
@@ -51,7 +51,7 @@ export function subscribeSingleShearingHeader(
 
 export function subscribeBulkShearingRecords(
 	permitId: string,
-	callbacks: SubscriptionCallback<ShearingRecord[]>,
+	callbacks: SubscriptionCallback<ShearingRecordData[]>,
 ): () => void {
 	const sub = database
 		.get<ShearingRecordModel>("shearingRecord")
@@ -115,7 +115,7 @@ export async function updateShearingHeader(
 export async function createSingleShearingRecord(
 	permitId: string,
 	data: ShearingRecordFormData,
-): Promise<ShearingRecord> {
+): Promise<ShearingRecordData> {
 	let record: ShearingRecordModel | undefined
 	await database.write(async () => {
 		record = await database

@@ -1,5 +1,5 @@
 import { AccentCard, StepList } from "@components"
-import type { CleaningCommon } from "@definitions/types"
+import type { CleaningCommonData } from "@definitions/types"
 import {
 	useReadBulkCleaningCommon,
 	useReadSingleCleaningHeader,
@@ -20,7 +20,7 @@ function CleaningRecordCard({
 }: {
 	index: number
 	permitId: string
-	record: CleaningCommon
+	record: CleaningCommonData
 }) {
 	const theme = useAppTheme()
 	const { data: grooming } = useReadSingleGrooming(record.id)

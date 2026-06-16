@@ -1,3 +1,27 @@
+import type {
+	BasicInfoData,
+	CleaningCommonData,
+	CleaningHeaderData,
+	DehearingData,
+	GroomingData,
+	ParticipantData,
+	ShearingHeaderData,
+	ShearingRecordData,
+} from "@vicugna/shared"
+
+export type {
+	BasicInfoData,
+	CleaningCommonData,
+	CleaningHeaderData,
+	DehearingData,
+	GenderData,
+	GroomingData,
+	ParticipantData,
+	PermitSyncData,
+	ShearingHeaderData,
+	ShearingRecordData,
+} from "@vicugna/shared"
+
 export type AdminPermit = {
 	id: string
 	date: string
@@ -5,132 +29,39 @@ export type AdminPermit = {
 	codigoAutorizacion: string
 }
 
-// BASIC INFO
-
-export type BasicInfo = {
-	id: string
-	permitId: string
-	department: string
-	regional: string
-	community: string
-	site: string
-	date: string
-	isCompleted: boolean
-}
-
 export type BasicInfoFormData = Omit<
-	BasicInfo,
+	BasicInfoData,
 	"id" | "isCompleted" | "permitId"
 >
 
 // PARTICIPANTS
 
-export type Gender = "M" | "F"
-
-export type Participant = {
-	id: string
-	permitId: string
-	name: string
-	lastNames: string
-	gender: Gender
-	identityNumber: string
-	signature: string
-	notes: string
-}
-
-export type ParticipantFormData = Omit<Participant, "id" | "permitId">
+export type ParticipantFormData = Omit<ParticipantData, "id" | "permitId">
 
 // SHEARING
 
-export interface ShearingHeader {
-	id: string
-	permitId: string
-	site: string
-	latitude: number
-	longitude: number
-	roundupCount: number
-	startTime: string
-	endTime: string
-	isCompleted: boolean
-}
-
 export type ShearingHeaderFormData = Omit<
-	ShearingHeader,
+	ShearingHeaderData,
 	"id" | "permitId" | "isCompleted"
 >
 
-export type ShearingRecord = {
-	id: string
-	permitId: string
-	tagNumber: number
-	sex: "F" | "M"
-	ageCategory: "Cria" | "Juvenil" | "Adulto"
-	liveWeight: number
-	fiberLength: number
-	bodyCondition: "Malo" | "Regular" | "Bueno"
-	gestationStatus: "No" | "Si" | "Si ultimo tercio"
-	externalParasites: "Ninguno" | "Garrapata" | "Piojos"
-	mangeSeverity: "Ninguna" | "Leve" | "Moderado" | "Severo"
-	hasDandruff: boolean
-	isSheared: boolean
-	isDead: boolean
-	observations: string
-}
-
-export type ShearingRecordFormData = Omit<ShearingRecord, "id" | "permitId">
+export type ShearingRecordFormData = Omit<ShearingRecordData, "id" | "permitId">
 
 // CLEANING
 
-export type CleaningHeader = {
-	id: string
-	permitId: string
-	startDate: string
-	endDate: string
-	site: string
-	supervisors: string
-	isCompleted: boolean
-}
-
 export type CleaningHeaderFormData = Omit<
-	CleaningHeader,
+	CleaningHeaderData,
 	"id" | "permitId" | "isCompleted"
 >
 
-export type CleaningCommon = {
-	id: string
-	permitId: string
-	fleeceNumber: string
-	grossWeight: number
-}
-
-export type CleaningCommonFormData = Omit<CleaningCommon, "id" | "permitId">
-
-export type Grooming = {
-	id: string
-	cleaningCommonId: string
-	cleanWeight: number
-	dirtyWeight: number
-	totalWeight: number
-	isCompleted: boolean
-}
+export type CleaningCommonFormData = Omit<CleaningCommonData, "id" | "permitId">
 
 export type GroomingFormData = Omit<
-	Grooming,
+	GroomingData,
 	"id" | "cleaningCommonId" | "isCompleted"
 >
 
-export type Dehearing = {
-	id: string
-	cleaningCommonId: string
-	dehairedWeight: number
-	bristleWeight: number
-	hasDandruff: boolean
-	dehairerName: string
-	signature: string
-	isCompleted: boolean
-}
-
 export type DehearingFormData = Omit<
-	Dehearing,
+	DehearingData,
 	"id" | "cleaningCommonId" | "isCompleted"
 >

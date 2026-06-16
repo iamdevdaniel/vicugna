@@ -4,7 +4,7 @@ import {
 } from "@database"
 import { type DbState } from './utils'
 import type {
-	ShearingRecord,
+	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { useEffect, useReducer } from "react"
@@ -12,10 +12,10 @@ import { makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkShearingRecords(
 	permitId: string,
-): DbState<ShearingRecord[]> {
+): DbState<ShearingRecordData[]> {
 	const [state, dispatch] = useReducer(
-		readReducer<ShearingRecord[]>,
-		makeReadInitial<ShearingRecord[]>([]),
+		readReducer<ShearingRecordData[]>,
+		makeReadInitial<ShearingRecordData[]>([]),
 	)
 
 	useEffect(() => {

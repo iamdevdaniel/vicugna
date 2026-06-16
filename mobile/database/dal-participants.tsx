@@ -1,4 +1,4 @@
-import type { Participant, ParticipantFormData } from "@definitions/types"
+import type { ParticipantData, ParticipantFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
 import { applyParticipantToModel, mapToParticipant } from "./mappers"
 import type { ParticipantModel } from "./models"
@@ -22,7 +22,7 @@ const COLUMNS = [
 
 export function subscribeBulkParticipants(
 	permitId: string,
-	callbacks: SubscriptionCallback<Participant[]>,
+	callbacks: SubscriptionCallback<ParticipantData[]>,
 ): () => void {
 	const sub = database
 		.get<ParticipantModel>("participants")
@@ -39,7 +39,7 @@ export function subscribeBulkParticipants(
 
 export function subscribeSingleParticipant(
 	participantId: string,
-	callbacks: SubscriptionCallback<Participant>,
+	callbacks: SubscriptionCallback<ParticipantData>,
 ): () => void {
 	const sub = database
 		.get<ParticipantModel>("participants")
@@ -57,7 +57,7 @@ export function subscribeSingleParticipant(
 export async function createSingleParticipant(
 	permitId: string,
 	data: ParticipantFormData,
-): Promise<Participant> {
+): Promise<ParticipantData> {
 	let record: ParticipantModel | undefined
 	await database.write(async () => {
 		record = await database

@@ -1,15 +1,15 @@
 import { subscribeSingleShearingHeader } from "@database"
 import { type DbState } from './utils'
-import type { ShearingHeader } from "@definitions/types"
+import type { ShearingHeaderData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { makeReadInitial, readReducer } from "./utils"
 
 export function useReadSingleShearingHeader(
 	permitId: string,
-): DbState<ShearingHeader | null> {
+): DbState<ShearingHeaderData | null> {
 	const [state, dispatch] = useReducer(
-		readReducer<ShearingHeader | null>,
-		makeReadInitial<ShearingHeader | null>(null),
+		readReducer<ShearingHeaderData | null>,
+		makeReadInitial<ShearingHeaderData | null>(null),
 	)
 
 	useEffect(() => {

@@ -1,19 +1,19 @@
 import type {
-	BasicInfo,
+	BasicInfoData,
 	BasicInfoFormData,
-	CleaningCommon,
+	CleaningCommonData,
 	CleaningCommonFormData,
-	CleaningHeader,
+	CleaningHeaderData,
 	CleaningHeaderFormData,
-	Dehearing,
+	DehearingData,
 	DehearingFormData,
-	Grooming,
+	GroomingData,
 	GroomingFormData,
-	Participant,
+	ParticipantData,
 	ParticipantFormData,
-	ShearingHeader,
+	ShearingHeaderData,
 	ShearingHeaderFormData,
-	ShearingRecord,
+	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
 import type {
@@ -27,7 +27,7 @@ import type {
 	ShearingRecordModel,
 } from "./models"
 
-export function mapToBasicInfo(m: BasicInfoModel): BasicInfo {
+export function mapToBasicInfo(m: BasicInfoModel): BasicInfoData {
 	return {
 		id: m.id,
 		permitId: m.permitId,
@@ -53,7 +53,7 @@ export function applyBasicInfoToModel(
 	model.isCompleted = isCompleted
 }
 
-export function mapToParticipant(m: ParticipantModel): Participant {
+export function mapToParticipant(m: ParticipantModel): ParticipantData {
 	return {
 		id: m.id,
 		permitId: m.permitId,
@@ -80,7 +80,7 @@ export function applyParticipantToModel(
 
 export function mapToShearingHeader(
 	model: ShearingHeaderModel,
-): ShearingHeader {
+): ShearingHeaderData {
 	return {
 		id: model.id,
 		permitId: model.permitId,
@@ -110,7 +110,7 @@ export function applyShearingHeaderToModel(
 
 export function mapToShearingRecord(
 	model: ShearingRecordModel,
-): ShearingRecord {
+): ShearingRecordData {
 	return {
 		id: model.id,
 		permitId: model.permitId,
@@ -173,7 +173,7 @@ export function applyShearingRecordToModel(
 
 export function mapToCleaningHeader(
 	model: CleaningHeaderModel,
-): CleaningHeader {
+): CleaningHeaderData {
 	return {
 		id: model.id,
 		permitId: model.permitId,
@@ -199,7 +199,7 @@ export function applyCleaningHeaderToModel(
 
 export function mapToCleaningCommon(
 	model: CleaningCommonModel,
-): CleaningCommon {
+): CleaningCommonData {
 	return {
 		id: model.id,
 		permitId: model.permitId,
@@ -218,7 +218,7 @@ export function applyCleaningCommonToModel(
 	model.grossWeight = data.grossWeight
 }
 
-export function mapToGrooming(model: GroomingModel): Grooming {
+export function mapToGrooming(model: GroomingModel): GroomingData {
 	return {
 		id: model.id,
 		cleaningCommonId: model.cleaningCommonId,
@@ -241,7 +241,7 @@ export function applyGroomingToModel(
 	model.isCompleted = true
 }
 
-export function mapToDehearing(model: DehearingModel): Dehearing {
+export function mapToDehearing(model: DehearingModel): DehearingData {
 	return {
 		id: model.id,
 		cleaningCommonId: model.cleaningCommonId,
