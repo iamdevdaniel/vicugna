@@ -2,18 +2,20 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
-    "moduleResolution": "Node",
+    "moduleResolution": "node10",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@vicugna/shared": ["../packages/shared/index.d.ts"]
+      "@config": ["src/config/index"],
+      "@db": ["src/db/index"],
+      "@permits": ["src/modules/permits/index"],
+      "@shared": ["../packages/shared/index.d.ts"]
     }
   },
   "include": ["src/**/*"],

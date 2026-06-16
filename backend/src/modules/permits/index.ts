@@ -1,3 +1,4 @@
+export { permitRoutes } from "./permit.routes"
 export type {
 	BasicInfoData,
 	CleaningCommonData,
@@ -9,4 +10,4 @@ export type {
 	PermitSyncData,
 	ShearingHeaderData,
 	ShearingRecordData,
-} from "@shared"
+} from "./permit.types"

@@ -5,8 +5,8 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
+    "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
+    "build": "tsc && tsc-alias",
     "tscheck": "tsc --noEmit",
     "db:start": "wsl -e bash -lc \"cd /mnt/d/Code/vicugna/backend && docker compose up -d\"",
     "db:stop": "wsl -e bash -lc \"cd /mnt/d/Code/vicugna/backend && docker compose down\"",
@@ -38,7 +38,9 @@
     "drizzle-kit": "^0.31.10",
     "nodemon": "^3.1.14",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^6.0.3"
+    "tsc-alias": "^1.8.17",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "~5.9.2"
   },
   "lint-staged": {
     "src/**/*.ts": [
