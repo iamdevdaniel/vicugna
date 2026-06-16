@@ -1,3 +1,15 @@
-cd mobile
-npx lint-staged
-npm run tscheck
+staged_files=$(git diff --cached --name-only)
+
+if echo "$staged_files" | grep -q "^mobile/"; then
+	cd mobile
+	npx lint-staged
+	npm run tscheck
+	cd ..
+fi
+
+if echo "$staged_files" | grep -q "^backend/"; then
+	cd backend
+	npx lint-staged
+	npm run tscheck
+	cd ..
+fi
