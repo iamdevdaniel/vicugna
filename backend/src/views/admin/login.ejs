@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title><%= pageTitle %></title>
+		<link rel="stylesheet" href="/admin.css" />
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script
+			defer
+			src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+		></script>
+	</head>
+	<body class="min-h-screen bg-slate-100 text-slate-800">
+		<main class="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-5 py-12">
+			<section
+				class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/5"
+				x-data="{ showHelp: false }"
+			>
+				<div class="mb-5">
+					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
+						Vicugna Admin
+					</p>
+					<h1 class="text-2xl font-semibold text-slate-900">Login</h1>
+					<p class="mt-2 text-sm text-slate-500">
+						Temporary server-rendered screen for the admin flow.
+					</p>
+				</div>
+
+				<form class="flex flex-col gap-4">
+					<label class="flex flex-col gap-2">
+						<span class="text-sm font-semibold text-slate-700">Email</span>
+						<input
+							type="email"
+							placeholder="admin@example.com"
+							class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+						/>
+					</label>
+
+					<label class="flex flex-col gap-2">
+						<span class="text-sm font-semibold text-slate-700">Password</span>
+						<input
+							type="password"
+							placeholder="********"
+							class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+						/>
+					</label>
+
+					<div class="flex flex-col gap-3 pt-2 sm:flex-row">
+						<button
+							type="submit"
+							class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800"
+						>
+							Entrar
+						</button>
+						<button
+							type="button"
+							class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+							@click="showHelp = !showHelp"
+						>
+							Ayuda
+						</button>
+					</div>
+				</form>
+
+				<p
+					class="mt-4 text-sm text-slate-500"
+					x-show="showHelp"
+					x-cloak
+				>
+					Real auth still needs to be wired.
+				</p>
+			</section>
+		</main>
+	</body>
+</html>
