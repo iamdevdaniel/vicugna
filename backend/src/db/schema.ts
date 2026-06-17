@@ -18,6 +18,41 @@ export const permits = pgTable("permits", {
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
 })
 
+export const users = pgTable(
+	"users",
+	{
+		id: text("id").primaryKey(),
+		email: text("email").notNull(),
+		passwordHash: text("password_hash").notNull(),
+		role: text("role").notNull(),
+		fullName: text("full_name").notNull(),
+		isActive: boolean("is_active").notNull().default(true),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+		updatedAt: timestamp("updated_at").notNull().defaultNow(),
+	},
+	(table) => [uniqueIndex("users_email_unique").on(table.email)],
+)
+
+export const permitAssignments = pgTable(
+	"permit_assignments",
+	{
+		id: text("id").primaryKey(),
+		permitId: text("permit_id")
+			.notNull()
+			.references(() => permits.id, { onDelete: "cascade" }),
+		userId: text("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		assignedAt: timestamp("assigned_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("permit_assignments_permit_user_unique").on(
+			table.permitId,
+			table.userId,
+		),
+	],
+)
+
 export const basicInfo = pgTable(
 	"basic_info",
 	{
@@ -169,12 +204,31 @@ export const dehearingDetails = pgTable(
 
 export const permitRelations = relations(permits, ({ one, many }) => ({
 	basicInfo: one(basicInfo),
+	assignments: many(permitAssignments),
 	participants: many(participants),
 	shearingHeader: one(shearingHeaders),
 	shearingRecords: many(shearingRecords),
 	cleaningHeader: one(cleaningHeaders),
 	cleaningCommonRecords: many(cleaningCommonRecords),
 }))
+
+export const userRelations = relations(users, ({ many }) => ({
+	assignments: many(permitAssignments),
+}))
+
+export const permitAssignmentRelations = relations(
+	permitAssignments,
+	({ one }) => ({
+		permit: one(permits, {
+			fields: [permitAssignments.permitId],
+			references: [permits.id],
+		}),
+		user: one(users, {
+			fields: [permitAssignments.userId],
+			references: [users.id],
+		}),
+	}),
+)
 
 export const cleaningCommonRecordRelations = relations(
 	cleaningCommonRecords,
