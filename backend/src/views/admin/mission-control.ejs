@@ -1,11 +1,9 @@
 <!doctype html>
 <html lang="en">
-	<%- include("../partials/admin-head", { pageTitle }) %>
+<%- include("../partials/admin-head", { pageTitle }) %>
+
 	<body class="min-h-screen bg-slate-100 text-slate-800">
-		<main
-			class="mx-auto max-w-6xl px-5 py-8"
-			x-data="{ filter: 'all' }"
-		>
+		<main class="mx-auto max-w-6xl px-5 py-8" x-data="{ filter: 'all' }">
 			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
@@ -19,10 +17,8 @@
 
 				<div class="flex items-center gap-3">
 					<form method="post" action="/admin/logout">
-						<button
-							type="submit"
-							class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
-						>
+						<button type="submit"
+							class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50">
 							Cerrar sesion
 						</button>
 					</form>
@@ -32,20 +28,27 @@
 			<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
 				<article class="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
 					<span class="text-sm text-slate-500">Asignados</span>
-					<strong class="mt-2 block text-3xl font-semibold text-slate-900"><%= summary.assignedPermits %></strong>
+					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
+						<%= summary.assignedPermits %>
+					</strong>
 				</article>
 				<article class="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
 					<span class="text-sm text-slate-500">Sincronizados</span>
-					<strong class="mt-2 block text-3xl font-semibold text-slate-900"><%= summary.syncedPermits %></strong>
+					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
+						<%= summary.syncedPermits %>
+					</strong>
 				</article>
 				<article class="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
 					<span class="text-sm text-slate-500">Completados</span>
-					<strong class="mt-2 block text-3xl font-semibold text-slate-900"><%= summary.completedPermits %></strong>
+					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
+						<%= summary.completedPermits %>
+					</strong>
 				</article>
 			</section>
 
 			<section class="mt-6 rounded-lg border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
-				<div class="flex flex-col gap-4 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+				<div
+					class="flex flex-col gap-4 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
 					<div>
 						<h2 class="text-lg font-semibold text-slate-900">Actividad reciente</h2>
 						<p class="mt-1 text-sm text-slate-500">
@@ -54,28 +57,22 @@
 					</div>
 
 					<div class="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
-						<button
-							type="button"
+						<button type="button"
 							class="rounded-md px-3 py-2 text-sm font-semibold text-slate-600 transition"
 							:class="filter === 'all' ? 'bg-blue-700 text-white' : 'hover:bg-slate-100'"
-							@click="filter = 'all'"
-						>
+							@click="filter = 'all'">
 							Todos
 						</button>
-						<button
-							type="button"
+						<button type="button"
 							class="rounded-md px-3 py-2 text-sm font-semibold text-slate-600 transition"
 							:class="filter === 'synced' ? 'bg-blue-700 text-white' : 'hover:bg-slate-100'"
-							@click="filter = 'synced'"
-						>
+							@click="filter = 'synced'">
 							Sincronizados
 						</button>
-						<button
-							type="button"
+						<button type="button"
 							class="rounded-md px-3 py-2 text-sm font-semibold text-slate-600 transition"
 							:class="filter === 'completed' ? 'bg-blue-700 text-white' : 'hover:bg-slate-100'"
-							@click="filter = 'completed'"
-						>
+							@click="filter = 'completed'">
 							Completados
 						</button>
 					</div>
@@ -87,4 +84,5 @@
 			</section>
 		</main>
 	</body>
+
 </html>

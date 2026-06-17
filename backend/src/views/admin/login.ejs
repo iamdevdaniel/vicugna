@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="en">
-	<%- include("../partials/admin-head", { pageTitle }) %>
+<%- include("../partials/admin-head", { pageTitle }) %>
+
 	<body class="min-h-screen bg-slate-100 text-slate-800">
 		<main class="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-5 py-12">
 			<section
 				class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/5"
-				x-data="{ showHelp: false }"
-			>
+				x-data="{ showHelp: false }">
 				<div class="mb-5">
 					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
 						Vicugna Admin
@@ -22,71 +22,71 @@
 						<div class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-700">
 							<%= errorMessage %>
 						</div>
-					<% } %>
+						<% } %>
 
-					<label class="flex flex-col gap-2">
-						<span class="text-sm font-semibold text-slate-700">Correo</span>
-						<input
-							class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-							type="email"
-							placeholder="correo@ejemplo.com"
-							name="email"
-							value="<%= email %>"
-							autocomplete="username"
-						/>
-					</label>
+							<label class="flex flex-col gap-2">
+								<span class="text-sm font-semibold text-slate-700">Correo</span>
+								<input
+									class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+									type="email" placeholder="correo@ejemplo.com" name="email" value="<%= email %>"
+									autocomplete="username" />
+							</label>
 
-					<label class="flex flex-col gap-2">
-						<span class="text-sm font-semibold text-slate-700">Contrasena</span>
-						<div class="relative">
-						<input
-							class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-							:type="showPassword ? 'text': 'password'"
-							placeholder="********"
-							name="password"
-							autocomplete="current-password"
-						/>
-						<button
-							type="button"
-							@click="showPassword = !showPassword"
-							class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
-							:aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-						>
-							<span x-show="!showPassword">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
-							</span>
-							<span x-show="showPassword">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
-							</span>
-						</button>
-						</div>
-					</label>
+							<label class="flex flex-col gap-2">
+								<span class="text-sm font-semibold text-slate-700">Contrasena</span>
+								<div class="relative">
+									<input
+										class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+										:type="showPassword ? 'text': 'password'" placeholder="********" name="password"
+										autocomplete="current-password" />
+									<button type="button" @click="showPassword = !showPassword"
+										class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+										:aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+										<span x-show="!showPassword">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+												viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+												stroke-linecap="round" stroke-linejoin="round"
+												class="lucide lucide-eye-icon lucide-eye">
+												<path
+													d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+												<circle cx="12" cy="12" r="3" />
+											</svg>
+										</span>
+										<span x-show="showPassword">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+												viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+												stroke-linecap="round" stroke-linejoin="round"
+												class="lucide lucide-eye-off-icon lucide-eye-off">
+												<path
+													d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
+												<path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+												<path
+													d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
+												<path d="m2 2 20 20" />
+											</svg>
+										</span>
+									</button>
+								</div>
+							</label>
 
-					<div class="flex flex-col gap-3 pt-2 sm:flex-row">
-						<button
-							type="submit"
-							class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800"
-						>
-							Entrar
-						</button>
-						<button
-							type="button"
-							class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
-							@click="showHelp = !showHelp"
-						>
-							Ayuda
-						</button>
-					</div>
+							<div class="flex flex-col gap-3 pt-2 sm:flex-row">
+								<button type="submit"
+									class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800">
+									Entrar
+								</button>
+								<button type="button"
+									class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+									@click="showHelp = !showHelp">
+									Ayuda
+								</button>
+							</div>
 				</form>
 
-				<p
-					class="mt-4 text-sm text-slate-500"
-					x-show="showHelp"
-					x-cloak
-				>
+				<p class="mt-4 text-sm text-slate-500" x-show="showHelp" x-cloak>
 					La ayuda del acceso todavia es provisional.
 				</p>
 			</section>
 		</main>
 	</body>
+
 </html>
