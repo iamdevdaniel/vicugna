@@ -11,7 +11,7 @@ export function renderAdminLogin(req: Request, res: Response) {
 	}
 
 	res.render("admin/login", {
-		pageTitle: "Admin Login",
+		pageTitle: "Inicio de sesion",
 		errorMessage: null,
 		email: "",
 	})
@@ -29,10 +29,10 @@ export async function loginAdmin(
 		const errorMessage =
 			error instanceof AdminAuthError
 				? error.message
-				: "Could not log in right now"
+				: "No se pudo iniciar sesion en este momento"
 
 		res.status(401).render("admin/login", {
-			pageTitle: "Admin Login",
+			pageTitle: "Inicio de sesion",
 			errorMessage,
 			email: req.body.email ?? "",
 		})
@@ -47,7 +47,7 @@ export function logoutAdmin(req: Request, res: Response) {
 
 export function renderMissionControl(req: Request, res: Response) {
 	res.render("admin/mission-control", {
-		pageTitle: "Mission Control",
+		pageTitle: "Panel de control",
 		adminUser: req.session.adminUser,
 		summary: {
 			assignedPermits: 0,

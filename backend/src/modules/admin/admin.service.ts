@@ -11,23 +11,23 @@ export async function authenticateAdmin(
 	const password = data.password.trim()
 
 	if (!email || !password) {
-		throw new AdminAuthError("Email and password are required")
+		throw new AdminAuthError("Correo y contraseña son obligatorios")
 	}
 
 	const user = await findUserByEmail(email)
 
 	if (!user?.isActive) {
-		throw new AdminAuthError("Invalid credentials")
+		throw new AdminAuthError("Credenciales invalidas")
 	}
 
 	if (user.role !== "admin") {
-		throw new AdminAuthError("Admin access required")
+		throw new AdminAuthError("Se requiere acceso de administrador")
 	}
 
 	const isValidPassword = await bcrypt.compare(password, user.passwordHash)
 
 	if (!isValidPassword) {
-		throw new AdminAuthError("Invalid credentials")
+		throw new AdminAuthError("Credenciales invalidas")
 	}
 
 	return {
