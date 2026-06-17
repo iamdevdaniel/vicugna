@@ -1,4 +1,5 @@
 import type { Request, Response } from "express"
+import { PermitNotFoundError, PermitValidationError } from "./permit.errors"
 import { syncPermitData } from "./permit.service"
 import type { PermitSyncData } from "./permit.types"
 
@@ -13,10 +14,28 @@ export async function syncPermit(
 			data: result,
 		})
 	} catch (error) {
-		res.status(400).json({
+		if (error instanceof PermitValidationError) {
+			res.status(400).json({
+				ok: false,
+				error: error.message,
+			})
+			return
+		}
+
+		if (error instanceof PermitNotFoundError) {
+			res.status(404).json({
+				ok: false,
+				error: error.message,
+			})
+			return
+		}
+
+		res.status(500).json({
 			ok: false,
 			error:
-				error instanceof Error ? error.message : "Invalid permit data",
+				error instanceof Error
+					? error.message
+					: "Internal server error",
 		})
 	}
 }

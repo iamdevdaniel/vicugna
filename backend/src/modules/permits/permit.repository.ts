@@ -1,6 +1,5 @@
 import { db } from "@db"
 import { eq } from "drizzle-orm"
-
 import {
 	basicInfo,
 	cleaningCommonRecords,
@@ -12,6 +11,7 @@ import {
 	shearingHeaders,
 	shearingRecords,
 } from "../../db/schema"
+import { PermitNotFoundError } from "./permit.errors"
 
 import type { PermitSyncData } from "./permit.types"
 
@@ -24,7 +24,7 @@ export async function savePermitSyncData(data: PermitSyncData) {
 		})
 
 		if (!existingPermit) {
-			throw new Error("Permit does not exist")
+			throw new PermitNotFoundError("Permit does not exist")
 		}
 
 		await deletePermitChildData(data, tx)

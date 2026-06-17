@@ -1,3 +1,4 @@
+import { PermitValidationError } from "./permit.errors"
 import { savePermitSyncData } from "./permit.repository"
 import type { PermitSyncData } from "./permit.types"
 
@@ -13,23 +14,23 @@ export async function syncPermitData(data: PermitSyncData) {
 
 function validatePermit(data: PermitSyncData): void {
 	if (!data.permit.id) {
-		throw new Error("Permit id is required")
+		throw new PermitValidationError("Permit id is required")
 	}
 }
 
 function validateBasicInfo(data: PermitSyncData): void {
 	if (!data.basicInfo) {
-		throw new Error("Basic info is required")
+		throw new PermitValidationError("Basic info is required")
 	}
 
 	if (data.basicInfo.permitId !== data.permit.id) {
-		throw new Error("Basic info permit id does not match")
+		throw new PermitValidationError("Basic info permit id does not match")
 	}
 }
 
 function validateParticipants(data: PermitSyncData): void {
 	if (!data.participants.length) {
-		throw new Error("There are no participants")
+		throw new PermitValidationError("There are no participants")
 	}
 
 	ensureUniqueIds(
@@ -39,22 +40,26 @@ function validateParticipants(data: PermitSyncData): void {
 
 	for (const participant of data.participants) {
 		if (participant.permitId !== data.permit.id) {
-			throw new Error("Participant permit id does not match")
+			throw new PermitValidationError(
+				"Participant permit id does not match",
+			)
 		}
 	}
 }
 
 function validateShearing(data: PermitSyncData): void {
 	if (!data.shearingHeader) {
-		throw new Error("Shearing header is required")
+		throw new PermitValidationError("Shearing header is required")
 	}
 
 	if (data.shearingHeader.permitId !== data.permit.id) {
-		throw new Error("Shearing header permit id does not match")
+		throw new PermitValidationError(
+			"Shearing header permit id does not match",
+		)
 	}
 
 	if (!data.shearingRecords.length) {
-		throw new Error("There are no shearing records")
+		throw new PermitValidationError("There are no shearing records")
 	}
 
 	ensureUniqueIds(
@@ -64,29 +69,33 @@ function validateShearing(data: PermitSyncData): void {
 
 	for (const record of data.shearingRecords) {
 		if (record.permitId !== data.permit.id) {
-			throw new Error("Shearing record permit id does not match")
+			throw new PermitValidationError(
+				"Shearing record permit id does not match",
+			)
 		}
 	}
 }
 
 function validateCleaning(data: PermitSyncData): void {
 	if (!data.cleaningHeader) {
-		throw new Error("Cleaning header is required")
+		throw new PermitValidationError("Cleaning header is required")
 	}
 
 	if (data.cleaningHeader.permitId !== data.permit.id) {
-		throw new Error("Cleaning header permit id does not match")
+		throw new PermitValidationError(
+			"Cleaning header permit id does not match",
+		)
 	}
 
 	if (!data.cleaningCommonRecords.length) {
-		throw new Error("The cleaning records are empty")
+		throw new PermitValidationError("The cleaning records are empty")
 	}
 
 	if (
 		data.groomingDetails.length + data.dehearingDetails.length !==
 		data.cleaningCommonRecords.length
 	) {
-		throw new Error(
+		throw new PermitValidationError(
 			"Cleaning details count must match the number of cleaning common records",
 		)
 	}
@@ -114,7 +123,9 @@ function validateCleaning(data: PermitSyncData): void {
 
 	for (const record of data.cleaningCommonRecords) {
 		if (record.permitId !== data.permit.id) {
-			throw new Error("Cleaning common permit id does not match")
+			throw new PermitValidationError(
+				"Cleaning common permit id does not match",
+			)
 		}
 	}
 
@@ -125,7 +136,9 @@ function validateCleaning(data: PermitSyncData): void {
 
 	for (const detail of data.groomingDetails) {
 		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
-			throw new Error("Grooming detail has invalid cleaning common id")
+			throw new PermitValidationError(
+				"Grooming detail has invalid cleaning common id",
+			)
 		}
 
 		usedDetailIds.add(detail.cleaningCommonId)
@@ -133,11 +146,13 @@ function validateCleaning(data: PermitSyncData): void {
 
 	for (const detail of data.dehearingDetails) {
 		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
-			throw new Error("Dehearing detail has invalid cleaning common id")
+			throw new PermitValidationError(
+				"Dehearing detail has invalid cleaning common id",
+			)
 		}
 
 		if (usedDetailIds.has(detail.cleaningCommonId)) {
-			throw new Error(
+			throw new PermitValidationError(
 				"A cleaning record cannot have both grooming and dehearing details",
 			)
 		}
@@ -148,6 +163,8 @@ function ensureUniqueIds(ids: string[], label: string): void {
 	const uniqueIds = new Set(ids)
 
 	if (uniqueIds.size !== ids.length) {
-		throw new Error(`${label} is duplicated in the sync payload`)
+		throw new PermitValidationError(
+			`${label} is duplicated in the sync payload`,
+		)
 	}
 }
