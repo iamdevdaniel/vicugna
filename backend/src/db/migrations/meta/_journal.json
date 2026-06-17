@@ -8,6 +8,13 @@
       "when": 1781579665853,
       "tag": "0000_bored_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781713886927,
+      "tag": "0001_useful_impossible_man",
+      "breakpoints": true
     }
   ]
 }

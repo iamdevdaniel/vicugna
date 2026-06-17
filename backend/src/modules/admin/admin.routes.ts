@@ -1,8 +1,16 @@
 import { Router } from "express"
 
-import { renderAdminLogin, renderMissionControl } from "./admin.controller"
+import {
+	loginAdmin,
+	logoutAdmin,
+	renderAdminLogin,
+	renderMissionControl,
+} from "./admin.controller"
+import { requireAdminSession } from "./admin.middleware"
 
 export const adminRoutes = Router()
 
 adminRoutes.get("/login", renderAdminLogin)
-adminRoutes.get("/mission-control", renderMissionControl)
+adminRoutes.post("/login", loginAdmin)
+adminRoutes.post("/logout", logoutAdmin)
+adminRoutes.get("/mission-control", requireAdminSession, renderMissionControl)

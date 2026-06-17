@@ -1,14 +1,54 @@
 import type { Request, Response } from "express"
 
-export function renderAdminLogin(_req: Request, res: Response) {
+import { AdminAuthError } from "./admin.errors"
+import { authenticateAdmin } from "./admin.service"
+import type { LoginFormData } from "./admin.types"
+
+export function renderAdminLogin(req: Request, res: Response) {
+	if (req.session.adminUser?.role === "admin") {
+		res.redirect("/admin/mission-control")
+		return
+	}
+
 	res.render("admin/login", {
 		pageTitle: "Admin Login",
+		errorMessage: null,
+		email: "",
 	})
 }
 
-export function renderMissionControl(_req: Request, res: Response) {
+export async function loginAdmin(
+	req: Request<Record<string, never>, Record<string, never>, LoginFormData>,
+	res: Response,
+) {
+	try {
+		const adminUser = await authenticateAdmin(req.body)
+		req.session.adminUser = adminUser
+		res.redirect("/admin/mission-control")
+	} catch (error) {
+		const errorMessage =
+			error instanceof AdminAuthError
+				? error.message
+				: "Could not log in right now"
+
+		res.status(401).render("admin/login", {
+			pageTitle: "Admin Login",
+			errorMessage,
+			email: req.body.email ?? "",
+		})
+	}
+}
+
+export function logoutAdmin(req: Request, res: Response) {
+	req.session.destroy(() => {
+		res.redirect("/admin/login")
+	})
+}
+
+export function renderMissionControl(req: Request, res: Response) {
 	res.render("admin/mission-control", {
 		pageTitle: "Mission Control",
+		adminUser: req.session.adminUser,
 		summary: {
 			assignedPermits: 0,
 			syncedPermits: 0,
