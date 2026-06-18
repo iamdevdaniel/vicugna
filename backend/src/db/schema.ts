@@ -9,50 +9,6 @@ import {
 	uniqueIndex,
 } from "drizzle-orm/pg-core"
 
-export const permits = pgTable("permits", {
-	id: text("id").primaryKey(),
-	date: text("date").notNull(),
-	site: text("site").notNull(),
-	authorizationCode: text("authorization_code").notNull(),
-	createdAt: timestamp("created_at").notNull().defaultNow(),
-	updatedAt: timestamp("updated_at").notNull().defaultNow(),
-})
-
-export const users = pgTable(
-	"users",
-	{
-		id: text("id").primaryKey(),
-		email: text("email").notNull(),
-		passwordHash: text("password_hash").notNull(),
-		role: text("role").notNull(),
-		fullName: text("full_name").notNull(),
-		isActive: boolean("is_active").notNull().default(true),
-		createdAt: timestamp("created_at").notNull().defaultNow(),
-		updatedAt: timestamp("updated_at").notNull().defaultNow(),
-	},
-	(table) => [uniqueIndex("users_email_unique").on(table.email)],
-)
-
-export const permitAssignments = pgTable(
-	"permit_assignments",
-	{
-		id: text("id").primaryKey(),
-		permitId: text("permit_id")
-			.notNull()
-			.references(() => permits.id, { onDelete: "cascade" }),
-		userId: text("user_id")
-			.notNull()
-			.references(() => users.id, { onDelete: "cascade" }),
-		assignedAt: timestamp("assigned_at").notNull().defaultNow(),
-	},
-	(table) => [
-		uniqueIndex("permit_assignments_permit_user_unique").on(
-			table.permitId,
-			table.userId,
-		),
-	],
-)
-
 export const departments = pgTable("departments", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),
@@ -74,6 +30,77 @@ export const communities = pgTable("communities", {
 	name: text("name").notNull(),
 })
 
+export const seasons = pgTable("seasons", {
+	id: text("id").primaryKey(),
+	name: text("name").notNull(),
+	startDate: text("start_date").notNull(),
+	endDate: text("end_date").notNull(),
+	isActive: boolean("is_active").notNull().default(true),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+	updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+
+export const users = pgTable(
+	"users",
+	{
+		id: text("id").primaryKey(),
+		email: text("email").notNull(),
+		passwordHash: text("password_hash").notNull(),
+		role: text("role").notNull(),
+		fullName: text("full_name").notNull(),
+		isActive: boolean("is_active").notNull().default(true),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+		updatedAt: timestamp("updated_at").notNull().defaultNow(),
+	},
+	(table) => [uniqueIndex("users_email_unique").on(table.email)],
+)
+
+export const communityAssignments = pgTable(
+	"community_assignments",
+	{
+		id: text("id").primaryKey(),
+		seasonId: text("season_id")
+			.notNull()
+			.references(() => seasons.id, { onDelete: "cascade" }),
+		communityId: text("community_id")
+			.notNull()
+			.references(() => communities.id),
+		userId: text("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		assignedAt: timestamp("assigned_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("community_assignments_season_community_unique").on(
+			table.seasonId,
+			table.communityId,
+		),
+	],
+)
+
+export const permits = pgTable(
+	"permits",
+	{
+		id: text("id").primaryKey(),
+		seasonId: text("season_id")
+			.notNull()
+			.references(() => seasons.id, { onDelete: "cascade" }),
+		communityId: text("community_id")
+			.notNull()
+			.references(() => communities.id),
+		permitNumber: text("permit_number").notNull(),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+		updatedAt: timestamp("updated_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("permits_season_community_number_unique").on(
+			table.seasonId,
+			table.communityId,
+			table.permitNumber,
+		),
+	],
+)
+
 export const basicInfo = pgTable(
 	"basic_info",
 	{
@@ -88,11 +115,7 @@ export const basicInfo = pgTable(
 		date: text("date").notNull(),
 		isCompleted: boolean("is_completed").notNull(),
 	},
-	(table) => ({
-		permitIdUnique: uniqueIndex("basic_info_permit_id_unique").on(
-			table.permitId,
-		),
-	}),
+	(table) => [uniqueIndex("basic_info_permit_id_unique").on(table.permitId)],
 )
 
 export const participants = pgTable("participants", {
@@ -123,11 +146,9 @@ export const shearingHeaders = pgTable(
 		endTime: text("end_time").notNull(),
 		isCompleted: boolean("is_completed").notNull(),
 	},
-	(table) => ({
-		permitIdUnique: uniqueIndex("shearing_headers_permit_id_unique").on(
-			table.permitId,
-		),
-	}),
+	(table) => [
+		uniqueIndex("shearing_headers_permit_id_unique").on(table.permitId),
+	],
 )
 
 export const shearingRecords = pgTable("shearing_records", {
@@ -163,11 +184,9 @@ export const cleaningHeaders = pgTable(
 		supervisors: text("supervisors").notNull(),
 		isCompleted: boolean("is_completed").notNull(),
 	},
-	(table) => ({
-		permitIdUnique: uniqueIndex("cleaning_headers_permit_id_unique").on(
-			table.permitId,
-		),
-	}),
+	(table) => [
+		uniqueIndex("cleaning_headers_permit_id_unique").on(table.permitId),
+	],
 )
 
 export const cleaningCommonRecords = pgTable("cleaning_common_records", {
@@ -193,11 +212,11 @@ export const groomingDetails = pgTable(
 		totalWeight: doublePrecision("total_weight").notNull(),
 		isCompleted: boolean("is_completed").notNull(),
 	},
-	(table) => ({
-		cleaningCommonIdUnique: uniqueIndex(
-			"grooming_details_cleaning_common_id_unique",
-		).on(table.cleaningCommonId),
-	}),
+	(table) => [
+		uniqueIndex("grooming_details_cleaning_common_id_unique").on(
+			table.cleaningCommonId,
+		),
+	],
 )
 
 export const dehearingDetails = pgTable(
@@ -216,40 +235,17 @@ export const dehearingDetails = pgTable(
 		signature: text("signature").notNull(),
 		isCompleted: boolean("is_completed").notNull(),
 	},
-	(table) => ({
-		cleaningCommonIdUnique: uniqueIndex(
-			"dehearing_details_cleaning_common_id_unique",
-		).on(table.cleaningCommonId),
-	}),
+	(table) => [
+		uniqueIndex("dehearing_details_cleaning_common_id_unique").on(
+			table.cleaningCommonId,
+		),
+	],
 )
 
-export const permitRelations = relations(permits, ({ one, many }) => ({
-	basicInfo: one(basicInfo),
-	assignments: many(permitAssignments),
-	participants: many(participants),
-	shearingHeader: one(shearingHeaders),
-	shearingRecords: many(shearingRecords),
-	cleaningHeader: one(cleaningHeaders),
-	cleaningCommonRecords: many(cleaningCommonRecords),
+export const seasonRelations = relations(seasons, ({ many }) => ({
+	communityAssignments: many(communityAssignments),
+	permits: many(permits),
 }))
-
-export const userRelations = relations(users, ({ many }) => ({
-	assignments: many(permitAssignments),
-}))
-
-export const permitAssignmentRelations = relations(
-	permitAssignments,
-	({ one }) => ({
-		permit: one(permits, {
-			fields: [permitAssignments.permitId],
-			references: [permits.id],
-		}),
-		user: one(users, {
-			fields: [permitAssignments.userId],
-			references: [users.id],
-		}),
-	}),
-)
 
 export const departmentRelations = relations(departments, ({ many }) => ({
 	regionals: many(regionals),
@@ -263,11 +259,52 @@ export const regionalRelations = relations(regionals, ({ one, many }) => ({
 	communities: many(communities),
 }))
 
-export const communityRelations = relations(communities, ({ one }) => ({
+export const communityRelations = relations(communities, ({ one, many }) => ({
 	regional: one(regionals, {
 		fields: [communities.regionalId],
 		references: [regionals.id],
 	}),
+	assignments: many(communityAssignments),
+	permits: many(permits),
+}))
+
+export const userRelations = relations(users, ({ many }) => ({
+	communityAssignments: many(communityAssignments),
+}))
+
+export const communityAssignmentRelations = relations(
+	communityAssignments,
+	({ one }) => ({
+		season: one(seasons, {
+			fields: [communityAssignments.seasonId],
+			references: [seasons.id],
+		}),
+		community: one(communities, {
+			fields: [communityAssignments.communityId],
+			references: [communities.id],
+		}),
+		user: one(users, {
+			fields: [communityAssignments.userId],
+			references: [users.id],
+		}),
+	}),
+)
+
+export const permitRelations = relations(permits, ({ one, many }) => ({
+	season: one(seasons, {
+		fields: [permits.seasonId],
+		references: [seasons.id],
+	}),
+	community: one(communities, {
+		fields: [permits.communityId],
+		references: [communities.id],
+	}),
+	basicInfo: one(basicInfo),
+	participants: many(participants),
+	shearingHeader: one(shearingHeaders),
+	shearingRecords: many(shearingRecords),
+	cleaningHeader: one(cleaningHeaders),
+	cleaningCommonRecords: many(cleaningCommonRecords),
 }))
 
 export const cleaningCommonRecordRelations = relations(
