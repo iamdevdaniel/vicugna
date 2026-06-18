@@ -53,6 +53,27 @@ export const permitAssignments = pgTable(
 	],
 )
 
+export const departments = pgTable("departments", {
+	id: text("id").primaryKey(),
+	name: text("name").notNull(),
+})
+
+export const regionals = pgTable("regionals", {
+	id: text("id").primaryKey(),
+	departmentId: text("department_id")
+		.notNull()
+		.references(() => departments.id),
+	name: text("name").notNull(),
+})
+
+export const communities = pgTable("communities", {
+	id: text("id").primaryKey(),
+	regionalId: text("regional_id")
+		.notNull()
+		.references(() => regionals.id),
+	name: text("name").notNull(),
+})
+
 export const basicInfo = pgTable(
 	"basic_info",
 	{
@@ -229,6 +250,25 @@ export const permitAssignmentRelations = relations(
 		}),
 	}),
 )
+
+export const departmentRelations = relations(departments, ({ many }) => ({
+	regionals: many(regionals),
+}))
+
+export const regionalRelations = relations(regionals, ({ one, many }) => ({
+	department: one(departments, {
+		fields: [regionals.departmentId],
+		references: [departments.id],
+	}),
+	communities: many(communities),
+}))
+
+export const communityRelations = relations(communities, ({ one }) => ({
+	regional: one(regionals, {
+		fields: [communities.regionalId],
+		references: [regionals.id],
+	}),
+}))
 
 export const cleaningCommonRecordRelations = relations(
 	cleaningCommonRecords,

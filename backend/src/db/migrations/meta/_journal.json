@@ -15,6 +15,13 @@
       "when": 1781713886927,
       "tag": "0001_useful_impossible_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781812434435,
+      "tag": "0002_clammy_epoch",
+      "breakpoints": true
     }
   ]
 }

@@ -13,9 +13,10 @@
     "db:status": "wsl -e bash -lc \"docker ps --filter name=vicugna-postgres\"",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:seed:regionals": "npm run build && node dist/db/seed-regionals.js",
     "db:studio": "drizzle-kit studio",
-    "lint": "biome check src/app.ts src/server.ts src/config src/db/client.ts src/db/schema.ts src/modules drizzle.config.ts",
-    "lint-fix": "biome check --write src/app.ts src/server.ts src/config src/db/client.ts src/db/schema.ts src/modules drizzle.config.ts",
+    "lint": "biome check src drizzle.config.ts",
+    "lint-fix": "biome check --write src drizzle.config.ts",
     "test": "echo \"No backend tests yet\""
   },
   "keywords": [],
