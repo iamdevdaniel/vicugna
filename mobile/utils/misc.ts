@@ -1,6 +1,6 @@
-import regionals from "@assets/data/regionals.json"
 import type { StepState } from "@components"
 import type { BasicInfoData } from "@definitions/types"
+import regionals from "@vicugna/shared/regionals.json"
 
 type DropdownOption = {
 	label: string
