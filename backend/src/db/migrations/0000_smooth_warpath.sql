@@ -133,11 +133,14 @@ CREATE TABLE "shearing_records" (
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"id" text PRIMARY KEY NOT NULL,
-	"email" text NOT NULL,
+	"full_name" text NOT NULL,
+	"phone_number" text NOT NULL,
+	"email" text,
 	"password_hash" text NOT NULL,
 	"role" text NOT NULL,
-	"full_name" text NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
+	"avatar_seed" text NOT NULL,
+	"avatar_style" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
@@ -164,4 +167,5 @@ CREATE UNIQUE INDEX "dehearing_details_cleaning_common_id_unique" ON "dehearing_
 CREATE UNIQUE INDEX "grooming_details_cleaning_common_id_unique" ON "grooming_details" USING btree ("cleaning_common_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "permits_season_community_number_unique" ON "permits" USING btree ("season_id","community_id","permit_number");--> statement-breakpoint
 CREATE UNIQUE INDEX "shearing_headers_permit_id_unique" ON "shearing_headers" USING btree ("permit_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "users_email_unique" ON "users" USING btree ("email");
+CREATE UNIQUE INDEX "users_email_unique" ON "users" USING btree ("email");--> statement-breakpoint
+CREATE UNIQUE INDEX "users_phone_number_unique" ON "users" USING btree ("phone_number");

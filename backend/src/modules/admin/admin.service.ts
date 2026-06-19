@@ -32,7 +32,7 @@ export async function authenticateAdmin(
 
 	return {
 		id: user.id,
-		email: user.email,
+		email: user.email ?? email,
 		fullName: user.fullName,
 		role: "admin",
 	}

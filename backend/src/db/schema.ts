@@ -44,15 +44,21 @@ export const users = pgTable(
 	"users",
 	{
 		id: text("id").primaryKey(),
-		email: text("email").notNull(),
+		fullName: text("full_name").notNull(),
+		phoneNumber: text("phone_number").notNull(),
+		email: text("email"),
 		passwordHash: text("password_hash").notNull(),
 		role: text("role").notNull(),
-		fullName: text("full_name").notNull(),
 		isActive: boolean("is_active").notNull().default(true),
+		avatarSeed: text("avatar_seed").notNull(),
+		avatarStyle: text("avatar_style").notNull(),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
 	},
-	(table) => [uniqueIndex("users_email_unique").on(table.email)],
+	(table) => [
+		uniqueIndex("users_email_unique").on(table.email),
+		uniqueIndex("users_phone_number_unique").on(table.phoneNumber),
+	],
 )
 
 export const communityAssignments = pgTable(
