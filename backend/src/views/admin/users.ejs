@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<%- include("../partials/admin-head", { pageTitle }) %>
+
+	<body class="min-h-screen bg-slate-100 text-slate-800">
+		<main class="mx-auto max-w-6xl px-5 py-8" x-data="{ isCreateModalOpen: false }">
+			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+				<div>
+					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
+						Vicugna Admin
+					</p>
+					<h1 class="text-3xl font-semibold text-slate-900">Usuarios</h1>
+					<p class="mt-2 text-sm text-slate-500">
+						<%= adminUser.fullName %>
+					</p>
+				</div>
+
+				<div class="flex items-center gap-3">
+					<button type="button"
+						class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800"
+						@click="isCreateModalOpen = true">
+						Nuevo usuario
+					</button>
+					<a href="/admin/mission-control"
+						class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50">
+						Panel
+					</a>
+				</div>
+			</header>
+
+			<div class="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/50 px-5 py-10"
+				x-show="isCreateModalOpen" x-cloak>
+				<button type="button" class="absolute inset-0 cursor-default" aria-label="Cerrar modal"
+					@click="isCreateModalOpen = false"></button>
+
+				<section class="relative w-full max-w-lg rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/20">
+					<div class="flex items-start justify-between gap-4">
+						<div>
+							<h2 class="text-lg font-semibold text-slate-900">Nuevo usuario</h2>
+							<p class="mt-1 text-sm text-slate-500">
+								Crea el acceso inicial para un usuario.
+							</p>
+						</div>
+						<button type="button"
+							class="inline-flex min-h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+							@click="isCreateModalOpen = false">
+							Cerrar
+						</button>
+					</div>
+
+					<form class="mt-5 flex flex-col gap-4" hx-post="/admin/users" hx-target="#users-page" hx-swap="outerHTML">
+						<label class="flex flex-col gap-2">
+							<span class="text-sm font-semibold text-slate-700">Nombre completo</span>
+							<input
+								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								type="text" name="fullName" autocomplete="name" />
+						</label>
+
+						<label class="flex flex-col gap-2">
+							<span class="text-sm font-semibold text-slate-700">Telefono</span>
+							<input
+								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								type="tel" name="phoneNumber" autocomplete="tel" />
+						</label>
+
+						<label class="flex flex-col gap-2">
+							<span class="flex items-center justify-between gap-3 text-sm font-semibold text-slate-700">
+								Correo
+								<span class="text-xs font-medium text-slate-400">Opcional</span>
+							</span>
+							<input
+								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								type="email" name="email" autocomplete="email" />
+						</label>
+
+						<label class="flex flex-col gap-2">
+							<span class="text-sm font-semibold text-slate-700">Rol</span>
+							<select
+								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								name="role">
+								<option value="user">Encargado</option>
+								<option value="admin">Administrador</option>
+							</select>
+						</label>
+
+						<label class="flex flex-col gap-2">
+							<span class="text-sm font-semibold text-slate-700">Contraseña temporal</span>
+							<input
+								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								type="text" name="password" autocomplete="new-password" />
+						</label>
+
+						<div class="flex justify-end gap-3 pt-2">
+							<button type="button"
+								class="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+								@click="isCreateModalOpen = false">
+								Cancelar
+							</button>
+							<button type="submit"
+								class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800">
+								Crear usuario
+							</button>
+						</div>
+					</form>
+				</section>
+			</div>
+			<%- include("../partials/users-list", { users }) %>
+		</main>
+	</body>
+
+</html>

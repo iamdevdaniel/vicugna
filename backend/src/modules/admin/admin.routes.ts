@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { userRoutes } from "../users"
 
 import {
 	loginAdmin,
@@ -14,3 +15,4 @@ adminRoutes.get("/login", renderAdminLogin)
 adminRoutes.post("/login", loginAdmin)
 adminRoutes.post("/logout", logoutAdmin)
 adminRoutes.get("/mission-control", requireAdminSession, renderMissionControl)
+adminRoutes.use("/users", requireAdminSession, userRoutes)
