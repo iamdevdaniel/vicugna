@@ -1,5 +1,6 @@
 import { Router } from "express"
-import { userRoutes } from "../users"
+import { assignmentRoutes } from "../assignments/assignment.routes"
+import { userRoutes } from "../users/user.routes"
 
 import {
 	loginAdmin,
@@ -16,3 +17,4 @@ adminRoutes.post("/login", loginAdmin)
 adminRoutes.post("/logout", logoutAdmin)
 adminRoutes.get("/mission-control", requireAdminSession, renderMissionControl)
 adminRoutes.use("/users", requireAdminSession, userRoutes)
+adminRoutes.use("/assignments", requireAdminSession, assignmentRoutes)

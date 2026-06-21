@@ -8,9 +8,36 @@ import {
 } from "./user.service"
 import type { CreateUserFormData, UsersPageData } from "./user.types"
 
+// ==========================================
+// PAGE & PARTIAL RENDERERS
+// ==========================================
+
 export async function renderUsersPage(req: Request, res: Response) {
 	res.render("admin/users", getUsersViewData(req, await getUsersPageState()))
 }
+
+export function renderPasswordSuggestion(_req: Request, res: Response) {
+	res.render("partials/users-password-field", {
+		suggestedPassword: getSuggestedTemporaryPassword(),
+	})
+}
+
+function getUsersViewData(
+	req: Request,
+	data: Omit<UsersPageData, "pageTitle" | "adminUser">,
+): UsersPageData {
+	return {
+		pageTitle: "Usuarios",
+		adminUser: {
+			fullName: req.session.adminUser?.fullName ?? "",
+		},
+		...data,
+	}
+}
+
+// ==========================================
+// MUTATION HANDLERS
+// ==========================================
 
 export async function createManagedUser(
 	req: Request<
@@ -34,25 +61,6 @@ export async function createManagedUser(
 			successMessage: null,
 			errorMessage: getUserErrorMessage(error),
 		})
-	}
-}
-
-export function renderPasswordSuggestion(_req: Request, res: Response) {
-	res.render("partials/users-password-field", {
-		suggestedPassword: getSuggestedTemporaryPassword(),
-	})
-}
-
-function getUsersViewData(
-	req: Request,
-	data: Omit<UsersPageData, "pageTitle" | "adminUser">,
-): UsersPageData {
-	return {
-		pageTitle: "Usuarios",
-		adminUser: {
-			fullName: req.session.adminUser?.fullName ?? "",
-		},
-		...data,
 	}
 }
 

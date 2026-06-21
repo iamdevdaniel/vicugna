@@ -4,6 +4,10 @@ import { AdminAuthError } from "./admin.errors"
 import { authenticateAdmin } from "./admin.service"
 import type { LoginFormData } from "./admin.types"
 
+// ==========================================
+// PAGE & PARTIAL RENDERERS
+// ==========================================
+
 export function renderAdminLogin(req: Request, res: Response) {
 	if (req.session.adminUser?.role === "admin") {
 		res.redirect("/admin/mission-control")
@@ -16,6 +20,17 @@ export function renderAdminLogin(req: Request, res: Response) {
 		email: "",
 	})
 }
+
+export function renderMissionControl(req: Request, res: Response) {
+	res.render("admin/mission-control", {
+		pageTitle: "Inicio",
+		adminUser: req.session.adminUser,
+	})
+}
+
+// ==========================================
+// MUTATION HANDLERS
+// ==========================================
 
 export async function loginAdmin(
 	req: Request<Record<string, never>, Record<string, never>, LoginFormData>,
@@ -42,12 +57,5 @@ export async function loginAdmin(
 export function logoutAdmin(req: Request, res: Response) {
 	req.session.destroy(() => {
 		res.redirect("/admin/login")
-	})
-}
-
-export function renderMissionControl(req: Request, res: Response) {
-	res.render("admin/mission-control", {
-		pageTitle: "Inicio",
-		adminUser: req.session.adminUser,
 	})
 }

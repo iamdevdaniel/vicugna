@@ -6,7 +6,7 @@ import cors from "cors"
 import express, { type Request, type Response } from "express"
 import session from "express-session"
 
-import { adminRoutes } from "./modules/admin"
+import { adminRoutes } from "./modules/admin/admin.routes"
 
 export const app = express()
 const srcDir = path.resolve(__dirname)
