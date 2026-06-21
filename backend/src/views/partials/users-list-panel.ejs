@@ -4,19 +4,19 @@
 	<% } %>
 
 	<% users.forEach((user) => { %>
-		<article class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+		<article class="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
 			<div>
 				<h3 class="font-semibold text-slate-900"><%= user.fullName %></h3>
-				<p class="text-sm text-slate-500"><%= user.phoneNumber %></p>
-				<p class="text-sm text-slate-500"><%= user.email || "Sin correo" %></p>
+				<p class="text-sm text-slate-500">
+					<%= user.phoneNumber %>
+					<span class="px-2 text-slate-300">•</span>
+					<%= user.email || "Sin correo" %>
+				</p>
 			</div>
 
 			<div class="flex flex-wrap items-center gap-2">
 				<span class="badge <%= user.isActive ? "badge-success badge-soft" : "badge-neutral badge-soft" %>">
 					<%= user.isActive ? "Activo" : "Inactivo" %>
-				</span>
-				<span class="badge badge-info badge-soft">
-					<%= user.role === "admin" ? "Admin" : "Encargado" %>
 				</span>
 			</div>
 		</article>

@@ -3,13 +3,13 @@
 <%- include("../partials/admin-head", { pageTitle }) %>
 
 	<body class="min-h-screen bg-base-200 text-base-content">
-		<main class="mx-auto max-w-6xl px-5 py-8" x-data="{ filter: 'all' }">
+		<main class="mx-auto max-w-6xl px-5 py-8">
 			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
 						Vicugna Admin
 					</p>
-					<h1 class="text-3xl font-semibold text-slate-900">Panel de control</h1>
+					<h1 class="text-3xl font-semibold text-slate-900">Inicio</h1>
 					<p class="mt-2 text-sm text-slate-500">
 						<%= adminUser.fullName %>
 					</p>
@@ -25,68 +25,83 @@
 				</div>
 			</header>
 
-			<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+			<section class="card mt-6 bg-base-100 shadow">
+				<div class="card-body">
+					<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+						<div>
+							<h2 class="card-title">Temporada actual</h2>
+							<p class="text-sm text-slate-500">
+								Todavia no hay una temporada cargada desde la interfaz.
+							</p>
+						</div>
+						<span class="badge badge-warning badge-soft">Pendiente</span>
+					</div>
+				</div>
+			</section>
+
+			<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-4">
 				<article class="card bg-base-100 shadow">
 					<div class="card-body">
-					<span class="text-sm text-slate-500">Asignados</span>
-					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
-						<%= summary.assignedPermits %>
-					</strong>
+						<span class="text-sm text-slate-500">Encargados</span>
+						<strong class="mt-2 block text-3xl font-semibold text-slate-900">0</strong>
 					</div>
 				</article>
 				<article class="card bg-base-100 shadow">
 					<div class="card-body">
-					<span class="text-sm text-slate-500">Sincronizados</span>
-					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
-						<%= summary.syncedPermits %>
-					</strong>
+						<span class="text-sm text-slate-500">Asignaciones</span>
+						<strong class="mt-2 block text-3xl font-semibold text-slate-900">0</strong>
 					</div>
 				</article>
 				<article class="card bg-base-100 shadow">
 					<div class="card-body">
-					<span class="text-sm text-slate-500">Completados</span>
-					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
-						<%= summary.completedPermits %>
-					</strong>
+						<span class="text-sm text-slate-500">Permisos</span>
+						<strong class="mt-2 block text-3xl font-semibold text-slate-900">0</strong>
+					</div>
+				</article>
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
+						<span class="text-sm text-slate-500">Completados</span>
+						<strong class="mt-2 block text-3xl font-semibold text-slate-900">0</strong>
 					</div>
 				</article>
 			</section>
 
-			<section class="card mt-6 bg-base-100 shadow">
-				<div
-					class="flex flex-col gap-4 border-b border-base-300 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<h2 class="text-lg font-semibold text-slate-900">Actividad reciente</h2>
-						<p class="mt-1 text-sm text-slate-500">
-							Panel provisional para sincronizacion y estado de completitud.
+			<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
+						<h2 class="card-title">Encargados</h2>
+						<p class="text-sm text-slate-500">
+							Crear usuarios y revisar quienes tienen acceso a la app.
 						</p>
+						<div class="card-actions justify-end">
+							<a href="/admin/users" class="btn btn-primary">Abrir</a>
+						</div>
 					</div>
+				</article>
 
-					<div class="join">
-						<button type="button"
-							class="btn join-item btn-sm"
-							:class="filter === 'all' ? 'btn-primary' : 'btn-outline'"
-							@click="filter = 'all'">
-							Todos
-						</button>
-						<button type="button"
-							class="btn join-item btn-sm"
-							:class="filter === 'synced' ? 'btn-primary' : 'btn-outline'"
-							@click="filter = 'synced'">
-							Sincronizados
-						</button>
-						<button type="button"
-							class="btn join-item btn-sm"
-							:class="filter === 'completed' ? 'btn-primary' : 'btn-outline'"
-							@click="filter = 'completed'">
-							Completados
-						</button>
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
+						<h2 class="card-title">Asignaciones</h2>
+						<p class="text-sm text-slate-500">
+							Asignar comunidad, encargado y permisos para la temporada.
+						</p>
+						<div class="card-actions justify-end">
+							<button type="button" class="btn btn-disabled">Pendiente</button>
+						</div>
 					</div>
-				</div>
+				</article>
 
-				<div class="px-5 py-8 text-sm text-slate-600">
-					Aun no hay datos de administracion cargados.
-				</div>
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
+						<h2 class="card-title">Seguimiento</h2>
+						<p class="text-sm text-slate-500">
+							Ver sincronizacion, completitud y generar el Excel final.
+						</p>
+						<div class="card-actions justify-end">
+							<button type="button" class="btn btn-disabled">Pendiente</button>
+						</div>
+					</div>
+				</article>
 			</section>
 		</main>
 	</body>

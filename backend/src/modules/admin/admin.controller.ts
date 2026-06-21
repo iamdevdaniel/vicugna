@@ -47,13 +47,7 @@ export function logoutAdmin(req: Request, res: Response) {
 
 export function renderMissionControl(req: Request, res: Response) {
 	res.render("admin/mission-control", {
-		pageTitle: "Panel de control",
+		pageTitle: "Inicio",
 		adminUser: req.session.adminUser,
-		summary: {
-			assignedPermits: 0,
-			syncedPermits: 0,
-			completedPermits: 0,
-		},
-		recentActivity: [],
 	})
 }
