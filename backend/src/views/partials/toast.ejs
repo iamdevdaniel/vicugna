@@ -1,0 +1,10 @@
+<div id="toast-container" hx-swap-oob="innerHTML" class="fixed inset-x-0 bottom-5 z-50 flex justify-center px-5">
+	<div
+		class="rounded-lg border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700 shadow-xl shadow-slate-950/10"
+		x-data="{ isVisible: true }"
+		x-init="setTimeout(() => isVisible = false, 3000)"
+		x-show="isVisible"
+		x-transition>
+		<%= message %>
+	</div>
+</div>

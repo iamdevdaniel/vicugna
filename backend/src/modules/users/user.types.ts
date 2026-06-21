@@ -16,7 +16,6 @@ export interface CreateUserFormData {
 	phoneNumber: string
 	email: string
 	password: string
-	role: string
 }
 
 // View
@@ -26,4 +25,5 @@ export interface UsersPageData {
 		fullName: string
 	}
 	users: UserListItem[]
+	suggestedPassword: string
 }

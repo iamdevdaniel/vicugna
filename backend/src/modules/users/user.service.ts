@@ -6,24 +6,41 @@ import {
 
 import { UserManagementError } from "./user.errors"
 import { createUser, listUsers } from "./user.repository"
-import type {
-	CreateUserFormData,
-	ManagedUserRole,
-	UserListItem,
-} from "./user.types"
+import type { CreateUserFormData, UserListItem } from "./user.types"
 
 const DEFAULT_AVATAR_STYLE = "marble"
+const PASSWORD_WORDS = [
+	"alpaca",
+	"brisa",
+	"campo",
+	"cerro",
+	"fibra",
+	"llama",
+	"nube",
+	"pampa",
+	"sol",
+	"viento",
+] as const
 
 export async function getUsersPageState(): Promise<{
 	users: UserListItem[]
+	suggestedPassword: string
 }> {
 	return {
 		users: await listUsers(),
+		suggestedPassword: getSuggestedTemporaryPassword(),
 	}
 }
 
+export function getSuggestedTemporaryPassword() {
+	const firstWord = pickPasswordWord()
+	const secondWord = pickPasswordWord()
+	const number = (crypto.getRandomValues(new Uint32Array(1))[0] % 90) + 10
+
+	return `${firstWord}-${secondWord}-${number}`
+}
+
 export async function registerUser(data: CreateUserFormData) {
-	const role = parseUserRole(data.role)
 	const fullName = data.fullName.trim()
 	const phoneNumber = data.phoneNumber.trim()
 	const email = normalizeEmail(data.email)
@@ -35,10 +52,6 @@ export async function registerUser(data: CreateUserFormData) {
 		)
 	}
 
-	if (role === "admin" && !email) {
-		throw new UserManagementError("Un administrador necesita correo")
-	}
-
 	try {
 		await createUser({
 			id: crypto.randomUUID(),
@@ -46,7 +59,7 @@ export async function registerUser(data: CreateUserFormData) {
 			phoneNumber,
 			email,
 			passwordHash: await bcrypt.hash(password, 12),
-			role,
+			role: "user",
 			isActive: true,
 			avatarSeed: `vicugna-${crypto.randomUUID()}`,
 			avatarStyle: DEFAULT_AVATAR_STYLE,
@@ -56,17 +69,15 @@ export async function registerUser(data: CreateUserFormData) {
 	}
 }
 
-function parseUserRole(role: string): ManagedUserRole {
-	if (role === "admin" || role === "user") {
-		return role
-	}
-
-	throw new UserManagementError("Rol invalido")
-}
-
 function normalizeEmail(email: string) {
 	const cleanEmail = email.trim().toLowerCase()
 	return cleanEmail || null
+}
+
+function pickPasswordWord() {
+	const index =
+		crypto.getRandomValues(new Uint32Array(1))[0] % PASSWORD_WORDS.length
+	return PASSWORD_WORDS[index]
 }
 
 function throwUserCreationError(error: unknown): never {

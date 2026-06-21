@@ -3,7 +3,10 @@
 <%- include("../partials/admin-head", { pageTitle }) %>
 
 	<body class="min-h-screen bg-slate-100 text-slate-800">
-		<main class="mx-auto max-w-6xl px-5 py-8" x-data="{ isCreateModalOpen: false }">
+		<main class="mx-auto max-w-6xl px-5 py-8"
+			x-data="{ isCreateModalOpen: false, activeUsersTab: window.location.hash === '#admins' ? 'admins' : 'users' }"
+			@hashchange.window="activeUsersTab = window.location.hash === '#admins' ? 'admins' : 'users'"
+			@user-created.window="isCreateModalOpen = false; $refs.createUserForm.reset(); $refs.createUserForm.elements.password.value = ''">
 			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
@@ -18,12 +21,12 @@
 				<div class="flex items-center gap-3">
 					<button type="button"
 						class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800"
-						@click="isCreateModalOpen = true">
+						@click="$refs.createUserForm.reset(); $refs.createUserForm.elements.password.value = ''; document.getElementById('create-user-modal-message').innerHTML = ''; isCreateModalOpen = true">
 						Nuevo usuario
 					</button>
 					<a href="/admin/mission-control"
 						class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50">
-						Panel
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
 					</a>
 				</div>
 			</header>
@@ -33,13 +36,11 @@
 				<button type="button" class="absolute inset-0 cursor-default" aria-label="Cerrar modal"
 					@click="isCreateModalOpen = false"></button>
 
-				<section class="relative w-full max-w-lg rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/20">
+				<section
+					class="relative w-full max-w-lg rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/20">
 					<div class="flex items-start justify-between gap-4">
 						<div>
 							<h2 class="text-lg font-semibold text-slate-900">Nuevo usuario</h2>
-							<p class="mt-1 text-sm text-slate-500">
-								Crea el acceso inicial para un usuario.
-							</p>
 						</div>
 						<button type="button"
 							class="inline-flex min-h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
@@ -48,7 +49,10 @@
 						</button>
 					</div>
 
-					<form class="mt-5 flex flex-col gap-4" hx-post="/admin/users" hx-target="#users-page" hx-swap="outerHTML">
+					<form x-ref="createUserForm" class="mt-5 flex flex-col gap-4" hx-post="/admin/users"
+						hx-target="#create-user-modal-message" hx-swap="innerHTML">
+						<div id="create-user-modal-message"></div>
+
 						<label class="flex flex-col gap-2">
 							<span class="text-sm font-semibold text-slate-700">Nombre completo</span>
 							<input
@@ -73,38 +77,25 @@
 								type="email" name="email" autocomplete="email" />
 						</label>
 
-						<label class="flex flex-col gap-2">
-							<span class="text-sm font-semibold text-slate-700">Rol</span>
-							<select
-								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-								name="role">
-								<option value="user">Encargado</option>
-								<option value="admin">Administrador</option>
-							</select>
-						</label>
+						<%- include("../partials/users-password-field", { suggestedPassword: "" }) %>
 
-						<label class="flex flex-col gap-2">
-							<span class="text-sm font-semibold text-slate-700">Contraseña temporal</span>
-							<input
-								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-								type="text" name="password" autocomplete="new-password" />
-						</label>
-
-						<div class="flex justify-end gap-3 pt-2">
-							<button type="button"
-								class="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-								@click="isCreateModalOpen = false">
-								Cancelar
-							</button>
-							<button type="submit"
-								class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800">
-								Crear usuario
-							</button>
-						</div>
+							<div class="flex justify-end gap-3 pt-2">
+								<button type="button"
+									class="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+									@click="isCreateModalOpen = false">
+									Cancelar
+								</button>
+								<button type="submit"
+									class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800">
+									<span class="htmx-request:hidden">Crear usuario</span>
+									<span class="htmx-indicator">Guardando...</span>
+								</button>
+							</div>
 					</form>
 				</section>
 			</div>
 			<%- include("../partials/users-list", { users }) %>
+				<div id="toast-container"></div>
 		</main>
 	</body>
 

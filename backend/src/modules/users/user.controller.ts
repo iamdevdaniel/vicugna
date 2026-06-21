@@ -1,7 +1,11 @@
 import type { Request, Response } from "express"
 
 import { UserManagementError } from "./user.errors"
-import { getUsersPageState, registerUser } from "./user.service"
+import {
+	getSuggestedTemporaryPassword,
+	getUsersPageState,
+	registerUser,
+} from "./user.service"
 import type { CreateUserFormData, UsersPageData } from "./user.types"
 
 export async function renderUsersPage(req: Request, res: Response) {
@@ -18,19 +22,25 @@ export async function createManagedUser(
 ) {
 	try {
 		await registerUser(req.body)
-		res.render("partials/users-list", {
+		res.setHeader("HX-Trigger", "user-created")
+		res.render("partials/users-create-result", {
 			...(await getUsersPageState()),
 			successMessage: "Usuario creado",
 			errorMessage: null,
 		})
 	} catch (error) {
-		console.error(error)
-		res.status(400).render("partials/users-list", {
+		res.render("partials/users-create-result", {
 			...(await getUsersPageState()),
 			successMessage: null,
 			errorMessage: getUserErrorMessage(error),
 		})
 	}
+}
+
+export function renderPasswordSuggestion(_req: Request, res: Response) {
+	res.render("partials/users-password-field", {
+		suggestedPassword: getSuggestedTemporaryPassword(),
+	})
 }
 
 function getUsersViewData(

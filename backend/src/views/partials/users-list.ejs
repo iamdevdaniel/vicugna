@@ -1,42 +1,33 @@
-<section id="users-page" class="mt-6 rounded-lg border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
-	<% if (typeof errorMessage !== "undefined" && errorMessage) { %>
-		<div class="border-b border-rose-200 bg-rose-50 px-5 py-3 text-sm text-rose-700">
-			<%= errorMessage %>
-		</div>
-	<% } %>
+<%
+	const regularUsers = users.filter((user) => user.role === "user")
+	const adminUsers = users.filter((user) => user.role === "admin")
+%>
 
-	<% if (typeof successMessage !== "undefined" && successMessage) { %>
-		<div class="border-b border-emerald-200 bg-emerald-50 px-5 py-3 text-sm text-emerald-700">
-			<%= successMessage %>
-		</div>
-	<% } %>
-
-	<div class="border-b border-slate-200 px-5 py-5">
+<section id="users-page" <% if (typeof useOobSwap !== "undefined" && useOobSwap) { %>hx-swap-oob="outerHTML"<% } %> class="mt-6 rounded-lg border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
+	<div class="border-b border-slate-200 px-5 pt-5">
 		<h2 class="text-lg font-semibold text-slate-900">Usuarios registrados</h2>
+
+		<nav class="mt-5 flex gap-2" aria-label="Tipos de usuario">
+			<a href="#users"
+				class="inline-flex min-h-10 items-center justify-center border-b-2 px-3 text-sm font-semibold transition"
+				:class="activeUsersTab === 'users' ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-900'"
+				@click="activeUsersTab = 'users'">
+				Encargados
+			</a>
+			<a href="#admins"
+				class="inline-flex min-h-10 items-center justify-center border-b-2 px-3 text-sm font-semibold transition"
+				:class="activeUsersTab === 'admins' ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-900'"
+				@click="activeUsersTab = 'admins'">
+				Admins
+			</a>
+		</nav>
 	</div>
 
-	<div class="divide-y divide-slate-200">
-		<% if (users.length === 0) { %>
-			<p class="px-5 py-8 text-sm text-slate-500">No hay usuarios creados.</p>
-		<% } %>
+	<div x-show="activeUsersTab === 'users'">
+		<%- include("./users-list-panel", { users: regularUsers, emptyMessage: "No hay encargados creados." }) %>
+	</div>
 
-		<% users.forEach((user) => { %>
-			<article class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-				<div>
-					<h3 class="font-semibold text-slate-900"><%= user.fullName %></h3>
-					<p class="text-sm text-slate-500"><%= user.phoneNumber %></p>
-					<p class="text-sm text-slate-500"><%= user.email || "Sin correo" %></p>
-				</div>
-
-				<div class="flex flex-wrap items-center gap-2">
-					<span class="rounded-full px-3 py-1 text-xs font-bold uppercase <%= user.isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600" %>">
-						<%= user.isActive ? "Activo" : "Inactivo" %>
-					</span>
-					<span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase text-blue-700">
-						<%= user.role === "admin" ? "Admin" : "Encargado" %>
-					</span>
-				</div>
-			</article>
-		<% }) %>
+	<div x-show="activeUsersTab === 'admins'">
+		<%- include("./users-list-panel", { users: adminUsers, emptyMessage: "No hay admins creados." }) %>
 	</div>
 </section>

@@ -1,0 +1,24 @@
+<div class="divide-y divide-slate-200">
+	<% if (users.length === 0) { %>
+		<p class="px-5 py-8 text-sm text-slate-500"><%= emptyMessage %></p>
+	<% } %>
+
+	<% users.forEach((user) => { %>
+		<article class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+			<div>
+				<h3 class="font-semibold text-slate-900"><%= user.fullName %></h3>
+				<p class="text-sm text-slate-500"><%= user.phoneNumber %></p>
+				<p class="text-sm text-slate-500"><%= user.email || "Sin correo" %></p>
+			</div>
+
+			<div class="flex flex-wrap items-center gap-2">
+				<span class="rounded-full px-3 py-1 text-xs font-bold uppercase <%= user.isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600" %>">
+					<%= user.isActive ? "Activo" : "Inactivo" %>
+				</span>
+				<span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase text-blue-700">
+					<%= user.role === "admin" ? "Admin" : "Encargado" %>
+				</span>
+			</div>
+		</article>
+	<% }) %>
+</div>

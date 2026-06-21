@@ -2,6 +2,18 @@
 	display: none !important;
 }
 
+.htmx-indicator {
+	display: none;
+}
+
+.htmx-request .htmx-indicator {
+	display: inline;
+}
+
+.htmx-request .htmx-request\:hidden {
+	display: none;
+}
+
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
 	display: none;
