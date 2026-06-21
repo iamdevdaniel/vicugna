@@ -17,8 +17,7 @@
 
 				<div class="flex items-center gap-3">
 					<form method="post" action="/admin/logout">
-						<button type="submit"
-							class="btn btn-outline btn-primary">
+						<button type="submit" class="btn btn-outline btn-primary">
 							Cerrar sesion
 						</button>
 					</form>
@@ -68,8 +67,18 @@
 
 			<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
 				<article class="card bg-base-100 shadow">
-					<div class="card-body">
-						<h2 class="card-title">Encargados</h2>
+					<div class="card-body flex">
+						<h2 class="card-title justify-between gap-2">
+							Encargados
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" class="h-5 w-5">
+								<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+								<path d="M16 3.128a4 4 0 0 1 0 7.744" />
+								<path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+								<circle cx="9" cy="7" r="4" />
+							</svg>
+						</h2>
 						<p class="text-sm text-slate-500">
 							Crear usuarios y revisar quienes tienen acceso a la app.
 						</p>
@@ -81,7 +90,20 @@
 
 				<article class="card bg-base-100 shadow">
 					<div class="card-body">
-						<h2 class="card-title">Asignaciones</h2>
+						<h2 class="card-title flex justify-between">
+							Asignaciones
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round"
+								class="lucide lucide-clipboard-pen-line-icon lucide-clipboard-pen-line">
+								<rect width="8" height="4" x="8" y="2" rx="1" />
+								<path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-.5" />
+								<path d="M16 4h2a2 2 0 0 1 1.73 1" />
+								<path d="M8 18h1" />
+								<path
+									d="M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" />
+							</svg>
+						</h2>
 						<p class="text-sm text-slate-500">
 							Asignar comunidad, encargado y permisos para la temporada.
 						</p>
@@ -93,7 +115,21 @@
 
 				<article class="card bg-base-100 shadow">
 					<div class="card-body">
-						<h2 class="card-title">Seguimiento</h2>
+						<h2 class="card-title flex justify-between">
+							Seguimiento
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" class="lucide lucide-binoculars-icon lucide-binoculars">
+								<path d="M10 10h4" />
+								<path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3" />
+								<path
+									d="M20 21a2 2 0 0 0 2-2v-3.851c0-1.39-2-2.962-2-4.829V8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2z" />
+								<path d="M 22 16 L 2 16" />
+								<path
+									d="M4 21a2 2 0 0 1-2-2v-3.851c0-1.39 2-2.962 2-4.829V8a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v11a2 2 0 0 1-2 2z" />
+								<path d="M9 7V4a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v3" />
+							</svg>
+						</h2>
 						<p class="text-sm text-slate-500">
 							Ver sincronizacion, completitud y generar el Excel final.
 						</p>
