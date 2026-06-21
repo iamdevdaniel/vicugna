@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <%- include("../partials/admin-head", { pageTitle }) %>
 
-	<body class="min-h-screen bg-slate-100 text-slate-800">
+	<body class="min-h-screen bg-base-200 text-base-content">
 		<main class="mx-auto max-w-6xl px-5 py-8" x-data="{ filter: 'all' }">
 			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
@@ -18,7 +18,7 @@
 				<div class="flex items-center gap-3">
 					<form method="post" action="/admin/logout">
 						<button type="submit"
-							class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50">
+							class="btn btn-outline btn-primary">
 							Cerrar sesion
 						</button>
 					</form>
@@ -26,29 +26,35 @@
 			</header>
 
 			<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-				<article class="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
 					<span class="text-sm text-slate-500">Asignados</span>
 					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
 						<%= summary.assignedPermits %>
 					</strong>
+					</div>
 				</article>
-				<article class="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
 					<span class="text-sm text-slate-500">Sincronizados</span>
 					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
 						<%= summary.syncedPermits %>
 					</strong>
+					</div>
 				</article>
-				<article class="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
 					<span class="text-sm text-slate-500">Completados</span>
 					<strong class="mt-2 block text-3xl font-semibold text-slate-900">
 						<%= summary.completedPermits %>
 					</strong>
+					</div>
 				</article>
 			</section>
 
-			<section class="mt-6 rounded-lg border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
+			<section class="card mt-6 bg-base-100 shadow">
 				<div
-					class="flex flex-col gap-4 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+					class="flex flex-col gap-4 border-b border-base-300 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
 					<div>
 						<h2 class="text-lg font-semibold text-slate-900">Actividad reciente</h2>
 						<p class="mt-1 text-sm text-slate-500">
@@ -56,22 +62,22 @@
 						</p>
 					</div>
 
-					<div class="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+					<div class="join">
 						<button type="button"
-							class="rounded-md px-3 py-2 text-sm font-semibold text-slate-600 transition"
-							:class="filter === 'all' ? 'bg-blue-700 text-white' : 'hover:bg-slate-100'"
+							class="btn join-item btn-sm"
+							:class="filter === 'all' ? 'btn-primary' : 'btn-outline'"
 							@click="filter = 'all'">
 							Todos
 						</button>
 						<button type="button"
-							class="rounded-md px-3 py-2 text-sm font-semibold text-slate-600 transition"
-							:class="filter === 'synced' ? 'bg-blue-700 text-white' : 'hover:bg-slate-100'"
+							class="btn join-item btn-sm"
+							:class="filter === 'synced' ? 'btn-primary' : 'btn-outline'"
 							@click="filter = 'synced'">
 							Sincronizados
 						</button>
 						<button type="button"
-							class="rounded-md px-3 py-2 text-sm font-semibold text-slate-600 transition"
-							:class="filter === 'completed' ? 'bg-blue-700 text-white' : 'hover:bg-slate-100'"
+							class="btn join-item btn-sm"
+							:class="filter === 'completed' ? 'btn-primary' : 'btn-outline'"
 							@click="filter = 'completed'">
 							Completados
 						</button>

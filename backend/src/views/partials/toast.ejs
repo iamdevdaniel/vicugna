@@ -1,10 +1,15 @@
 <div id="toast-container" hx-swap-oob="innerHTML" class="fixed inset-x-0 bottom-5 z-50 flex justify-center px-5">
 	<div
-		class="rounded-lg border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700 shadow-xl shadow-slate-950/10"
+		class="alert alert-success w-auto shadow-lg"
 		x-data="{ isVisible: true }"
 		x-init="setTimeout(() => isVisible = false, 3000)"
 		x-show="isVisible"
-		x-transition>
+		x-transition:enter="transition ease-out duration-200"
+		x-transition:enter-start="translate-y-4 opacity-0"
+		x-transition:enter-end="translate-y-0 opacity-100"
+		x-transition:leave="transition ease-in duration-200"
+		x-transition:leave-start="translate-y-0 opacity-100"
+		x-transition:leave-end="translate-y-4 opacity-0">
 		<%= message %>
 	</div>
 </div>

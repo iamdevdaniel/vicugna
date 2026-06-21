@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <%- include("../partials/admin-head", { pageTitle }) %>
 
-	<body class="min-h-screen bg-slate-100 text-slate-800">
+	<body class="min-h-screen bg-base-200 text-base-content">
 		<main class="mx-auto max-w-6xl px-5 py-8"
 			x-data="{ isCreateModalOpen: false, activeUsersTab: window.location.hash === '#admins' ? 'admins' : 'users' }"
 			@hashchange.window="activeUsersTab = window.location.hash === '#admins' ? 'admins' : 'users'"
@@ -20,30 +20,30 @@
 
 				<div class="flex items-center gap-3">
 					<button type="button"
-						class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800"
+						class="btn btn-primary"
 						@click="$refs.createUserForm.reset(); $refs.createUserForm.elements.password.value = ''; document.getElementById('create-user-modal-message').innerHTML = ''; isCreateModalOpen = true">
 						Nuevo usuario
 					</button>
 					<a href="/admin/mission-control"
-						class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50">
+						class="btn btn-outline btn-primary">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
 					</a>
 				</div>
 			</header>
 
-			<div class="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/50 px-5 py-10"
+			<div class="modal modal-open bg-neutral/50"
 				x-show="isCreateModalOpen" x-cloak>
-				<button type="button" class="absolute inset-0 cursor-default" aria-label="Cerrar modal"
+				<button type="button" class="modal-backdrop" aria-label="Cerrar modal"
 					@click="isCreateModalOpen = false"></button>
 
 				<section
-					class="relative w-full max-w-lg rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/20">
+					class="modal-box">
 					<div class="flex items-start justify-between gap-4">
 						<div>
 							<h2 class="text-lg font-semibold text-slate-900">Nuevo usuario</h2>
 						</div>
 						<button type="button"
-							class="inline-flex min-h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+							class="btn btn-ghost btn-sm"
 							@click="isCreateModalOpen = false">
 							Cerrar
 						</button>
@@ -53,27 +53,27 @@
 						hx-target="#create-user-modal-message" hx-swap="innerHTML">
 						<div id="create-user-modal-message"></div>
 
-						<label class="flex flex-col gap-2">
-							<span class="text-sm font-semibold text-slate-700">Nombre completo</span>
+						<label class="form-control">
+							<span class="label-text mb-2 font-semibold">Nombre completo</span>
 							<input
-								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								class="input input-bordered w-full"
 								type="text" name="fullName" autocomplete="name" />
 						</label>
 
-						<label class="flex flex-col gap-2">
-							<span class="text-sm font-semibold text-slate-700">Telefono</span>
+						<label class="form-control">
+							<span class="label-text mb-2 font-semibold">Telefono</span>
 							<input
-								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								class="input input-bordered w-full"
 								type="tel" name="phoneNumber" autocomplete="tel" />
 						</label>
 
-						<label class="flex flex-col gap-2">
-							<span class="flex items-center justify-between gap-3 text-sm font-semibold text-slate-700">
+						<label class="form-control">
+							<span class="label-text mb-2 flex items-center justify-between gap-3 font-semibold">
 								Correo
-								<span class="text-xs font-medium text-slate-400">Opcional</span>
+								<span class="text-xs font-medium text-base-content/50">Opcional</span>
 							</span>
 							<input
-								class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+								class="input input-bordered w-full"
 								type="email" name="email" autocomplete="email" />
 						</label>
 
@@ -81,12 +81,12 @@
 
 							<div class="flex justify-end gap-3 pt-2">
 								<button type="button"
-									class="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+									class="btn btn-ghost"
 									@click="isCreateModalOpen = false">
 									Cancelar
 								</button>
 								<button type="submit"
-									class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800">
+									class="btn btn-primary">
 									<span class="htmx-request:hidden">Crear usuario</span>
 									<span class="htmx-indicator">Guardando...</span>
 								</button>

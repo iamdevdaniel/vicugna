@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <%- include("../partials/admin-head", { pageTitle }) %>
 
-	<body class="min-h-screen bg-slate-100 text-slate-800">
+	<body class="min-h-screen bg-base-200 text-base-content">
 		<main class="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-5 py-12">
 			<section
-				class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/5"
+				class="card w-full max-w-md bg-base-100 shadow"
 				x-data="{ showHelp: false }">
-				<div class="mb-5">
+				<div class="card-body">
 					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
 						Vicugna Admin
 					</p>
@@ -15,28 +15,27 @@
 					<p class="mt-2 text-sm text-slate-500">
 						Acceso de administracion para asignacion y seguimiento de permisos.
 					</p>
-				</div>
 
 				<form method="post" action="/admin/login" class="flex flex-col gap-4" x-data="{showPassword: false}">
 					<% if (errorMessage) { %>
-						<div class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-700">
+						<div class="alert alert-error alert-soft">
 							<%= errorMessage %>
 						</div>
 						<% } %>
 
-							<label class="flex flex-col gap-2">
-								<span class="text-sm font-semibold text-slate-700">Correo</span>
+							<label class="form-control">
+								<span class="label-text mb-2 font-semibold">Correo</span>
 								<input
-									class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+									class="input input-bordered w-full"
 									type="email" placeholder="correo@ejemplo.com" name="email" value="<%= email %>"
 									autocomplete="username" />
 							</label>
 
-							<label class="flex flex-col gap-2">
-								<span class="text-sm font-semibold text-slate-700">Contrasena</span>
+							<label class="form-control">
+								<span class="label-text mb-2 font-semibold">Contrasena</span>
 								<div class="relative">
 									<input
-										class="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+										class="input input-bordered w-full pr-12"
 										:type="showPassword ? 'text': 'password'" placeholder="********" name="password"
 										autocomplete="current-password" />
 									<button type="button" @click="showPassword = !showPassword"
@@ -71,11 +70,11 @@
 
 							<div class="flex flex-col gap-3 pt-2 sm:flex-row">
 								<button type="submit"
-									class="inline-flex min-h-10 items-center justify-center rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white transition hover:bg-blue-800">
+									class="btn btn-primary">
 									Entrar
 								</button>
 								<button type="button"
-									class="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+									class="btn btn-outline btn-primary"
 									@click="showHelp = !showHelp">
 									Ayuda
 								</button>
@@ -85,6 +84,7 @@
 				<p class="mt-4 text-sm text-slate-500" x-show="showHelp" x-cloak>
 					La ayuda del acceso todavia es provisional.
 				</p>
+				</div>
 			</section>
 		</main>
 	</body>
