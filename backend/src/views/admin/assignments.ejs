@@ -1,6 +1,234 @@
 <!doctype html>
 <html lang="es" data-theme="light">
-	<%- include("../partials/admin-head", { pageTitle }) %>
-		<body class="min-h-screen bg-base-200 text-base-content">QOTSA</body>
+<%- include("../partials/admin-head", { pageTitle }) %>
+
+	<body class="min-h-screen bg-base-200 text-base-content">
+		<main
+			class="mx-auto max-w-6xl px-5 py-8"
+			x-data='{
+				seasons: <%- JSON.stringify(seasons) %>,
+				communities: <%- JSON.stringify(communities) %>,
+				users: <%- JSON.stringify(users) %>,
+				selectedSeasonId: "<%= seasons[0]?.id ?? "" %>",
+				isCommunityPickerOpen: false,
+				communitySearch: "",
+				selectedCommunityId: "",
+				selectedCommunityName: "",
+				isUserPickerOpen: false,
+				userSearch: "",
+				selectedUserId: "",
+				selectedUserName: "",
+				get filteredCommunities() {
+					const search = this.communitySearch.trim().toLowerCase()
+					if (!search) return this.communities.slice(0, 8)
+					return this.communities
+						.filter((community) => community.name.toLowerCase().includes(search))
+						.slice(0, 8)
+				},
+				get filteredUsers() {
+					const search = this.userSearch.trim().toLowerCase()
+					if (!search) return this.users.slice(0, 8)
+					return this.users
+						.filter((user) => user.name.toLowerCase().includes(search))
+						.slice(0, 8)
+				},
+				selectCommunity(community) {
+					this.selectedCommunityId = community.id
+					this.selectedCommunityName = community.name
+					this.communitySearch = community.name
+					this.isCommunityPickerOpen = false
+				},
+				clearCommunity() {
+					this.selectedCommunityId = ""
+					this.selectedCommunityName = ""
+					this.communitySearch = ""
+					this.isCommunityPickerOpen = false
+				},
+				selectUser(user) {
+					this.selectedUserId = user.id
+					this.selectedUserName = user.name
+					this.userSearch = user.name
+					this.isUserPickerOpen = false
+				},
+				clearUser() {
+					this.selectedUserId = ""
+					this.selectedUserName = ""
+					this.userSearch = ""
+					this.isUserPickerOpen = false
+				},
+			}'>
+			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+				<div>
+					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500"> 
+						Vicugna Admin
+					</p>
+					<h1 class="text-3xl font-semibold text-slate-900">Asignaciones</h1>
+					<p class="mt-2 text-sm text-slate-500">
+						<%= adminUser.fullName %>
+					</p>
+				</div>
+
+				<div class="flex items-center gap-3">
+					<a href="/admin/mission-control" class="btn btn-outline btn-primary">
+						Inicio
+					</a>
+				</div>
+			</header>
+
+			<section class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_1fr]">
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
+						<h2 class="card-title">Nueva asignacion</h2>
+						<p class="text-sm text-slate-500">
+							Primero vamos a conectar temporada, comunidad, encargado y permisos.
+						</p>
+
+						<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+							<label class="form-control">
+								<span class="label-text mb-2 font-semibold">Temporada</span>
+								<select class="select select-bordered w-full" x-model="selectedSeasonId">
+									<% seasons.forEach((season) => { %>
+										<option value="<%= season.id %>"><%= season.name %></option>
+									<% }) %>
+								</select>
+							</label>
+
+							<div class="form-control">
+								<span class="label-text mb-2 font-semibold">Comunidad</span>
+								<input type="hidden" name="communityId" :value="selectedCommunityId" />
+								<div class="relative" @click.outside="isCommunityPickerOpen = false">
+									<div class="join w-full">
+										<input
+											class="input input-bordered join-item w-full"
+											type="text"
+											x-model="communitySearch"
+											@click="isCommunityPickerOpen = true"
+											@input="isCommunityPickerOpen = true"
+											placeholder="Buscar o seleccionar comunidad" />
+										<button
+											type="button"
+											class="btn btn-outline join-item"
+											@click="selectedCommunityId ? clearCommunity() : isCommunityPickerOpen = !isCommunityPickerOpen">
+											<span x-text="selectedCommunityId ? 'Limpiar' : 'Ver'"></span>
+										</button>
+									</div>
+									<div
+										class="rounded-box absolute left-0 right-0 top-full z-20 mt-2 border border-base-300 bg-base-100 shadow"
+										x-show="isCommunityPickerOpen"
+										x-cloak>
+										<template x-if="filteredCommunities.length === 0">
+											<p class="px-3 py-3 text-sm text-slate-500">Sin resultados</p>
+										</template>
+										<ul class="max-h-48 overflow-y-auto">
+											<template x-for="community in filteredCommunities" :key="community.id">
+												<li>
+													<button
+														type="button"
+														class="w-full px-3 py-2 text-left text-sm transition hover:bg-base-200"
+														@click="selectCommunity(community)"
+														x-text="community.name"></button>
+												</li>
+											</template>
+										</ul>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-control md:col-span-2">
+								<span class="label-text mb-2 font-semibold">Encargado</span>
+								<input type="hidden" name="userId" :value="selectedUserId" />
+								<div class="relative" @click.outside="isUserPickerOpen = false">
+									<div class="join w-full">
+										<input
+											class="input input-bordered join-item w-full"
+											type="text"
+											x-model="userSearch"
+											@click="isUserPickerOpen = true"
+											@input="isUserPickerOpen = true"
+											placeholder="Buscar o seleccionar encargado" />
+										<button
+											type="button"
+											class="btn btn-outline join-item"
+											@click="selectedUserId ? clearUser() : isUserPickerOpen = !isUserPickerOpen">
+											<span x-text="selectedUserId ? 'Limpiar' : 'Ver'"></span>
+										</button>
+									</div>
+									<div
+										class="rounded-box absolute left-0 right-0 top-full z-20 mt-2 border border-base-300 bg-base-100 shadow"
+										x-show="isUserPickerOpen"
+										x-cloak>
+										<template x-if="filteredUsers.length === 0">
+											<p class="px-3 py-3 text-sm text-slate-500">Sin resultados</p>
+										</template>
+										<ul class="max-h-48 overflow-y-auto">
+											<template x-for="user in filteredUsers" :key="user.id">
+												<li>
+													<button
+														type="button"
+														class="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition hover:bg-base-200"
+														@click="selectUser(user)">
+														<span x-text="user.name"></span>
+														<span class="badge badge-success badge-soft" x-show="user.isActive">Activo</span>
+													</button>
+												</li>
+											</template>
+										</ul>
+									</div>
+								</div>
+							</div>
+
+							<label class="form-control md:col-span-2">
+								<span class="label-text mb-2 font-semibold">Permisos</span>
+								<textarea
+									class="textarea textarea-bordered min-h-28 w-full"
+									placeholder="Un permiso por linea"
+									disabled></textarea>
+							</label>
+						</div>
+
+						<div class="card-actions mt-4 justify-end">
+							<button type="button" class="btn btn-primary" disabled>
+								Guardar asignacion
+							</button>
+						</div>
+					</div>
+				</article>
+
+				<article class="card bg-base-100 shadow">
+					<div class="card-body">
+						<h2 class="card-title">Asignaciones actuales</h2>
+						<p class="text-sm text-slate-500">
+							Resumen de lo que ya esta conectado en la base de datos.
+						</p>
+
+						<div class="mt-4 space-y-3 text-sm text-slate-600">
+							<p>Temporadas: <strong><%= seasons.length %></strong></p>
+							<p>Comunidades: <strong><%= communities.length %></strong></p>
+							<p>Encargados: <strong><%= users.length %></strong></p>
+							<p>Asignaciones: <strong><%= assignments.length %></strong></p>
+						</div>
+
+						<div class="mt-4 space-y-3">
+							<% if (assignments.length === 0) { %>
+								<p class="text-sm text-slate-500">Todavia no hay asignaciones guardadas.</p>
+							<% } %>
+
+							<% assignments.forEach((assignment) => { %>
+								<article class="rounded-box border border-base-300 px-4 py-3">
+									<h3 class="font-semibold text-slate-900"><%= assignment.communityName %></h3>
+									<p class="mt-1 text-sm text-slate-500">
+										<%= assignment.seasonName %> • <%= assignment.userFullName %>
+									</p>
+									<p class="mt-2 text-sm text-slate-600">
+										Permisos: <strong><%= assignment.permitCount %></strong>
+									</p>
+								</article>
+							<% }) %>
+						</div>
+					</div>
+				</article>
+			</section>
+		</main>
+	</body>
 
 </html>

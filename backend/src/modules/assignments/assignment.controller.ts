@@ -1,12 +1,28 @@
 import type { Request, Response } from "express"
-// import { AssignmentError } from "./assignment.errors"
-// import { } from 'assignment.service'
-// import type { } from './assignment.types'
+
+import { getAssignmentsPageState } from "./assignment.service"
+import type { AssignmentPageData } from "./assignment.types"
 
 // ==========================================
 // PAGE & PARTIAL RENDERERS
 // ==========================================
 
-export function renderAssignmentPage(_: Request, res: Response) {
-	res.render("admin/assignments", { pageTitle: "Asignaciones" })
+export async function renderAssignmentPage(req: Request, res: Response) {
+	res.render(
+		"admin/assignments",
+		getAssignmentsViewData(req, await getAssignmentsPageState()),
+	)
+}
+
+function getAssignmentsViewData(
+	req: Request,
+	data: Omit<AssignmentPageData, "pageTitle" | "adminUser">,
+): AssignmentPageData {
+	return {
+		pageTitle: "Asignaciones",
+		adminUser: {
+			fullName: req.session.adminUser?.fullName ?? "",
+		},
+		...data,
+	}
 }
