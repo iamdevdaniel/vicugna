@@ -1,9 +1,10 @@
 import { db } from "@db"
 import { and, count, eq } from "drizzle-orm"
 
-import { permits, users } from "../../db/schema"
+import { communityAssignments, permits, users } from "../../db/schema"
 import type {
 	AssignmentListItem,
+	CreateAssignmentFormData,
 	ManagedUserOption,
 	SelectOption,
 } from "./assignment.types"
@@ -86,6 +87,43 @@ export async function listAssignments(): Promise<AssignmentListItem[]> {
 				buildAssignmentKey(assignment.seasonId, assignment.communityId),
 			) ?? 0,
 	}))
+}
+
+export async function findAssignmentBySeasonAndCommunity(
+	seasonId: string,
+	communityId: string,
+) {
+	return db.query.communityAssignments.findFirst({
+		where: and(
+			eq(communityAssignments.seasonId, seasonId),
+			eq(communityAssignments.communityId, communityId),
+		),
+	})
+}
+
+export async function saveAssignmentPermit(
+	data: CreateAssignmentFormData,
+	options: {
+		shouldCreateAssignment: boolean
+	},
+) {
+	await db.transaction(async (tx) => {
+		if (options.shouldCreateAssignment) {
+			await tx.insert(communityAssignments).values({
+				id: crypto.randomUUID(),
+				seasonId: data.seasonId,
+				communityId: data.communityId,
+				userId: data.userId,
+			})
+		}
+
+		await tx.insert(permits).values({
+			id: crypto.randomUUID(),
+			seasonId: data.seasonId,
+			communityId: data.communityId,
+			permitNumber: data.permitNumber,
+		})
+	})
 }
 
 function buildAssignmentKey(seasonId: string, communityId: string) {

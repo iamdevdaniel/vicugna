@@ -3,8 +3,10 @@ export interface CreateAssignmentFormData {
 	seasonId: string
 	communityId: string
 	userId: string
-	permitNumbers: string[]
+	permitNumber: string
 }
+
+export type CreateAssignmentFormRequestBody = CreateAssignmentFormData
 
 // View
 export interface SelectOption {
@@ -29,6 +31,7 @@ export interface AssignmentPageData {
 	adminUser: {
 		fullName: string
 	}
+	formMessage: string | null
 	seasons: SelectOption[]
 	communities: SelectOption[]
 	users: ManagedUserOption[]
