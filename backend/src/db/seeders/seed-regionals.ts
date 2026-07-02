@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { pool } from "@config"
 import { db } from "@db"
-import { communities, departments, regionals } from "./schema"
+import { communities, departments, regionals } from "../schema"
 
 type CommunitySeed = {
 	id: string
