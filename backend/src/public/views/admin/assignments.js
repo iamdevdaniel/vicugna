@@ -1,9 +1,6 @@
-function assignmentsPage(initialData) {
+function assignmentFormPage(initialData) {
 	return {
-		seasons: initialData.seasons,
 		communities: initialData.communities,
-		users: initialData.users,
-		selectedSeasonId: initialData.selectedSeasonId,
 		isCommunityPickerOpen: false,
 		communitySearch: "",
 		selectedCommunityId: "",
@@ -41,6 +38,25 @@ function assignmentsPage(initialData) {
 			this.selectedCommunityName = ""
 			this.communitySearch = ""
 			this.isCommunityPickerOpen = false
+		},
+	}
+}
+
+function assignmentUserPicker(initialData) {
+	return {
+		users: initialData.users,
+		isUserPickerOpen: false,
+		userSearch: "",
+		selectedUserId: "",
+		selectedUserName: "",
+		get filteredUsers() {
+			const search = this.userSearch.trim().toLowerCase()
+
+			if (!search) return this.users.slice(0, 8)
+
+			return this.users
+				.filter((user) => user.name.toLowerCase().includes(search))
+				.slice(0, 8)
 		},
 		selectUser(user) {
 			this.selectedUserId = user.id

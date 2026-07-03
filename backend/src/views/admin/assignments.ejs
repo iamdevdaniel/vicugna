@@ -5,15 +5,13 @@
 	<body class="min-h-screen bg-base-200 text-base-content">
 		<main
 			class="mx-auto max-w-6xl px-5 py-8"
-			x-data='assignmentsPage({
-				seasons: <%- JSON.stringify(seasons) %>,
+			x-data='assignmentFormPage({
 				communities: <%- JSON.stringify(communities) %>,
-				users: <%- JSON.stringify(users) %>,
-				selectedSeasonId: "<%= seasons[0]?.id ?? "" %>",
-			})'>
+			})'
+			@assignment-created.window="$refs.assignmentMessage.innerHTML = ''; clearCommunity(); $refs.permitInput.value = ''">
 			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
-					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500"> 
+					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
 						Vicugna Admin
 					</p>
 					<h1 class="text-3xl font-semibold text-slate-900">Asignaciones</h1>
@@ -37,19 +35,34 @@
 							Primero vamos a conectar temporada, comunidad, encargado y permisos.
 						</p>
 
-						<% if (formMessage) { %>
-							<div class="alert alert-info alert-soft mt-4">
-								<%= formMessage %>
+						<form
+							class="mt-4"
+							hx-post="/admin/assignments"
+							hx-target="#assignment-form-message"
+							hx-swap="innerHTML">
+							<div x-ref="assignmentMessage" id="assignment-form-message">
+								<% if (formMessage) { %>
+									<div class="alert alert-info alert-soft mb-4">
+										<%= formMessage %>
+									</div>
+								<% } %>
 							</div>
-						<% } %>
 
-						<form method="post" action="/admin/assignments" class="mt-4">
 							<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 								<label class="form-control">
 									<span class="label-text mb-2 font-semibold">Temporada</span>
-									<select class="select select-bordered w-full" x-model="selectedSeasonId" name="seasonId">
+									<select
+										class="select select-bordered w-full"
+										name="seasonId"
+										hx-post="/admin/assignments/available-users"
+										hx-trigger="change"
+										hx-target="#assignment-user-picker-slot"
+										hx-swap="outerHTML"
+										hx-include="[name='seasonId']">
 										<% seasons.forEach((season) => { %>
-											<option value="<%= season.id %>"><%= season.name %></option>
+											<option value="<%= season.id %>" <%= selectedSeasonId === season.id ? "selected" : "" %>>
+												<%= season.name %>
+											</option>
 										<% }) %>
 									</select>
 								</label>
@@ -106,63 +119,12 @@
 									</div>
 								</div>
 
-								<div class="form-control md:col-span-2">
-									<span class="label-text mb-2 font-semibold">Encargado</span>
-									<input type="hidden" name="userId" :value="selectedUserId" />
-									<div class="relative" @click.outside="isUserPickerOpen = false">
-										<div class="join w-full">
-											<input
-												class="input input-bordered join-item w-full"
-												type="text"
-												x-model="userSearch"
-												@click="isUserPickerOpen = true"
-												@input="isUserPickerOpen = true"
-												placeholder="Buscar o seleccionar encargado" />
-											<button
-												type="button"
-												class="btn btn-outline join-item"
-												@click="selectedUserId ? clearUser() : isUserPickerOpen = !isUserPickerOpen">
-												<template x-if="selectedUserId">
-													<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-														<path d="M18 6 6 18" />
-														<path d="m6 6 12 12" />
-													</svg>
-												</template>
-												<template x-if="!selectedUserId">
-													<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-														<circle cx="11" cy="11" r="8" />
-														<path d="m21 21-4.3-4.3" />
-													</svg>
-												</template>
-											</button>
-										</div>
-										<div
-											class="rounded-box absolute left-0 right-0 top-full z-20 mt-2 border border-base-300 bg-base-100 shadow"
-											x-show="isUserPickerOpen"
-											x-cloak>
-											<template x-if="filteredUsers.length === 0">
-												<p class="px-3 py-3 text-sm text-slate-500">Sin resultados</p>
-											</template>
-											<ul class="max-h-48 overflow-y-auto">
-												<template x-for="user in filteredUsers" :key="user.id">
-													<li>
-														<button
-															type="button"
-															class="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition hover:bg-base-200"
-															@click="selectUser(user)">
-															<span x-text="user.name"></span>
-															<span class="badge badge-success badge-soft" x-show="user.isActive">Activo</span>
-														</button>
-													</li>
-												</template>
-											</ul>
-										</div>
-									</div>
-								</div>
+								<%- include("../partials/assignment-user-picker", { users }) %>
 
 								<label class="form-control md:col-span-2">
 									<span class="label-text mb-2 font-semibold">Permiso</span>
 									<input
+										x-ref="permitInput"
 										class="input input-bordered w-full"
 										name="permitNumber"
 										placeholder="Numero de permiso" />
@@ -178,40 +140,10 @@
 					</div>
 				</article>
 
-				<article class="card bg-base-100 shadow">
-					<div class="card-body">
-						<h2 class="card-title">Asignaciones actuales</h2>
-						<p class="text-sm text-slate-500">
-							Resumen de lo que ya esta conectado en la base de datos.
-						</p>
-
-						<div class="mt-4 space-y-3 text-sm text-slate-600">
-							<p>Temporadas: <strong><%= seasons.length %></strong></p>
-							<p>Comunidades: <strong><%= communities.length %></strong></p>
-							<p>Encargados: <strong><%= users.length %></strong></p>
-							<p>Asignaciones: <strong><%= assignments.length %></strong></p>
-						</div>
-
-						<div class="mt-4 space-y-3">
-							<% if (assignments.length === 0) { %>
-								<p class="text-sm text-slate-500">Todavia no hay asignaciones guardadas.</p>
-							<% } %>
-
-							<% assignments.forEach((assignment) => { %>
-								<article class="rounded-box border border-base-300 px-4 py-3">
-									<h3 class="font-semibold text-slate-900"><%= assignment.communityName %></h3>
-									<p class="mt-1 text-sm text-slate-500">
-										<%= assignment.seasonName %> • <%= assignment.userFullName %>
-									</p>
-									<p class="mt-2 text-sm text-slate-600">
-										Permisos: <strong><%= assignment.permitCount %></strong>
-									</p>
-								</article>
-							<% }) %>
-						</div>
-					</div>
-				</article>
+				<%- include("../partials/assignments-list-panel", { seasons, communities, users, assignments }) %>
 			</section>
+
+			<div id="toast-container" class="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex justify-center px-5"></div>
 		</main>
 		<script src="/views/admin/assignments.js"></script>
 	</body>

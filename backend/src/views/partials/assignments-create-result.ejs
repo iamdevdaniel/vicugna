@@ -1,0 +1,11 @@
+<% if (errorMessage) { %>
+	<div class="alert alert-error alert-soft">
+		<%= errorMessage %>
+	</div>
+<% } %>
+
+<% if (successMessage) { %>
+	<%- include("./assignment-user-picker", { users, useOobSwap: true }) %>
+	<%- include("./assignments-list-panel", { seasons, communities, users, assignments, useOobSwap: true }) %>
+	<%- include("./toast", { message: successMessage }) %>
+<% } %>

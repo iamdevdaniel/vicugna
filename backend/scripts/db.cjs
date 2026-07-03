@@ -15,9 +15,10 @@ npm run db -- seed regionals
 */
 
 const backendDir = path.resolve(__dirname, "..")
+const repoDir = path.resolve(backendDir, "..")
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm"
-const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx"
 const nodeCommand = process.platform === "win32" ? "node.exe" : "node"
+const drizzleScript = path.join(repoDir, "node_modules", "drizzle-kit", "bin.cjs")
 
 const seedTargets = {
 	regionals: "dist/db/seeders/seed-regionals.js",
@@ -38,13 +39,13 @@ switch (action) {
 		runCommand("docker", ["ps", "--filter", "name=vicugna-postgres"])
 		break
 	case "generate":
-		runCommand(npxCommand, ["drizzle-kit", "generate"])
+		runCommand(nodeCommand, [drizzleScript, "generate"])
 		break
 	case "migrate":
-		runCommand(npxCommand, ["drizzle-kit", "migrate"])
+		runCommand(nodeCommand, [drizzleScript, "migrate"])
 		break
 	case "studio":
-		runCommand(npxCommand, ["drizzle-kit", "studio"])
+		runCommand(nodeCommand, [drizzleScript, "studio"])
 		break
 	case "seed":
 		runSeed(seedTarget)

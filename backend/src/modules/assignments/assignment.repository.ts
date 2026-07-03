@@ -1,7 +1,7 @@
 import { db } from "@db"
-import { and, count, eq } from "drizzle-orm"
+import { and, eq, notExists } from "drizzle-orm"
 
-import { communityAssignments, permits, users } from "../../db/schema"
+import { assignments, permits, users } from "../../db/schema"
 import type {
 	AssignmentListItem,
 	CreateAssignmentFormData,
@@ -48,12 +48,42 @@ export async function listAssignmentUsers(): Promise<ManagedUserOption[]> {
 	}))
 }
 
+export async function listAvailableAssignmentUsers(
+	seasonId: string,
+): Promise<ManagedUserOption[]> {
+	const rows = await db.query.users.findMany({
+		where: and(
+			eq(users.role, "user"),
+			eq(users.isActive, true),
+			notExists(
+				db
+					.select({ id: assignments.id })
+					.from(assignments)
+					.where(
+						and(
+							eq(assignments.seasonId, seasonId),
+							eq(assignments.userId, users.id),
+						),
+					),
+			),
+		),
+		orderBy: (table, { asc: sortAsc }) => [sortAsc(table.fullName)],
+	})
+
+	return rows.map((user) => ({
+		id: user.id,
+		name: user.fullName,
+		isActive: user.isActive,
+	}))
+}
+
 export async function listAssignments(): Promise<AssignmentListItem[]> {
-	const rows = await db.query.communityAssignments.findMany({
+	const rows = await db.query.assignments.findMany({
 		with: {
 			season: true,
 			community: true,
 			user: true,
+			permit: true,
 		},
 		orderBy: (table, { asc: sortAsc }) => [
 			sortAsc(table.assignedAt),
@@ -61,71 +91,42 @@ export async function listAssignments(): Promise<AssignmentListItem[]> {
 		],
 	})
 
-	const permitCounts = await db
-		.select({
-			seasonId: permits.seasonId,
-			communityId: permits.communityId,
-			permitCount: count(),
-		})
-		.from(permits)
-		.groupBy(permits.seasonId, permits.communityId)
-
-	const permitCountByAssignment = new Map(
-		permitCounts.map((row) => [
-			buildAssignmentKey(row.seasonId, row.communityId),
-			Number(row.permitCount),
-		]),
-	)
-
 	return rows.map((assignment) => ({
 		id: assignment.id,
 		seasonName: assignment.season.name,
 		communityName: assignment.community.name,
 		userFullName: assignment.user.fullName,
-		permitCount:
-			permitCountByAssignment.get(
-				buildAssignmentKey(assignment.seasonId, assignment.communityId),
-			) ?? 0,
+		permitNumber: assignment.permit.permitNumber,
 	}))
 }
 
-export async function findAssignmentBySeasonAndCommunity(
+export async function findAssignmentBySeasonAndUser(
 	seasonId: string,
-	communityId: string,
+	userId: string,
 ) {
-	return db.query.communityAssignments.findFirst({
+	return db.query.assignments.findFirst({
 		where: and(
-			eq(communityAssignments.seasonId, seasonId),
-			eq(communityAssignments.communityId, communityId),
+			eq(assignments.seasonId, seasonId),
+			eq(assignments.userId, userId),
 		),
 	})
 }
 
-export async function saveAssignmentPermit(
-	data: CreateAssignmentFormData,
-	options: {
-		shouldCreateAssignment: boolean
-	},
-) {
+export async function saveAssignment(data: CreateAssignmentFormData) {
 	await db.transaction(async (tx) => {
-		if (options.shouldCreateAssignment) {
-			await tx.insert(communityAssignments).values({
-				id: crypto.randomUUID(),
-				seasonId: data.seasonId,
-				communityId: data.communityId,
-				userId: data.userId,
-			})
-		}
+		const permitId = crypto.randomUUID()
 
 		await tx.insert(permits).values({
+			id: permitId,
+			permitNumber: data.permitNumber,
+		})
+
+		await tx.insert(assignments).values({
 			id: crypto.randomUUID(),
 			seasonId: data.seasonId,
 			communityId: data.communityId,
-			permitNumber: data.permitNumber,
+			userId: data.userId,
+			permitId,
 		})
 	})
-}
-
-function buildAssignmentKey(seasonId: string, communityId: string) {
-	return `${seasonId}:${communityId}`
 }

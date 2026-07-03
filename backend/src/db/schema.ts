@@ -9,6 +9,10 @@ import {
 	uniqueIndex,
 } from "drizzle-orm/pg-core"
 
+// ==========================================
+// TABLES
+// ==========================================
+
 export const departments = pgTable("departments", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),
@@ -61,8 +65,21 @@ export const users = pgTable(
 	],
 )
 
-export const communityAssignments = pgTable(
-	"community_assignments",
+export const permits = pgTable(
+	"permits",
+	{
+		id: text("id").primaryKey(),
+		permitNumber: text("permit_number").notNull(),
+		createdAt: timestamp("created_at").notNull().defaultNow(),
+		updatedAt: timestamp("updated_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("permits_permit_number_unique").on(table.permitNumber),
+	],
+)
+
+export const assignments = pgTable(
+	"assignments",
 	{
 		id: text("id").primaryKey(),
 		seasonId: text("season_id")
@@ -74,36 +91,17 @@ export const communityAssignments = pgTable(
 		userId: text("user_id")
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
+		permitId: text("permit_id")
+			.notNull()
+			.references(() => permits.id, { onDelete: "cascade" }),
 		assignedAt: timestamp("assigned_at").notNull().defaultNow(),
 	},
 	(table) => [
-		uniqueIndex("community_assignments_season_community_unique").on(
+		uniqueIndex("assignments_season_user_unique").on(
 			table.seasonId,
-			table.communityId,
+			table.userId,
 		),
-	],
-)
-
-export const permits = pgTable(
-	"permits",
-	{
-		id: text("id").primaryKey(),
-		seasonId: text("season_id")
-			.notNull()
-			.references(() => seasons.id, { onDelete: "cascade" }),
-		communityId: text("community_id")
-			.notNull()
-			.references(() => communities.id),
-		permitNumber: text("permit_number").notNull(),
-		createdAt: timestamp("created_at").notNull().defaultNow(),
-		updatedAt: timestamp("updated_at").notNull().defaultNow(),
-	},
-	(table) => [
-		uniqueIndex("permits_season_community_number_unique").on(
-			table.seasonId,
-			table.communityId,
-			table.permitNumber,
-		),
+		uniqueIndex("assignments_permit_id_unique").on(table.permitId),
 	],
 )
 
@@ -248,9 +246,12 @@ export const dehearingDetails = pgTable(
 	],
 )
 
+// ==========================================
+// RELATIONS
+// ==========================================
+
 export const seasonRelations = relations(seasons, ({ many }) => ({
-	communityAssignments: many(communityAssignments),
-	permits: many(permits),
+	assignments: many(assignments),
 }))
 
 export const departmentRelations = relations(departments, ({ many }) => ({
@@ -270,41 +271,34 @@ export const communityRelations = relations(communities, ({ one, many }) => ({
 		fields: [communities.regionalId],
 		references: [regionals.id],
 	}),
-	assignments: many(communityAssignments),
-	permits: many(permits),
+	assignments: many(assignments),
 }))
 
 export const userRelations = relations(users, ({ many }) => ({
-	communityAssignments: many(communityAssignments),
+	assignments: many(assignments),
 }))
 
-export const communityAssignmentRelations = relations(
-	communityAssignments,
-	({ one }) => ({
-		season: one(seasons, {
-			fields: [communityAssignments.seasonId],
-			references: [seasons.id],
-		}),
-		community: one(communities, {
-			fields: [communityAssignments.communityId],
-			references: [communities.id],
-		}),
-		user: one(users, {
-			fields: [communityAssignments.userId],
-			references: [users.id],
-		}),
-	}),
-)
-
-export const permitRelations = relations(permits, ({ one, many }) => ({
+export const assignmentRelations = relations(assignments, ({ one }) => ({
 	season: one(seasons, {
-		fields: [permits.seasonId],
+		fields: [assignments.seasonId],
 		references: [seasons.id],
 	}),
 	community: one(communities, {
-		fields: [permits.communityId],
+		fields: [assignments.communityId],
 		references: [communities.id],
 	}),
+	user: one(users, {
+		fields: [assignments.userId],
+		references: [users.id],
+	}),
+	permit: one(permits, {
+		fields: [assignments.permitId],
+		references: [permits.id],
+	}),
+}))
+
+export const permitRelations = relations(permits, ({ one, many }) => ({
+	assignment: one(assignments),
 	basicInfo: one(basicInfo),
 	participants: many(participants),
 	shearingHeader: one(shearingHeaders),

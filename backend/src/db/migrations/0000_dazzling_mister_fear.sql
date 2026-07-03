@@ -1,3 +1,12 @@
+CREATE TABLE "assignments" (
+	"id" text PRIMARY KEY NOT NULL,
+	"season_id" text NOT NULL,
+	"community_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"permit_id" text NOT NULL,
+	"assigned_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "basic_info" (
 	"id" text PRIMARY KEY NOT NULL,
 	"permit_id" text NOT NULL,
@@ -30,14 +39,6 @@ CREATE TABLE "communities" (
 	"id" text PRIMARY KEY NOT NULL,
 	"regional_id" text NOT NULL,
 	"name" text NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "community_assignments" (
-	"id" text PRIMARY KEY NOT NULL,
-	"season_id" text NOT NULL,
-	"community_id" text NOT NULL,
-	"user_id" text NOT NULL,
-	"assigned_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "dehearing_details" (
@@ -78,8 +79,6 @@ CREATE TABLE "participants" (
 --> statement-breakpoint
 CREATE TABLE "permits" (
 	"id" text PRIMARY KEY NOT NULL,
-	"season_id" text NOT NULL,
-	"community_id" text NOT NULL,
 	"permit_number" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
@@ -145,27 +144,27 @@ CREATE TABLE "users" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+ALTER TABLE "assignments" ADD CONSTRAINT "assignments_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "public"."seasons"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "assignments" ADD CONSTRAINT "assignments_community_id_communities_id_fk" FOREIGN KEY ("community_id") REFERENCES "public"."communities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "assignments" ADD CONSTRAINT "assignments_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "assignments" ADD CONSTRAINT "assignments_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "basic_info" ADD CONSTRAINT "basic_info_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cleaning_common_records" ADD CONSTRAINT "cleaning_common_records_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cleaning_headers" ADD CONSTRAINT "cleaning_headers_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "communities" ADD CONSTRAINT "communities_regional_id_regionals_id_fk" FOREIGN KEY ("regional_id") REFERENCES "public"."regionals"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "community_assignments" ADD CONSTRAINT "community_assignments_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "public"."seasons"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "community_assignments" ADD CONSTRAINT "community_assignments_community_id_communities_id_fk" FOREIGN KEY ("community_id") REFERENCES "public"."communities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "community_assignments" ADD CONSTRAINT "community_assignments_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "dehearing_details" ADD CONSTRAINT "dehearing_details_cleaning_common_id_cleaning_common_records_id_fk" FOREIGN KEY ("cleaning_common_id") REFERENCES "public"."cleaning_common_records"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "grooming_details" ADD CONSTRAINT "grooming_details_cleaning_common_id_cleaning_common_records_id_fk" FOREIGN KEY ("cleaning_common_id") REFERENCES "public"."cleaning_common_records"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "participants" ADD CONSTRAINT "participants_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "permits" ADD CONSTRAINT "permits_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "public"."seasons"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "permits" ADD CONSTRAINT "permits_community_id_communities_id_fk" FOREIGN KEY ("community_id") REFERENCES "public"."communities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "regionals" ADD CONSTRAINT "regionals_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shearing_headers" ADD CONSTRAINT "shearing_headers_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shearing_records" ADD CONSTRAINT "shearing_records_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "assignments_season_user_unique" ON "assignments" USING btree ("season_id","user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "assignments_permit_id_unique" ON "assignments" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "basic_info_permit_id_unique" ON "basic_info" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "cleaning_headers_permit_id_unique" ON "cleaning_headers" USING btree ("permit_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "community_assignments_season_community_unique" ON "community_assignments" USING btree ("season_id","community_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "dehearing_details_cleaning_common_id_unique" ON "dehearing_details" USING btree ("cleaning_common_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "grooming_details_cleaning_common_id_unique" ON "grooming_details" USING btree ("cleaning_common_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "permits_season_community_number_unique" ON "permits" USING btree ("season_id","community_id","permit_number");--> statement-breakpoint
+CREATE UNIQUE INDEX "permits_permit_number_unique" ON "permits" USING btree ("permit_number");--> statement-breakpoint
 CREATE UNIQUE INDEX "shearing_headers_permit_id_unique" ON "shearing_headers" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "users_email_unique" ON "users" USING btree ("email");--> statement-breakpoint
 CREATE UNIQUE INDEX "users_phone_number_unique" ON "users" USING btree ("phone_number");

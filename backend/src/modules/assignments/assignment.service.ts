@@ -4,34 +4,71 @@ import {
 } from "../../db/errors"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
-	findAssignmentBySeasonAndCommunity,
+	findAssignmentBySeasonAndUser,
 	listAssignmentCommunities,
 	listAssignmentSeasons,
 	listAssignments,
-	listAssignmentUsers,
-	saveAssignmentPermit,
+	listAvailableAssignmentUsers,
+	saveAssignment,
 } from "./assignment.repository"
 import type {
 	AssignmentPageData,
 	CreateAssignmentFormData,
 } from "./assignment.types"
 
-export async function getAssignmentsPageState(): Promise<
+export async function getAssignmentsInitialPageState(): Promise<
 	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
 > {
-	const [seasons, communities, users, assignments] = await Promise.all([
+	const [seasons, communities, assignments] = await Promise.all([
 		listAssignmentSeasons(),
 		listAssignmentCommunities(),
-		listAssignmentUsers(),
 		listAssignments(),
 	])
 
+	const selectedSeasonId = seasons[0]?.id ?? ""
+	const users = selectedSeasonId
+		? await listAvailableAssignmentUsers(selectedSeasonId)
+		: []
+
 	return {
+		selectedSeasonId,
 		seasons,
 		communities,
 		users,
 		assignments,
 	}
+}
+
+export async function getAssignmentsPageStateForSeason(
+	selectedSeasonId: string,
+): Promise<
+	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
+> {
+	const [seasons, communities, assignments] = await Promise.all([
+		listAssignmentSeasons(),
+		listAssignmentCommunities(),
+		listAssignments(),
+	])
+
+	const users = selectedSeasonId
+		? await listAvailableAssignmentUsers(selectedSeasonId)
+		: []
+
+	return {
+		selectedSeasonId,
+		seasons,
+		communities,
+		users,
+		assignments,
+	}
+}
+
+export async function getAvailableAssignmentUsers(selectedSeasonId: string) {
+	if (!selectedSeasonId) {
+		return []
+	}
+
+	return listAvailableAssignmentUsers(selectedSeasonId)
 }
 
 export async function createAssignment(data: CreateAssignmentFormData) {
@@ -48,21 +85,19 @@ export async function createAssignment(data: CreateAssignmentFormData) {
 		)
 	}
 
-	const existingAssignment = await findAssignmentBySeasonAndCommunity(
+	const existingAssignment = await findAssignmentBySeasonAndUser(
 		formData.seasonId,
-		formData.communityId,
+		formData.userId,
 	)
 
-	if (existingAssignment && existingAssignment.userId !== formData.userId) {
+	if (existingAssignment) {
 		throw new AssignmentManagementError(
-			"Esa comunidad ya tiene otro encargado en esa temporada",
+			"Ese encargado ya tiene un permiso en esa temporada",
 		)
 	}
 
 	try {
-		await saveAssignmentPermit(formData, {
-			shouldCreateAssignment: !existingAssignment,
-		})
+		await saveAssignment(formData)
 	} catch (error) {
 		throwAssignmentCreationError(error)
 	}
@@ -85,16 +120,18 @@ function throwAssignmentCreationError(error: unknown): never {
 		POSTGRES_ERROR_CODES.uniqueViolation,
 	)
 
-	if (uniqueConstraint === "community_assignments_season_community_unique") {
+	if (uniqueConstraint === "assignments_season_user_unique") {
 		throw new AssignmentManagementError(
-			"Esa comunidad ya tiene un encargado en esa temporada",
+			"Ese encargado ya tiene un permiso en esa temporada",
 		)
 	}
 
-	if (uniqueConstraint === "permits_season_community_number_unique") {
-		throw new AssignmentManagementError(
-			"Ese permiso ya existe para esa comunidad en esa temporada",
-		)
+	if (uniqueConstraint === "permits_permit_number_unique") {
+		throw new AssignmentManagementError("Ese permiso ya existe")
+	}
+
+	if (uniqueConstraint === "assignments_permit_id_unique") {
+		throw new AssignmentManagementError("Ese permiso ya esta asignado")
 	}
 
 	const foreignKeyConstraint = getPostgresConstraintName(

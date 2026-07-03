@@ -1,0 +1,36 @@
+<article
+	id="assignments-list-panel"
+	<% if (typeof useOobSwap !== "undefined" && useOobSwap) { %>hx-swap-oob="outerHTML"<% } %>
+	class="card bg-base-100 shadow">
+	<div class="card-body">
+		<h2 class="card-title">Asignaciones actuales</h2>
+		<p class="text-sm text-slate-500">
+			Resumen de lo que ya esta conectado en la base de datos.
+		</p>
+
+		<div class="mt-4 space-y-3 text-sm text-slate-600">
+			<p>Temporadas: <strong><%= seasons.length %></strong></p>
+			<p>Comunidades: <strong><%= communities.length %></strong></p>
+			<p>Disponibles: <strong><%= users.length %></strong></p>
+			<p>Asignaciones: <strong><%= assignments.length %></strong></p>
+		</div>
+
+		<div class="mt-4 space-y-3">
+			<% if (assignments.length === 0) { %>
+				<p class="text-sm text-slate-500">Todavia no hay asignaciones guardadas.</p>
+			<% } %>
+
+			<% assignments.forEach((assignment) => { %>
+				<article class="rounded-box border border-base-300 px-4 py-3">
+					<h3 class="font-semibold text-slate-900"><%= assignment.communityName %></h3>
+					<p class="mt-1 text-sm text-slate-500">
+						<%= assignment.seasonName %> • <%= assignment.userFullName %>
+					</p>
+					<p class="mt-2 text-sm text-slate-600">
+						Permiso: <strong><%= assignment.permitNumber %></strong>
+					</p>
+				</article>
+			<% }) %>
+		</div>
+	</div>
+</article>

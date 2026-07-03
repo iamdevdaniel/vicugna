@@ -23,7 +23,7 @@ export interface AssignmentListItem {
 	seasonName: string
 	communityName: string
 	userFullName: string
-	permitCount: number
+	permitNumber: string
 }
 
 export interface AssignmentPageData {
@@ -32,6 +32,7 @@ export interface AssignmentPageData {
 		fullName: string
 	}
 	formMessage: string | null
+	selectedSeasonId: string
 	seasons: SelectOption[]
 	communities: SelectOption[]
 	users: ManagedUserOption[]

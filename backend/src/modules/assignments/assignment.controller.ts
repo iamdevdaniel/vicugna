@@ -1,6 +1,11 @@
 import type { Request, Response } from "express"
 import { AssignmentManagementError } from "./assignment.errors"
-import { createAssignment, getAssignmentsPageState } from "./assignment.service"
+import {
+	createAssignment,
+	getAssignmentsInitialPageState,
+	getAssignmentsPageStateForSeason,
+	getAvailableAssignmentUsers,
+} from "./assignment.service"
 import type {
 	AssignmentPageData,
 	CreateAssignmentFormRequestBody,
@@ -13,8 +18,26 @@ import type {
 export async function renderAssignmentPage(req: Request, res: Response) {
 	res.render(
 		"admin/assignments",
-		getAssignmentsViewData(req, await getAssignmentsPageState(), null),
+		getAssignmentsViewData(
+			req,
+			await getAssignmentsInitialPageState(),
+			null,
+		),
 	)
+}
+
+export async function renderAvailableAssignmentUsers(
+	req: Request<
+		Record<string, never>,
+		Record<string, never>,
+		{ seasonId?: string }
+	>,
+	res: Response,
+) {
+	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
+	const users = await getAvailableAssignmentUsers(selectedSeasonId)
+
+	res.render("partials/assignment-user-picker", { users })
 }
 
 function getAssignmentsViewData(
@@ -44,26 +67,31 @@ export async function submitAssignmentForm(
 	>,
 	res: Response,
 ) {
+	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
+
 	try {
 		await createAssignment(req.body)
-		res.render(
-			"admin/assignments",
-			getAssignmentsViewData(
-				req,
-				await getAssignmentsPageState(),
-				"Asignacion guardada",
-			),
-		)
+		res.setHeader("HX-Trigger", "assignment-created")
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			errorMessage: null,
+		})
 	} catch (error) {
-		res.render(
-			"admin/assignments",
-			getAssignmentsViewData(
-				req,
-				await getAssignmentsPageState(),
-				getAssignmentErrorMessage(error),
-			),
-		)
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			errorMessage: getAssignmentErrorMessage(error),
+		})
 	}
+}
+
+function getSelectedSeasonId(seasonId: unknown) {
+	if (typeof seasonId !== "string") {
+		return ""
+	}
+
+	const trimmedSeasonId = seasonId.trim()
+
+	return trimmedSeasonId
 }
 
 function getAssignmentErrorMessage(error: unknown) {

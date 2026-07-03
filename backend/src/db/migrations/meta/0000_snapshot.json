@@ -1,9 +1,149 @@
 {
-  "id": "2bbf990b-e4ff-419e-b679-abd16a9b368f",
+  "id": "ddf6bb2b-131f-4116-b784-5b6f0b9357cd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.assignments": {
+      "name": "assignments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "season_id": {
+          "name": "season_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "community_id": {
+          "name": "community_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "permit_id": {
+          "name": "permit_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigned_at": {
+          "name": "assigned_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "assignments_season_user_unique": {
+          "name": "assignments_season_user_unique",
+          "columns": [
+            {
+              "expression": "season_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "assignments_permit_id_unique": {
+          "name": "assignments_permit_id_unique",
+          "columns": [
+            {
+              "expression": "permit_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "assignments_season_id_seasons_id_fk": {
+          "name": "assignments_season_id_seasons_id_fk",
+          "tableFrom": "assignments",
+          "tableTo": "seasons",
+          "columnsFrom": [
+            "season_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "assignments_community_id_communities_id_fk": {
+          "name": "assignments_community_id_communities_id_fk",
+          "tableFrom": "assignments",
+          "tableTo": "communities",
+          "columnsFrom": [
+            "community_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "assignments_user_id_users_id_fk": {
+          "name": "assignments_user_id_users_id_fk",
+          "tableFrom": "assignments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "assignments_permit_id_permits_id_fk": {
+          "name": "assignments_permit_id_permits_id_fk",
+          "tableFrom": "assignments",
+          "tableTo": "permits",
+          "columnsFrom": [
+            "permit_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.basic_info": {
       "name": "basic_info",
       "schema": "",
@@ -267,112 +407,6 @@
             "id"
           ],
           "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.community_assignments": {
-      "name": "community_assignments",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "season_id": {
-          "name": "season_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "community_id": {
-          "name": "community_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "assigned_at": {
-          "name": "assigned_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "community_assignments_season_community_unique": {
-          "name": "community_assignments_season_community_unique",
-          "columns": [
-            {
-              "expression": "season_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "community_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "community_assignments_season_id_seasons_id_fk": {
-          "name": "community_assignments_season_id_seasons_id_fk",
-          "tableFrom": "community_assignments",
-          "tableTo": "seasons",
-          "columnsFrom": [
-            "season_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "community_assignments_community_id_communities_id_fk": {
-          "name": "community_assignments_community_id_communities_id_fk",
-          "tableFrom": "community_assignments",
-          "tableTo": "communities",
-          "columnsFrom": [
-            "community_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "community_assignments_user_id_users_id_fk": {
-          "name": "community_assignments_user_id_users_id_fk",
-          "tableFrom": "community_assignments",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -662,18 +696,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "season_id": {
-          "name": "season_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "community_id": {
-          "name": "community_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "permit_number": {
           "name": "permit_number",
           "type": "text",
@@ -696,21 +718,9 @@
         }
       },
       "indexes": {
-        "permits_season_community_number_unique": {
-          "name": "permits_season_community_number_unique",
+        "permits_permit_number_unique": {
+          "name": "permits_permit_number_unique",
           "columns": [
-            {
-              "expression": "season_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "community_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
             {
               "expression": "permit_number",
               "isExpression": false,
@@ -724,34 +734,7 @@
           "with": {}
         }
       },
-      "foreignKeys": {
-        "permits_season_id_seasons_id_fk": {
-          "name": "permits_season_id_seasons_id_fk",
-          "tableFrom": "permits",
-          "tableTo": "seasons",
-          "columnsFrom": [
-            "season_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "permits_community_id_communities_id_fk": {
-          "name": "permits_community_id_communities_id_fk",
-          "tableFrom": "permits",
-          "tableTo": "communities",
-          "columnsFrom": [
-            "community_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
