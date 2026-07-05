@@ -5,10 +5,10 @@ import {
 import { AssignmentManagementError } from "./assignment.errors"
 import {
 	findAssignmentBySeasonAndUser,
-	listAssignmentCommunities,
-	listAssignmentSeasons,
 	listAssignments,
 	listAvailableAssignmentUsers,
+	listCommunities,
+	listSeasons,
 	saveAssignment,
 } from "./assignment.repository"
 import type {
@@ -19,16 +19,16 @@ import type {
 export async function getAssignmentsInitialPageState(): Promise<
 	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
 > {
-	const [seasons, communities, assignments] = await Promise.all([
-		listAssignmentSeasons(),
-		listAssignmentCommunities(),
-		listAssignments(),
+	const [seasons, communities] = await Promise.all([
+		listSeasons(),
+		listCommunities(),
 	])
 
 	const selectedSeasonId = seasons[0]?.id ?? ""
-	const users = selectedSeasonId
-		? await listAvailableAssignmentUsers(selectedSeasonId)
-		: []
+	const [users, assignments] = await Promise.all([
+		selectedSeasonId ? listAvailableAssignmentUsers(selectedSeasonId) : [],
+		selectedSeasonId ? listAssignments(selectedSeasonId) : [],
+	])
 
 	return {
 		selectedSeasonId,
@@ -44,15 +44,12 @@ export async function getAssignmentsPageStateForSeason(
 ): Promise<
 	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
 > {
-	const [seasons, communities, assignments] = await Promise.all([
-		listAssignmentSeasons(),
-		listAssignmentCommunities(),
-		listAssignments(),
+	const [seasons, communities, users, assignments] = await Promise.all([
+		listSeasons(),
+		listCommunities(),
+		selectedSeasonId ? listAvailableAssignmentUsers(selectedSeasonId) : [],
+		selectedSeasonId ? listAssignments(selectedSeasonId) : [],
 	])
-
-	const users = selectedSeasonId
-		? await listAvailableAssignmentUsers(selectedSeasonId)
-		: []
 
 	return {
 		selectedSeasonId,

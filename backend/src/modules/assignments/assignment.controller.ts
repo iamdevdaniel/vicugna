@@ -4,7 +4,6 @@ import {
 	createAssignment,
 	getAssignmentsInitialPageState,
 	getAssignmentsPageStateForSeason,
-	getAvailableAssignmentUsers,
 } from "./assignment.service"
 import type {
 	AssignmentPageData,
@@ -26,7 +25,7 @@ export async function renderAssignmentPage(req: Request, res: Response) {
 	)
 }
 
-export async function renderAvailableAssignmentUsers(
+export async function renderAssignmentSeasonState(
 	req: Request<
 		Record<string, never>,
 		Record<string, never>,
@@ -35,9 +34,9 @@ export async function renderAvailableAssignmentUsers(
 	res: Response,
 ) {
 	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
-	const users = await getAvailableAssignmentUsers(selectedSeasonId)
+	const seasonState = await getAssignmentsPageStateForSeason(selectedSeasonId)
 
-	res.render("partials/assignment-user-picker", { users })
+	res.render("partials/assignments-season-state", seasonState)
 }
 
 function getAssignmentsViewData(

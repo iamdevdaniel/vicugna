@@ -54,10 +54,10 @@
 									<select
 										class="select select-bordered w-full"
 										name="seasonId"
-										hx-post="/admin/assignments/available-users"
+										hx-post="/admin/assignments/season-state"
 										hx-trigger="change"
-										hx-target="#assignment-user-picker-slot"
-										hx-swap="outerHTML"
+										hx-target="#assignment-form-message"
+										hx-swap="none"
 										hx-include="[name='seasonId']">
 										<% seasons.forEach((season) => { %>
 											<option value="<%= season.id %>" <%= selectedSeasonId === season.id ? "selected" : "" %>>

@@ -9,7 +9,7 @@ import type {
 	SelectOption,
 } from "./assignment.types"
 
-export async function listAssignmentSeasons(): Promise<SelectOption[]> {
+export async function listSeasons(): Promise<SelectOption[]> {
 	const rows = await db.query.seasons.findMany({
 		orderBy: (table, { desc, asc: sortAsc }) => [
 			desc(table.isActive),
@@ -24,7 +24,7 @@ export async function listAssignmentSeasons(): Promise<SelectOption[]> {
 	}))
 }
 
-export async function listAssignmentCommunities(): Promise<SelectOption[]> {
+export async function listCommunities(): Promise<SelectOption[]> {
 	const rows = await db.query.communities.findMany({
 		orderBy: (table, { asc: sortAsc }) => [sortAsc(table.name)],
 	})
@@ -77,8 +77,11 @@ export async function listAvailableAssignmentUsers(
 	}))
 }
 
-export async function listAssignments(): Promise<AssignmentListItem[]> {
+export async function listAssignments(
+	seasonId?: string,
+): Promise<AssignmentListItem[]> {
 	const rows = await db.query.assignments.findMany({
+		where: seasonId ? eq(assignments.seasonId, seasonId) : undefined,
 		with: {
 			season: true,
 			community: true,

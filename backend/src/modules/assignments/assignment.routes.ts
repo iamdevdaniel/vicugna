@@ -1,12 +1,12 @@
 import { Router } from "express"
 import {
 	renderAssignmentPage,
-	renderAvailableAssignmentUsers,
+	renderAssignmentSeasonState,
 	submitAssignmentForm,
 } from "./assignment.controller"
 
 export const assignmentRoutes = Router()
 
-assignmentRoutes.post("/available-users", renderAvailableAssignmentUsers)
+assignmentRoutes.post("/season-state", renderAssignmentSeasonState)
 assignmentRoutes.get("/", renderAssignmentPage)
 assignmentRoutes.post("/", submitAssignmentForm)
