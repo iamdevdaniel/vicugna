@@ -1,8 +1,13 @@
 <div
 	id="assignment-user-picker-slot"
 	<% if (typeof useOobSwap !== "undefined" && useOobSwap) { %>hx-swap-oob="outerHTML"<% } %>
-	class="form-control md:col-span-2"
+	class="form-control relative md:col-span-2"
 	x-data='assignmentUserPicker({ users: <%- JSON.stringify(users) %> })'>
+	<div
+		id="assignment-user-picker-loading"
+		class="htmx-indicator absolute inset-0 z-10 flex items-center justify-center rounded-box bg-base-100/70">
+		<span class="loading loading-spinner loading-md text-primary"></span>
+	</div>
 	<span class="label-text mb-2 font-semibold">Encargado</span>
 	<input type="hidden" name="userId" :value="selectedUserId" />
 	<div class="relative" @click.outside="isUserPickerOpen = false">

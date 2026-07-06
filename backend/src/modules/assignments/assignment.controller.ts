@@ -35,7 +35,6 @@ export async function renderAssignmentSeasonState(
 ) {
 	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
 	const seasonState = await getAssignmentsPageStateForSeason(selectedSeasonId)
-
 	res.render("partials/assignments-season-state", seasonState)
 }
 

@@ -36,6 +36,7 @@
 						</p>
 
 						<form
+							id="assignment-form"
 							class="mt-4"
 							hx-post="/admin/assignments"
 							hx-target="#assignment-form-message"
@@ -58,7 +59,9 @@
 										hx-trigger="change"
 										hx-target="#assignment-form-message"
 										hx-swap="none"
-										hx-include="[name='seasonId']">
+										hx-include="[name='seasonId']"
+										hx-disabled-elt="#assignment-form input, #assignment-form select, #assignment-form button"
+										hx-indicator="#assignment-user-picker-loading, #assignments-list-loading">
 										<% seasons.forEach((season) => { %>
 											<option value="<%= season.id %>" <%= selectedSeasonId === season.id ? "selected" : "" %>>
 												<%= season.name %>
