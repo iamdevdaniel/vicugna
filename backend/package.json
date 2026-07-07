@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run css:watch\"",
-    "dev:server": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
+    "dev:server": "tsx watch --clear-screen=false src/server.ts",
     "build": "npm run css:build && npm run build:ts",
     "build:ts": "tsc && tsc-alias",
     "css:build": "tailwindcss -i src/public/admin.input.css -o src/public/admin.css --minify",
@@ -46,9 +46,8 @@
     "concurrently": "^10.0.3",
     "daisyui": "^5.5.23",
     "drizzle-kit": "^0.31.10",
-    "nodemon": "^3.1.14",
     "tailwindcss": "^4.3.1",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.20.6",
     "tsc-alias": "^1.8.17",
     "tsconfig-paths": "^4.2.0",
     "typescript": "~5.9.2"

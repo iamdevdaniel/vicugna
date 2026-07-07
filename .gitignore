@@ -46,6 +46,7 @@ app-example
 
 # AI
 AGENTS.md
+.env
 
 # Tailwind
 backend/src/public/admin.css
