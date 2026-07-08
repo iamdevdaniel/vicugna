@@ -2,12 +2,14 @@ import type { Request, Response } from "express"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
 	createAssignment,
+	createPermit,
 	getAssignmentsInitialPageState,
 	getAssignmentsPageStateForSeason,
 } from "./assignment.service"
 import type {
 	AssignmentPageData,
 	CreateAssignmentFormRequestBody,
+	CreatePermitFormData,
 } from "./assignment.types"
 
 // ==========================================
@@ -70,6 +72,30 @@ export async function submitAssignmentForm(
 	try {
 		await createAssignment(req.body)
 		res.setHeader("HX-Trigger", "assignment-created")
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			errorMessage: null,
+		})
+	} catch (error) {
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			errorMessage: getAssignmentErrorMessage(error),
+		})
+	}
+}
+
+export async function submitPermitForm(
+	req: Request<
+		Record<string, never>,
+		Record<string, never>,
+		CreatePermitFormData
+	>,
+	res: Response,
+) {
+	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
+
+	try {
+		await createPermit(req.body)
 		res.render("partials/assignments-create-result", {
 			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
 			errorMessage: null,

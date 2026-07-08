@@ -3,10 +3,16 @@ export interface CreateAssignmentFormData {
 	seasonId: string
 	communityId: string
 	userId: string
-	permitNumber: string
+	permitId: string
 }
 
 export type CreateAssignmentFormRequestBody = CreateAssignmentFormData
+
+export interface CreatePermitFormData {
+	seasonId: string
+	communityId: string
+	permitNumber: string
+}
 
 // View
 export interface SelectOption {

@@ -1,5 +1,5 @@
 import { db } from "@db"
-import { and, eq, notExists } from "drizzle-orm"
+import { and, eq, notInArray } from "drizzle-orm"
 
 import { assignments, permits, users } from "../../db/schema"
 import type {
@@ -48,35 +48,6 @@ export async function listAssignmentUsers(): Promise<ManagedUserOption[]> {
 	}))
 }
 
-export async function listAvailableAssignmentUsers(
-	seasonId: string,
-): Promise<ManagedUserOption[]> {
-	const rows = await db.query.users.findMany({
-		where: and(
-			eq(users.role, "user"),
-			eq(users.isActive, true),
-			notExists(
-				db
-					.select({ id: assignments.id })
-					.from(assignments)
-					.where(
-						and(
-							eq(assignments.seasonId, seasonId),
-							eq(assignments.userId, users.id),
-						),
-					),
-			),
-		),
-		orderBy: (table, { asc: sortAsc }) => [sortAsc(table.fullName)],
-	})
-
-	return rows.map((user) => ({
-		id: user.id,
-		name: user.fullName,
-		isActive: user.isActive,
-	}))
-}
-
 export async function listAssignments(
 	seasonId?: string,
 ): Promise<AssignmentListItem[]> {
@@ -103,25 +74,63 @@ export async function listAssignments(
 	}))
 }
 
-export async function findAssignmentBySeasonAndUser(
-	seasonId: string,
-	userId: string,
-) {
-	return db.query.assignments.findFirst({
-		where: and(
-			eq(assignments.seasonId, seasonId),
-			eq(assignments.userId, userId),
-		),
+export async function findPermitByNumber(permitNumber: string) {
+	return db.query.permits.findFirst({
+		where: eq(permits.permitNumber, permitNumber),
 	})
 }
 
-export async function saveAssignment(data: CreateAssignmentFormData) {
-	await db.transaction(async (tx) => {
-		const permitId = crypto.randomUUID()
+export async function listAssignedUserIdsByPermit(
+	permitId: string,
+): Promise<string[]> {
+	const rows = await db.query.assignments.findMany({
+		where: eq(assignments.permitId, permitId),
+		columns: {
+			userId: true,
+		},
+	})
 
-		await tx.insert(permits).values({
-			id: permitId,
-			permitNumber: data.permitNumber,
+	return rows.map((row) => row.userId)
+}
+
+export async function listEligibleAssignmentUsersByPermit(
+	permitId: string,
+): Promise<ManagedUserOption[]> {
+	const assignedUserIds = await listAssignedUserIdsByPermit(permitId)
+
+	const rows = await db.query.users.findMany({
+		where: and(
+			eq(users.role, "user"),
+			eq(users.isActive, true),
+			assignedUserIds.length > 0
+				? notInArray(users.id, assignedUserIds)
+				: undefined,
+		),
+		orderBy: (table, { asc: sortAsc }) => [sortAsc(table.fullName)],
+	})
+
+	return rows.map((user) => ({
+		id: user.id,
+		name: user.fullName,
+		isActive: user.isActive,
+	}))
+}
+
+export async function createPermit(permitNumber: string) {
+	const permitId = crypto.randomUUID()
+
+	await db.insert(permits).values({
+		id: permitId,
+		permitNumber,
+	})
+
+	return permitId
+}
+
+export async function createAssignment(data: CreateAssignmentFormData) {
+	await db.transaction(async (tx) => {
+		const existingAssignment = await tx.query.assignments.findFirst({
+			where: eq(assignments.permitId, data.permitId),
 		})
 
 		await tx.insert(assignments).values({
@@ -129,7 +138,8 @@ export async function saveAssignment(data: CreateAssignmentFormData) {
 			seasonId: data.seasonId,
 			communityId: data.communityId,
 			userId: data.userId,
-			permitId,
+			permitId: data.permitId,
+			active: existingAssignment ? false : true,
 		})
 	})
 }

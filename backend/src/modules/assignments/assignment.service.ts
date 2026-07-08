@@ -4,17 +4,27 @@ import {
 } from "../../db/errors"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
-	findAssignmentBySeasonAndUser,
+	createAssignment as createAssignmentRecord,
+	createPermit as createPermitRecord,
+	findPermitByNumber,
 	listAssignments,
-	listAvailableAssignmentUsers,
+	listAssignmentUsers,
 	listCommunities,
+	listEligibleAssignmentUsersByPermit,
 	listSeasons,
-	saveAssignment,
 } from "./assignment.repository"
 import type {
 	AssignmentPageData,
 	CreateAssignmentFormData,
+	CreatePermitFormData,
 } from "./assignment.types"
+
+// Keep the assignment rules in one file for now so this feature stays easier
+// to read and change while the flow is still being defined.
+
+// ==========================================
+// PAGE DATA
+// ==========================================
 
 export async function getAssignmentsInitialPageState(): Promise<
 	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
@@ -26,7 +36,7 @@ export async function getAssignmentsInitialPageState(): Promise<
 
 	const selectedSeasonId = seasons[0]?.id ?? ""
 	const [users, assignments] = await Promise.all([
-		selectedSeasonId ? listAvailableAssignmentUsers(selectedSeasonId) : [],
+		selectedSeasonId ? listAssignmentUsers() : [],
 		selectedSeasonId ? listAssignments(selectedSeasonId) : [],
 	])
 
@@ -47,7 +57,7 @@ export async function getAssignmentsPageStateForSeason(
 	const [seasons, communities, users, assignments] = await Promise.all([
 		listSeasons(),
 		listCommunities(),
-		selectedSeasonId ? listAvailableAssignmentUsers(selectedSeasonId) : [],
+		selectedSeasonId ? listAssignmentUsers() : [],
 		selectedSeasonId ? listAssignments(selectedSeasonId) : [],
 	])
 
@@ -60,12 +70,32 @@ export async function getAssignmentsPageStateForSeason(
 	}
 }
 
-export async function getAvailableAssignmentUsers(selectedSeasonId: string) {
-	if (!selectedSeasonId) {
-		return []
+export async function getEligibleAssignmentUsersForPermit(permitId: string) {
+	return listEligibleAssignmentUsersByPermit(permitId)
+}
+
+// ==========================================
+// PERMIT CREATION FLOW
+// ==========================================
+
+export async function createPermit(data: CreatePermitFormData) {
+	const formData = normalizePermitForm(data)
+
+	if (!formData.seasonId || !formData.communityId || !formData.permitNumber) {
+		throw new AssignmentManagementError(
+			"Temporada, comunidad y permiso son obligatorios",
+		)
 	}
 
-	return listAvailableAssignmentUsers(selectedSeasonId)
+	const existingPermit = await findPermitByNumber(formData.permitNumber)
+
+	if (existingPermit) {
+		throw new AssignmentManagementError("Ese permiso ya existe")
+	}
+
+	return {
+		permitId: await createPermitRecord(formData.permitNumber),
+	}
 }
 
 export async function createAssignment(data: CreateAssignmentFormData) {
@@ -75,28 +105,29 @@ export async function createAssignment(data: CreateAssignmentFormData) {
 		!formData.seasonId ||
 		!formData.communityId ||
 		!formData.userId ||
-		!formData.permitNumber
+		!formData.permitId
 	) {
 		throw new AssignmentManagementError(
 			"Temporada, comunidad, encargado y permiso son obligatorios",
 		)
 	}
 
-	const existingAssignment = await findAssignmentBySeasonAndUser(
-		formData.seasonId,
-		formData.userId,
-	)
-
-	if (existingAssignment) {
-		throw new AssignmentManagementError(
-			"Ese encargado ya tiene un permiso en esa temporada",
-		)
-	}
-
 	try {
-		await saveAssignment(formData)
+		await createAssignmentRecord(formData)
 	} catch (error) {
 		throwAssignmentCreationError(error)
+	}
+}
+
+// ==========================================
+// ASSIGNMENT FLOW
+// ==========================================
+
+function normalizePermitForm(data: CreatePermitFormData) {
+	return {
+		seasonId: data.seasonId.trim(),
+		communityId: data.communityId.trim(),
+		permitNumber: data.permitNumber.trim(),
 	}
 }
 
@@ -107,7 +138,7 @@ function normalizeCreateAssignmentForm(
 		seasonId: data.seasonId.trim(),
 		communityId: data.communityId.trim(),
 		userId: data.userId.trim(),
-		permitNumber: data.permitNumber.trim(),
+		permitId: data.permitId.trim(),
 	}
 }
 
@@ -117,18 +148,16 @@ function throwAssignmentCreationError(error: unknown): never {
 		POSTGRES_ERROR_CODES.uniqueViolation,
 	)
 
-	if (uniqueConstraint === "assignments_season_user_unique") {
+	if (
+		uniqueConstraint === "assignments_season_community_user_permit_unique"
+	) {
+		throw new AssignmentManagementError("Esa asignacion ya existe")
+	}
+
+	if (uniqueConstraint === "assignments_active_permit_unique") {
 		throw new AssignmentManagementError(
-			"Ese encargado ya tiene un permiso en esa temporada",
+			"No se pudo definir el encargado principal del permiso",
 		)
-	}
-
-	if (uniqueConstraint === "permits_permit_number_unique") {
-		throw new AssignmentManagementError("Ese permiso ya existe")
-	}
-
-	if (uniqueConstraint === "assignments_permit_id_unique") {
-		throw new AssignmentManagementError("Ese permiso ya esta asignado")
 	}
 
 	const foreignKeyConstraint = getPostgresConstraintName(
