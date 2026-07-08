@@ -5,5 +5,8 @@
     "backend",
     "mobile",
     "shared"
-  ]
+  ],
+  "devDependencies": {
+    "lint-staged": "^15.5.2"
+  }
 }
