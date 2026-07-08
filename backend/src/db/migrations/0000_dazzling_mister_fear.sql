@@ -4,6 +4,7 @@ CREATE TABLE "assignments" (
 	"community_id" text NOT NULL,
 	"user_id" text NOT NULL,
 	"permit_id" text NOT NULL,
+	"active" boolean DEFAULT false NOT NULL,
 	"assigned_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -158,8 +159,8 @@ ALTER TABLE "participants" ADD CONSTRAINT "participants_permit_id_permits_id_fk"
 ALTER TABLE "regionals" ADD CONSTRAINT "regionals_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shearing_headers" ADD CONSTRAINT "shearing_headers_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shearing_records" ADD CONSTRAINT "shearing_records_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "assignments_season_user_unique" ON "assignments" USING btree ("season_id","user_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "assignments_permit_id_unique" ON "assignments" USING btree ("permit_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "assignments_season_community_user_permit_unique" ON "assignments" USING btree ("season_id","community_id","user_id","permit_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "assignments_active_permit_unique" ON "assignments" USING btree ("permit_id") WHERE "assignments"."active" = true;--> statement-breakpoint
 CREATE UNIQUE INDEX "basic_info_permit_id_unique" ON "basic_info" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "cleaning_headers_permit_id_unique" ON "cleaning_headers" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "dehearing_details_cleaning_common_id_unique" ON "dehearing_details" USING btree ("cleaning_common_id");--> statement-breakpoint

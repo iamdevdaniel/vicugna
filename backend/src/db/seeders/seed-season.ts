@@ -18,6 +18,13 @@ const SEASONS_TO_SEED: SeasonSeed[] = [
 		endDate: "2027-08-31",
 		isActive: true,
 	},
+	{
+		id: "season-2025",
+		name: "Temporada 2025",
+		startDate: "2025-06-01",
+		endDate: "2025-08-31",
+		isActive: false,
+	},
 ]
 
 async function seedSeasons() {

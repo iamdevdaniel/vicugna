@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm"
+import { relations, sql } from "drizzle-orm"
 import {
 	boolean,
 	doublePrecision,
@@ -94,14 +94,19 @@ export const assignments = pgTable(
 		permitId: text("permit_id")
 			.notNull()
 			.references(() => permits.id, { onDelete: "cascade" }),
+		active: boolean("active").notNull().default(false),
 		assignedAt: timestamp("assigned_at").notNull().defaultNow(),
 	},
 	(table) => [
-		uniqueIndex("assignments_season_user_unique").on(
+		uniqueIndex("assignments_season_community_user_permit_unique").on(
 			table.seasonId,
+			table.communityId,
 			table.userId,
+			table.permitId,
 		),
-		uniqueIndex("assignments_permit_id_unique").on(table.permitId),
+		uniqueIndex("assignments_active_permit_unique")
+			.on(table.permitId)
+			.where(sql`${table.active} = true`),
 	],
 )
 

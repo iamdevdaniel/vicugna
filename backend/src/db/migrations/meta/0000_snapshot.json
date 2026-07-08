@@ -38,6 +38,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "assigned_at": {
           "name": "assigned_at",
           "type": "timestamp",
@@ -47,8 +54,8 @@
         }
       },
       "indexes": {
-        "assignments_season_user_unique": {
-          "name": "assignments_season_user_unique",
+        "assignments_season_community_user_permit_unique": {
+          "name": "assignments_season_community_user_permit_unique",
           "columns": [
             {
               "expression": "season_id",
@@ -57,7 +64,19 @@
               "nulls": "last"
             },
             {
+              "expression": "community_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
               "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "permit_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -68,8 +87,8 @@
           "method": "btree",
           "with": {}
         },
-        "assignments_permit_id_unique": {
-          "name": "assignments_permit_id_unique",
+        "assignments_active_permit_unique": {
+          "name": "assignments_active_permit_unique",
           "columns": [
             {
               "expression": "permit_id",
@@ -79,6 +98,7 @@
             }
           ],
           "isUnique": true,
+          "where": "\"assignments\".\"active\" = true",
           "concurrently": false,
           "method": "btree",
           "with": {}
