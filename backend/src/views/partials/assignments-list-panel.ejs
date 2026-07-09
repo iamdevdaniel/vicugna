@@ -1,37 +1,27 @@
 <article
 	id="assignments-list-panel"
 	<% if (typeof useOobSwap !== "undefined" && useOobSwap) { %>hx-swap-oob="outerHTML"<% } %>
-	class="card relative bg-base-100 shadow">
+	class="card relative bg-base-100 shadow xl:min-h-0">
 	<div
 		id="assignments-list-loading"
 		class="htmx-indicator absolute inset-0 z-10 flex items-center justify-center rounded-box bg-base-100/70">
 		<span class="loading loading-spinner loading-lg text-primary"></span>
 	</div>
-	<div class="card-body">
-		<h2 class="card-title">Asignaciones actuales</h2>
-		<p class="text-sm text-slate-500">
-			Resumen de lo que ya esta conectado en la base de datos.
-		</p>
+	<div class="card-body p-4 xl:h-full xl:overflow-hidden">
+		<h2 class="text-base font-semibold text-slate-900">Asignaciones</h2>
 
-		<div class="mt-4 space-y-3 text-sm text-slate-600">
-			<p>Temporadas: <strong><%= seasons.length %></strong></p>
-			<p>Comunidades: <strong><%= communities.length %></strong></p>
-			<p>Disponibles: <strong><%= users.length %></strong></p>
-			<p>Asignaciones: <strong><%= assignments.length %></strong></p>
-		</div>
-
-		<div class="mt-4 space-y-3">
+		<div class="mt-3 space-y-2.5 xl:h-full xl:overflow-y-auto">
 			<% if (assignments.length === 0) { %>
-				<p class="text-sm text-slate-500">Todavia no hay asignaciones guardadas.</p>
+				<p class="text-xs text-slate-500">Todavia no hay asignaciones guardadas.</p>
 			<% } %>
 
 			<% assignments.forEach((assignment) => { %>
 				<article class="rounded-box border border-base-300 px-4 py-3">
 					<h3 class="font-semibold text-slate-900"><%= assignment.communityName %></h3>
-					<p class="mt-1 text-sm text-slate-500">
+					<p class="mt-1 text-xs text-slate-500">
 						<%= assignment.seasonName %> • <%= assignment.userFullName %>
 					</p>
-					<p class="mt-2 text-sm text-slate-600">
+					<p class="mt-2 text-xs text-slate-600">
 						Permiso: <strong><%= assignment.permitNumber %></strong>
 					</p>
 				</article>

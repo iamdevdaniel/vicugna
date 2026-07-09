@@ -1,20 +1,26 @@
 // HTTP
-export interface CreateAssignmentFormData {
+export interface CreateAssignmentData {
 	seasonId: string
 	communityId: string
 	userId: string
 	permitId: string
 }
 
-export type CreateAssignmentFormRequestBody = CreateAssignmentFormData
+export interface CreateAssignmentFormRequestBody extends CreateAssignmentData {
+	permitNumber: string
+}
 
 export interface CreatePermitFormData {
 	seasonId: string
-	communityId: string
 	permitNumber: string
 }
 
 // View
+export interface SelectedPermitData {
+	id: string
+	seasonId: string
+	permitNumber: string
+}
 export interface SelectOption {
 	id: string
 	name: string
@@ -22,6 +28,11 @@ export interface SelectOption {
 
 export interface ManagedUserOption extends SelectOption {
 	isActive: boolean
+}
+
+export interface PermitListItem {
+	id: string
+	permitNumber: string
 }
 
 export interface AssignmentListItem {
@@ -39,7 +50,9 @@ export interface AssignmentPageData {
 	}
 	formMessage: string | null
 	selectedSeasonId: string
+	selectedPermit: SelectedPermitData | null
 	seasons: SelectOption[]
+	permits: PermitListItem[]
 	communities: SelectOption[]
 	users: ManagedUserOption[]
 	assignments: AssignmentListItem[]

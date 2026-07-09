@@ -4,8 +4,9 @@ import { and, eq, notInArray } from "drizzle-orm"
 import { assignments, permits, users } from "../../db/schema"
 import type {
 	AssignmentListItem,
-	CreateAssignmentFormData,
+	CreateAssignmentData,
 	ManagedUserOption,
+	PermitListItem,
 	SelectOption,
 } from "./assignment.types"
 
@@ -32,6 +33,17 @@ export async function listCommunities(): Promise<SelectOption[]> {
 	return rows.map((community) => ({
 		id: community.id,
 		name: community.name,
+	}))
+}
+
+export async function listPermits(): Promise<PermitListItem[]> {
+	const rows = await db.query.permits.findMany({
+		orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
+	})
+
+	return rows.map((permit) => ({
+		id: permit.id,
+		permitNumber: permit.permitNumber,
 	}))
 }
 
@@ -127,7 +139,7 @@ export async function createPermit(permitNumber: string) {
 	return permitId
 }
 
-export async function createAssignment(data: CreateAssignmentFormData) {
+export async function createAssignment(data: CreateAssignmentData) {
 	await db.transaction(async (tx) => {
 		const existingAssignment = await tx.query.assignments.findFirst({
 			where: eq(assignments.permitId, data.permitId),

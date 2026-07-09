@@ -10,6 +10,7 @@ import type {
 	AssignmentPageData,
 	CreateAssignmentFormRequestBody,
 	CreatePermitFormData,
+	SelectedPermitData,
 } from "./assignment.types"
 
 // ==========================================
@@ -31,11 +32,12 @@ export async function renderAssignmentSeasonState(
 	req: Request<
 		Record<string, never>,
 		Record<string, never>,
+		Record<string, never>,
 		{ seasonId?: string }
 	>,
 	res: Response,
 ) {
-	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
+	const selectedSeasonId = getSelectedSeasonId(req.query.seasonId)
 	const seasonState = await getAssignmentsPageStateForSeason(selectedSeasonId)
 	res.render("partials/assignments-season-state", seasonState)
 }
@@ -59,31 +61,6 @@ function getAssignmentsViewData(
 // MUTATION HANDLERS
 // ==========================================
 
-export async function submitAssignmentForm(
-	req: Request<
-		Record<string, never>,
-		Record<string, never>,
-		CreateAssignmentFormRequestBody
-	>,
-	res: Response,
-) {
-	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
-
-	try {
-		await createAssignment(req.body)
-		res.setHeader("HX-Trigger", "assignment-created")
-		res.render("partials/assignments-create-result", {
-			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
-			errorMessage: null,
-		})
-	} catch (error) {
-		res.render("partials/assignments-create-result", {
-			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
-			errorMessage: getAssignmentErrorMessage(error),
-		})
-	}
-}
-
 export async function submitPermitForm(
 	req: Request<
 		Record<string, never>,
@@ -95,15 +72,56 @@ export async function submitPermitForm(
 	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
 
 	try {
-		await createPermit(req.body)
+		const { permitId } = await createPermit(req.body)
+		const selectedPermit: SelectedPermitData = {
+			id: permitId,
+			seasonId: selectedSeasonId,
+			permitNumber: req.body.permitNumber.trim(),
+		}
+		res.render("partials/assignments-create-permit-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit,
+			errorMessage: null,
+		})
+	} catch (error) {
+		res.render("partials/assignments-create-permit-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit: null,
+			errorMessage: getAssignmentErrorMessage(error),
+		})
+	}
+}
+
+export async function submitAssignmentForm(
+	req: Request<
+		Record<string, never>,
+		Record<string, never>,
+		CreateAssignmentFormRequestBody
+	>,
+	res: Response,
+) {
+	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
+	const selectedPermit: SelectedPermitData = {
+		id: req.body.permitId,
+		seasonId: selectedSeasonId,
+		permitNumber: req.body.permitNumber,
+	}
+
+	try {
+		await createAssignment(req.body)
+		res.setHeader("HX-Trigger", "assignment-created")
 		res.render("partials/assignments-create-result", {
 			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit,
 			errorMessage: null,
+			successMessage: "Asignacion guardada",
 		})
 	} catch (error) {
 		res.render("partials/assignments-create-result", {
 			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit,
 			errorMessage: getAssignmentErrorMessage(error),
+			successMessage: null,
 		})
 	}
 }

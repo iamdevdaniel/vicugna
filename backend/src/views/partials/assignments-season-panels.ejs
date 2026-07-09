@@ -1,0 +1,77 @@
+<div
+	id="assignments-season-panels-root"
+	x-data='assignmentSeasonState({
+		permits: <%- JSON.stringify(permits) %>,
+		selectedPermit: <%- JSON.stringify(selectedPermit) %>,
+		selectedSeasonId: <%- JSON.stringify(selectedSeasonId) %>,
+	})'
+class="grid grid-cols-1 gap-4 xl:h-full xl:grid-cols-[1.05fr_1fr_1.15fr]">
+<article class="card bg-base-100 shadow xl:min-h-0">
+	<div class="card-body p-4 xl:flex xl:h-full xl:min-h-0 xl:flex-col">
+		<h2 class="text-base font-semibold text-slate-900">Permiso</h2>
+
+		<form
+			id="permit-form"
+			class="mt-2 xl:flex-none"
+			hx-post="/admin/assignments/permits"
+			hx-swap="none">
+			<input type="hidden" name="seasonId" value="<%= selectedSeasonId %>" />
+			<div id="permit-form-message">
+				<% if (formMessage) { %>
+					<div class="alert alert-info alert-soft mb-4">
+						<%= formMessage %>
+					</div>
+				<% } %>
+			</div>
+
+			<div>
+				<h3 class="text-xs font-semibold uppercase tracking-wide text-slate-700">Crear permiso</h3>
+				<div class="mt-1.5 join w-full">
+					<input
+						class="input input-bordered join-item w-full"
+						name="permitNumber"
+						placeholder="Numero de permiso" />
+					<button type="submit" class="btn btn-primary join-item" aria-label="Crear permiso">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M5 12h14" />
+							<path d="M12 5v14" />
+						</svg>
+					</button>
+				</div>
+			</div>
+		</form>
+
+		<%- include("./assignments-permit-list", { permits, selectedPermit, selectedSeasonId }) %>
+	</div>
+</article>
+
+<article class="card bg-base-100 shadow xl:min-h-0">
+	<div class="card-body relative justify-start p-4 xl:h-full xl:overflow-y-auto">
+		<h2 class="text-base font-semibold text-slate-900">Asignar encargado</h2>
+		<form
+			id="assignment-form"
+			class="mt-2"
+			hx-post="/admin/assignments"
+			hx-swap="none">
+			<div id="assignment-form-message"></div>
+			<div x-show="selectedPermit" x-cloak>
+				<div class="grid grid-cols-1 gap-4">
+					<%- include("./assignment-selected-permit", { selectedPermit }) %>
+					<%- include("./assignment-community-picker", { communities }) %>
+					<%- include("./assignment-user-picker", { users }) %>
+				</div>
+				<div class="card-actions mt-3 justify-end">
+					<button type="submit" class="btn btn-primary">
+						Guardar asignacion
+					</button>
+				</div>
+			</div>
+			<p x-show="!selectedPermit" x-cloak class="text-xs text-slate-500">
+				Selecciona un permiso primero.
+			</p>
+		</form>
+	</div>
+</article>
+
+<%- include("./assignments-list-panel", { seasons, communities, users, assignments }) %>
+</div>

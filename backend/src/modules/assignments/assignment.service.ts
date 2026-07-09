@@ -11,11 +11,12 @@ import {
 	listAssignmentUsers,
 	listCommunities,
 	listEligibleAssignmentUsersByPermit,
+	listPermits,
 	listSeasons,
 } from "./assignment.repository"
 import type {
 	AssignmentPageData,
-	CreateAssignmentFormData,
+	CreateAssignmentData,
 	CreatePermitFormData,
 } from "./assignment.types"
 
@@ -35,14 +36,17 @@ export async function getAssignmentsInitialPageState(): Promise<
 	])
 
 	const selectedSeasonId = seasons[0]?.id ?? ""
-	const [users, assignments] = await Promise.all([
+	const [permits, users, assignments] = await Promise.all([
+		listPermits(),
 		selectedSeasonId ? listAssignmentUsers() : [],
 		selectedSeasonId ? listAssignments(selectedSeasonId) : [],
 	])
 
 	return {
 		selectedSeasonId,
+		selectedPermit: null,
 		seasons,
+		permits,
 		communities,
 		users,
 		assignments,
@@ -54,16 +58,20 @@ export async function getAssignmentsPageStateForSeason(
 ): Promise<
 	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
 > {
-	const [seasons, communities, users, assignments] = await Promise.all([
-		listSeasons(),
-		listCommunities(),
-		selectedSeasonId ? listAssignmentUsers() : [],
-		selectedSeasonId ? listAssignments(selectedSeasonId) : [],
-	])
+	const [seasons, permits, communities, users, assignments] =
+		await Promise.all([
+			listSeasons(),
+			listPermits(),
+			listCommunities(),
+			selectedSeasonId ? listAssignmentUsers() : [],
+			selectedSeasonId ? listAssignments(selectedSeasonId) : [],
+		])
 
 	return {
 		selectedSeasonId,
+		selectedPermit: null,
 		seasons,
+		permits,
 		communities,
 		users,
 		assignments,
@@ -81,9 +89,9 @@ export async function getEligibleAssignmentUsersForPermit(permitId: string) {
 export async function createPermit(data: CreatePermitFormData) {
 	const formData = normalizePermitForm(data)
 
-	if (!formData.seasonId || !formData.communityId || !formData.permitNumber) {
+	if (!formData.seasonId || !formData.permitNumber) {
 		throw new AssignmentManagementError(
-			"Temporada, comunidad y permiso son obligatorios",
+			"Temporada y permiso son obligatorios",
 		)
 	}
 
@@ -98,7 +106,7 @@ export async function createPermit(data: CreatePermitFormData) {
 	}
 }
 
-export async function createAssignment(data: CreateAssignmentFormData) {
+export async function createAssignment(data: CreateAssignmentData) {
 	const formData = normalizeCreateAssignmentForm(data)
 
 	if (
@@ -126,14 +134,13 @@ export async function createAssignment(data: CreateAssignmentFormData) {
 function normalizePermitForm(data: CreatePermitFormData) {
 	return {
 		seasonId: data.seasonId.trim(),
-		communityId: data.communityId.trim(),
 		permitNumber: data.permitNumber.trim(),
 	}
 }
 
 function normalizeCreateAssignmentForm(
-	data: CreateAssignmentFormData,
-): CreateAssignmentFormData {
+	data: CreateAssignmentData,
+): CreateAssignmentData {
 	return {
 		seasonId: data.seasonId.trim(),
 		communityId: data.communityId.trim(),

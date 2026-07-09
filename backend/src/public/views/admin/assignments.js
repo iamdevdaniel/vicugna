@@ -1,14 +1,45 @@
-function assignmentFormPage(initialData) {
+function assignmentSeasonState(initialData) {
+	return {
+		permits: initialData.permits,
+		permitSearch: "",
+		selectedPermitId: initialData.selectedPermit?.id ?? "",
+		selectedSeasonId: initialData.selectedSeasonId,
+		get selectedPermit() {
+			const permit = this.permits.find(
+				(currentPermit) => currentPermit.id === this.selectedPermitId,
+			)
+
+			if (!permit) {
+				return null
+			}
+
+			return {
+				id: permit.id,
+				permitNumber: permit.permitNumber,
+			}
+		},
+		get filteredPermits() {
+			const search = this.permitSearch.trim().toLowerCase()
+
+			if (!search) return this.permits
+
+			return this.permits.filter((permit) =>
+				permit.permitNumber.toLowerCase().includes(search),
+			)
+		},
+		selectPermit(permit) {
+			this.selectedPermitId =
+				this.selectedPermitId === permit.id ? "" : permit.id
+		},
+	}
+}
+
+function assignmentCommunityPicker(initialData) {
 	return {
 		communities: initialData.communities,
 		isCommunityPickerOpen: false,
 		communitySearch: "",
 		selectedCommunityId: "",
-		selectedCommunityName: "",
-		isUserPickerOpen: false,
-		userSearch: "",
-		selectedUserId: "",
-		selectedUserName: "",
 		get filteredCommunities() {
 			const search = this.communitySearch.trim().toLowerCase()
 
@@ -18,24 +49,13 @@ function assignmentFormPage(initialData) {
 				.filter((community) => community.name.toLowerCase().includes(search))
 				.slice(0, 8)
 		},
-		get filteredUsers() {
-			const search = this.userSearch.trim().toLowerCase()
-
-			if (!search) return this.users.slice(0, 8)
-
-			return this.users
-				.filter((user) => user.name.toLowerCase().includes(search))
-				.slice(0, 8)
-		},
 		selectCommunity(community) {
 			this.selectedCommunityId = community.id
-			this.selectedCommunityName = community.name
 			this.communitySearch = community.name
 			this.isCommunityPickerOpen = false
 		},
 		clearCommunity() {
 			this.selectedCommunityId = ""
-			this.selectedCommunityName = ""
 			this.communitySearch = ""
 			this.isCommunityPickerOpen = false
 		},

@@ -1,0 +1,16 @@
+<div
+	id="assignment-selected-permit-slot">
+	<template x-if="selectedPermit">
+		<div>
+			<input type="hidden" name="seasonId" :value="selectedSeasonId" />
+			<input type="hidden" name="permitId" :value="selectedPermit.id" />
+			<input type="hidden" name="permitNumber" :value="selectedPermit.permitNumber" />
+			<div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+				<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+					Permiso seleccionado
+				</p>
+				<p class="mt-1 font-semibold text-slate-900" x-text="selectedPermit.permitNumber"></p>
+			</div>
+		</div>
+	</template>
+</div>
