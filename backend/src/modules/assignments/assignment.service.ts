@@ -8,7 +8,6 @@ import {
 	createPermit as createPermitRecord,
 	deleteAssignment as deleteAssignmentRecord,
 	findAssignmentById,
-	findFirstAssignmentByPermit,
 	findPermitById,
 	findPermitBySeasonAndNumber,
 	listAssignments,
@@ -51,6 +50,7 @@ export async function getAssignmentsInitialPageState(): Promise<
 
 	return {
 		selectedSeasonId,
+		selectedCommunityId: "",
 		selectedPermit: null,
 		seasons,
 		permits,
@@ -77,6 +77,7 @@ export async function getAssignmentsPageStateForSeason(
 
 	return {
 		selectedSeasonId,
+		selectedCommunityId: "",
 		selectedPermit: null,
 		seasons,
 		permits,
@@ -98,9 +99,9 @@ export async function getEligibleAssignmentUsersForPermit(permitId: string) {
 export async function createPermit(data: CreatePermitFormData) {
 	const formData = normalizePermitForm(data)
 
-	if (!formData.seasonId || !formData.permitNumber) {
+	if (!formData.seasonId || !formData.communityId || !formData.permitNumber) {
 		throw new AssignmentManagementError(
-			"Temporada y permiso son obligatorios",
+			"Temporada, comunidad y permiso son obligatorios",
 		)
 	}
 
@@ -116,6 +117,7 @@ export async function createPermit(data: CreatePermitFormData) {
 	return {
 		permitId: await createPermitRecord(
 			formData.seasonId,
+			formData.communityId,
 			formData.permitNumber,
 		),
 	}
@@ -124,14 +126,9 @@ export async function createPermit(data: CreatePermitFormData) {
 export async function createAssignment(data: CreateAssignmentData) {
 	const formData = normalizeCreateAssignmentForm(data)
 
-	if (
-		!formData.seasonId ||
-		!formData.communityId ||
-		!formData.userId ||
-		!formData.permitId
-	) {
+	if (!formData.seasonId || !formData.userId || !formData.permitId) {
 		throw new AssignmentManagementError(
-			"Temporada, comunidad, encargado y permiso son obligatorios",
+			"Temporada, encargado y permiso son obligatorios",
 		)
 	}
 
@@ -147,21 +144,11 @@ export async function createAssignment(data: CreateAssignmentData) {
 		)
 	}
 
-	const existingAssignment = await findFirstAssignmentByPermit(
-		formData.permitId,
-	)
-
-	if (
-		existingAssignment &&
-		existingAssignment.communityId !== formData.communityId
-	) {
-		throw new AssignmentManagementError(
-			"Ese permiso ya fue fijado a otra comunidad",
-		)
-	}
-
 	try {
-		await createAssignmentRecord(formData)
+		await createAssignmentRecord({
+			...formData,
+			communityId: permit.communityId,
+		})
 	} catch (error) {
 		throwAssignmentCreationError(error)
 	}
@@ -202,6 +189,7 @@ export async function removeAssignment(data: AssignmentMutationRequestBody) {
 function normalizePermitForm(data: CreatePermitFormData) {
 	return {
 		seasonId: data.seasonId.trim(),
+		communityId: data.communityId.trim(),
 		permitNumber: data.permitNumber.trim(),
 	}
 }
@@ -222,6 +210,7 @@ function normalizeAssignmentMutationForm(
 ): AssignmentMutationRequestBody {
 	return {
 		seasonId: data.seasonId.trim(),
+		communityId: data.communityId.trim(),
 		permitId: data.permitId.trim(),
 		assignmentId: data.assignmentId.trim(),
 	}

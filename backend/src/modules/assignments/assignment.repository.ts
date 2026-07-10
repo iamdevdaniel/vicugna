@@ -38,11 +38,16 @@ export async function listCommunities(): Promise<SelectOption[]> {
 
 export async function listPermits(): Promise<PermitListItem[]> {
 	const rows = await db.query.permits.findMany({
+		with: {
+			community: true,
+		},
 		orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
 	})
 
 	return rows.map((permit) => ({
 		id: permit.id,
+		communityId: permit.communityId,
+		communityName: permit.community.name,
 		permitNumber: permit.permitNumber,
 	}))
 }
@@ -110,11 +115,16 @@ export async function listPermitsBySeason(
 ): Promise<PermitListItem[]> {
 	const rows = await db.query.permits.findMany({
 		where: eq(permits.seasonId, seasonId),
+		with: {
+			community: true,
+		},
 		orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
 	})
 
 	return rows.map((permit) => ({
 		id: permit.id,
+		communityId: permit.communityId,
+		communityName: permit.community.name,
 		permitNumber: permit.permitNumber,
 	}))
 }
@@ -173,12 +183,17 @@ export async function listEligibleAssignmentUsersByPermit(
 	}))
 }
 
-export async function createPermit(seasonId: string, permitNumber: string) {
+export async function createPermit(
+	seasonId: string,
+	communityId: string,
+	permitNumber: string,
+) {
 	const permitId = crypto.randomUUID()
 
 	await db.insert(permits).values({
 		id: permitId,
 		seasonId,
+		communityId,
 		permitNumber,
 	})
 

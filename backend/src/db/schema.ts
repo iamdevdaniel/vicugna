@@ -72,6 +72,9 @@ export const permits = pgTable(
 		seasonId: text("season_id")
 			.notNull()
 			.references(() => seasons.id),
+		communityId: text("community_id")
+			.notNull()
+			.references(() => communities.id),
 		permitNumber: text("permit_number").notNull(),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -263,6 +266,7 @@ export const dehearingDetails = pgTable(
 
 export const seasonRelations = relations(seasons, ({ many }) => ({
 	assignments: many(assignments),
+	permits: many(permits),
 }))
 
 export const departmentRelations = relations(departments, ({ many }) => ({
@@ -283,6 +287,7 @@ export const communityRelations = relations(communities, ({ one, many }) => ({
 		references: [regionals.id],
 	}),
 	assignments: many(assignments),
+	permits: many(permits),
 }))
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -309,6 +314,14 @@ export const assignmentRelations = relations(assignments, ({ one }) => ({
 }))
 
 export const permitRelations = relations(permits, ({ one, many }) => ({
+	season: one(seasons, {
+		fields: [permits.seasonId],
+		references: [seasons.id],
+	}),
+	community: one(communities, {
+		fields: [permits.communityId],
+		references: [communities.id],
+	}),
 	assignment: one(assignments),
 	basicInfo: one(basicInfo),
 	participants: many(participants),

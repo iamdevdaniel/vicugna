@@ -12,11 +12,13 @@ export interface CreateAssignmentFormRequestBody extends CreateAssignmentData {
 
 export interface CreatePermitFormData {
 	seasonId: string
+	communityId: string
 	permitNumber: string
 }
 
 export interface AssignmentMutationRequestBody {
 	seasonId: string
+	communityId: string
 	permitId: string
 	assignmentId: string
 }
@@ -25,6 +27,7 @@ export interface AssignmentMutationRequestBody {
 export interface SelectedPermitData {
 	id: string
 	seasonId: string
+	communityId: string
 	permitNumber: string
 }
 export interface SelectOption {
@@ -38,6 +41,8 @@ export interface ManagedUserOption extends SelectOption {
 
 export interface PermitListItem {
 	id: string
+	communityId: string
+	communityName: string
 	permitNumber: string
 }
 
@@ -74,6 +79,7 @@ export interface AssignmentPageData {
 	}
 	formMessage: string | null
 	selectedSeasonId: string
+	selectedCommunityId: string
 	selectedPermit: SelectedPermitData | null
 	seasons: SelectOption[]
 	permits: PermitListItem[]

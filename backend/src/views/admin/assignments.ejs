@@ -3,7 +3,7 @@
 <%- include("../partials/admin-head", { pageTitle }) %>
 
 	<body class="min-h-screen bg-base-200 text-base-content">
-		<main class="mx-auto flex max-w-7xl flex-col px-4 py-4 xl:h-screen xl:overflow-hidden">
+		<main class="mx-auto flex w-full max-w-7xl flex-col px-4 py-4 lg:h-screen lg:overflow-hidden">
 			<header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
@@ -24,19 +24,13 @@
 
 			<section class="mt-3 card bg-base-100 shadow">
 				<div class="card-body p-4">
-					<div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+					<form method="get" action="/admin/assignments" class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
 						<div>
 							<h2 class="card-title">Temporada activa</h2>
 						</div>
 						<label class="form-control w-full md:max-w-xs">
 							<span class="label-text mb-2 font-semibold">Temporada</span>
-							<select
-								class="select select-bordered w-full"
-								name="seasonId"
-								hx-get="/admin/assignments/season-state"
-								hx-trigger="change"
-								hx-target="#season-state-slot"
-								hx-swap="innerHTML">
+							<select class="select select-bordered w-full" name="seasonId" onchange="this.form.submit()">
 								<% seasons.forEach((season) => { %>
 									<option value="<%= season.id %>" <%= selectedSeasonId === season.id ? "selected" : "" %>>
 										<%= season.name %>
@@ -44,27 +38,30 @@
 								<% }) %>
 							</select>
 						</label>
-					</div>
+					</form>
 				</div>
 			</section>
 
-			<section id="season-state-slot" class="mt-3 xl:min-h-0 xl:flex-1 xl:overflow-hidden">
-				<%- include("../partials/assignments-season-panels", {
-					formMessage,
-					selectedSeasonId,
-					selectedPermit,
-					seasons,
-					permits,
-					communities,
-					users,
-					assignments,
-					assignmentCards
-				}) %>
-			</section>
+			<section class="mt-3 grid grid-cols-1 items-start gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-3">
+				<article class="card bg-base-100 shadow lg:h-full">
+					<div class="card-body p-4 lg:h-full">
+						<h2 class="text-base font-semibold text-slate-900">Panel 1</h2>
+					</div>
+				</article>
 
-			<div id="toast-container" class="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex justify-center px-5"></div>
+				<article class="card bg-base-100 shadow lg:h-full">
+					<div class="card-body p-4 lg:h-full">
+						<h2 class="text-base font-semibold text-slate-900">Panel 2</h2>
+					</div>
+				</article>
+
+				<article class="card bg-base-100 shadow lg:h-full">
+					<div class="card-body p-4 lg:h-full">
+						<h2 class="text-base font-semibold text-slate-900">Panel 3</h2>
+					</div>
+				</article>
+			</section>
 		</main>
-		<script src="/views/admin/assignments.js"></script>
 	</body>
 
 </html>
