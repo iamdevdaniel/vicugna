@@ -1,14 +1,14 @@
 import type { Request, Response } from "express"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
-	createAssignment,
+	createAssignmentsBatch,
 	createPermit,
 	getAssignmentsInitialPageState,
 	getAssignmentsPageStateForSeason,
 } from "./assignment.service"
 import type {
 	AssignmentPageData,
-	CreateAssignmentData,
+	CreateAssignmentsBatchFormData,
 	CreatePermitFormData,
 	PermitListItem,
 	SelectedPermitData,
@@ -96,7 +96,7 @@ export async function submitAssignmentForm(
 	req: Request<
 		Record<string, never>,
 		Record<string, never>,
-		CreateAssignmentData
+		CreateAssignmentsBatchFormData
 	>,
 	res: Response,
 ) {
@@ -105,14 +105,14 @@ export async function submitAssignmentForm(
 	const permitId = req.body.permitId?.trim() ?? ""
 
 	try {
-		await createAssignment(req.body)
+		await createAssignmentsBatch(req.body)
 
 		res.redirect(
 			getAssignmentPageUrl({
 				seasonId,
 				communityId,
 				permitId,
-				success: "Asignacion guardada",
+				success: "Asignaciones guardadas",
 			}),
 		)
 	} catch (error) {

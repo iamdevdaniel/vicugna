@@ -6,6 +6,14 @@ export interface CreateAssignmentData {
 	permitId: string
 }
 
+export interface CreateAssignmentsBatchFormData {
+	seasonId: string
+	communityId: string
+	permitId: string
+	userIds: string | string[]
+	activeUserId: string
+}
+
 export interface CreatePermitFormData {
 	seasonId: string
 	communityId: string

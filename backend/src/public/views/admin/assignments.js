@@ -6,6 +6,7 @@ function assignmentPageState(initialData) {
 		communities: initialData.communities,
 		users: initialData.users,
 		assignmentCards: initialData.assignmentCards,
+		stagedAssignmentsByPermit: {},
 		newPermitNumber: "",
 		communitySearch: "",
 		userSearch: "",
@@ -41,12 +42,17 @@ function assignmentPageState(initialData) {
 				.slice(0, 8)
 		},
 		get filteredPermits() {
-			if (!this.selectedCommunityId) {
+			if (!this.hasSelectedCommunity) {
 				return []
 			}
 
 			return this.permits.filter(
 				(permit) => permit.communityId === this.selectedCommunityId,
+			)
+		},
+		get hasSelectedCommunity() {
+			return this.communities.some(
+				(community) => community.id === this.selectedCommunityId,
 			)
 		},
 		get selectedPermit() {
@@ -75,6 +81,9 @@ function assignmentPageState(initialData) {
 			const assignedUserIds = new Set(
 				this.selectedPermitAssignments.map((user) => user.userId),
 			)
+			for (const user of this.stagedUsersForSelectedPermit) {
+				assignedUserIds.add(user.userId)
+			}
 			const search = this.userSearch.trim().toLowerCase()
 
 			return this.users
@@ -83,6 +92,20 @@ function assignmentPageState(initialData) {
 					search ? user.name.toLowerCase().includes(search) : true,
 				)
 				.slice(0, 8)
+		},
+		get stagedUsersForSelectedPermit() {
+			if (!this.selectedPermitId) {
+				return []
+			}
+
+			return this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
+		},
+		get stagedActiveUserId() {
+			const activeUser = this.stagedUsersForSelectedPermit.find(
+				(user) => user.active,
+			)
+
+			return activeUser?.userId ?? ""
 		},
 		get filteredAssignmentCards() {
 			const search = this.assignmentSearch.trim().toLowerCase()
@@ -115,6 +138,19 @@ function assignmentPageState(initialData) {
 				if (right.permitId === this.selectedPermitId) return 1
 				return 0
 			})
+		},
+		handleCommunitySearchInput() {
+			this.isCommunityDropdownOpen = true
+
+			if (this.communitySearch.trim()) {
+				return
+			}
+
+			this.selectedCommunityId = ""
+			this.selectedPermitId = ""
+			this.selectedUserId = ""
+			this.userSearch = ""
+			this.isUserDropdownOpen = false
 		},
 		selectCommunity(community) {
 			this.selectedCommunityId = community.id
@@ -151,21 +187,94 @@ function assignmentPageState(initialData) {
 
 			this.selectPermit(permit)
 		},
-		selectUser(user) {
-			this.selectedUserId = user.id
-			this.userSearch = user.name
+		addUserToStage(user) {
+			if (!this.selectedPermitId) {
+				return
+			}
+
+			const currentUsers =
+				this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
+			const hasPersistedActiveUser = this.selectedPermitAssignments.some(
+				(currentUser) => currentUser.active,
+			)
+			const hasStagedActiveUser = currentUsers.some(
+				(currentUser) => currentUser.active,
+			)
+
+			this.stagedAssignmentsByPermit[this.selectedPermitId] = [
+				...currentUsers,
+				{
+					userId: user.id,
+					userFullName: user.name,
+					active: !hasPersistedActiveUser && !hasStagedActiveUser,
+				},
+			]
+
+			this.selectedUserId = ""
+			this.userSearch = ""
 			this.isUserDropdownOpen = false
+		},
+		removeStagedUser(userId) {
+			if (!this.selectedPermitId) {
+				return
+			}
+
+			const currentUsers =
+				this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
+			const userToRemove = currentUsers.find(
+				(currentUser) => currentUser.userId === userId,
+			)
+			const remainingUsers = currentUsers.filter(
+				(currentUser) => currentUser.userId !== userId,
+			)
+
+			if (!userToRemove) {
+				return
+			}
+
+			const hasPersistedActiveUser = this.selectedPermitAssignments.some(
+				(currentUser) => currentUser.active,
+			)
+
+			if (
+				userToRemove.active &&
+				!hasPersistedActiveUser &&
+				remainingUsers.length > 0
+			) {
+				remainingUsers[0] = {
+					...remainingUsers[0],
+					active: true,
+				}
+			}
+
+			this.stagedAssignmentsByPermit[this.selectedPermitId] =
+				remainingUsers
+		},
+		setStagedUserActive(userId) {
+			if (!this.selectedPermitId) {
+				return
+			}
+
+			const currentUsers =
+				this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
+
+			this.stagedAssignmentsByPermit[this.selectedPermitId] =
+				currentUsers.map((currentUser) => ({
+					...currentUser,
+					active: currentUser.userId === userId,
+				}))
 		},
 		permitAssignedUsersCount(permit) {
 			const card = this.assignmentCards.find(
 				(currentCard) => currentCard.permitId === permit.id,
 			)
+			const stagedUsers = this.stagedAssignmentsByPermit[permit.id] ?? []
 
 			if (!card) {
-				return 0
+				return stagedUsers.length
 			}
 
-			return card.users.length
+			return card.users.length + stagedUsers.length
 		},
 		assignmentCardBadge(card) {
 			const activeUser = card.users.find((user) => user.active)

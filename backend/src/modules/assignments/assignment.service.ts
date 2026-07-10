@@ -5,9 +5,11 @@ import {
 import { AssignmentManagementError } from "./assignment.errors"
 import {
 	createAssignment as createAssignmentRecord,
+	createAssignmentsBatch as createAssignmentsBatchRecord,
 	createPermit as createPermitRecord,
 	deleteAssignment as deleteAssignmentRecord,
 	findAssignmentById,
+	findFirstAssignmentByPermit,
 	findPermitById,
 	findPermitBySeasonAndNumber,
 	listAssignments,
@@ -23,6 +25,7 @@ import type {
 	AssignmentPageData,
 	AssignmentPermitCard,
 	CreateAssignmentData,
+	CreateAssignmentsBatchFormData,
 	CreatePermitFormData,
 } from "./assignment.types"
 
@@ -154,6 +157,57 @@ export async function createAssignment(data: CreateAssignmentData) {
 	}
 }
 
+export async function createAssignmentsBatch(
+	data: CreateAssignmentsBatchFormData,
+) {
+	const formData = normalizeCreateAssignmentsBatchForm(data)
+
+	if (
+		!formData.seasonId ||
+		!formData.permitId ||
+		formData.userIds.length === 0
+	) {
+		throw new AssignmentManagementError(
+			"Temporada, permiso y encargados son obligatorios",
+		)
+	}
+
+	const permit = await findPermitById(formData.permitId)
+
+	if (!permit) {
+		throw new AssignmentManagementError("Ese permiso ya no existe")
+	}
+
+	if (permit.seasonId !== formData.seasonId) {
+		throw new AssignmentManagementError(
+			"Ese permiso pertenece a otra temporada",
+		)
+	}
+
+	if (new Set(formData.userIds).size !== formData.userIds.length) {
+		throw new AssignmentManagementError("Hay encargados repetidos")
+	}
+
+	const firstAssignment = await findFirstAssignmentByPermit(formData.permitId)
+	const activeUserId = firstAssignment
+		? null
+		: formData.activeUserId || formData.userIds[0]
+
+	try {
+		await createAssignmentsBatchRecord(
+			formData.userIds.map((userId) => ({
+				seasonId: formData.seasonId,
+				communityId: permit.communityId,
+				userId,
+				permitId: formData.permitId,
+				active: activeUserId === userId,
+			})),
+		)
+	} catch (error) {
+		throwAssignmentCreationError(error)
+	}
+}
+
 export async function setAssignmentAsActive(
 	data: AssignmentMutationRequestBody,
 ) {
@@ -205,6 +259,18 @@ function normalizeCreateAssignmentForm(
 	}
 }
 
+function normalizeCreateAssignmentsBatchForm(
+	data: CreateAssignmentsBatchFormData,
+) {
+	return {
+		seasonId: data.seasonId.trim(),
+		communityId: data.communityId.trim(),
+		permitId: data.permitId.trim(),
+		activeUserId: data.activeUserId.trim(),
+		userIds: normalizeUserIds(data.userIds),
+	}
+}
+
 function normalizeAssignmentMutationForm(
 	data: AssignmentMutationRequestBody,
 ): AssignmentMutationRequestBody {
@@ -214,6 +280,12 @@ function normalizeAssignmentMutationForm(
 		permitId: data.permitId.trim(),
 		assignmentId: data.assignmentId.trim(),
 	}
+}
+
+function normalizeUserIds(userIds: string | string[]) {
+	const rawValues = Array.isArray(userIds) ? userIds : [userIds]
+
+	return rawValues.map((value) => value.trim()).filter(Boolean)
 }
 
 async function getAssignmentForMutation(data: AssignmentMutationRequestBody) {

@@ -217,6 +217,23 @@ export async function createAssignment(data: CreateAssignmentData) {
 	})
 }
 
+export async function createAssignmentsBatch(
+	records: Array<CreateAssignmentData & { active: boolean }>,
+) {
+	await db.transaction(async (tx) => {
+		await tx.insert(assignments).values(
+			records.map((record) => ({
+				id: crypto.randomUUID(),
+				seasonId: record.seasonId,
+				communityId: record.communityId,
+				userId: record.userId,
+				permitId: record.permitId,
+				active: record.active,
+			})),
+		)
+	})
+}
+
 export async function setActiveAssignment(
 	assignmentId: string,
 	permitId: string,

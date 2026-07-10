@@ -13,7 +13,7 @@
 					placeholder="Buscar comunidad"
 					x-model="communitySearch"
 					@focus="isCommunityDropdownOpen = true"
-					@input="isCommunityDropdownOpen = true" />
+					@input="handleCommunitySearchInput()" />
 			</label>
 			<div
 				x-cloak
@@ -63,9 +63,6 @@
 					</div>
 				</label>
 			</form>
-			<p class="text-xs text-slate-500" x-show="!selectedCommunityId" x-cloak>
-				Selecciona una comunidad primero.
-			</p>
 		</section>
 
 		<section class="flex min-h-0 flex-1 basis-0 flex-col lg:overflow-hidden">
@@ -79,18 +76,18 @@
 				<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col gap-2 overflow-y-auto pr-1">
 					<div
 						x-cloak
-						x-show="selectedCommunityId && filteredPermits.length === 0"
-						class="rounded-lg border border-dashed border-base-300 bg-base-100 px-3 py-4 text-sm text-slate-500">
+						x-show="hasSelectedCommunity && filteredPermits.length === 0"
+						class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
 						No hay permisos para esa comunidad.
 					</div>
 					<div
 						x-cloak
-						x-show="!selectedCommunityId"
-						class="rounded-lg border border-dashed border-base-300 bg-base-100 px-3 py-4 text-sm text-slate-500">
+						x-show="!hasSelectedCommunity"
+						class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
 						Selecciona una comunidad para ver sus permisos.
 					</div>
 					<% if (permits.length === 0) { %>
-						<div class="rounded-lg border border-dashed border-base-300 bg-base-100 px-3 py-4 text-sm text-slate-500">
+						<div class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
 							Aun no hay permisos para esta temporada.
 						</div>
 					<% } %>

@@ -1,5 +1,5 @@
 <article class="card bg-base-100 shadow lg:h-full">
-	<div class="card-body gap-4 p-4 lg:h-full lg:min-h-0">
+	<div class="card-body gap-4 p-4 lg:h-full lg:min-h-0 lg:overflow-hidden">
 		<h2 class="text-base font-semibold text-slate-900">Asignar usuarios</h2>
 
 		<section>
@@ -7,15 +7,18 @@
 			</div>
 		</section>
 
-		<form method="post" action="/admin/assignments" class="flex h-full min-h-0 flex-col">
+		<form method="post" action="/admin/assignments" class="flex h-full min-h-0 flex-col lg:overflow-hidden">
 			<input type="hidden" name="seasonId" value="<%= selectedSeasonId %>" />
 			<input type="hidden" name="communityId" x-model="selectedCommunityId" />
 			<input type="hidden" name="permitId" x-model="selectedPermitId" />
-			<input type="hidden" name="userId" x-model="selectedUserId" />
+			<input type="hidden" name="activeUserId" :value="stagedActiveUserId" />
+			<template x-for="user in stagedUsersForSelectedPermit" :key="`input-${user.userId}`">
+				<input type="hidden" name="userIds" :value="user.userId" />
+			</template>
 
-		<section class="relative space-y-2" @click.outside="isUserDropdownOpen = false">
-			<label class="form-control">
-				<span class="label-text mb-2 font-semibold">Encargado</span>
+			<section class="relative space-y-2" @click.outside="isUserDropdownOpen = false">
+				<label class="form-control">
+					<span class="label-text mb-2 font-semibold">Encargado</span>
 					<input
 						class="input input-bordered w-full"
 						type="text"
@@ -24,8 +27,8 @@
 						placeholder="Buscar encargado"
 						x-model="userSearch"
 						@focus="isUserDropdownOpen = true"
-					@input="isUserDropdownOpen = true"
-					:disabled="!selectedPermit" />
+						@input="isUserDropdownOpen = true"
+						:disabled="!selectedPermit" />
 				</label>
 
 				<div
@@ -38,7 +41,7 @@
 							<button
 								type="button"
 								class="flex w-full justify-start rounded-none px-3 py-2 text-left"
-								@click="selectUser(user)">
+								@click="addUserToStage(user)">
 								<span x-text="user.name"></span>
 							</button>
 						</li>
@@ -52,9 +55,57 @@
 				</div>
 			</section>
 
-			<div class="mt-auto pt-2">
-				<button type="submit" class="btn btn-primary w-full" :disabled="!selectedPermit || !selectedUserId">
-					Guardar asignacion
+			<section class="flex min-h-0 flex-1 basis-0 flex-col lg:overflow-hidden">
+				<div class="flex min-h-0 flex-1 basis-0 flex-col gap-2 overflow-y-auto pr-1">
+					<div
+						x-show="!selectedPermit"
+						x-cloak
+						class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
+						Selecciona un permiso primero.
+					</div>
+
+					<div
+						x-show="selectedPermit && stagedUsersForSelectedPermit.length === 0"
+						x-cloak
+						class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
+						Aun no hay usuarios asignados a este permiso.
+					</div>
+
+					<template x-for="user in stagedUsersForSelectedPermit" :key="user.userId">
+						<div class="flex items-center justify-between gap-3 rounded-xl border border-base-300 bg-base-100 px-3 py-2">
+							<div class="min-w-0">
+								<div class="truncate text-sm font-medium text-slate-900" x-text="user.userFullName"></div>
+							</div>
+							<div class="flex items-center gap-2">
+								<button
+									type="button"
+									class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition"
+									:class="user.active
+										? 'text-success hover:bg-success hover:text-white'
+										: 'text-slate-400 hover:bg-success hover:text-white'"
+									@click="setStagedUserActive(user.userId)">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/>
+									</svg>
+								</button>
+								<button
+									type="button"
+									class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-error hover:text-white"
+									@click="removeStagedUser(user.userId)">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M18 6 6 18"/>
+										<path d="m6 6 12 12"/>
+									</svg>
+								</button>
+							</div>
+						</div>
+					</template>
+				</div>
+			</section>
+
+			<div class="pt-2">
+				<button type="submit" class="btn btn-primary w-full" :disabled="!selectedPermit || stagedUsersForSelectedPermit.length === 0">
+					Crear asignaciones
 				</button>
 			</div>
 		</form>
