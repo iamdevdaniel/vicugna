@@ -44,7 +44,7 @@
 											x-bind:hx-vals="JSON.stringify({ seasonId: selectedSeasonId, permitId: card.permitId, assignmentId: user.assignmentId })"
 											hx-confirm="Marcar este encargado como principal?"
 											hx-swap="none"
-											:class="user.active ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'"
+											:class="user.active ? 'text-success' : 'text-slate-400 hover:text-slate-600'"
 											:title="user.active ? 'Encargado principal' : 'Marcar como principal'"
 											aria-label="Cambiar encargado principal">
 											<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
