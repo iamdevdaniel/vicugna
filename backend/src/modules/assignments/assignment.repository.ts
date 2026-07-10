@@ -197,7 +197,7 @@ export async function createAssignment(data: CreateAssignmentData) {
 			communityId: data.communityId,
 			userId: data.userId,
 			permitId: data.permitId,
-			active: existingAssignment ? false : true,
+			active: !existingAssignment,
 		})
 	})
 }

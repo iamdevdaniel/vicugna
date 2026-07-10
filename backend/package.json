@@ -57,6 +57,10 @@
       "biome check --write --no-errors-on-unmatched",
       "biome check --error-on-warnings --no-errors-on-unmatched"
     ],
+    "src/public/views/**/*.js": [
+      "biome check --write --no-errors-on-unmatched",
+      "biome check --error-on-warnings --no-errors-on-unmatched"
+    ],
     "drizzle.config.ts": [
       "biome check --write --no-errors-on-unmatched",
       "biome check --error-on-warnings --no-errors-on-unmatched"

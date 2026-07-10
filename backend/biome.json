@@ -7,7 +7,12 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["src/**/*.ts", "drizzle.config.ts", "!src/db/migrations/**"]
+		"includes": [
+			"src/**/*.ts",
+			"src/public/views/**/*.js",
+			"drizzle.config.ts",
+			"!src/db/migrations/**"
+		]
 	},
 	"formatter": {
 		"enabled": true,

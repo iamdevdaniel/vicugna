@@ -54,12 +54,16 @@ function assignmentSeasonState(initialData) {
 			if (!search) return this.communities.slice(0, 8)
 
 			return this.communities
-				.filter((community) => community.name.toLowerCase().includes(search))
+				.filter((community) =>
+					community.name.toLowerCase().includes(search),
+				)
 				.slice(0, 8)
 		},
 		get eligibleUsers() {
 			const assignedUserIds = new Set(
-				this.selectedPermitAssignments.map((assignment) => assignment.userId),
+				this.selectedPermitAssignments.map(
+					(assignment) => assignment.userId,
+				),
 			)
 			const search = this.userSearch.trim().toLowerCase()
 
@@ -89,7 +93,8 @@ function assignmentSeasonState(initialData) {
 			}
 
 			const usersCount = card.users.length
-			const usersLabel = usersCount === 1 ? "1 encargado" : `${usersCount} encargados`
+			const usersLabel =
+				usersCount === 1 ? "1 encargado" : `${usersCount} encargados`
 
 			return `${card.communityName} • ${usersLabel}`
 		},
@@ -142,3 +147,5 @@ function assignmentSeasonState(initialData) {
 		},
 	}
 }
+
+window.assignmentSeasonState = assignmentSeasonState
