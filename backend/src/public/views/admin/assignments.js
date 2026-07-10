@@ -37,20 +37,6 @@ function assignmentSeasonState(initialData) {
 				(assignment) => assignment.permitId === this.selectedPermitId,
 			)
 		},
-		get orderedAssignmentCards() {
-			if (!this.selectedPermit) {
-				return this.assignmentCards
-			}
-
-			const selectedCard = this.assignmentCards.find(
-				(card) => card.permitId === this.selectedPermit.id,
-			)
-			const remainingCards = this.assignmentCards.filter(
-				(card) => card.permitId !== this.selectedPermit.id,
-			)
-
-			return selectedCard ? [selectedCard, ...remainingCards] : remainingCards
-		},
 		get selectedPermitCommunityId() {
 			return this.selectedPermitAssignments[0]?.communityId ?? ""
 		},
@@ -100,6 +86,25 @@ function assignmentSeasonState(initialData) {
 			this.clearUser()
 			this.isCommunityPickerOpen = false
 			this.isUserPickerOpen = false
+
+			queueMicrotask(() => {
+				if (!this.selectedPermitId) {
+					return
+				}
+
+				const selectedCard = document.querySelector(
+					`[data-assignment-card-id="${this.selectedPermitId}"]`,
+				)
+
+				if (!(selectedCard instanceof HTMLElement)) {
+					return
+				}
+
+				selectedCard.scrollIntoView({
+					behavior: "smooth",
+					block: "nearest",
+				})
+			})
 		},
 		selectCommunity(community) {
 			this.selectedCommunityId = community.id
