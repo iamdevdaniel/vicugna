@@ -6,6 +6,7 @@ import { AssignmentManagementError } from "./assignment.errors"
 import {
 	createAssignment as createAssignmentRecord,
 	createPermit as createPermitRecord,
+	findFirstAssignmentByPermit,
 	findPermitById,
 	findPermitBySeasonAndNumber,
 	listAssignments,
@@ -17,6 +18,7 @@ import {
 } from "./assignment.repository"
 import type {
 	AssignmentPageData,
+	AssignmentPermitCard,
 	CreateAssignmentData,
 	CreatePermitFormData,
 } from "./assignment.types"
@@ -51,6 +53,7 @@ export async function getAssignmentsInitialPageState(): Promise<
 		communities,
 		users,
 		assignments,
+		assignmentCards: buildAssignmentCards(assignments),
 	}
 }
 
@@ -76,6 +79,7 @@ export async function getAssignmentsPageStateForSeason(
 		communities,
 		users,
 		assignments,
+		assignmentCards: buildAssignmentCards(assignments),
 	}
 }
 
@@ -139,6 +143,19 @@ export async function createAssignment(data: CreateAssignmentData) {
 		)
 	}
 
+	const existingAssignment = await findFirstAssignmentByPermit(
+		formData.permitId,
+	)
+
+	if (
+		existingAssignment &&
+		existingAssignment.communityId !== formData.communityId
+	) {
+		throw new AssignmentManagementError(
+			"Ese permiso ya fue fijado a otra comunidad",
+		)
+	}
+
 	try {
 		await createAssignmentRecord(formData)
 	} catch (error) {
@@ -198,4 +215,42 @@ function throwAssignmentCreationError(error: unknown): never {
 	}
 
 	throw error
+}
+
+function buildAssignmentCards(
+	assignments: AssignmentPageData["assignments"],
+): AssignmentPermitCard[] {
+	const cardsByPermit = new Map<string, AssignmentPermitCard>()
+
+	for (const assignment of assignments) {
+		const existingCard = cardsByPermit.get(assignment.permitId)
+
+		if (existingCard) {
+			existingCard.users.push({
+				assignmentId: assignment.id,
+				userId: assignment.userId,
+				userFullName: assignment.userFullName,
+				active: assignment.active,
+			})
+			continue
+		}
+
+		cardsByPermit.set(assignment.permitId, {
+			permitId: assignment.permitId,
+			permitNumber: assignment.permitNumber,
+			seasonName: assignment.seasonName,
+			communityId: assignment.communityId,
+			communityName: assignment.communityName,
+			users: [
+				{
+					assignmentId: assignment.id,
+					userId: assignment.userId,
+					userFullName: assignment.userFullName,
+					active: assignment.active,
+				},
+			],
+		})
+	}
+
+	return Array.from(cardsByPermit.values())
 }

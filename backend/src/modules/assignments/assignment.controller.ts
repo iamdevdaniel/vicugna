@@ -54,6 +54,7 @@ function getAssignmentsViewData(
 		},
 		formMessage,
 		...data,
+		assignmentCards: data.assignmentCards ?? [],
 	}
 }
 

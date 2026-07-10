@@ -1,13 +1,4 @@
-<div
-	id="assignment-user-picker-slot"
-	<% if (typeof useOobSwap !== "undefined" && useOobSwap) { %>hx-swap-oob="outerHTML"<% } %>
-	class="form-control relative md:col-span-2"
-	x-data='assignmentUserPicker({ users: <%- JSON.stringify(users) %> })'>
-	<div
-		id="assignment-user-picker-loading"
-		class="htmx-indicator absolute inset-0 z-10 flex items-center justify-center rounded-box bg-base-100/70">
-		<span class="loading loading-spinner loading-md text-primary"></span>
-	</div>
+<div class="form-control relative md:col-span-2">
 	<span class="label-text mb-2 font-semibold">Encargado</span>
 	<input type="hidden" name="userId" :value="selectedUserId" />
 	<div class="relative" @click.outside="isUserPickerOpen = false">
@@ -41,11 +32,11 @@
 			class="rounded-box absolute left-0 right-0 top-full z-20 mt-2 border border-base-300 bg-base-100 shadow"
 			x-show="isUserPickerOpen"
 			x-cloak>
-			<template x-if="filteredUsers.length === 0">
-				<p class="px-3 py-3 text-sm text-slate-500">Sin resultados</p>
+			<template x-if="eligibleUsers.length === 0">
+				<p class="px-3 py-3 text-sm text-slate-500">No hay encargados disponibles.</p>
 			</template>
 			<ul class="max-h-48 overflow-y-auto">
-				<template x-for="user in filteredUsers" :key="user.id">
+				<template x-for="user in eligibleUsers" :key="user.id">
 					<li>
 						<button
 							type="button"

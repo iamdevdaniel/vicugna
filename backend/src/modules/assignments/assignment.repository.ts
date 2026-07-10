@@ -79,11 +79,24 @@ export async function listAssignments(
 
 	return rows.map((assignment) => ({
 		id: assignment.id,
+		permitId: assignment.permitId,
+		communityId: assignment.communityId,
+		userId: assignment.userId,
+		active: assignment.active,
 		seasonName: assignment.season.name,
 		communityName: assignment.community.name,
 		userFullName: assignment.user.fullName,
 		permitNumber: assignment.permit.permitNumber,
 	}))
+}
+
+export async function findFirstAssignmentByPermit(permitId: string) {
+	return db.query.assignments.findFirst({
+		where: eq(assignments.permitId, permitId),
+		with: {
+			community: true,
+		},
+	})
 }
 
 export async function listPermitsBySeason(

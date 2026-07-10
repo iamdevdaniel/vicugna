@@ -1,9 +1,20 @@
 function assignmentSeasonState(initialData) {
 	return {
 		permits: initialData.permits,
+		communities: initialData.communities,
+		users: initialData.users,
+		assignments: initialData.assignments,
+		assignmentCards: initialData.assignmentCards,
 		permitSearch: "",
 		selectedPermitId: initialData.selectedPermit?.id ?? "",
 		selectedSeasonId: initialData.selectedSeasonId,
+		isCommunityPickerOpen: false,
+		communitySearch: "",
+		selectedCommunityId: "",
+		isUserPickerOpen: false,
+		userSearch: "",
+		selectedUserId: "",
+		selectedUserName: "",
 		get selectedPermit() {
 			const permit = this.permits.find(
 				(currentPermit) => currentPermit.id === this.selectedPermitId,
@@ -18,6 +29,62 @@ function assignmentSeasonState(initialData) {
 				permitNumber: permit.permitNumber,
 			}
 		},
+		get selectedPermitAssignments() {
+			if (!this.selectedPermitId) {
+				return []
+			}
+
+			return this.assignments.filter(
+				(assignment) => assignment.permitId === this.selectedPermitId,
+			)
+		},
+		get orderedAssignmentCards() {
+			if (!this.selectedPermit) {
+				return this.assignmentCards
+			}
+
+			const selectedCard = this.assignmentCards.find(
+				(card) => card.permitId === this.selectedPermit.id,
+			)
+			const remainingCards = this.assignmentCards.filter(
+				(card) => card.permitId !== this.selectedPermit.id,
+			)
+
+			return selectedCard ? [selectedCard, ...remainingCards] : remainingCards
+		},
+		get selectedPermitCommunityId() {
+			return this.selectedPermitAssignments[0]?.communityId ?? ""
+		},
+		get selectedPermitCommunityName() {
+			const community = this.communities.find(
+				(currentCommunity) =>
+					currentCommunity.id === this.selectedPermitCommunityId,
+			)
+
+			return community?.name ?? ""
+		},
+		get filteredCommunities() {
+			const search = this.communitySearch.trim().toLowerCase()
+
+			if (!search) return this.communities.slice(0, 8)
+
+			return this.communities
+				.filter((community) => community.name.toLowerCase().includes(search))
+				.slice(0, 8)
+		},
+		get eligibleUsers() {
+			const assignedUserIds = new Set(
+				this.selectedPermitAssignments.map((assignment) => assignment.userId),
+			)
+			const search = this.userSearch.trim().toLowerCase()
+
+			return this.users
+				.filter((user) => !assignedUserIds.has(user.id))
+				.filter((user) =>
+					search ? user.name.toLowerCase().includes(search) : true,
+				)
+				.slice(0, 8)
+		},
 		get filteredPermits() {
 			const search = this.permitSearch.trim().toLowerCase()
 
@@ -30,24 +97,10 @@ function assignmentSeasonState(initialData) {
 		selectPermit(permit) {
 			this.selectedPermitId =
 				this.selectedPermitId === permit.id ? "" : permit.id
-		},
-	}
-}
-
-function assignmentCommunityPicker(initialData) {
-	return {
-		communities: initialData.communities,
-		isCommunityPickerOpen: false,
-		communitySearch: "",
-		selectedCommunityId: "",
-		get filteredCommunities() {
-			const search = this.communitySearch.trim().toLowerCase()
-
-			if (!search) return this.communities.slice(0, 8)
-
-			return this.communities
-				.filter((community) => community.name.toLowerCase().includes(search))
-				.slice(0, 8)
+			this.clearCommunity()
+			this.clearUser()
+			this.isCommunityPickerOpen = false
+			this.isUserPickerOpen = false
 		},
 		selectCommunity(community) {
 			this.selectedCommunityId = community.id
@@ -58,25 +111,6 @@ function assignmentCommunityPicker(initialData) {
 			this.selectedCommunityId = ""
 			this.communitySearch = ""
 			this.isCommunityPickerOpen = false
-		},
-	}
-}
-
-function assignmentUserPicker(initialData) {
-	return {
-		users: initialData.users,
-		isUserPickerOpen: false,
-		userSearch: "",
-		selectedUserId: "",
-		selectedUserName: "",
-		get filteredUsers() {
-			const search = this.userSearch.trim().toLowerCase()
-
-			if (!search) return this.users.slice(0, 8)
-
-			return this.users
-				.filter((user) => user.name.toLowerCase().includes(search))
-				.slice(0, 8)
 		},
 		selectUser(user) {
 			this.selectedUserId = user.id

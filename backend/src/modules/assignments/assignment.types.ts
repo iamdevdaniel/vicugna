@@ -37,10 +37,28 @@ export interface PermitListItem {
 
 export interface AssignmentListItem {
 	id: string
+	permitId: string
+	communityId: string
+	userId: string
+	active: boolean
 	seasonName: string
 	communityName: string
 	userFullName: string
 	permitNumber: string
+}
+
+export interface AssignmentPermitCard {
+	permitId: string
+	permitNumber: string
+	seasonName: string
+	communityId: string
+	communityName: string
+	users: Array<{
+		assignmentId: string
+		userId: string
+		userFullName: string
+		active: boolean
+	}>
 }
 
 export interface AssignmentPageData {
@@ -56,4 +74,5 @@ export interface AssignmentPageData {
 	communities: SelectOption[]
 	users: ManagedUserOption[]
 	assignments: AssignmentListItem[]
+	assignmentCards: AssignmentPermitCard[]
 }

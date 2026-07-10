@@ -1,31 +1,45 @@
-<article
-	id="assignments-list-panel"
-	<% if (typeof useOobSwap !== "undefined" && useOobSwap) { %>hx-swap-oob="outerHTML"<% } %>
-	class="card relative bg-base-100 shadow xl:min-h-0">
-	<div
-		id="assignments-list-loading"
-		class="htmx-indicator absolute inset-0 z-10 flex items-center justify-center rounded-box bg-base-100/70">
-		<span class="loading loading-spinner loading-lg text-primary"></span>
-	</div>
+<article id="assignments-list-panel" class="card relative bg-base-100 shadow xl:min-h-0">
 	<div class="card-body p-4 xl:h-full xl:overflow-hidden">
 		<h2 class="text-base font-semibold text-slate-900">Asignaciones</h2>
 
-		<div class="mt-3 space-y-2.5 xl:h-full xl:overflow-y-auto">
-			<% if (assignments.length === 0) { %>
+		<div class="mt-3 xl:h-full xl:overflow-y-auto">
+			<template x-if="orderedAssignmentCards.length === 0">
 				<p class="text-xs text-slate-500">Todavia no hay asignaciones guardadas.</p>
-			<% } %>
+			</template>
 
-			<% assignments.forEach((assignment) => { %>
-				<article class="rounded-box border border-base-300 px-4 py-3">
-					<h3 class="font-semibold text-slate-900"><%= assignment.communityName %></h3>
-					<p class="mt-1 text-xs text-slate-500">
-						<%= assignment.seasonName %> • <%= assignment.userFullName %>
-					</p>
-					<p class="mt-2 text-xs text-slate-600">
-						Permiso: <strong><%= assignment.permitNumber %></strong>
-					</p>
-				</article>
-			<% }) %>
+			<div class="space-y-2.5" x-show="orderedAssignmentCards.length > 0" x-cloak>
+				<template x-for="card in orderedAssignmentCards" :key="card.permitId">
+					<article
+						class="rounded-box border px-4 py-3"
+						:class="selectedPermit && selectedPermit.id === card.permitId
+							? 'border-primary bg-primary/5'
+							: 'border-base-300'">
+						<div class="flex items-start justify-between gap-3">
+							<div>
+								<h3 class="font-semibold text-slate-900" x-text="card.permitNumber"></h3>
+								<p class="mt-1 text-xs text-slate-500">
+									<span x-text="card.seasonName"></span>
+									<span> • </span>
+									<span x-text="card.communityName"></span>
+								</p>
+							</div>
+							<span
+								class="h-10 w-1 rounded-full"
+								:class="selectedPermit && selectedPermit.id === card.permitId
+									? 'bg-primary'
+									: 'bg-transparent'"></span>
+						</div>
+						<div class="mt-3 space-y-2">
+							<template x-for="user in card.users" :key="user.assignmentId">
+								<div class="flex items-center justify-between gap-3 rounded-box bg-base-200 px-3 py-2">
+									<span class="text-sm text-slate-700" x-text="user.userFullName"></span>
+									<span class="badge badge-primary badge-soft" x-show="user.active">Principal</span>
+								</div>
+							</template>
+						</div>
+					</article>
+				</template>
+			</div>
 		</div>
 	</div>
 </article>

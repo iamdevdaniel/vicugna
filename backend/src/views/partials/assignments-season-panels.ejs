@@ -4,6 +4,10 @@
 		permits: <%- JSON.stringify(permits) %>,
 		selectedPermit: <%- JSON.stringify(selectedPermit) %>,
 		selectedSeasonId: <%- JSON.stringify(selectedSeasonId) %>,
+		communities: <%- JSON.stringify(communities) %>,
+		users: <%- JSON.stringify(users) %>,
+		assignments: <%- JSON.stringify(assignments) %>,
+		assignmentCards: <%- JSON.stringify(assignmentCards) %>,
 	})'
 class="grid grid-cols-1 gap-4 xl:h-full xl:grid-cols-[1.05fr_1fr_1.15fr]">
 <article class="card bg-base-100 shadow xl:min-h-0">
@@ -57,8 +61,8 @@ class="grid grid-cols-1 gap-4 xl:h-full xl:grid-cols-[1.05fr_1fr_1.15fr]">
 			<div x-show="selectedPermit" x-cloak>
 				<div class="grid grid-cols-1 gap-4">
 					<%- include("./assignment-selected-permit", { selectedPermit }) %>
-					<%- include("./assignment-community-picker", { communities }) %>
-					<%- include("./assignment-user-picker", { users }) %>
+					<%- include("./assignment-community-picker") %>
+					<%- include("./assignment-user-picker") %>
 				</div>
 				<div class="card-actions mt-3 justify-end">
 					<button type="submit" class="btn btn-primary">
@@ -73,5 +77,5 @@ class="grid grid-cols-1 gap-4 xl:h-full xl:grid-cols-[1.05fr_1fr_1.15fr]">
 	</div>
 </article>
 
-<%- include("./assignments-list-panel", { seasons, communities, users, assignments }) %>
+<%- include("./assignments-list-panel") %>
 </div>
