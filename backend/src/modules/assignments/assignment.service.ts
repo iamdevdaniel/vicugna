@@ -6,6 +6,8 @@ import { AssignmentManagementError } from "./assignment.errors"
 import {
 	createAssignment as createAssignmentRecord,
 	createPermit as createPermitRecord,
+	deleteAssignment as deleteAssignmentRecord,
+	findAssignmentById,
 	findFirstAssignmentByPermit,
 	findPermitById,
 	findPermitBySeasonAndNumber,
@@ -15,8 +17,10 @@ import {
 	listEligibleAssignmentUsersByPermit,
 	listPermitsBySeason,
 	listSeasons,
+	setActiveAssignment as setActiveAssignmentRecord,
 } from "./assignment.repository"
 import type {
+	AssignmentMutationRequestBody,
 	AssignmentPageData,
 	AssignmentPermitCard,
 	CreateAssignmentData,
@@ -163,6 +167,34 @@ export async function createAssignment(data: CreateAssignmentData) {
 	}
 }
 
+export async function setAssignmentAsActive(
+	data: AssignmentMutationRequestBody,
+) {
+	const formData = normalizeAssignmentMutationForm(data)
+	const assignment = await getAssignmentForMutation(formData)
+
+	if (assignment.permitId !== formData.permitId) {
+		throw new AssignmentManagementError(
+			"Esa asignacion no pertenece al permiso seleccionado",
+		)
+	}
+
+	await setActiveAssignmentRecord(formData.assignmentId, formData.permitId)
+}
+
+export async function removeAssignment(data: AssignmentMutationRequestBody) {
+	const formData = normalizeAssignmentMutationForm(data)
+	const assignment = await getAssignmentForMutation(formData)
+
+	if (assignment.permitId !== formData.permitId) {
+		throw new AssignmentManagementError(
+			"Esa asignacion no pertenece al permiso seleccionado",
+		)
+	}
+
+	await deleteAssignmentRecord(formData.assignmentId)
+}
+
 // ==========================================
 // ASSIGNMENT FLOW
 // ==========================================
@@ -183,6 +215,36 @@ function normalizeCreateAssignmentForm(
 		userId: data.userId.trim(),
 		permitId: data.permitId.trim(),
 	}
+}
+
+function normalizeAssignmentMutationForm(
+	data: AssignmentMutationRequestBody,
+): AssignmentMutationRequestBody {
+	return {
+		seasonId: data.seasonId.trim(),
+		permitId: data.permitId.trim(),
+		assignmentId: data.assignmentId.trim(),
+	}
+}
+
+async function getAssignmentForMutation(data: AssignmentMutationRequestBody) {
+	if (!data.seasonId || !data.permitId || !data.assignmentId) {
+		throw new AssignmentManagementError("Faltan datos de la asignacion")
+	}
+
+	const assignment = await findAssignmentById(data.assignmentId)
+
+	if (!assignment) {
+		throw new AssignmentManagementError("Esa asignacion ya no existe")
+	}
+
+	if (assignment.seasonId !== data.seasonId) {
+		throw new AssignmentManagementError(
+			"Esa asignacion pertenece a otra temporada",
+		)
+	}
+
+	return assignment
 }
 
 function throwAssignmentCreationError(error: unknown): never {

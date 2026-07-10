@@ -1,15 +1,14 @@
+<section
+	id="season-state-slot"
+	class="mt-3 xl:min-h-0 xl:flex-1 xl:overflow-hidden"
+	hx-swap-oob="outerHTML">
+	<%- include("./assignments-season-panels", { formMessage: null, selectedSeasonId, selectedPermit, seasons, permits, communities, users, assignments, assignmentCards }) %>
+</section>
+
 <% if (errorMessage) { %>
-	<div class="alert alert-error alert-soft">
-		<%= errorMessage %>
-	</div>
+	<%- include("./toast", { message: errorMessage, type: "error" }) %>
 <% } %>
 
 <% if (selectedPermit) { %>
-	<section
-		id="season-state-slot"
-		class="mt-3 xl:min-h-0 xl:flex-1 xl:overflow-hidden"
-		hx-swap-oob="outerHTML">
-		<%- include("./assignments-season-panels", { formMessage: null, selectedSeasonId, selectedPermit, seasons, permits, communities, users, assignments, assignmentCards }) %>
-	</section>
-	<%- include("./toast", { message: "Permiso creado" }) %>
+	<%- include("./toast", { message: "Permiso creado", type: "success" }) %>
 <% } %>

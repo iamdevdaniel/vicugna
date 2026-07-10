@@ -99,6 +99,12 @@ export async function findFirstAssignmentByPermit(permitId: string) {
 	})
 }
 
+export async function findAssignmentById(assignmentId: string) {
+	return db.query.assignments.findFirst({
+		where: eq(assignments.id, assignmentId),
+	})
+}
+
 export async function listPermitsBySeason(
 	seasonId: string,
 ): Promise<PermitListItem[]> {
@@ -194,4 +200,25 @@ export async function createAssignment(data: CreateAssignmentData) {
 			active: existingAssignment ? false : true,
 		})
 	})
+}
+
+export async function setActiveAssignment(
+	assignmentId: string,
+	permitId: string,
+) {
+	await db.transaction(async (tx) => {
+		await tx
+			.update(assignments)
+			.set({ active: false })
+			.where(eq(assignments.permitId, permitId))
+
+		await tx
+			.update(assignments)
+			.set({ active: true })
+			.where(eq(assignments.id, assignmentId))
+	})
+}
+
+export async function deleteAssignment(assignmentId: string) {
+	await db.delete(assignments).where(eq(assignments.id, assignmentId))
 }

@@ -1,6 +1,6 @@
 <div id="toast-container" hx-swap-oob="innerHTML">
 	<div
-		class="alert alert-success pointer-events-auto w-auto shadow-lg"
+		class="alert pointer-events-auto w-auto shadow-lg <%= type === 'error' ? 'alert-error' : 'alert-success' %>"
 		x-data="{ isVisible: true }"
 		x-init="setTimeout(() => isVisible = false, 3000)"
 		x-show="isVisible"

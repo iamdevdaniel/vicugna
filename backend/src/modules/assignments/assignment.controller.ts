@@ -5,8 +5,11 @@ import {
 	createPermit,
 	getAssignmentsInitialPageState,
 	getAssignmentsPageStateForSeason,
+	removeAssignment,
+	setAssignmentAsActive,
 } from "./assignment.service"
 import type {
+	AssignmentMutationRequestBody,
 	AssignmentPageData,
 	CreateAssignmentFormRequestBody,
 	CreatePermitFormData,
@@ -127,6 +130,74 @@ export async function submitAssignmentForm(
 	}
 }
 
+export async function activateAssignment(
+	req: Request<
+		Record<string, never>,
+		Record<string, never>,
+		AssignmentMutationRequestBody
+	>,
+	res: Response,
+) {
+	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
+
+	try {
+		await setAssignmentAsActive(req.body)
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit: await getSelectedPermitData(
+				selectedSeasonId,
+				req.body.permitId,
+			),
+			errorMessage: null,
+			successMessage: "Encargado principal actualizado",
+		})
+	} catch (error) {
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit: await getSelectedPermitData(
+				selectedSeasonId,
+				req.body.permitId,
+			),
+			errorMessage: getAssignmentErrorMessage(error),
+			successMessage: null,
+		})
+	}
+}
+
+export async function deleteAssignment(
+	req: Request<
+		Record<string, never>,
+		Record<string, never>,
+		AssignmentMutationRequestBody
+	>,
+	res: Response,
+) {
+	const selectedSeasonId = getSelectedSeasonId(req.body.seasonId)
+
+	try {
+		await removeAssignment(req.body)
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit: await getSelectedPermitData(
+				selectedSeasonId,
+				req.body.permitId,
+			),
+			errorMessage: null,
+			successMessage: "Asignacion eliminada",
+		})
+	} catch (error) {
+		res.render("partials/assignments-create-result", {
+			...(await getAssignmentsPageStateForSeason(selectedSeasonId)),
+			selectedPermit: await getSelectedPermitData(
+				selectedSeasonId,
+				req.body.permitId,
+			),
+			errorMessage: getAssignmentErrorMessage(error),
+			successMessage: null,
+		})
+	}
+}
+
 function getSelectedSeasonId(seasonId: unknown) {
 	if (Array.isArray(seasonId)) {
 		const firstSeasonId = seasonId[0]
@@ -149,4 +220,24 @@ function getAssignmentErrorMessage(error: unknown) {
 	}
 
 	return "No se pudo guardar la asignacion"
+}
+
+async function getSelectedPermitData(
+	selectedSeasonId: string,
+	permitId: string,
+): Promise<SelectedPermitData | null> {
+	const seasonState = await getAssignmentsPageStateForSeason(selectedSeasonId)
+	const selectedPermit = seasonState.permits.find(
+		(permit) => permit.id === permitId,
+	)
+
+	if (!selectedPermit) {
+		return null
+	}
+
+	return {
+		id: selectedPermit.id,
+		seasonId: selectedSeasonId,
+		permitNumber: selectedPermit.permitNumber,
+	}
 }
