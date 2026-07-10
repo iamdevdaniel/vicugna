@@ -79,6 +79,20 @@ function assignmentSeasonState(initialData) {
 				permit.permitNumber.toLowerCase().includes(search),
 			)
 		},
+		getPermitSummary(permitId) {
+			const card = this.assignmentCards.find(
+				(currentCard) => currentCard.permitId === permitId,
+			)
+
+			if (!card) {
+				return "Sin asignaciones"
+			}
+
+			const usersCount = card.users.length
+			const usersLabel = usersCount === 1 ? "1 encargado" : `${usersCount} encargados`
+
+			return `${card.communityName} • ${usersLabel}`
+		},
 		selectPermit(permit) {
 			this.selectedPermitId =
 				this.selectedPermitId === permit.id ? "" : permit.id

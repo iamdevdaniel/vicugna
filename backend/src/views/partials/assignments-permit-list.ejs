@@ -37,7 +37,10 @@
 						<span
 							class="h-10 w-1 rounded-full"
 							:class="selectedPermitId === permit.id ? 'bg-primary' : 'bg-transparent'"></span>
-						<span class="flex-1 font-medium text-slate-900" x-text="permit.permitNumber"></span>
+						<div class="flex-1">
+							<p class="font-medium text-slate-900" x-text="permit.permitNumber"></p>
+							<p class="mt-0.5 text-xs text-slate-500" x-text="getPermitSummary(permit.id)"></p>
+						</div>
 						<svg
 							x-show="selectedPermitId === permit.id"
 							xmlns="http://www.w3.org/2000/svg"
