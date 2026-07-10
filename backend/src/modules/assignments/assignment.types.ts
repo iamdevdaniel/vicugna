@@ -6,10 +6,6 @@ export interface CreateAssignmentData {
 	permitId: string
 }
 
-export interface CreateAssignmentFormRequestBody extends CreateAssignmentData {
-	permitNumber: string
-}
-
 export interface CreatePermitFormData {
 	seasonId: string
 	communityId: string

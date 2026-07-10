@@ -1,0 +1,62 @@
+<article class="card bg-base-100 shadow lg:h-full">
+	<div class="card-body gap-4 p-4 lg:h-full lg:min-h-0">
+		<h2 class="text-base font-semibold text-slate-900">Asignar usuarios</h2>
+
+		<section>
+			<div class="text-center text-lg font-semibold text-slate-900" x-text="selectedPermit ? selectedPermit.permitNumber : '-'">
+			</div>
+		</section>
+
+		<form method="post" action="/admin/assignments" class="flex h-full min-h-0 flex-col">
+			<input type="hidden" name="seasonId" value="<%= selectedSeasonId %>" />
+			<input type="hidden" name="communityId" x-model="selectedCommunityId" />
+			<input type="hidden" name="permitId" x-model="selectedPermitId" />
+			<input type="hidden" name="userId" x-model="selectedUserId" />
+
+		<section class="relative space-y-2" @click.outside="isUserDropdownOpen = false">
+			<label class="form-control">
+				<span class="label-text mb-2 font-semibold">Encargado</span>
+					<input
+						class="input input-bordered w-full"
+						type="text"
+						name="userSearch"
+						autocomplete="off"
+						placeholder="Buscar encargado"
+						x-model="userSearch"
+						@focus="isUserDropdownOpen = true"
+					@input="isUserDropdownOpen = true"
+					:disabled="!selectedPermit" />
+				</label>
+
+				<div
+					x-show="isUserDropdownOpen"
+					x-cloak
+					class="absolute inset-x-0 top-full z-10 mt-1 overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-lg">
+					<ul class="menu w-full p-0 text-sm">
+					<template x-for="user in eligibleUsers" :key="user.id">
+						<li class="w-full">
+							<button
+								type="button"
+								class="flex w-full justify-start rounded-none px-3 py-2 text-left"
+								@click="selectUser(user)">
+								<span x-text="user.name"></span>
+							</button>
+						</li>
+					</template>
+						<li x-show="eligibleUsers.length === 0">
+							<div class="px-3 py-2 text-sm text-slate-500">
+								Sin resultados
+							</div>
+						</li>
+					</ul>
+				</div>
+			</section>
+
+			<div class="mt-auto pt-2">
+				<button type="submit" class="btn btn-primary w-full" :disabled="!selectedPermit || !selectedUserId">
+					Guardar asignacion
+				</button>
+			</div>
+		</form>
+	</div>
+</article>

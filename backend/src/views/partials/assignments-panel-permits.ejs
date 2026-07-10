@@ -1,0 +1,124 @@
+<article class="card bg-base-100 shadow lg:h-full lg:min-h-0 lg:overflow-hidden">
+	<div class="card-body gap-4 p-4 lg:h-full lg:min-h-0 lg:overflow-hidden">
+		<h2 class="text-base font-semibold text-slate-900">Permisos</h2>
+
+		<section class="relative space-y-2" @click.outside="isCommunityDropdownOpen = false">
+			<label class="form-control">
+				<span class="label-text mb-2 font-semibold">Comunidad</span>
+				<input
+					class="input input-bordered w-full"
+					type="text"
+					name="communitySearch"
+					autocomplete="off"
+					placeholder="Buscar comunidad"
+					x-model="communitySearch"
+					@focus="isCommunityDropdownOpen = true"
+					@input="isCommunityDropdownOpen = true" />
+			</label>
+			<div
+				x-cloak
+				x-show="isCommunityDropdownOpen"
+				class="absolute inset-x-0 top-full z-10 mt-1 overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-lg">
+				<ul class="menu w-full p-0 text-sm">
+					<template x-for="community in filteredCommunities" :key="community.id">
+						<li class="w-full">
+							<button
+								type="button"
+								class="flex w-full justify-start rounded-none px-3 py-2 text-left"
+								@click="selectCommunity(community)">
+								<span x-text="community.name"></span>
+							</button>
+						</li>
+					</template>
+					<li x-show="filteredCommunities.length === 0">
+						<div class="px-3 py-2 text-sm text-slate-500">
+							Sin resultados
+						</div>
+					</li>
+				</ul>
+			</div>
+		</section>
+
+		<section class="space-y-2">
+			<form method="post" action="/admin/assignments/permits" class="space-y-2">
+				<input type="hidden" name="seasonId" value="<%= selectedSeasonId %>" />
+				<input type="hidden" name="communityId" x-model="selectedCommunityId" />
+				<label class="form-control">
+					<span class="label-text mb-2 font-semibold">Crear nuevo permiso</span>
+					<div class="join w-full">
+						<input
+							class="input input-bordered join-item w-full"
+							type="text"
+							name="permitNumber"
+							autocomplete="off"
+							placeholder="Numero de permiso"
+							x-model="newPermitNumber"
+							:disabled="!selectedCommunityId" />
+						<button
+							type="submit"
+							class="btn btn-primary join-item"
+							:disabled="!selectedCommunityId || !newPermitNumber.trim()">
+							Crear
+						</button>
+					</div>
+				</label>
+			</form>
+			<p class="text-xs text-slate-500" x-show="!selectedCommunityId" x-cloak>
+				Selecciona una comunidad primero.
+			</p>
+		</section>
+
+		<section class="flex min-h-0 flex-1 basis-0 flex-col lg:overflow-hidden">
+			<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col bg-transparent lg:overflow-hidden">
+				<div class="mb-2 flex items-center justify-end">
+					<span
+						class="flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-2 text-sm font-semibold text-primary-content"
+						x-text="filteredPermits.length">
+					</span>
+				</div>
+				<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col gap-2 overflow-y-auto pr-1">
+					<div
+						x-cloak
+						x-show="selectedCommunityId && filteredPermits.length === 0"
+						class="rounded-lg border border-dashed border-base-300 bg-base-100 px-3 py-4 text-sm text-slate-500">
+						No hay permisos para esa comunidad.
+					</div>
+					<div
+						x-cloak
+						x-show="!selectedCommunityId"
+						class="rounded-lg border border-dashed border-base-300 bg-base-100 px-3 py-4 text-sm text-slate-500">
+						Selecciona una comunidad para ver sus permisos.
+					</div>
+					<% if (permits.length === 0) { %>
+						<div class="rounded-lg border border-dashed border-base-300 bg-base-100 px-3 py-4 text-sm text-slate-500">
+							Aun no hay permisos para esta temporada.
+						</div>
+					<% } %>
+					<template x-for="permit in filteredPermits" :key="permit.id">
+						<button
+							type="button"
+							class="rounded-xl border px-3 py-2 text-left transition"
+							:class="selectedPermitId === permit.id
+								? 'border-primary bg-primary/5'
+								: 'border-base-300 bg-base-100 hover:border-primary/40 hover:bg-base-100'"
+							@click="selectPermit(permit)">
+							<div class="flex items-center justify-between gap-3">
+								<div class="text-sm font-semibold text-slate-900" x-text="permit.permitNumber">
+								</div>
+								<div class="flex items-center gap-1.5 text-xs text-slate-500">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+										<path d="M16 3.128a4 4 0 0 1 0 7.744"/>
+										<path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+										<circle cx="9" cy="7" r="4"/>
+									</svg>
+									<span x-text="permitAssignedUsersCount(permit)"></span>
+								</div>
+							</div>
+						</button>
+					</template>
+				</div>
+			</div>
+		</section>
+	</div>
+</article>
