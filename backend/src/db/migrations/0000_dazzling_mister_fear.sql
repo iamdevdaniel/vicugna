@@ -80,6 +80,7 @@ CREATE TABLE "participants" (
 --> statement-breakpoint
 CREATE TABLE "permits" (
 	"id" text PRIMARY KEY NOT NULL,
+	"season_id" text NOT NULL,
 	"permit_number" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
@@ -156,6 +157,7 @@ ALTER TABLE "communities" ADD CONSTRAINT "communities_regional_id_regionals_id_f
 ALTER TABLE "dehearing_details" ADD CONSTRAINT "dehearing_details_cleaning_common_id_cleaning_common_records_id_fk" FOREIGN KEY ("cleaning_common_id") REFERENCES "public"."cleaning_common_records"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "grooming_details" ADD CONSTRAINT "grooming_details_cleaning_common_id_cleaning_common_records_id_fk" FOREIGN KEY ("cleaning_common_id") REFERENCES "public"."cleaning_common_records"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "participants" ADD CONSTRAINT "participants_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "permits" ADD CONSTRAINT "permits_season_id_seasons_id_fk" FOREIGN KEY ("season_id") REFERENCES "public"."seasons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "regionals" ADD CONSTRAINT "regionals_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shearing_headers" ADD CONSTRAINT "shearing_headers_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "shearing_records" ADD CONSTRAINT "shearing_records_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -165,7 +167,7 @@ CREATE UNIQUE INDEX "basic_info_permit_id_unique" ON "basic_info" USING btree ("
 CREATE UNIQUE INDEX "cleaning_headers_permit_id_unique" ON "cleaning_headers" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "dehearing_details_cleaning_common_id_unique" ON "dehearing_details" USING btree ("cleaning_common_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "grooming_details_cleaning_common_id_unique" ON "grooming_details" USING btree ("cleaning_common_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "permits_permit_number_unique" ON "permits" USING btree ("permit_number");--> statement-breakpoint
+CREATE UNIQUE INDEX "permits_season_permit_number_unique" ON "permits" USING btree ("season_id","permit_number");--> statement-breakpoint
 CREATE UNIQUE INDEX "shearing_headers_permit_id_unique" ON "shearing_headers" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "users_email_unique" ON "users" USING btree ("email");--> statement-breakpoint
 CREATE UNIQUE INDEX "users_phone_number_unique" ON "users" USING btree ("phone_number");

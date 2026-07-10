@@ -69,12 +69,18 @@ export const permits = pgTable(
 	"permits",
 	{
 		id: text("id").primaryKey(),
+		seasonId: text("season_id")
+			.notNull()
+			.references(() => seasons.id),
 		permitNumber: text("permit_number").notNull(),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
 	},
 	(table) => [
-		uniqueIndex("permits_permit_number_unique").on(table.permitNumber),
+		uniqueIndex("permits_season_permit_number_unique").on(
+			table.seasonId,
+			table.permitNumber,
+		),
 	],
 )
 

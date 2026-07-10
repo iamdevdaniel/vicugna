@@ -86,9 +86,35 @@ export async function listAssignments(
 	}))
 }
 
-export async function findPermitByNumber(permitNumber: string) {
+export async function listPermitsBySeason(
+	seasonId: string,
+): Promise<PermitListItem[]> {
+	const rows = await db.query.permits.findMany({
+		where: eq(permits.seasonId, seasonId),
+		orderBy: (table, { desc }) => [desc(table.createdAt), desc(table.id)],
+	})
+
+	return rows.map((permit) => ({
+		id: permit.id,
+		permitNumber: permit.permitNumber,
+	}))
+}
+
+export async function findPermitBySeasonAndNumber(
+	seasonId: string,
+	permitNumber: string,
+) {
 	return db.query.permits.findFirst({
-		where: eq(permits.permitNumber, permitNumber),
+		where: and(
+			eq(permits.seasonId, seasonId),
+			eq(permits.permitNumber, permitNumber),
+		),
+	})
+}
+
+export async function findPermitById(permitId: string) {
+	return db.query.permits.findFirst({
+		where: eq(permits.id, permitId),
 	})
 }
 
@@ -128,11 +154,12 @@ export async function listEligibleAssignmentUsersByPermit(
 	}))
 }
 
-export async function createPermit(permitNumber: string) {
+export async function createPermit(seasonId: string, permitNumber: string) {
 	const permitId = crypto.randomUUID()
 
 	await db.insert(permits).values({
 		id: permitId,
+		seasonId,
 		permitNumber,
 	})
 

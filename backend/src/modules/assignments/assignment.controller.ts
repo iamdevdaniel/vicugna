@@ -127,6 +127,12 @@ export async function submitAssignmentForm(
 }
 
 function getSelectedSeasonId(seasonId: unknown) {
+	if (Array.isArray(seasonId)) {
+		const firstSeasonId = seasonId[0]
+
+		return typeof firstSeasonId === "string" ? firstSeasonId.trim() : ""
+	}
+
 	if (typeof seasonId !== "string") {
 		return ""
 	}

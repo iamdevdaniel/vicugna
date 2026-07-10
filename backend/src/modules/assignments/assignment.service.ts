@@ -6,12 +6,13 @@ import { AssignmentManagementError } from "./assignment.errors"
 import {
 	createAssignment as createAssignmentRecord,
 	createPermit as createPermitRecord,
-	findPermitByNumber,
+	findPermitById,
+	findPermitBySeasonAndNumber,
 	listAssignments,
 	listAssignmentUsers,
 	listCommunities,
 	listEligibleAssignmentUsersByPermit,
-	listPermits,
+	listPermitsBySeason,
 	listSeasons,
 } from "./assignment.repository"
 import type {
@@ -37,7 +38,7 @@ export async function getAssignmentsInitialPageState(): Promise<
 
 	const selectedSeasonId = seasons[0]?.id ?? ""
 	const [permits, users, assignments] = await Promise.all([
-		listPermits(),
+		selectedSeasonId ? listPermitsBySeason(selectedSeasonId) : [],
 		selectedSeasonId ? listAssignmentUsers() : [],
 		selectedSeasonId ? listAssignments(selectedSeasonId) : [],
 	])
@@ -61,7 +62,7 @@ export async function getAssignmentsPageStateForSeason(
 	const [seasons, permits, communities, users, assignments] =
 		await Promise.all([
 			listSeasons(),
-			listPermits(),
+			selectedSeasonId ? listPermitsBySeason(selectedSeasonId) : [],
 			listCommunities(),
 			selectedSeasonId ? listAssignmentUsers() : [],
 			selectedSeasonId ? listAssignments(selectedSeasonId) : [],
@@ -95,14 +96,20 @@ export async function createPermit(data: CreatePermitFormData) {
 		)
 	}
 
-	const existingPermit = await findPermitByNumber(formData.permitNumber)
+	const existingPermit = await findPermitBySeasonAndNumber(
+		formData.seasonId,
+		formData.permitNumber,
+	)
 
 	if (existingPermit) {
 		throw new AssignmentManagementError("Ese permiso ya existe")
 	}
 
 	return {
-		permitId: await createPermitRecord(formData.permitNumber),
+		permitId: await createPermitRecord(
+			formData.seasonId,
+			formData.permitNumber,
+		),
 	}
 }
 
@@ -117,6 +124,18 @@ export async function createAssignment(data: CreateAssignmentData) {
 	) {
 		throw new AssignmentManagementError(
 			"Temporada, comunidad, encargado y permiso son obligatorios",
+		)
+	}
+
+	const permit = await findPermitById(formData.permitId)
+
+	if (!permit) {
+		throw new AssignmentManagementError("Ese permiso ya no existe")
+	}
+
+	if (permit.seasonId !== formData.seasonId) {
+		throw new AssignmentManagementError(
+			"Ese permiso pertenece a otra temporada",
 		)
 	}
 

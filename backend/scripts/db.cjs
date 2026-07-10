@@ -10,8 +10,9 @@ npm run db -- status
 npm run db -- generate
 npm run db -- migrate
 npm run db -- studio
-npm run db -- seed season
+npm run db -- seed seasons
 npm run db -- seed regionals
+npm run db -- seed users
 */
 
 const backendDir = path.resolve(__dirname, "..")
@@ -22,7 +23,8 @@ const drizzleScript = path.join(repoDir, "node_modules", "drizzle-kit", "bin.cjs
 
 const seedTargets = {
 	regionals: "dist/db/seeders/seed-regionals.js",
-	season: "dist/db/seeders/seed-season.js",
+	seasons: "dist/db/seeders/seed-seasons.js",
+	users: "dist/db/seeders/seed-users.js",
 }
 
 const action = process.argv[2]
@@ -59,7 +61,7 @@ switch (action) {
 
 function runSeed(target) {
 	if (!target || !seedTargets[target]) {
-		console.error("Unknown seed target. Use: regionals or season")
+		console.error("Unknown seed target. Use: regionals, seasons or users")
 		process.exit(1)
 	}
 

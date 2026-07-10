@@ -37,7 +37,6 @@
 								hx-trigger="change"
 								hx-target="#season-state-slot"
 								hx-swap="innerHTML"
-								hx-include="[name='seasonId']"
 								hx-indicator="#assignment-user-picker-loading, #assignments-list-loading">
 								<% seasons.forEach((season) => { %>
 									<option value="<%= season.id %>" <%= selectedSeasonId === season.id ? "selected" : "" %>>
