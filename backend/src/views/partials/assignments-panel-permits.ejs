@@ -104,13 +104,13 @@
 				<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col gap-2 overflow-y-auto pr-1">
 					<div
 						x-cloak
-						x-show="hasSelectedCommunity && filteredPermits.length === 0"
+						x-show="permits.length > 0 && hasSelectedCommunity && filteredPermits.length === 0"
 						class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
 						No hay permisos para esa comunidad.
 					</div>
 					<div
 						x-cloak
-						x-show="!hasSelectedCommunity"
+						x-show="permits.length > 0 && !hasSelectedCommunity"
 						class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
 						Selecciona una comunidad para ver sus permisos.
 					</div>
