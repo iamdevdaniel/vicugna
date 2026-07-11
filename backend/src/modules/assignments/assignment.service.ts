@@ -4,12 +4,9 @@ import {
 } from "../../db/errors"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
-	createAssignment as createAssignmentRecord,
-	createAssignmentsBatch as createAssignmentsBatchRecord,
 	createPermit as createPermitRecord,
 	deleteAssignment as deleteAssignmentRecord,
 	findAssignmentById,
-	findFirstAssignmentByPermit,
 	findPermitById,
 	findPermitBySeasonAndNumber,
 	listAssignments,
@@ -18,15 +15,15 @@ import {
 	listEligibleAssignmentUsersByPermit,
 	listPermitsBySeason,
 	listSeasons,
+	replaceAssignmentsForPermit as replaceAssignmentsForPermitRecord,
 	setActiveAssignment as setActiveAssignmentRecord,
 } from "./assignment.repository"
 import type {
 	AssignmentMutationRequestBody,
 	AssignmentPageData,
 	AssignmentPermitCard,
-	CreateAssignmentData,
-	CreateAssignmentsBatchFormData,
 	CreatePermitFormData,
+	SavePermitAssignmentsFormData,
 } from "./assignment.types"
 
 // Keep the assignment rules in one file for now so this feature stays easier
@@ -126,49 +123,20 @@ export async function createPermit(data: CreatePermitFormData) {
 	}
 }
 
-export async function createAssignment(data: CreateAssignmentData) {
-	const formData = normalizeCreateAssignmentForm(data)
-
-	if (!formData.seasonId || !formData.userId || !formData.permitId) {
-		throw new AssignmentManagementError(
-			"Temporada, encargado y permiso son obligatorios",
-		)
-	}
-
-	const permit = await findPermitById(formData.permitId)
-
-	if (!permit) {
-		throw new AssignmentManagementError("Ese permiso ya no existe")
-	}
-
-	if (permit.seasonId !== formData.seasonId) {
-		throw new AssignmentManagementError(
-			"Ese permiso pertenece a otra temporada",
-		)
-	}
-
-	try {
-		await createAssignmentRecord({
-			...formData,
-			communityId: permit.communityId,
-		})
-	} catch (error) {
-		throwAssignmentCreationError(error)
-	}
-}
-
-export async function createAssignmentsBatch(
-	data: CreateAssignmentsBatchFormData,
+export async function savePermitAssignments(
+	data: SavePermitAssignmentsFormData,
 ) {
-	const formData = normalizeCreateAssignmentsBatchForm(data)
+	const formData = normalizeSavePermitAssignmentsForm(data)
 
-	if (
-		!formData.seasonId ||
-		!formData.permitId ||
-		formData.userIds.length === 0
-	) {
+	if (!formData.seasonId || !formData.permitId) {
 		throw new AssignmentManagementError(
-			"Temporada, permiso y encargados son obligatorios",
+			"Temporada y permiso son obligatorios",
+		)
+	}
+
+	if (formData.userIds.length === 0) {
+		throw new AssignmentManagementError(
+			"El permiso debe tener al menos un encargado",
 		)
 	}
 
@@ -188,13 +156,16 @@ export async function createAssignmentsBatch(
 		throw new AssignmentManagementError("Hay encargados repetidos")
 	}
 
-	const firstAssignment = await findFirstAssignmentByPermit(formData.permitId)
-	const activeUserId = firstAssignment
-		? null
-		: formData.activeUserId || formData.userIds[0]
+	const activeUserId =
+		formData.userIds.length === 0
+			? null
+			: formData.userIds.includes(formData.activeUserId)
+				? formData.activeUserId
+				: formData.userIds[0]
 
 	try {
-		await createAssignmentsBatchRecord(
+		await replaceAssignmentsForPermitRecord(
+			formData.permitId,
 			formData.userIds.map((userId) => ({
 				seasonId: formData.seasonId,
 				communityId: permit.communityId,
@@ -248,19 +219,8 @@ function normalizePermitForm(data: CreatePermitFormData) {
 	}
 }
 
-function normalizeCreateAssignmentForm(
-	data: CreateAssignmentData,
-): CreateAssignmentData {
-	return {
-		seasonId: data.seasonId.trim(),
-		communityId: data.communityId.trim(),
-		userId: data.userId.trim(),
-		permitId: data.permitId.trim(),
-	}
-}
-
-function normalizeCreateAssignmentsBatchForm(
-	data: CreateAssignmentsBatchFormData,
+function normalizeSavePermitAssignmentsForm(
+	data: SavePermitAssignmentsFormData,
 ) {
 	return {
 		seasonId: data.seasonId.trim(),
@@ -282,7 +242,11 @@ function normalizeAssignmentMutationForm(
 	}
 }
 
-function normalizeUserIds(userIds: string | string[]) {
+function normalizeUserIds(userIds?: string | string[]) {
+	if (!userIds) {
+		return []
+	}
+
 	const rawValues = Array.isArray(userIds) ? userIds : [userIds]
 
 	return rawValues.map((value) => value.trim()).filter(Boolean)

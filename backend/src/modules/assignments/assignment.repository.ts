@@ -4,7 +4,6 @@ import { and, eq, notInArray } from "drizzle-orm"
 import { assignments, permits, users } from "../../db/schema"
 import type {
 	AssignmentListItem,
-	CreateAssignmentData,
 	ManagedUserOption,
 	PermitListItem,
 	SelectOption,
@@ -200,27 +199,23 @@ export async function createPermit(
 	return permitId
 }
 
-export async function createAssignment(data: CreateAssignmentData) {
-	await db.transaction(async (tx) => {
-		const existingAssignment = await tx.query.assignments.findFirst({
-			where: eq(assignments.permitId, data.permitId),
-		})
-
-		await tx.insert(assignments).values({
-			id: crypto.randomUUID(),
-			seasonId: data.seasonId,
-			communityId: data.communityId,
-			userId: data.userId,
-			permitId: data.permitId,
-			active: !existingAssignment,
-		})
-	})
-}
-
-export async function createAssignmentsBatch(
-	records: Array<CreateAssignmentData & { active: boolean }>,
+export async function replaceAssignmentsForPermit(
+	permitId: string,
+	records: Array<{
+		seasonId: string
+		communityId: string
+		userId: string
+		permitId: string
+		active: boolean
+	}>,
 ) {
 	await db.transaction(async (tx) => {
+		await tx.delete(assignments).where(eq(assignments.permitId, permitId))
+
+		if (records.length === 0) {
+			return
+		}
+
 		await tx.insert(assignments).values(
 			records.map((record) => ({
 				id: crypto.randomUUID(),

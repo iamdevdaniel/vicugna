@@ -6,7 +6,7 @@ function assignmentPageState(initialData) {
 		communities: initialData.communities,
 		users: initialData.users,
 		assignmentCards: initialData.assignmentCards,
-		stagedAssignmentsByPermit: {},
+		draftAssignmentsByPermit: {},
 		newPermitNumber: "",
 		communitySearch: "",
 		userSearch: "",
@@ -19,6 +19,7 @@ function assignmentPageState(initialData) {
 		selectedUserId: "",
 		isCommunityDropdownOpen: false,
 		isUserDropdownOpen: false,
+		skipUnloadWarning: false,
 		init() {
 			const selectedCommunity = this.communities.find(
 				(community) => community.id === this.selectedCommunityId,
@@ -27,6 +28,15 @@ function assignmentPageState(initialData) {
 			if (selectedCommunity) {
 				this.communitySearch = selectedCommunity.name
 			}
+
+			window.addEventListener("beforeunload", (event) => {
+				if (!this.hasDirtyDrafts || this.skipUnloadWarning) {
+					return
+				}
+
+				event.preventDefault()
+				event.returnValue = ""
+			})
 		},
 		get filteredCommunities() {
 			const search = this.communitySearch.trim().toLowerCase()
@@ -60,18 +70,42 @@ function assignmentPageState(initialData) {
 				(currentPermit) => currentPermit.id === this.selectedPermitId,
 			)
 
-			if (!permit) {
-				return null
+			return permit ?? null
+		},
+		get savedUsersForSelectedPermit() {
+			return this.getSavedUsersForPermit(this.selectedPermitId)
+		},
+		get panel2Users() {
+			if (!this.selectedPermitId) {
+				return []
 			}
 
-			return permit
-		},
-		get selectedPermitAssignments() {
-			const card = this.assignmentCards.find(
-				(currentCard) => currentCard.permitId === this.selectedPermitId,
+			return (
+				this.draftAssignmentsByPermit[this.selectedPermitId] ??
+				this.savedUsersForSelectedPermit
 			)
+		},
+		get panel2ActiveUserId() {
+			const activeUser = this.panel2Users.find((user) => user.active)
 
-			return card?.users ?? []
+			return activeUser?.userId ?? ""
+		},
+		get hasSavedUsersForSelectedPermit() {
+			return this.savedUsersForSelectedPermit.length > 0
+		},
+		get isSelectedPermitDirty() {
+			return Boolean(
+				this.selectedPermitId &&
+					this.draftAssignmentsByPermit[this.selectedPermitId],
+			)
+		},
+		get hasDirtyDrafts() {
+			return Object.keys(this.draftAssignmentsByPermit).length > 0
+		},
+		get panel2SubmitLabel() {
+			return this.hasSavedUsersForSelectedPermit
+				? "Guardar cambios"
+				: "Crear asignaciones"
 		},
 		get eligibleUsers() {
 			if (!this.selectedPermit) {
@@ -79,11 +113,8 @@ function assignmentPageState(initialData) {
 			}
 
 			const assignedUserIds = new Set(
-				this.selectedPermitAssignments.map((user) => user.userId),
+				this.panel2Users.map((user) => user.userId),
 			)
-			for (const user of this.stagedUsersForSelectedPermit) {
-				assignedUserIds.add(user.userId)
-			}
 			const search = this.userSearch.trim().toLowerCase()
 
 			return this.users
@@ -92,20 +123,6 @@ function assignmentPageState(initialData) {
 					search ? user.name.toLowerCase().includes(search) : true,
 				)
 				.slice(0, 8)
-		},
-		get stagedUsersForSelectedPermit() {
-			if (!this.selectedPermitId) {
-				return []
-			}
-
-			return this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
-		},
-		get stagedActiveUserId() {
-			const activeUser = this.stagedUsersForSelectedPermit.find(
-				(user) => user.active,
-			)
-
-			return activeUser?.userId ?? ""
 		},
 		get filteredAssignmentCards() {
 			const search = this.assignmentSearch.trim().toLowerCase()
@@ -146,26 +163,51 @@ function assignmentPageState(initialData) {
 				return
 			}
 
-			this.selectedCommunityId = ""
-			this.selectedPermitId = ""
-			this.selectedUserId = ""
-			this.userSearch = ""
-			this.isUserDropdownOpen = false
+			if (!this.discardSelectedPermitDraftIfNeeded()) {
+				const selectedCommunity = this.communities.find(
+					(community) => community.id === this.selectedCommunityId,
+				)
+
+				this.communitySearch = selectedCommunity?.name ?? ""
+				return
+			}
+
+			this.clearSelectionState()
 		},
 		selectCommunity(community) {
+			if (
+				community.id !== this.selectedCommunityId &&
+				!this.discardSelectedPermitDraftIfNeeded()
+			) {
+				return
+			}
+
 			this.selectedCommunityId = community.id
 			this.communitySearch = community.name
 			this.selectedPermitId = ""
 			this.selectedUserId = ""
 			this.userSearch = ""
 			this.isCommunityDropdownOpen = false
+			this.isUserDropdownOpen = false
 		},
 		selectPermit(permit) {
+			if (
+				this.selectedPermitId &&
+				this.selectedPermitId !== permit.id &&
+				!this.discardSelectedPermitDraftIfNeeded()
+			) {
+				return
+			}
+
+			if (
+				this.selectedPermitId === permit.id &&
+				!this.discardSelectedPermitDraftIfNeeded()
+			) {
+				return
+			}
+
 			if (this.selectedPermitId === permit.id) {
-				this.selectedPermitId = ""
-				this.selectedUserId = ""
-				this.userSearch = ""
-				this.isUserDropdownOpen = false
+				this.clearPermitSelection()
 				return
 			}
 
@@ -187,94 +229,83 @@ function assignmentPageState(initialData) {
 
 			this.selectPermit(permit)
 		},
-		addUserToStage(user) {
+		addUserToDraft(user) {
 			if (!this.selectedPermitId) {
 				return
 			}
 
-			const currentUsers =
-				this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
-			const hasPersistedActiveUser = this.selectedPermitAssignments.some(
-				(currentUser) => currentUser.active,
-			)
-			const hasStagedActiveUser = currentUsers.some(
+			const currentUsers = this.ensureDraftForSelectedPermit()
+			const hasActiveUser = currentUsers.some(
 				(currentUser) => currentUser.active,
 			)
 
-			this.stagedAssignmentsByPermit[this.selectedPermitId] = [
+			this.writeDraftForSelectedPermit([
 				...currentUsers,
 				{
 					userId: user.id,
 					userFullName: user.name,
-					active: !hasPersistedActiveUser && !hasStagedActiveUser,
+					active: !hasActiveUser,
+					source: "staged",
 				},
-			]
+			])
 
 			this.selectedUserId = ""
 			this.userSearch = ""
 			this.isUserDropdownOpen = false
 		},
-		removeStagedUser(userId) {
+		removeDraftUser(userId) {
 			if (!this.selectedPermitId) {
 				return
 			}
 
-			const currentUsers =
-				this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
+			const currentUsers = this.ensureDraftForSelectedPermit()
 			const userToRemove = currentUsers.find(
 				(currentUser) => currentUser.userId === userId,
-			)
-			const remainingUsers = currentUsers.filter(
-				(currentUser) => currentUser.userId !== userId,
 			)
 
 			if (!userToRemove) {
 				return
 			}
 
-			const hasPersistedActiveUser = this.selectedPermitAssignments.some(
-				(currentUser) => currentUser.active,
+			const remainingUsers = currentUsers.filter(
+				(currentUser) => currentUser.userId !== userId,
 			)
 
-			if (
-				userToRemove.active &&
-				!hasPersistedActiveUser &&
-				remainingUsers.length > 0
-			) {
+			if (userToRemove.active && remainingUsers.length > 0) {
 				remainingUsers[0] = {
 					...remainingUsers[0],
 					active: true,
 				}
 			}
 
-			this.stagedAssignmentsByPermit[this.selectedPermitId] =
-				remainingUsers
+			this.writeDraftForSelectedPermit(remainingUsers)
 		},
-		setStagedUserActive(userId) {
+		setDraftUserActive(userId) {
 			if (!this.selectedPermitId) {
 				return
 			}
 
-			const currentUsers =
-				this.stagedAssignmentsByPermit[this.selectedPermitId] ?? []
+			const currentUsers = this.ensureDraftForSelectedPermit()
 
-			this.stagedAssignmentsByPermit[this.selectedPermitId] =
+			this.writeDraftForSelectedPermit(
 				currentUsers.map((currentUser) => ({
 					...currentUser,
 					active: currentUser.userId === userId,
-				}))
+				})),
+			)
 		},
 		permitAssignedUsersCount(permit) {
+			const draftUsers = this.draftAssignmentsByPermit[permit.id]
+
+			if (draftUsers) {
+				return draftUsers.length
+			}
+
 			const card = this.assignmentCards.find(
 				(currentCard) => currentCard.permitId === permit.id,
 			)
-			const stagedUsers = this.stagedAssignmentsByPermit[permit.id] ?? []
 
-			if (!card) {
-				return stagedUsers.length
-			}
-
-			return card.users.length + stagedUsers.length
+			return card?.users.length ?? 0
 		},
 		assignmentCardBadge(card) {
 			const activeUser = card.users.find((user) => user.active)
@@ -286,6 +317,70 @@ function assignmentPageState(initialData) {
 			return card.users.length === 1
 				? "1 usuario"
 				: `${card.users.length} usuarios`
+		},
+		discardSelectedPermitDraftIfNeeded() {
+			if (!this.isSelectedPermitDirty) {
+				return true
+			}
+
+			const shouldDiscard = window.confirm(
+				"Hay cambios sin guardar en este permiso. Si continuas, se perderan.",
+			)
+
+			if (shouldDiscard && this.selectedPermitId) {
+				delete this.draftAssignmentsByPermit[this.selectedPermitId]
+			}
+
+			return shouldDiscard
+		},
+		clearSelectionState() {
+			this.selectedCommunityId = ""
+			this.clearPermitSelection()
+		},
+		clearPermitSelection() {
+			this.selectedPermitId = ""
+			this.selectedUserId = ""
+			this.userSearch = ""
+			this.isUserDropdownOpen = false
+		},
+		getSavedUsersForPermit(permitId) {
+			if (!permitId) {
+				return []
+			}
+
+			const card = this.assignmentCards.find(
+				(currentCard) => currentCard.permitId === permitId,
+			)
+
+			return (
+				card?.users.map((user) => ({
+					...user,
+					source: "saved",
+				})) ?? []
+			)
+		},
+		ensureDraftForSelectedPermit() {
+			const existingDraft =
+				this.draftAssignmentsByPermit[this.selectedPermitId]
+
+			if (existingDraft) {
+				return existingDraft
+			}
+
+			const savedUsers = this.getSavedUsersForPermit(
+				this.selectedPermitId,
+			)
+
+			this.draftAssignmentsByPermit[this.selectedPermitId] = savedUsers
+
+			return savedUsers
+		},
+		writeDraftForSelectedPermit(users) {
+			if (!this.selectedPermitId) {
+				return
+			}
+
+			this.draftAssignmentsByPermit[this.selectedPermitId] = users
 		},
 	}
 }

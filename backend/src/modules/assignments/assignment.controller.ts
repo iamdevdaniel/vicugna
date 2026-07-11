@@ -1,16 +1,16 @@
 import type { Request, Response } from "express"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
-	createAssignmentsBatch,
 	createPermit,
 	getAssignmentsInitialPageState,
 	getAssignmentsPageStateForSeason,
+	savePermitAssignments,
 } from "./assignment.service"
 import type {
 	AssignmentPageData,
-	CreateAssignmentsBatchFormData,
 	CreatePermitFormData,
 	PermitListItem,
+	SavePermitAssignmentsFormData,
 	SelectedPermitData,
 } from "./assignment.types"
 
@@ -96,7 +96,7 @@ export async function submitAssignmentForm(
 	req: Request<
 		Record<string, never>,
 		Record<string, never>,
-		CreateAssignmentsBatchFormData
+		SavePermitAssignmentsFormData
 	>,
 	res: Response,
 ) {
@@ -105,7 +105,7 @@ export async function submitAssignmentForm(
 	const permitId = req.body.permitId?.trim() ?? ""
 
 	try {
-		await createAssignmentsBatch(req.body)
+		await savePermitAssignments(req.body)
 
 		res.redirect(
 			getAssignmentPageUrl({

@@ -7,12 +7,12 @@
 			</div>
 		</section>
 
-		<form method="post" action="/admin/assignments" class="flex h-full min-h-0 flex-col lg:overflow-hidden">
+		<form method="post" action="/admin/assignments" class="flex h-full min-h-0 flex-col lg:overflow-hidden" @submit="skipUnloadWarning = true">
 			<input type="hidden" name="seasonId" value="<%= selectedSeasonId %>" />
 			<input type="hidden" name="communityId" x-model="selectedCommunityId" />
 			<input type="hidden" name="permitId" x-model="selectedPermitId" />
-			<input type="hidden" name="activeUserId" :value="stagedActiveUserId" />
-			<template x-for="user in stagedUsersForSelectedPermit" :key="`input-${user.userId}`">
+			<input type="hidden" name="activeUserId" :value="panel2ActiveUserId" />
+			<template x-for="user in panel2Users" :key="`input-${user.source}-${user.userId}`">
 				<input type="hidden" name="userIds" :value="user.userId" />
 			</template>
 
@@ -41,7 +41,7 @@
 							<button
 								type="button"
 								class="flex w-full justify-start rounded-none px-3 py-2 text-left"
-								@click="addUserToStage(user)">
+								@click="addUserToDraft(user)">
 								<span x-text="user.name"></span>
 							</button>
 						</li>
@@ -65,25 +65,31 @@
 					</div>
 
 					<div
-						x-show="selectedPermit && stagedUsersForSelectedPermit.length === 0"
+						x-show="selectedPermit && panel2Users.length === 0"
 						x-cloak
 						class="flex min-h-full items-center justify-center px-3 py-4 text-center text-sm text-slate-500">
 						Aun no hay usuarios asignados a este permiso.
 					</div>
 
-					<template x-for="user in stagedUsersForSelectedPermit" :key="user.userId">
+					<template x-for="user in panel2Users" :key="`${user.source}-${user.userId}`">
 						<div class="flex items-center justify-between gap-3 rounded-xl border border-base-300 bg-base-100 px-3 py-2">
 							<div class="min-w-0">
 								<div class="truncate text-sm font-medium text-slate-900" x-text="user.userFullName"></div>
+								<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
+									<span
+										class="badge badge-sm"
+										:class="user.source === 'saved' ? 'badge-ghost' : 'badge-info badge-soft'"
+										x-text="user.source === 'saved' ? 'Guardado' : 'Nuevo'"></span>
+								</div>
 							</div>
 							<div class="flex items-center gap-2">
 								<button
 									type="button"
-									class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition"
+									class="flex h-8 w-8 items-center justify-center rounded-full transition"
 									:class="user.active
-										? 'text-success hover:bg-success hover:text-white'
-										: 'text-slate-400 hover:bg-success hover:text-white'"
-									@click="setStagedUserActive(user.userId)">
+										? 'cursor-pointer text-success hover:bg-success hover:text-white'
+										: 'cursor-pointer text-slate-400 hover:bg-success hover:text-white'"
+									@click="setDraftUserActive(user.userId)">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/>
 									</svg>
@@ -91,7 +97,7 @@
 								<button
 									type="button"
 									class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-error hover:text-white"
-									@click="removeStagedUser(user.userId)">
+									@click="removeDraftUser(user.userId)">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M18 6 6 18"/>
 										<path d="m6 6 12 12"/>
@@ -104,8 +110,8 @@
 			</section>
 
 			<div class="pt-2">
-				<button type="submit" class="btn btn-primary w-full" :disabled="!selectedPermit || stagedUsersForSelectedPermit.length === 0">
-					Crear asignaciones
+				<button type="submit" class="btn btn-primary w-full" :disabled="!selectedPermit || !isSelectedPermitDirty || panel2Users.length === 0">
+					<span x-text="panel2SubmitLabel"></span>
 				</button>
 			</div>
 		</form>

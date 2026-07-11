@@ -6,11 +6,11 @@ export interface CreateAssignmentData {
 	permitId: string
 }
 
-export interface CreateAssignmentsBatchFormData {
+export interface SavePermitAssignmentsFormData {
 	seasonId: string
 	communityId: string
 	permitId: string
-	userIds: string | string[]
+	userIds?: string | string[]
 	activeUserId: string
 }
 
