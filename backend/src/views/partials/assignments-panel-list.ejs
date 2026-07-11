@@ -5,18 +5,30 @@
 		<section class="space-y-2">
 			<label class="form-control">
 				<span class="label-text mb-2 font-semibold">Buscar</span>
-				<input
-					class="input input-bordered w-full"
-					type="text"
-					name="assignmentSearch"
-					autocomplete="off"
-					placeholder="Buscar por permiso o usuario"
-					x-model="assignmentSearch" />
+				<div class="relative">
+					<input
+						class="input input-bordered w-full pr-10"
+						type="text"
+						name="assignmentSearch"
+						autocomplete="off"
+						placeholder="Buscar por permiso o usuario"
+						x-model="assignmentSearch" />
+					<button
+						type="button"
+						x-cloak
+						x-show="assignmentSearch.trim()"
+						class="absolute inset-y-0 right-2 flex cursor-pointer items-center text-slate-400 transition hover:text-slate-700"
+						@click="assignmentSearch = ''">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M18 6 6 18"/>
+							<path d="m6 6 12 12"/>
+						</svg>
+					</button>
+				</div>
 			</label>
 		</section>
 
-		<div class="rounded-box flex min-h-0 flex-1 basis-0 flex-col border border-base-300 bg-base-200/40 p-2 lg:overflow-hidden">
-			<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col gap-1.5 overflow-y-auto pr-1">
+		<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col gap-1.5 overflow-y-auto pr-1">
 				<div
 					x-show="filteredAssignmentCards.length === 0"
 					x-cloak
@@ -32,7 +44,8 @@
 
 				<template x-for="card in filteredAssignmentCards" :key="card.permitId">
 					<article
-						class="rounded-xl border px-3 py-2 text-left transition"
+						:data-assignment-card-id="card.permitId"
+						class="cursor-pointer rounded-xl border px-3 py-2 text-left transition"
 						:class="selectedPermitId === card.permitId
 							? 'border-primary bg-primary/5'
 							: 'border-base-300 bg-base-100'"
@@ -63,7 +76,6 @@
 						</div>
 					</article>
 				</template>
-			</div>
 		</div>
 	</div>
 </article>

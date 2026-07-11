@@ -5,28 +5,56 @@
 		<section class="relative space-y-2" @click.outside="isCommunityDropdownOpen = false">
 			<label class="form-control">
 				<span class="label-text mb-2 font-semibold">Comunidad</span>
-				<input
-					class="input input-bordered w-full"
-					type="text"
-					name="communitySearch"
-					autocomplete="off"
-					placeholder="Buscar comunidad"
-					x-model="communitySearch"
-					@focus="isCommunityDropdownOpen = true"
-					@input="handleCommunitySearchInput()" />
+				<div class="relative">
+					<input
+						class="input input-bordered w-full pr-10"
+						type="text"
+						name="communitySearch"
+						autocomplete="off"
+						placeholder="Buscar comunidad"
+						x-model="communitySearch"
+						@focus="isCommunityDropdownOpen = true"
+						@input="handleCommunitySearchInput()" />
+					<button
+						type="button"
+						x-cloak
+						x-show="communitySearch.trim()"
+						class="absolute inset-y-0 right-2 flex cursor-pointer items-center text-slate-400 transition hover:text-slate-700"
+						@click="
+							communitySearch = ''
+							handleCommunitySearchInput()
+						">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M18 6 6 18"/>
+							<path d="m6 6 12 12"/>
+						</svg>
+					</button>
+				</div>
 			</label>
 			<div
 				x-cloak
 				x-show="isCommunityDropdownOpen"
-				class="absolute inset-x-0 top-full z-10 mt-1 overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-lg">
+				class="absolute inset-x-0 top-full z-10 mt-1 max-h-80 overflow-y-auto overflow-x-hidden rounded-box border border-base-300 bg-base-100 shadow-lg">
 				<ul class="menu w-full p-0 text-sm">
 					<template x-for="community in filteredCommunities" :key="community.id">
 						<li class="w-full">
 							<button
 								type="button"
-								class="flex w-full justify-start rounded-none px-3 py-2 text-left"
+								class="flex w-full items-center justify-between rounded-none px-3 py-2 text-left transition-none"
 								@click="selectCommunity(community)">
-								<span x-text="community.name"></span>
+								<span class="truncate pr-3" x-text="community.name"></span>
+								<span
+									class="flex shrink-0 items-center gap-1 text-xs"
+									:class="communityPermitCount(community.id) > 0 ? 'text-primary' : 'text-slate-500'">
+									<span x-text="communityPermitCount(community.id)"></span>
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M14 2v5a1 1 0 0 0 1 1h5"/>
+										<path d="M4 12v6"/>
+										<path d="M4 14h2"/>
+										<path d="M9.65 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v4"/>
+										<circle cx="4" cy="20" r="2"/>
+									</svg>
+								</span>
 							</button>
 						</li>
 					</template>
@@ -94,7 +122,7 @@
 					<template x-for="permit in filteredPermits" :key="permit.id">
 						<button
 							type="button"
-							class="rounded-xl border px-3 py-2 text-left transition"
+							class="cursor-pointer rounded-xl border px-3 py-2 text-left transition"
 							:class="selectedPermitId === permit.id
 								? 'border-primary bg-primary/5'
 								: 'border-base-300 bg-base-100 hover:border-primary/40 hover:bg-base-100'"

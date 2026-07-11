@@ -19,16 +19,33 @@
 			<section class="relative space-y-2" @click.outside="isUserDropdownOpen = false">
 				<label class="form-control">
 					<span class="label-text mb-2 font-semibold">Encargado</span>
-					<input
-						class="input input-bordered w-full"
-						type="text"
-						name="userSearch"
-						autocomplete="off"
-						placeholder="Buscar encargado"
-						x-model="userSearch"
-						@focus="isUserDropdownOpen = true"
-						@input="isUserDropdownOpen = true"
-						:disabled="!selectedPermit" />
+					<div class="relative">
+						<input
+							class="input input-bordered w-full pr-10"
+							type="text"
+							name="userSearch"
+							autocomplete="off"
+							placeholder="Buscar encargado"
+							x-model="userSearch"
+							@focus="isUserDropdownOpen = true"
+							@input="isUserDropdownOpen = true"
+							:disabled="!selectedPermit" />
+						<button
+							type="button"
+							x-cloak
+							x-show="userSearch.trim()"
+							class="absolute inset-y-0 right-2 flex cursor-pointer items-center text-slate-400 transition hover:text-slate-700"
+							@click="
+								userSearch = ''
+								isUserDropdownOpen = true
+							"
+							:disabled="!selectedPermit">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<path d="M18 6 6 18"/>
+								<path d="m6 6 12 12"/>
+							</svg>
+						</button>
+					</div>
 				</label>
 
 				<div
@@ -40,7 +57,7 @@
 						<li class="w-full">
 							<button
 								type="button"
-								class="flex w-full justify-start rounded-none px-3 py-2 text-left"
+								class="flex w-full justify-start rounded-none px-3 py-2 text-left transition-none"
 								@click="addUserToDraft(user)">
 								<span x-text="user.name"></span>
 							</button>
@@ -110,7 +127,11 @@
 			</section>
 
 			<div class="pt-2">
-				<button type="submit" class="btn btn-primary w-full" :disabled="!selectedPermit || !isSelectedPermitDirty || panel2Users.length === 0">
+				<button
+					type="submit"
+					class="btn w-full"
+					:class="hasSavedUsersForSelectedPermit ? 'btn-info text-white hover:text-white' : 'btn-primary'"
+					:disabled="!selectedPermit || !isSelectedPermitDirty || panel2Users.length === 0">
 					<span x-text="panel2SubmitLabel"></span>
 				</button>
 			</div>

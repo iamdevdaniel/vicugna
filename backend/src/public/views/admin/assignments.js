@@ -16,7 +16,6 @@ function assignmentPageState(initialData) {
 			initialData.selectedPermit?.communityId ||
 			"",
 		selectedPermitId,
-		selectedUserId: "",
 		isCommunityDropdownOpen: false,
 		isUserDropdownOpen: false,
 		skipUnloadWarning: false,
@@ -42,14 +41,12 @@ function assignmentPageState(initialData) {
 			const search = this.communitySearch.trim().toLowerCase()
 
 			if (!search) {
-				return this.communities.slice(0, 8)
+				return this.communities
 			}
 
-			return this.communities
-				.filter((community) =>
-					community.name.toLowerCase().includes(search),
-				)
-				.slice(0, 8)
+			return this.communities.filter((community) =>
+				community.name.toLowerCase().includes(search),
+			)
 		},
 		get filteredPermits() {
 			if (!this.hasSelectedCommunity) {
@@ -127,33 +124,31 @@ function assignmentPageState(initialData) {
 		get filteredAssignmentCards() {
 			const search = this.assignmentSearch.trim().toLowerCase()
 
-			const filteredCards = this.assignmentCards.filter((card) => {
-				if (
-					this.selectedCommunityId &&
-					card.communityId !== this.selectedCommunityId
-				) {
-					return false
-				}
+			const cardsByPermitId = new Map(
+				this.assignmentCards.map((card) => [card.permitId, card]),
+			)
 
-				if (!search) {
-					return true
-				}
+			return this.filteredPermits
+				.filter((permit) => cardsByPermitId.has(permit.id))
+				.map((permit) => cardsByPermitId.get(permit.id))
+				.filter((card) => {
+					if (!card) {
+						return false
+					}
 
-				const haystack = [
-					card.permitNumber,
-					...card.users.map((user) => user.userFullName),
-				]
-					.join(" ")
-					.toLowerCase()
+					if (!search) {
+						return true
+					}
 
-				return haystack.includes(search)
-			})
+					const haystack = [
+						card.permitNumber,
+						...card.users.map((user) => user.userFullName),
+					]
+						.join(" ")
+						.toLowerCase()
 
-			return filteredCards.sort((left, right) => {
-				if (left.permitId === this.selectedPermitId) return -1
-				if (right.permitId === this.selectedPermitId) return 1
-				return 0
-			})
+					return haystack.includes(search)
+				})
 		},
 		handleCommunitySearchInput() {
 			this.isCommunityDropdownOpen = true
@@ -184,7 +179,6 @@ function assignmentPageState(initialData) {
 			this.selectedCommunityId = community.id
 			this.communitySearch = community.name
 			this.selectedPermitId = ""
-			this.selectedUserId = ""
 			this.userSearch = ""
 			this.isCommunityDropdownOpen = false
 			this.isUserDropdownOpen = false
@@ -213,9 +207,9 @@ function assignmentPageState(initialData) {
 			this.selectedPermitId = permit.id
 			this.selectedCommunityId = permit.communityId
 			this.communitySearch = permit.communityName
-			this.selectedUserId = ""
 			this.userSearch = ""
 			this.isUserDropdownOpen = false
+			this.scrollSelectedAssignmentCardIntoView()
 		},
 		selectPermitById(permitId) {
 			const permit = this.permits.find(
@@ -248,7 +242,6 @@ function assignmentPageState(initialData) {
 				},
 			])
 
-			this.selectedUserId = ""
 			this.userSearch = ""
 			this.isUserDropdownOpen = false
 		},
@@ -306,6 +299,11 @@ function assignmentPageState(initialData) {
 
 			return card?.users.length ?? 0
 		},
+		communityPermitCount(communityId) {
+			return this.permits.filter(
+				(permit) => permit.communityId === communityId,
+			).length
+		},
 		assignmentCardBadge(card) {
 			const activeUser = card.users.find((user) => user.active)
 
@@ -338,7 +336,6 @@ function assignmentPageState(initialData) {
 		},
 		clearPermitSelection() {
 			this.selectedPermitId = ""
-			this.selectedUserId = ""
 			this.userSearch = ""
 			this.isUserDropdownOpen = false
 		},
@@ -380,6 +377,26 @@ function assignmentPageState(initialData) {
 			}
 
 			this.draftAssignmentsByPermit[this.selectedPermitId] = users
+		},
+		scrollSelectedAssignmentCardIntoView() {
+			if (!this.selectedPermitId) {
+				return
+			}
+
+			queueMicrotask(() => {
+				const selectedCard = document.querySelector(
+					`[data-assignment-card-id="${this.selectedPermitId}"]`,
+				)
+
+				if (!(selectedCard instanceof HTMLElement)) {
+					return
+				}
+
+				selectedCard.scrollIntoView({
+					block: "nearest",
+					behavior: "smooth",
+				})
+			})
 		},
 	}
 }
