@@ -1,2 +1,2 @@
-export { db, pool } from "./db"
+export { db, isDatabaseConnectionError, pool } from "./db"
 export { env } from "./env"

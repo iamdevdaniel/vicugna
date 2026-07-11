@@ -1,9 +1,13 @@
 import path from "node:path"
-import { env, pool } from "@config"
+import { env, isDatabaseConnectionError, pool } from "@config"
 import { permitRoutes } from "@permits"
 import connectPgSimple from "connect-pg-simple"
 import cors from "cors"
-import express, { type Request, type Response } from "express"
+import express, {
+	type NextFunction,
+	type Request,
+	type Response,
+} from "express"
 import session from "express-session"
 
 import { adminRoutes } from "./modules/admin/admin.routes"
@@ -40,4 +44,27 @@ app.use("/permits", permitRoutes)
 
 app.get("/", (_req: Request, res: Response) => {
 	res.json({ message: "Vicugna backend is running" })
+})
+
+app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
+	if (res.headersSent) {
+		next(error)
+		return
+	}
+
+	if (!isDatabaseConnectionError(error)) {
+		next(error)
+		return
+	}
+
+	if (req.accepts("html")) {
+		res.status(503).send(
+			"Base de datos no disponible. Intenta de nuevo en un momento.",
+		)
+		return
+	}
+
+	res.status(503).json({
+		message: "Base de datos no disponible. Intenta de nuevo en un momento.",
+	})
 })
