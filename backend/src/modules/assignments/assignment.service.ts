@@ -34,7 +34,10 @@ import type {
 // ==========================================
 
 export async function getAssignmentsInitialPageState(): Promise<
-	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
+	Omit<
+		AssignmentPageData,
+		"pageTitle" | "adminUser" | "formMessage" | "formMessageType"
+	>
 > {
 	const [seasons, communities] = await Promise.all([
 		listSeasons(),
@@ -64,7 +67,10 @@ export async function getAssignmentsInitialPageState(): Promise<
 export async function getAssignmentsPageStateForSeason(
 	selectedSeasonId: string,
 ): Promise<
-	Omit<AssignmentPageData, "pageTitle" | "adminUser" | "formMessage">
+	Omit<
+		AssignmentPageData,
+		"pageTitle" | "adminUser" | "formMessage" | "formMessageType"
+	>
 > {
 	const [seasons, permits, communities, users, assignments] =
 		await Promise.all([

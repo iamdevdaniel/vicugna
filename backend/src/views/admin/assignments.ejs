@@ -75,11 +75,7 @@
 				x-transition:leave-start="translate-x-0 opacity-100"
 				x-transition:leave-end="translate-x-8 opacity-0"
 				class="pointer-events-none fixed bottom-5 right-5 z-50 w-full max-w-md px-4 sm:px-0">
-				<div class="alert w-full shadow-lg
-					<%= formMessage === 'Permiso creado'
-					|| formMessage === 'Asignacion guardada'
-					|| formMessage === 'Asignaciones guardadas'
-						? 'alert-success' : 'alert-error' %>">
+				<div class="alert w-full shadow-lg <%= formMessageType === 'error' ? 'alert-error' : 'alert-success' %>">
 					<span><%= formMessage %></span>
 				</div>
 			</div>

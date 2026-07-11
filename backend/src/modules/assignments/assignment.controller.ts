@@ -42,10 +42,10 @@ export async function renderAssignmentPage(
 		selectedPermit?.communityId ||
 		getQueryValue(req.query.communityId) ||
 		pageState.selectedCommunityId
-	const formMessage =
-		getQueryValue(req.query.error) ||
-		getQueryValue(req.query.success) ||
-		null
+	const errorMessage = getQueryValue(req.query.error)
+	const successMessage = getQueryValue(req.query.success)
+	const formMessage = errorMessage || successMessage || null
+	const formMessageType = errorMessage ? "error" : null
 
 	res.render("admin/assignments", {
 		pageTitle: "Asignaciones",
@@ -53,6 +53,7 @@ export async function renderAssignmentPage(
 			fullName: req.session.adminUser?.fullName ?? "",
 		},
 		formMessage,
+		formMessageType,
 		...pageState,
 		selectedCommunityId,
 		selectedPermit,

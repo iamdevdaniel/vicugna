@@ -83,6 +83,7 @@ export interface AssignmentPageData {
 		fullName: string
 	}
 	formMessage: string | null
+	formMessageType: "error" | null
 	selectedSeasonId: string
 	selectedCommunityId: string
 	selectedPermit: SelectedPermitData | null
