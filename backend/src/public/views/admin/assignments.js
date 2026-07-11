@@ -140,7 +140,6 @@ function assignmentPageState(initialData) {
 				}
 
 				const haystack = [
-					card.communityName,
 					card.permitNumber,
 					...card.users.map((user) => user.userFullName),
 				]

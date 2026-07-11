@@ -1,6 +1,6 @@
 <article class="card bg-base-100 shadow lg:h-full lg:min-h-0 lg:overflow-hidden">
 	<div class="card-body gap-4 p-4 lg:h-full lg:min-h-0 lg:overflow-hidden">
-		<h2 class="text-base font-semibold text-slate-900">Permisos</h2>
+		<h2 class="text-base font-semibold text-slate-900">Crear permiso</h2>
 
 		<section class="relative space-y-2" @click.outside="isCommunityDropdownOpen = false">
 			<label class="form-control">
@@ -69,8 +69,8 @@
 			<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col bg-transparent lg:overflow-hidden">
 				<div class="mb-2 flex items-center justify-end">
 					<span
-						class="flex h-7 min-w-7 items-center justify-center rounded-full bg-primary px-2 text-sm font-semibold text-primary-content"
-						x-text="filteredPermits.length">
+						class="badge badge-outline badge-sm"
+						x-text="`${filteredPermits.length} permisos`">
 					</span>
 				</div>
 				<div class="flex min-h-0 h-0 flex-1 basis-0 flex-col gap-2 overflow-y-auto pr-1">
