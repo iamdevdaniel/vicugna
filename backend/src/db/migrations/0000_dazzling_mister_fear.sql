@@ -4,6 +4,7 @@ CREATE TABLE "assignments" (
 	"community_id" text NOT NULL,
 	"user_id" text NOT NULL,
 	"permit_id" text NOT NULL,
+	"position" integer NOT NULL,
 	"active" boolean DEFAULT false NOT NULL,
 	"assigned_at" timestamp DEFAULT now() NOT NULL
 );

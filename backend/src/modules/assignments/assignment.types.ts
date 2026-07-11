@@ -55,6 +55,7 @@ export interface AssignmentListItem {
 	permitId: string
 	communityId: string
 	userId: string
+	position: number
 	active: boolean
 	seasonName: string
 	communityName: string

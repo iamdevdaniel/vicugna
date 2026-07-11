@@ -166,11 +166,12 @@ export async function savePermitAssignments(
 	try {
 		await replaceAssignmentsForPermitRecord(
 			formData.permitId,
-			formData.userIds.map((userId) => ({
+			formData.userIds.map((userId, position) => ({
 				seasonId: formData.seasonId,
 				communityId: permit.communityId,
 				userId,
 				permitId: formData.permitId,
+				position,
 				active: activeUserId === userId,
 			})),
 		)

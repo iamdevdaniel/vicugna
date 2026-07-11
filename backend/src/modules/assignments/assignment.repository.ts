@@ -76,7 +76,7 @@ export async function listAssignments(
 			permit: true,
 		},
 		orderBy: (table, { asc: sortAsc }) => [
-			sortAsc(table.assignedAt),
+			sortAsc(table.position),
 			sortAsc(table.id),
 		],
 	})
@@ -86,6 +86,7 @@ export async function listAssignments(
 		permitId: assignment.permitId,
 		communityId: assignment.communityId,
 		userId: assignment.userId,
+		position: assignment.position,
 		active: assignment.active,
 		seasonName: assignment.season.name,
 		communityName: assignment.community.name,
@@ -206,6 +207,7 @@ export async function replaceAssignmentsForPermit(
 		communityId: string
 		userId: string
 		permitId: string
+		position: number
 		active: boolean
 	}>,
 ) {
@@ -223,6 +225,7 @@ export async function replaceAssignmentsForPermit(
 				communityId: record.communityId,
 				userId: record.userId,
 				permitId: record.permitId,
+				position: record.position,
 				active: record.active,
 			})),
 		)

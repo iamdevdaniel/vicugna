@@ -103,6 +103,7 @@ export const assignments = pgTable(
 		permitId: text("permit_id")
 			.notNull()
 			.references(() => permits.id, { onDelete: "cascade" }),
+		position: integer("position").notNull(),
 		active: boolean("active").notNull().default(false),
 		assignedAt: timestamp("assigned_at").notNull().defaultNow(),
 	},

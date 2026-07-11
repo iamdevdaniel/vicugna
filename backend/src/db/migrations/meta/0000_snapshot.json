@@ -38,6 +38,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
         "active": {
           "name": "active",
           "type": "boolean",
