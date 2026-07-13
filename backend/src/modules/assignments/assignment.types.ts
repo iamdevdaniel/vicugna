@@ -96,6 +96,8 @@ export interface AssignmentPageData {
 	selectedPermit: SelectedPermitData | null
 	seasons: SelectOption[]
 	permits: PermitListItem[]
+	communitiesWithPermitsCount: number
+	permitsCount: number
 	communities: SelectOption[]
 	users: ManagedUserOption[]
 	assignments: AssignmentListItem[]

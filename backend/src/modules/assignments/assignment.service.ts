@@ -59,6 +59,7 @@ export async function getAssignmentsInitialPageState(): Promise<
 		selectedPermit: null,
 		seasons,
 		permits,
+		...buildPermitSummary(permits),
 		communities,
 		users,
 		assignments,
@@ -89,6 +90,7 @@ export async function getAssignmentsPageStateForSeason(
 		selectedPermit: null,
 		seasons,
 		permits,
+		...buildPermitSummary(permits),
 		communities,
 		users,
 		assignments,
@@ -305,6 +307,15 @@ function normalizeUserIds(userIds?: string | string[]) {
 	const rawValues = Array.isArray(userIds) ? userIds : [userIds]
 
 	return rawValues.map((value) => value.trim()).filter(Boolean)
+}
+
+function buildPermitSummary(permits: AssignmentPageData["permits"]) {
+	return {
+		communitiesWithPermitsCount: new Set(
+			permits.map((permit) => permit.communityId),
+		).size,
+		permitsCount: permits.length,
+	}
 }
 
 async function getAssignmentForMutation(data: AssignmentMutationRequestBody) {
