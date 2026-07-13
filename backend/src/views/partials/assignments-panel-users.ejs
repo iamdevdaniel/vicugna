@@ -3,7 +3,77 @@
 		<h2 class="text-base font-semibold text-slate-900">Configurar permiso</h2>
 
 		<section>
-			<div class="text-center text-lg font-semibold text-slate-900" x-text="selectedPermit ? selectedPermit.permitNumber : '-'">
+			<div
+				x-show="!selectedPermit"
+				x-cloak
+				class="text-center text-lg font-semibold text-slate-900">
+				-
+			</div>
+
+			<div x-show="selectedPermit" x-cloak>
+				<form
+					method="post"
+					action="/admin/assignments/permits/rename"
+					class="mx-auto grid w-full max-w-md grid-cols-[2rem_minmax(0,1fr)_2rem] items-center gap-2"
+					@submit="skipUnloadWarning = true">
+					<input type="hidden" name="seasonId" value="<%= selectedSeasonId %>" />
+					<input type="hidden" name="communityId" x-model="selectedCommunityId" />
+					<input type="hidden" name="permitId" x-model="selectedPermitId" />
+
+					<div x-show="!isEditingPermitName" x-cloak class="contents">
+						<div class="col-start-2 flex min-w-0 items-center justify-center">
+							<div class="truncate border-b border-transparent text-center text-lg font-semibold text-slate-900" x-text="selectedPermit ? selectedPermit.permitNumber : ''"></div>
+						</div>
+						<div class="col-start-3 flex items-center justify-center">
+							<button
+								type="button"
+								class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-base-200 hover:text-slate-700"
+								@click="startPermitRename()">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<path d="M13 21h8"/>
+									<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					<div
+						x-show="isEditingPermitName"
+						x-cloak
+						class="col-span-3 grid grid-cols-[2rem_minmax(0,1fr)_2rem] items-center gap-2">
+						<div class="flex items-center justify-center">
+							<button
+								type="button"
+								class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-base-200 hover:text-slate-700"
+								@click="cancelPermitRename()">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<path d="M18 6 6 18"/>
+									<path d="m6 6 12 12"/>
+								</svg>
+							</button>
+						</div>
+						<input
+							x-ref="permitNameInput"
+							class="w-full border-0 border-b border-base-300 bg-transparent px-0 py-1 text-center text-lg font-semibold text-slate-900 outline-none focus:border-primary focus:outline-none focus:ring-0"
+							type="text"
+							name="permitNumber"
+							autocomplete="off"
+							x-model="permitNameDraft"
+							@keydown.escape.prevent="cancelPermitRename()" />
+						<div class="flex items-center justify-center">
+							<button
+								type="submit"
+								class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-primary hover:text-white disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+								:disabled="!canSubmitPermitRename">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+									<path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+									<path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+								</svg>
+							</button>
+						</div>
+					</div>
+				</form>
 			</div>
 		</section>
 

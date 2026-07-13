@@ -20,6 +20,13 @@ export interface CreatePermitFormData {
 	permitNumber: string
 }
 
+export interface RenamePermitFormData {
+	seasonId: string
+	communityId: string
+	permitId: string
+	permitNumber: string
+}
+
 export interface AssignmentMutationRequestBody {
 	seasonId: string
 	communityId: string

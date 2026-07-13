@@ -200,6 +200,19 @@ export async function createPermit(
 	return permitId
 }
 
+export async function updatePermitNumber(
+	permitId: string,
+	permitNumber: string,
+) {
+	await db
+		.update(permits)
+		.set({
+			permitNumber,
+			updatedAt: new Date(),
+		})
+		.where(eq(permits.id, permitId))
+}
+
 export async function replaceAssignmentsForPermit(
 	permitId: string,
 	records: Array<{

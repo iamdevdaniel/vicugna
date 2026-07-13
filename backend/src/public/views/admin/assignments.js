@@ -8,6 +8,7 @@ function assignmentPageState(initialData) {
 		assignmentCards: initialData.assignmentCards,
 		draftAssignmentsByPermit: {},
 		newPermitNumber: "",
+		permitNameDraft: "",
 		communitySearch: "",
 		userSearch: "",
 		assignmentSearch: "",
@@ -16,6 +17,7 @@ function assignmentPageState(initialData) {
 			initialData.selectedPermit?.communityId ||
 			"",
 		selectedPermitId,
+		isEditingPermitName: false,
 		isCommunityDropdownOpen: false,
 		isUserDropdownOpen: false,
 		skipUnloadWarning: false,
@@ -68,6 +70,15 @@ function assignmentPageState(initialData) {
 			)
 
 			return permit ?? null
+		},
+		get canSubmitPermitRename() {
+			return Boolean(
+				this.selectedPermit &&
+					this.isEditingPermitName &&
+					this.permitNameDraft.trim() &&
+					this.permitNameDraft.trim() !==
+						this.selectedPermit.permitNumber,
+			)
 		},
 		get savedUsersForSelectedPermit() {
 			return this.getSavedUsersForPermit(this.selectedPermitId)
@@ -207,6 +218,8 @@ function assignmentPageState(initialData) {
 			this.selectedPermitId = permit.id
 			this.selectedCommunityId = permit.communityId
 			this.communitySearch = permit.communityName
+			this.isEditingPermitName = false
+			this.permitNameDraft = ""
 			this.userSearch = ""
 			this.isUserDropdownOpen = false
 			this.scrollSelectedAssignmentCardIntoView()
@@ -221,6 +234,18 @@ function assignmentPageState(initialData) {
 			}
 
 			this.selectPermit(permit)
+		},
+		startPermitRename() {
+			if (!this.selectedPermit) {
+				return
+			}
+
+			this.isEditingPermitName = true
+			this.permitNameDraft = this.selectedPermit.permitNumber
+		},
+		cancelPermitRename() {
+			this.isEditingPermitName = false
+			this.permitNameDraft = ""
 		},
 		addUserToDraft(user) {
 			if (!this.selectedPermitId) {
@@ -336,6 +361,8 @@ function assignmentPageState(initialData) {
 		},
 		clearPermitSelection() {
 			this.selectedPermitId = ""
+			this.isEditingPermitName = false
+			this.permitNameDraft = ""
 			this.userSearch = ""
 			this.isUserDropdownOpen = false
 		},

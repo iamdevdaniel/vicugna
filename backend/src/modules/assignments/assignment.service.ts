@@ -17,12 +17,14 @@ import {
 	listSeasons,
 	replaceAssignmentsForPermit as replaceAssignmentsForPermitRecord,
 	setActiveAssignment as setActiveAssignmentRecord,
+	updatePermitNumber as updatePermitNumberRecord,
 } from "./assignment.repository"
 import type {
 	AssignmentMutationRequestBody,
 	AssignmentPageData,
 	AssignmentPermitCard,
 	CreatePermitFormData,
+	RenamePermitFormData,
 	SavePermitAssignmentsFormData,
 } from "./assignment.types"
 
@@ -127,6 +129,43 @@ export async function createPermit(data: CreatePermitFormData) {
 			formData.permitNumber,
 		),
 	}
+}
+
+export async function renamePermit(data: RenamePermitFormData) {
+	const formData = normalizeRenamePermitForm(data)
+
+	if (!formData.seasonId || !formData.permitId || !formData.permitNumber) {
+		throw new AssignmentManagementError(
+			"Temporada, permiso y nuevo nombre son obligatorios",
+		)
+	}
+
+	const permit = await findPermitById(formData.permitId)
+
+	if (!permit) {
+		throw new AssignmentManagementError("Ese permiso ya no existe")
+	}
+
+	if (permit.seasonId !== formData.seasonId) {
+		throw new AssignmentManagementError(
+			"Ese permiso pertenece a otra temporada",
+		)
+	}
+
+	if (permit.permitNumber === formData.permitNumber) {
+		return
+	}
+
+	const existingPermit = await findPermitBySeasonAndNumber(
+		formData.seasonId,
+		formData.permitNumber,
+	)
+
+	if (existingPermit && existingPermit.id !== formData.permitId) {
+		throw new AssignmentManagementError("Ese permiso ya existe")
+	}
+
+	await updatePermitNumberRecord(formData.permitId, formData.permitNumber)
 }
 
 export async function savePermitAssignments(
@@ -235,6 +274,15 @@ function normalizeSavePermitAssignmentsForm(
 		permitId: data.permitId.trim(),
 		activeUserId: data.activeUserId.trim(),
 		userIds: normalizeUserIds(data.userIds),
+	}
+}
+
+function normalizeRenamePermitForm(data: RenamePermitFormData) {
+	return {
+		seasonId: data.seasonId.trim(),
+		communityId: data.communityId.trim(),
+		permitId: data.permitId.trim(),
+		permitNumber: data.permitNumber.trim(),
 	}
 }
 

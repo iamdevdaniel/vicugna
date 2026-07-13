@@ -4,12 +4,14 @@ import {
 	createPermit,
 	getAssignmentsInitialPageState,
 	getAssignmentsPageStateForSeason,
+	renamePermit,
 	savePermitAssignments,
 } from "./assignment.service"
 import type {
 	AssignmentPageData,
 	CreatePermitFormData,
 	PermitListItem,
+	RenamePermitFormData,
 	SavePermitAssignmentsFormData,
 	SelectedPermitData,
 } from "./assignment.types"
@@ -114,6 +116,41 @@ export async function submitAssignmentForm(
 				communityId,
 				permitId,
 				success: "Asignaciones guardadas",
+			}),
+		)
+	} catch (error) {
+		res.redirect(
+			getAssignmentPageUrl({
+				seasonId,
+				communityId,
+				permitId,
+				error: getAssignmentErrorMessage(error),
+			}),
+		)
+	}
+}
+
+export async function submitPermitRenameForm(
+	req: Request<
+		Record<string, never>,
+		Record<string, never>,
+		RenamePermitFormData
+	>,
+	res: Response,
+) {
+	const seasonId = getSelectedSeasonId(req.body.seasonId)
+	const communityId = req.body.communityId?.trim() ?? ""
+	const permitId = req.body.permitId?.trim() ?? ""
+
+	try {
+		await renamePermit(req.body)
+
+		res.redirect(
+			getAssignmentPageUrl({
+				seasonId,
+				communityId,
+				permitId,
+				success: "Permiso actualizado",
 			}),
 		)
 	} catch (error) {
