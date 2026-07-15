@@ -22,3 +22,10 @@
 - Allow many users per permit, but only one active assignee per permit.
 - Decide how to handle assigned users that later become inactive system users.
 - Keep future mobile sync rules aligned with permit community locking and single active assignee.
+
+## Hosting & DB
+
+Links for future consideration (db and server):
+- [Render Dashboard](https://dashboard.render.com/) (Server)
+- [Supabase Pricing](https://supabase.com/pricing) (DB)
+
