@@ -1,6 +1,17 @@
+function getRequiredEnv(name: string) {
+	const value = process.env[name]?.trim()
+
+	if (!value) {
+		throw new Error(`Missing required environment variable: ${name}`)
+	}
+
+	return value
+}
+
 export const env = {
 	port: Number(process.env.PORT ?? 3000),
-	databaseUrl: process.env.DATABASE_URL,
-	sessionSecret: process.env.SESSION_SECRET ?? "vicugna-dev-session-secret",
+	databaseUrl: getRequiredEnv("VICUGNA_DATABASE_URL"),
+	adminAuthSecret: getRequiredEnv("VICUGNA_ADMIN_AUTH_SECRET"),
+	mobileAuthSecret: getRequiredEnv("VICUGNA_MOBILE_AUTH_SECRET"),
 	nodeEnv: process.env.NODE_ENV ?? "development",
 }

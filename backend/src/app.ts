@@ -11,6 +11,7 @@ import express, {
 import session from "express-session"
 
 import { adminRoutes } from "./modules/admin/admin.routes"
+import { mobileAuthRoutes } from "./modules/mobile-auth/mobile_auth.routes"
 
 export const app = express()
 const srcDir = path.resolve(__dirname)
@@ -25,7 +26,7 @@ app.use(
 			pool,
 			createTableIfMissing: true,
 		}),
-		secret: env.sessionSecret,
+		secret: env.adminAuthSecret,
 		resave: false,
 		saveUninitialized: false,
 		cookie: {
@@ -40,6 +41,7 @@ app.set("views", path.join(srcDir, "views"))
 app.set("view engine", "ejs")
 app.use(express.static(path.join(srcDir, "public")))
 app.use("/admin", adminRoutes)
+app.use("/mobile/auth", mobileAuthRoutes)
 app.use("/permits", permitRoutes)
 
 app.get("/", (_req: Request, res: Response) => {

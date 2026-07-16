@@ -1,10 +1,10 @@
 import { Pool, type QueryResult } from "pg"
 import "dotenv/config"
 
-const databaseUrl = process.env.DATABASE_URL
+const databaseUrl = process.env.VICUGNA_DATABASE_URL
 
 if (!databaseUrl) {
-	throw new Error("DATABASE_URL is required")
+	throw new Error("VICUGNA_DATABASE_URL is required")
 }
 
 export const pool = new Pool({
