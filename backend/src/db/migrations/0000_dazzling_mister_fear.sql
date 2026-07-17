@@ -94,6 +94,12 @@ CREATE TABLE "regionals" (
 	"name" text NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "session" (
+	"sid" varchar PRIMARY KEY NOT NULL,
+	"sess" json NOT NULL,
+	"expire" timestamp(6) NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "seasons" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
@@ -171,6 +177,7 @@ CREATE UNIQUE INDEX "cleaning_headers_permit_id_unique" ON "cleaning_headers" US
 CREATE UNIQUE INDEX "dehearing_details_cleaning_common_id_unique" ON "dehearing_details" USING btree ("cleaning_common_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "grooming_details_cleaning_common_id_unique" ON "grooming_details" USING btree ("cleaning_common_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "permits_season_permit_number_unique" ON "permits" USING btree ("season_id","permit_number");--> statement-breakpoint
+CREATE INDEX "IDX_session_expire" ON "session" USING btree ("expire");--> statement-breakpoint
 CREATE UNIQUE INDEX "shearing_headers_permit_id_unique" ON "shearing_headers" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "users_email_unique" ON "users" USING btree ("email");--> statement-breakpoint
 CREATE UNIQUE INDEX "users_phone_number_unique" ON "users" USING btree ("phone_number");

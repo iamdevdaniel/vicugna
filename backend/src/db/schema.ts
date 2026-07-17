@@ -2,11 +2,14 @@ import { relations, sql } from "drizzle-orm"
 import {
 	boolean,
 	doublePrecision,
+	index,
 	integer,
+	json,
 	pgTable,
 	text,
 	timestamp,
 	uniqueIndex,
+	varchar,
 } from "drizzle-orm/pg-core"
 
 // ==========================================
@@ -63,6 +66,16 @@ export const users = pgTable(
 		uniqueIndex("users_email_unique").on(table.email),
 		uniqueIndex("users_phone_number_unique").on(table.phoneNumber),
 	],
+)
+
+export const sessions = pgTable(
+	"session",
+	{
+		sid: varchar("sid").primaryKey(),
+		sess: json("sess").notNull(),
+		expire: timestamp("expire", { precision: 6 }).notNull(),
+	},
+	(table) => [index("IDX_session_expire").on(table.expire)],
 )
 
 export const permits = pgTable(
