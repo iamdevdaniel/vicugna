@@ -29,6 +29,19 @@ export type AdminPermit = {
 	codigoAutorizacion: string
 }
 
+export type MobileAuthUser = {
+	id: string
+	email: string
+	fullName: string
+	role: "user"
+}
+
+export type MobileLoginResponseData = {
+	token: string
+	expiresAt: string
+	user: MobileAuthUser
+}
+
 export type BasicInfoFormData = Omit<
 	BasicInfoData,
 	"id" | "isCompleted" | "permitId"

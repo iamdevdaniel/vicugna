@@ -1,5 +1,6 @@
 export const ROUTES = {
 	HOME: "/",
+	LOGIN: "/login",
 	OVERVIEW: (permitId: string) => ({
 		pathname: "/[permitId]" as const,
 		params: { permitId },
@@ -50,4 +51,4 @@ export const ROUTES = {
 			params: { permitId, recordId },
 		}),
 	},
-}
+} as const

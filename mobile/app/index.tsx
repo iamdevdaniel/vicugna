@@ -1,80 +1,83 @@
-import permits from "@assets/data/permits.json"
-import type { AdminPermit } from "@definitions/types"
-import { usePermitActions } from "@hooks"
+import { AuthStatusCard } from "@components"
+import { useReadLocalPermits } from "@hooks"
+import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
+import { useAppTheme } from "@utils/useAppTheme"
 import { router } from "expo-router"
-import { useEffect, useState } from "react"
-import { Alert, FlatList } from "react-native"
-import { Card, FAB, Text } from "react-native-paper"
+import { FlatList, View } from "react-native"
+import { Card, Icon, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { seedPermitBeforeCleaningRecords } from "../database/dev-seed"
 
-const mockAdminPermit: AdminPermit[] = permits
+export default function HomeScreen() {
+	const theme = useAppTheme()
+	const { token, user, isHydrated } = useMobileAuthStore()
+	const { data: permits, loading } = useReadLocalPermits()
 
-// OVERVIEW /
-export default function () {
-	const { initializePermits } = usePermitActions()
-	const [seeding, setSeeding] = useState(false)
-
-	// TODO: implement path for permit init failure
-	useEffect(() => {
-		initializePermits(mockAdminPermit.map((p) => p.id))
-	}, [initializePermits])
-
-	const onSeed = async () => {
-		setSeeding(true)
-		try {
-			await initializePermits(mockAdminPermit.map((p) => p.id))
-			await seedPermitBeforeCleaningRecords(mockAdminPermit[0].id)
-			Alert.alert("Seed listo", `Permiso ${mockAdminPermit[0].id}`)
-		} catch {
-			Alert.alert("Error", "No se pudo crear la data de prueba")
-		} finally {
-			setSeeding(false)
-		}
-	}
+	const isAuthenticated = Boolean(token && user)
 
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
+		<SafeAreaView
+			style={{ flex: 1, backgroundColor: theme.colors.background }}
+		>
 			<FlatList
-				data={mockAdminPermit}
+				data={permits}
 				keyExtractor={(item) => item.id}
 				contentContainerStyle={{
 					padding: 16,
-					paddingBottom: 80,
+					paddingBottom: 32,
 					gap: 10,
+					flexGrow: 1,
 				}}
+				ListHeaderComponent={
+					isHydrated && !isAuthenticated ? (
+						<AuthStatusCard
+							isAuthenticated={false}
+							userEmail={null}
+							onLogin={() => router.push(ROUTES.LOGIN)}
+							onLogout={() =>
+								useMobileAuthStore.getState().logout()
+							}
+							surfaceVariantColor={theme.colors.surfaceVariant}
+						/>
+					) : null
+				}
+				ListEmptyComponent={
+					<View
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+							paddingBottom: 64,
+							gap: 12,
+						}}
+					>
+						<Icon
+							source="file-document-outline"
+							size={40}
+							color={theme.colors.outline}
+						/>
+						<Text variant="bodyLarge">
+							{loading ? "Cargando permisos" : "Sin permisos aún"}
+						</Text>
+					</View>
+				}
 				renderItem={({ item }) => (
 					<Card
-						style={{
-							marginBottom: 10,
-						}}
-						onPress={() => router.push(ROUTES.OVERVIEW(item.id))}
+						style={{ marginBottom: 10 }}
+						onPress={() =>
+							router.push(ROUTES.OVERVIEW(item.permitId))
+						}
 					>
 						<Card.Content>
-							<Text variant="titleSmall">
-								{item.codigoAutorizacion}
+							<Text variant="titleSmall">{item.permitId}</Text>
+							<Text variant="bodyMedium">
+								{item.site || item.community || "-"}
 							</Text>
-							<Text variant="bodyMedium">{item.site}</Text>
-							<Text variant="bodySmall">{item.date}</Text>
+							<Text variant="bodySmall">{item.date || "-"}</Text>
 						</Card.Content>
 					</Card>
 				)}
 			/>
-			{__DEV__ && (
-				<FAB
-					icon="database-plus"
-					label="Seed"
-					loading={seeding}
-					disabled={seeding}
-					onPress={onSeed}
-					style={{
-						position: "absolute",
-						right: 16,
-						bottom: 64,
-					}}
-				/>
-			)}
 		</SafeAreaView>
 	)
 }

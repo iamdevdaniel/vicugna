@@ -15,4 +15,5 @@ export {
 export { CleaningCommonSummary } from "./cleanup/CleaningCommonSummary"
 export { DehearingFields } from "./cleanup/DehearingFields"
 export { GroomingFields } from "./cleanup/GroomingFields"
+export { AuthStatusCard } from "./home/AuthStatusCard"
 export { VicugnaIcon } from "./icons/VicugnaIcon"

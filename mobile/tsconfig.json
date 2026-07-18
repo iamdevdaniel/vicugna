@@ -8,6 +8,7 @@
       "@definitions/*": ["./definitions/*"],
       "@assets/*": ["./assets/*"],
       "@utils/*": ["./utils/*"],
+      "@api": ["./api/index"],
       "@database": ["./database/index"],
       "@components": ["./components/index"],
       "@hooks": ["./hooks/index"],
