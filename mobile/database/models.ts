@@ -19,9 +19,6 @@ export class PermitModel extends Model {
 export class BasicInfoModel extends Model {
 	static table = "basicInfo"
 	@field("permitId") permitId!: string
-	@text("department") department!: string
-	@text("regional") regional!: string
-	@text("community") community!: string
 	@text("site") site!: string
 	@text("date") date!: string
 	@field("isCompleted") isCompleted!: boolean

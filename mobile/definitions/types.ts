@@ -1,5 +1,4 @@
 import type {
-	BasicInfoData,
 	CleaningCommonData,
 	CleaningHeaderData,
 	DehearingData,
@@ -10,7 +9,6 @@ import type {
 } from "@vicugna/shared"
 
 export type {
-	BasicInfoData,
 	CleaningCommonData,
 	CleaningHeaderData,
 	DehearingData,
@@ -35,6 +33,14 @@ export type PermitData = {
 	isActiveAssignmentUser: boolean
 	site: string
 	date: string
+}
+
+export type BasicInfoData = {
+	id: string
+	permitId: string
+	site: string
+	date: string
+	isCompleted: boolean
 }
 
 export type AdminPermit = {

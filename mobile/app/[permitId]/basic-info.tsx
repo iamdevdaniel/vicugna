@@ -1,13 +1,8 @@
-import { SimpleDropdown as Dropdown, LabeledInput } from "@components"
+import { LabeledInput } from "@components"
 import type { BasicInfoFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useReadSingleBasicInfo, useSingleBasicInfoActions } from "@hooks"
 import DateTimePicker from "@react-native-community/datetimepicker"
-import {
-	getCommunityOptions,
-	getDepartmentOptions,
-	getRegionalOptions,
-} from "@utils/misc"
 import { useAppTheme } from "@utils/useAppTheme"
 import { defaultValuesBasicInfo, yupBasicInfo } from "@utils/yup-basic-info"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
@@ -34,8 +29,6 @@ export default function () {
 
 	const {
 		control,
-		watch,
-		setValue,
 		reset,
 		formState: { errors, isValid },
 		handleSubmit,
@@ -45,48 +38,15 @@ export default function () {
 		resolver: yupResolver(yupBasicInfo),
 	})
 
-	const [regionalOptions, setRegionalOptions] = useState<
-		Array<{ label: string; value: string }>
-	>([])
-	const [comunidadOptions, setComunidadOptions] = useState<
-		Array<{ label: string; value: string }>
-	>([])
 	const [datePickerOpen, setDatePickerOpen] = useState(false)
-
-	const selectedDepartamento = watch("department")
-	const selectedRegional = watch("regional")
 
 	useEffect(() => {
 		if (loading || !data) return
 		reset({
-			department: data.department,
-			regional: data.regional,
-			community: data.community,
 			site: data.site,
 			date: data.date,
 		})
 	}, [loading, reset, data])
-
-	const departamentoOptions = getDepartmentOptions()
-
-	useEffect(() => {
-		if (selectedDepartamento) {
-			setRegionalOptions(getRegionalOptions(selectedDepartamento))
-		} else {
-			setRegionalOptions([])
-			setComunidadOptions([])
-		}
-	}, [selectedDepartamento])
-
-	useEffect(() => {
-		if (selectedRegional && selectedDepartamento) {
-			setComunidadOptions(
-				getCommunityOptions(selectedDepartamento, selectedRegional),
-			)
-		} else {
-			setComunidadOptions([])
-		}
-	}, [selectedRegional, selectedDepartamento])
 
 	const onSubmit = async (formData: BasicInfoFormData) => {
 		if (!data) return
@@ -119,77 +79,9 @@ export default function () {
 				contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
 				keyboardShouldPersistTaps="handled"
 			>
-				<LabeledInput label="Departamento" labelPrefix="1">
-					<Controller
-						control={control}
-						name="department"
-						render={({ field: { onChange, value } }) => (
-							<Dropdown
-								placeholder="Seleccionar departamento"
-								options={departamentoOptions}
-								value={value}
-								onSelect={(v) => {
-									onChange(v)
-									setValue("regional", "", {
-										shouldValidate: true,
-									})
-									setValue("community", "", {
-										shouldValidate: true,
-									})
-								}}
-							/>
-						)}
-					/>
-				</LabeledInput>
-
-				<LabeledInput
-					label="Asociación Regional"
-					labelPrefix="2"
-					error={errors.regional?.message}
-				>
-					<Controller
-						control={control}
-						name="regional"
-						render={({ field: { onChange, value } }) => (
-							<Dropdown
-								placeholder="Seleccionar regional"
-								options={regionalOptions}
-								value={value}
-								onSelect={(v) => {
-									onChange(v)
-									setValue("community", "", {
-										shouldValidate: true,
-									})
-								}}
-								disabled={!selectedDepartamento}
-							/>
-						)}
-					/>
-				</LabeledInput>
-
-				<LabeledInput
-					label="Comunidad Manejadora de Vicuñas"
-					labelPrefix="3"
-					error={errors.community?.message}
-				>
-					<Controller
-						control={control}
-						name="community"
-						render={({ field: { onChange, value } }) => (
-							<Dropdown
-								placeholder="Seleccionar comunidad"
-								options={comunidadOptions}
-								value={value}
-								onSelect={onChange}
-								disabled={!selectedRegional}
-							/>
-						)}
-					/>
-				</LabeledInput>
-
 				<LabeledInput
 					label="Sitio de Captura"
-					labelPrefix="4"
+					labelPrefix="1"
 					error={errors.site?.message}
 				>
 					<Controller
@@ -211,7 +103,7 @@ export default function () {
 
 				<LabeledInput
 					label="Fecha de Captura"
-					labelPrefix="5"
+					labelPrefix="2"
 					error={errors.date?.message}
 				>
 					<Controller

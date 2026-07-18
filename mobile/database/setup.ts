@@ -7,6 +7,7 @@ import {
 	DehearingModel,
 	GroomingModel,
 	ParticipantModel,
+	PermitModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
@@ -19,6 +20,7 @@ const adapter = new SQLiteAdapter({
 export const database = new Database({
 	adapter,
 	modelClasses: [
+		PermitModel,
 		BasicInfoModel,
 		ParticipantModel,
 		ShearingHeaderModel,

@@ -18,14 +18,7 @@ export function subscribeSingleBasicInfo(
 	const sub = database
 		.get<BasicInfoModel>("basicInfo")
 		.query(Q.where("permitId", permitId))
-		.observeWithColumns([
-			"department",
-			"regional",
-			"community",
-			"site",
-			"date",
-			"isCompleted",
-		])
+		.observeWithColumns(["site", "date", "isCompleted"])
 		.subscribe({
 			next: (records) =>
 				callbacks.onChange(
@@ -48,9 +41,6 @@ export async function createSingleBasicInfo(
 			.get<BasicInfoModel>("basicInfo")
 			.create((model) => {
 				model.permitId = permitId
-				model.department = ""
-				model.regional = ""
-				model.community = ""
 				model.site = ""
 				model.date = ""
 				model.isCompleted = false

@@ -29,7 +29,7 @@ export {
 	subscribeSingleParticipant,
 	updateSingleParticipant,
 } from "./dal-participants"
-export { initializePermits } from "./dal-permit"
+export { savePermits, subscribePermits } from "./dal-permit"
 export {
 	createSingleShearingRecord,
 	deleteSingleShearingRecord,

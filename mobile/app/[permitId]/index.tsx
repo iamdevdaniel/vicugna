@@ -9,11 +9,7 @@ import {
 	useReadSingleCleaningHeader,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
-import {
-	getCommunityName,
-	getDependentStepState,
-	getRegionalName,
-} from "@utils/misc"
+import { getDependentStepState } from "@utils/misc"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
@@ -80,13 +76,8 @@ export default function () {
 							},
 							details: basicInfo?.isCompleted ? (
 								<View style={{ gap: 4 }}>
+									<Text>Sitio: {basicInfo.site}</Text>
 									<Text>Fecha: {basicInfo.date}</Text>
-									<Text>
-										Regional: {getRegionalName(basicInfo)}
-									</Text>
-									<Text>
-										Comunidad: {getCommunityName(basicInfo)}
-									</Text>
 								</View>
 							) : null,
 						},

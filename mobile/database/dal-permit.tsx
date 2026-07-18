@@ -1,31 +1,73 @@
+import type { PermitData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
+import { applyPermitToModel, mapToPermit } from "./mappers"
 import type {
 	BasicInfoModel,
 	CleaningHeaderModel,
+	PermitModel,
 	ShearingHeaderModel,
 } from "./models"
 import { database } from "./setup"
 
-let initializingPermits = false
+type SubscriptionCallback<T> = {
+	onChange: (data: T) => void
+	onError: (error: Error) => void
+}
 
-export async function initializePermits(permitIds: string[]): Promise<void> {
-	if (initializingPermits) return
-	initializingPermits = true
+let savingPermits = false
+
+//-------------------READ-------------------
+
+export function subscribePermits(
+	callbacks: SubscriptionCallback<PermitData[]>,
+): () => void {
+	const sub = database
+		.get<PermitModel>("permits")
+		.query(Q.sortBy("permitNumber", Q.asc))
+		.observe()
+		.subscribe({
+			next: (records) =>
+				callbacks.onChange(
+					records.map((record) => mapToPermit(record)),
+				),
+			error: (error) => callbacks.onError(error as Error),
+		})
+
+	return () => sub.unsubscribe()
+}
+
+//-------------------WRITE-------------------
+
+export async function savePermits(permits: PermitData[]): Promise<void> {
+	if (savingPermits || permits.length === 0) return
+
+	savingPermits = true
+
 	try {
+		const permitIds = permits.map((permit) => permit.id)
+
+		const existingPermits = await database
+			.get<PermitModel>("permits")
+			.query(Q.where("id", Q.oneOf(permitIds)))
+			.fetch()
+		const existingPermitIds = new Set(
+			existingPermits.map((permit) => permit.id),
+		)
+
 		const existingBasic = await database
 			.get<BasicInfoModel>("basicInfo")
 			.query(Q.where("permitId", Q.oneOf(permitIds)))
 			.fetch()
-		const existingBasicIds = new Set(existingBasic.map((r) => r.permitId))
-		const missingBasic = permitIds.filter((id) => !existingBasicIds.has(id))
+		const existingBasicIds = new Set(
+			existingBasic.map((record) => record.permitId),
+		)
 
 		const existingHeader = await database
 			.get<ShearingHeaderModel>("shearingHeader")
 			.query(Q.where("permitId", Q.oneOf(permitIds)))
 			.fetch()
-		const existingHeaderIds = new Set(existingHeader.map((r) => r.permitId))
-		const missingHeader = permitIds.filter(
-			(id) => !existingHeaderIds.has(id),
+		const existingHeaderIds = new Set(
+			existingHeader.map((record) => record.permitId),
 		)
 
 		const existingCleaningHeader = await database
@@ -33,74 +75,87 @@ export async function initializePermits(permitIds: string[]): Promise<void> {
 			.query(Q.where("permitId", Q.oneOf(permitIds)))
 			.fetch()
 		const existingCleaningHeaderIds = new Set(
-			existingCleaningHeader.map((r) => r.permitId),
+			existingCleaningHeader.map((record) => record.permitId),
 		)
-		const missingCleaningHeader = permitIds.filter(
-			(id) => !existingCleaningHeaderIds.has(id),
-		)
-
-		if (
-			missingBasic.length === 0 &&
-			missingHeader.length === 0 &&
-			missingCleaningHeader.length === 0
-		) {
-			return
-		}
 
 		await database.write(async () => {
 			const batchOps: Model[] = []
 
-			missingBasic.forEach((permitId) => {
-				batchOps.push(
-					database
-						.get<BasicInfoModel>("basicInfo")
-						.prepareCreate((model) => {
-							model.permitId = permitId
-							model.department = ""
-							model.regional = ""
-							model.community = ""
-							model.site = ""
-							model.date = ""
-							model.isCompleted = false
-						}),
-				)
-			})
+			for (const permit of permits) {
+				if (existingPermitIds.has(permit.id)) {
+					const record = existingPermits.find(
+						(item) => item.id === permit.id,
+					)
 
-			missingHeader.forEach((permitId) => {
-				batchOps.push(
-					database
-						.get<ShearingHeaderModel>("shearingHeader")
-						.prepareCreate((model) => {
-							model.permitId = permitId
-							model.site = ""
-							model.latitude = 0
-							model.longitude = 0
-							model.roundupCount = 0
-							model.startTime = ""
-							model.endTime = ""
-							model.isCompleted = false
-						}),
-				)
-			})
+					if (record) {
+						batchOps.push(
+							record.prepareUpdate((model) => {
+								applyPermitToModel(model, permit)
+							}),
+						)
+					}
+				} else {
+					batchOps.push(
+						database
+							.get<PermitModel>("permits")
+							.prepareCreate((model) => {
+								applyPermitToModel(model, permit)
+								model._raw.id = permit.id
+							}),
+					)
+				}
 
-			missingCleaningHeader.forEach((permitId) => {
-				batchOps.push(
-					database
-						.get<CleaningHeaderModel>("cleaningHeader")
-						.prepareCreate((model) => {
-							model.permitId = permitId
-							model.startDate = ""
-							model.endDate = ""
-							model.site = ""
-							model.supervisors = ""
-							model.isCompleted = false
-						}),
-				)
-			})
+				if (!existingBasicIds.has(permit.id)) {
+					batchOps.push(
+						database
+							.get<BasicInfoModel>("basicInfo")
+							.prepareCreate((model) => {
+								model.permitId = permit.id
+								model.site = ""
+								model.date = ""
+								model.isCompleted = false
+							}),
+					)
+				}
 
-			await database.batch(...batchOps)
+				if (!existingHeaderIds.has(permit.id)) {
+					batchOps.push(
+						database
+							.get<ShearingHeaderModel>("shearingHeader")
+							.prepareCreate((model) => {
+								model.permitId = permit.id
+								model.site = ""
+								model.latitude = 0
+								model.longitude = 0
+								model.roundupCount = 0
+								model.startTime = ""
+								model.endTime = ""
+								model.isCompleted = false
+							}),
+					)
+				}
+
+				if (!existingCleaningHeaderIds.has(permit.id)) {
+					batchOps.push(
+						database
+							.get<CleaningHeaderModel>("cleaningHeader")
+							.prepareCreate((model) => {
+								model.permitId = permit.id
+								model.startDate = ""
+								model.endDate = ""
+								model.site = ""
+								model.supervisors = ""
+								model.isCompleted = false
+							}),
+					)
+				}
+			}
+
+			if (batchOps.length > 0) {
+				await database.batch(...batchOps)
+			}
 		})
 	} finally {
-		initializingPermits = false
+		savingPermits = false
 	}
 }

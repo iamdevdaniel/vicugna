@@ -1,5 +1,5 @@
 import { AuthStatusCard } from "@components"
-import { useReadLocalPermits } from "@hooks"
+import { useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 export default function HomeScreen() {
 	const theme = useAppTheme()
 	const { token, user, isHydrated } = useMobileAuthStore()
-	const { data: permits, loading } = useReadLocalPermits()
+	const { data: permits, loading } = useReadPermits()
 
 	const isAuthenticated = Boolean(token && user)
 
@@ -64,14 +64,14 @@ export default function HomeScreen() {
 				renderItem={({ item }) => (
 					<Card
 						style={{ marginBottom: 10 }}
-						onPress={() =>
-							router.push(ROUTES.OVERVIEW(item.permitId))
-						}
+						onPress={() => router.push(ROUTES.OVERVIEW(item.id))}
 					>
 						<Card.Content>
-							<Text variant="titleSmall">{item.permitId}</Text>
+							<Text variant="titleSmall">
+								{item.permitNumber}
+							</Text>
 							<Text variant="bodyMedium">
-								{item.site || item.community || "-"}
+								{item.userFullName}
 							</Text>
 							<Text variant="bodySmall">{item.date || "-"}</Text>
 						</Card.Content>

@@ -11,6 +11,7 @@ import type {
 	GroomingFormData,
 	ParticipantData,
 	ParticipantFormData,
+	PermitData,
 	ShearingHeaderData,
 	ShearingHeaderFormData,
 	ShearingRecordData,
@@ -23,17 +24,46 @@ import type {
 	DehearingModel,
 	GroomingModel,
 	ParticipantModel,
+	PermitModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
+
+export function mapToPermit(model: PermitModel): PermitData {
+	return {
+		id: model.id,
+		permitNumber: model.permitNumber,
+		seasonId: model.seasonId,
+		seasonName: model.seasonName,
+		communityId: model.communityId,
+		regionalId: model.regionalId,
+		departmentId: model.departmentId,
+		userId: model.userId,
+		userFullName: model.userFullName,
+		isActiveAssignmentUser: model.isActiveAssignmentUser,
+		site: model.site,
+		date: model.date,
+	}
+}
+
+export function applyPermitToModel(model: PermitModel, data: PermitData): void {
+	model.seasonId = data.seasonId
+	model.seasonName = data.seasonName
+	model.communityId = data.communityId
+	model.regionalId = data.regionalId
+	model.departmentId = data.departmentId
+	model.permitNumber = data.permitNumber
+	model.userId = data.userId
+	model.userFullName = data.userFullName
+	model.isActiveAssignmentUser = data.isActiveAssignmentUser
+	model.site = data.site
+	model.date = data.date
+}
 
 export function mapToBasicInfo(m: BasicInfoModel): BasicInfoData {
 	return {
 		id: m.id,
 		permitId: m.permitId,
-		department: m.department,
-		regional: m.regional,
-		community: m.community,
 		site: m.site,
 		date: m.date,
 		isCompleted: m.isCompleted,
@@ -45,9 +75,6 @@ export function applyBasicInfoToModel(
 	data: BasicInfoFormData,
 	isCompleted: boolean,
 ): void {
-	model.department = data.department
-	model.regional = data.regional
-	model.community = data.community
 	model.site = data.site
 	model.date = data.date
 	model.isCompleted = isCompleted
