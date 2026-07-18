@@ -22,6 +22,21 @@ export type {
 	ShearingRecordData,
 } from "@vicugna/shared"
 
+export type PermitData = {
+	id: string
+	permitNumber: string
+	seasonId: string
+	seasonName: string
+	communityId: string
+	regionalId: string
+	departmentId: string
+	userId: string
+	userFullName: string
+	isActiveAssignmentUser: boolean
+	site: string
+	date: string
+}
+
 export type AdminPermit = {
 	id: string
 	date: string

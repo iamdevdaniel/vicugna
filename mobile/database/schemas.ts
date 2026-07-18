@@ -4,6 +4,22 @@ export const appDbSchema = appSchema({
 	version: 1,
 	tables: [
 		tableSchema({
+			name: "permits",
+			columns: [
+				{ name: "seasonId", type: "string", isIndexed: true },
+				{ name: "seasonName", type: "string" },
+				{ name: "communityId", type: "string", isIndexed: true },
+				{ name: "regionalId", type: "string", isIndexed: true },
+				{ name: "departmentId", type: "string", isIndexed: true },
+				{ name: "permitNumber", type: "string", isIndexed: true },
+				{ name: "userId", type: "string", isIndexed: true },
+				{ name: "userFullName", type: "string" },
+				{ name: "isActiveAssignmentUser", type: "boolean" },
+				{ name: "site", type: "string" },
+				{ name: "date", type: "string" },
+			],
+		}),
+		tableSchema({
 			name: "basicInfo",
 			columns: [
 				{ name: "permitId", type: "string", isIndexed: true },

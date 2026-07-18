@@ -1,6 +1,21 @@
 import { Model } from "@nozbe/watermelondb"
 import { field, text } from "@nozbe/watermelondb/decorators"
 
+export class PermitModel extends Model {
+	static table = "permits"
+	@text("seasonId") seasonId!: string
+	@text("seasonName") seasonName!: string
+	@text("communityId") communityId!: string
+	@text("regionalId") regionalId!: string
+	@text("departmentId") departmentId!: string
+	@text("permitNumber") permitNumber!: string
+	@text("userId") userId!: string
+	@text("userFullName") userFullName!: string
+	@field("isActiveAssignmentUser") isActiveAssignmentUser!: boolean
+	@text("site") site!: string
+	@text("date") date!: string
+}
+
 export class BasicInfoModel extends Model {
 	static table = "basicInfo"
 	@field("permitId") permitId!: string
