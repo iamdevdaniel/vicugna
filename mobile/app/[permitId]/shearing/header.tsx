@@ -95,6 +95,7 @@ export default function () {
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
+									autoCapitalize="words"
 									error={!!errors.site}
 								/>
 							)}

@@ -403,6 +403,7 @@ export default function () {
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
+									autoCapitalize="sentences"
 									multiline
 									style={{ height: 100 }}
 									contentStyle={{

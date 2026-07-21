@@ -16,7 +16,10 @@ import { ScrollView, Text, View } from "react-native"
 // OVERVIEW /[permitId]
 export default function () {
 	const theme = useAppTheme()
-	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { permitId, permitNumber } = useLocalSearchParams<{
+		permitId: string
+		permitNumber?: string
+	}>()
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const { data: records } = useReadBulkShearingRecords(permitId)
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
@@ -51,7 +54,9 @@ export default function () {
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-			<Stack.Screen options={{ title: `Permiso ${permitId || ""}` }} />
+			<Stack.Screen
+				options={{ title: `Permiso ${permitNumber ?? "sin número"}` }}
+			/>
 			<ScrollView
 				contentContainerStyle={{
 					padding: 20,
@@ -68,7 +73,10 @@ export default function () {
 								icon: "pencil",
 								onPress: () =>
 									router.push(
-										ROUTES.PARTICIPANTS.OVERVIEW(permitId),
+										ROUTES.PARTICIPANTS.OVERVIEW({
+											permitId,
+											permitNumber,
+										}),
 									),
 							},
 							details: <Text>Total: {participants.length}</Text>,
@@ -80,7 +88,10 @@ export default function () {
 								icon: "pencil",
 								onPress: () =>
 									router.push(
-										ROUTES.SHEARING.OVERVIEW(permitId),
+										ROUTES.SHEARING.OVERVIEW({
+											permitId,
+											permitNumber,
+										}),
 									),
 							},
 							details: <Text>Total: {records.length}</Text>,
@@ -92,7 +103,10 @@ export default function () {
 								icon: "pencil",
 								onPress: () =>
 									router.push(
-										ROUTES.CLEANUP.OVERVIEW(permitId),
+										ROUTES.CLEANUP.OVERVIEW({
+											permitId,
+											permitNumber,
+										}),
 									),
 							},
 							details: (

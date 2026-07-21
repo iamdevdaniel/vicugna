@@ -49,7 +49,7 @@ export const OverviewStep = ({
 							alignItems: "center",
 							marginRight: done ? 8 : 16,
 							...(done
-								? { paddingHorizontal: 6, paddingVertical: 2 }
+								? { width: 24, height: 24 }
 								: { width: 32, height: 32 }),
 						}}
 					>

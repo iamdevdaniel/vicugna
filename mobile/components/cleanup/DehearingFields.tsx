@@ -99,6 +99,7 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 							value={value}
 							onChangeText={onChange}
 							onBlur={onBlur}
+							autoCapitalize="words"
 							error={!!errors.dehairerName}
 						/>
 					)}

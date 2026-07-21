@@ -1,14 +1,19 @@
+type PermitRouteParams = {
+	permitId: string
+	permitNumber?: string
+}
+
 export const ROUTES = {
 	HOME: "/",
 	LOGIN: "/login",
-	OVERVIEW: (permitId: string) => ({
+	OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 		pathname: "/[permitId]" as const,
-		params: { permitId },
+		params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
 	}),
 	PARTICIPANTS: {
-		OVERVIEW: (permitId: string) => ({
+		OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 			pathname: "/[permitId]/participants" as const,
-			params: { permitId },
+			params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
 		}),
 		FORM: (permitId: string, participantId: string) => ({
 			pathname: "/[permitId]/participants/[participantId]" as const,
@@ -16,9 +21,9 @@ export const ROUTES = {
 		}),
 	},
 	SHEARING: {
-		OVERVIEW: (permitId: string) => ({
+		OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 			pathname: "/[permitId]/shearing" as const,
-			params: { permitId },
+			params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
 		}),
 		HEADER: (permitId: string) => ({
 			pathname: "/[permitId]/shearing/header" as const,
@@ -30,9 +35,9 @@ export const ROUTES = {
 		}),
 	},
 	CLEANUP: {
-		OVERVIEW: (permitId: string) => ({
+		OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 			pathname: "/[permitId]/cleanup" as const,
-			params: { permitId },
+			params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
 		}),
 		HEADER: (permitId: string) => ({
 			pathname: "/[permitId]/cleanup/header" as const,

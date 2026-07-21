@@ -121,7 +121,14 @@ export default function HomeScreen() {
 				renderItem={({ item: permit }) => (
 					<Card
 						style={{ marginBottom: 10 }}
-						onPress={() => router.push(ROUTES.OVERVIEW(permit.id))}
+						onPress={() =>
+							router.push(
+								ROUTES.OVERVIEW({
+									permitId: permit.id,
+									permitNumber: permit.permitNumber,
+								}),
+							)
+						}
 					>
 						<Card.Content>
 							<Text variant="titleSmall">

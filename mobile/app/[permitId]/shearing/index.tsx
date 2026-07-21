@@ -10,7 +10,10 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { permitId, permitNumber } = useLocalSearchParams<{
+		permitId: string
+		permitNumber?: string
+	}>()
 	const { data: shearingForm } = useReadSingleShearingHeader(permitId)
 	const { data: shearingRecords } = useReadBulkShearingRecords(permitId)
 
@@ -21,7 +24,9 @@ export default function () {
 		<SafeAreaView
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen options={{ title: `Permiso ${permitId || ""}` }} />
+			<Stack.Screen
+				options={{ title: `Permiso ${permitNumber ?? "sin número"}` }}
+			/>
 			<ScrollView
 				contentContainerStyle={{
 					paddingHorizontal: 20,
