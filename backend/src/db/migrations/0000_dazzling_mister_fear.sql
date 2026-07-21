@@ -9,17 +9,6 @@ CREATE TABLE "assignments" (
 	"assigned_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "basic_info" (
-	"id" text PRIMARY KEY NOT NULL,
-	"permit_id" text NOT NULL,
-	"department" text NOT NULL,
-	"regional" text NOT NULL,
-	"community" text NOT NULL,
-	"site" text NOT NULL,
-	"date" text NOT NULL,
-	"is_completed" boolean NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "cleaning_common_records" (
 	"id" text PRIMARY KEY NOT NULL,
 	"permit_id" text NOT NULL,
@@ -158,7 +147,6 @@ ALTER TABLE "assignments" ADD CONSTRAINT "assignments_season_id_seasons_id_fk" F
 ALTER TABLE "assignments" ADD CONSTRAINT "assignments_community_id_communities_id_fk" FOREIGN KEY ("community_id") REFERENCES "public"."communities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "assignments" ADD CONSTRAINT "assignments_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "assignments" ADD CONSTRAINT "assignments_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "basic_info" ADD CONSTRAINT "basic_info_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cleaning_common_records" ADD CONSTRAINT "cleaning_common_records_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cleaning_headers" ADD CONSTRAINT "cleaning_headers_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "communities" ADD CONSTRAINT "communities_regional_id_regionals_id_fk" FOREIGN KEY ("regional_id") REFERENCES "public"."regionals"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -172,7 +160,6 @@ ALTER TABLE "shearing_headers" ADD CONSTRAINT "shearing_headers_permit_id_permit
 ALTER TABLE "shearing_records" ADD CONSTRAINT "shearing_records_permit_id_permits_id_fk" FOREIGN KEY ("permit_id") REFERENCES "public"."permits"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "assignments_season_community_user_permit_unique" ON "assignments" USING btree ("season_id","community_id","user_id","permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "assignments_active_permit_unique" ON "assignments" USING btree ("permit_id") WHERE "assignments"."active" = true;--> statement-breakpoint
-CREATE UNIQUE INDEX "basic_info_permit_id_unique" ON "basic_info" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "cleaning_headers_permit_id_unique" ON "cleaning_headers" USING btree ("permit_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "dehearing_details_cleaning_common_id_unique" ON "dehearing_details" USING btree ("cleaning_common_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "grooming_details_cleaning_common_id_unique" ON "grooming_details" USING btree ("cleaning_common_id");--> statement-breakpoint

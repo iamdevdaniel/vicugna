@@ -23,7 +23,6 @@ export async function listMobilePermitsByUserId(
 							},
 						},
 					},
-					basicInfo: true,
 				},
 			},
 		},
@@ -44,7 +43,5 @@ export async function listMobilePermitsByUserId(
 		userId: assignment.userId,
 		userFullName: assignment.user.fullName,
 		isActiveAssignmentUser: assignment.active,
-		site: assignment.permit.basicInfo?.site ?? "",
-		date: assignment.permit.basicInfo?.date ?? "",
 	}))
 }

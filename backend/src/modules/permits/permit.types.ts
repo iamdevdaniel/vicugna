@@ -1,5 +1,4 @@
 export type {
-	BasicInfoData,
 	CleaningCommonData,
 	CleaningHeaderData,
 	DehearingData,

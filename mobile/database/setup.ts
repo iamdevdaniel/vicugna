@@ -1,7 +1,6 @@
 import { Database } from "@nozbe/watermelondb"
 import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite"
 import {
-	BasicInfoModel,
 	CleaningCommonModel,
 	CleaningHeaderModel,
 	DehearingModel,
@@ -21,7 +20,6 @@ export const database = new Database({
 	adapter,
 	modelClasses: [
 		PermitModel,
-		BasicInfoModel,
 		ParticipantModel,
 		ShearingHeaderModel,
 		ShearingRecordModel,

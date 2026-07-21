@@ -133,23 +133,6 @@ export const assignments = pgTable(
 	],
 )
 
-export const basicInfo = pgTable(
-	"basic_info",
-	{
-		id: text("id").primaryKey(),
-		permitId: text("permit_id")
-			.notNull()
-			.references(() => permits.id, { onDelete: "cascade" }),
-		department: text("department").notNull(),
-		regional: text("regional").notNull(),
-		community: text("community").notNull(),
-		site: text("site").notNull(),
-		date: text("date").notNull(),
-		isCompleted: boolean("is_completed").notNull(),
-	},
-	(table) => [uniqueIndex("basic_info_permit_id_unique").on(table.permitId)],
-)
-
 export const participants = pgTable("participants", {
 	id: text("id").primaryKey(),
 	permitId: text("permit_id")
@@ -337,22 +320,11 @@ export const permitRelations = relations(permits, ({ one, many }) => ({
 		references: [communities.id],
 	}),
 	assignments: many(assignments),
-	basicInfo: one(basicInfo, {
-		fields: [permits.id],
-		references: [basicInfo.permitId],
-	}),
 	participants: many(participants),
 	shearingHeader: one(shearingHeaders),
 	shearingRecords: many(shearingRecords),
 	cleaningHeader: one(cleaningHeaders),
 	cleaningCommonRecords: many(cleaningCommonRecords),
-}))
-
-export const basicInfoRelations = relations(basicInfo, ({ one }) => ({
-	permit: one(permits, {
-		fields: [basicInfo.permitId],
-		references: [permits.id],
-	}),
 }))
 
 export const cleaningCommonRecordRelations = relations(

@@ -12,16 +12,6 @@ export class PermitModel extends Model {
 	@text("userId") userId!: string
 	@text("userFullName") userFullName!: string
 	@field("isActiveAssignmentUser") isActiveAssignmentUser!: boolean
-	@text("site") site!: string
-	@text("date") date!: string
-}
-
-export class BasicInfoModel extends Model {
-	static table = "basicInfo"
-	@field("permitId") permitId!: string
-	@text("site") site!: string
-	@text("date") date!: string
-	@field("isCompleted") isCompleted!: boolean
 }
 
 export class ParticipantModel extends Model {

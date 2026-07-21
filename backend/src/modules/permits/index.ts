@@ -1,6 +1,5 @@
 export { permitRoutes } from "./permit.routes"
 export type {
-	BasicInfoData,
 	CleaningCommonData,
 	CleaningHeaderData,
 	DehearingData,

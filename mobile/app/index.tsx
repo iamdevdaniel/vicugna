@@ -130,9 +130,6 @@ export default function HomeScreen() {
 							<Text variant="bodyMedium">
 								{permit.userFullName}
 							</Text>
-							<Text variant="bodySmall">
-								{permit.date || "-"}
-							</Text>
 						</Card.Content>
 					</Card>
 				)}

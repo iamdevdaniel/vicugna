@@ -31,16 +31,6 @@ export type PermitData = {
 	userId: string
 	userFullName: string
 	isActiveAssignmentUser: boolean
-	site: string
-	date: string
-}
-
-export type BasicInfoData = {
-	id: string
-	permitId: string
-	site: string
-	date: string
-	isCompleted: boolean
 }
 
 export type AdminPermit = {
@@ -62,11 +52,6 @@ export type MobileLoginResponseData = {
 	expiresAt: string
 	user: MobileAuthUser
 }
-
-export type BasicInfoFormData = Omit<
-	BasicInfoData,
-	"id" | "isCompleted" | "permitId"
->
 
 // PARTICIPANTS
 

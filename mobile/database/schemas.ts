@@ -15,17 +15,6 @@ export const appDbSchema = appSchema({
 				{ name: "userId", type: "string", isIndexed: true },
 				{ name: "userFullName", type: "string" },
 				{ name: "isActiveAssignmentUser", type: "boolean" },
-				{ name: "site", type: "string" },
-				{ name: "date", type: "string" },
-			],
-		}),
-		tableSchema({
-			name: "basicInfo",
-			columns: [
-				{ name: "permitId", type: "string", isIndexed: true },
-				{ name: "site", type: "string" },
-				{ name: "date", type: "string" },
-				{ name: "isCompleted", type: "boolean" },
 			],
 		}),
 		tableSchema({

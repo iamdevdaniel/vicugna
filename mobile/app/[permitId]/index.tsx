@@ -5,7 +5,6 @@ import {
 	useReadBulkGrooming,
 	useReadBulkParticipants,
 	useReadBulkShearingRecords,
-	useReadSingleBasicInfo,
 	useReadSingleCleaningHeader,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
@@ -18,7 +17,6 @@ import { ScrollView, Text, View } from "react-native"
 export default function () {
 	const theme = useAppTheme()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
-	const { data: basicInfo } = useReadSingleBasicInfo(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const { data: records } = useReadBulkShearingRecords(permitId)
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
@@ -27,11 +25,8 @@ export default function () {
 	const { data: groomingRecords } = useReadBulkGrooming(cleaningRecordIds)
 	const { data: dehearingRecords } = useReadBulkDehearing(cleaningRecordIds)
 
-	const basicInfoState: StepState = basicInfo?.isCompleted ? "done" : "ready"
-	const participantsState = getDependentStepState(
-		basicInfoState === "done",
-		participants.length > 0,
-	)
+	const participantsState: StepState =
+		participants.length > 0 ? "done" : "ready"
 	const shearingState = getDependentStepState(
 		participantsState === "done",
 		records.length > 0,
@@ -66,21 +61,6 @@ export default function () {
 			>
 				<StepList
 					steps={[
-						{
-							title: "Informacion Basica",
-							state: basicInfoState,
-							action: {
-								icon: "pencil",
-								onPress: () =>
-									router.push(ROUTES.BASIC_INFO(permitId)),
-							},
-							details: basicInfo?.isCompleted ? (
-								<View style={{ gap: 4 }}>
-									<Text>Sitio: {basicInfo.site}</Text>
-									<Text>Fecha: {basicInfo.date}</Text>
-								</View>
-							) : null,
-						},
 						{
 							title: "Participantes",
 							state: participantsState,

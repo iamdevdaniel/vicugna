@@ -2,7 +2,6 @@ import type { PermitData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import { applyPermitToModel, mapToPermit } from "./mappers"
 import type {
-	BasicInfoModel,
 	CleaningHeaderModel,
 	PermitModel,
 	ShearingHeaderModel,
@@ -54,14 +53,6 @@ export async function savePermits(permits: PermitData[]): Promise<void> {
 			existingPermits.map((permit) => permit.id),
 		)
 
-		const existingBasic = await database
-			.get<BasicInfoModel>("basicInfo")
-			.query(Q.where("permitId", Q.oneOf(permitIds)))
-			.fetch()
-		const existingBasicIds = new Set(
-			existingBasic.map((record) => record.permitId),
-		)
-
 		const existingHeader = await database
 			.get<ShearingHeaderModel>("shearingHeader")
 			.query(Q.where("permitId", Q.oneOf(permitIds)))
@@ -101,19 +92,6 @@ export async function savePermits(permits: PermitData[]): Promise<void> {
 							.prepareCreate((model) => {
 								applyPermitToModel(model, permit)
 								model._raw.id = permit.id
-							}),
-					)
-				}
-
-				if (!existingBasicIds.has(permit.id)) {
-					batchOps.push(
-						database
-							.get<BasicInfoModel>("basicInfo")
-							.prepareCreate((model) => {
-								model.permitId = permit.id
-								model.site = ""
-								model.date = ""
-								model.isCompleted = false
 							}),
 					)
 				}

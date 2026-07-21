@@ -1,9 +1,4 @@
 export {
-	createSingleBasicInfo,
-	subscribeSingleBasicInfo,
-	updateSingleBasicInfo,
-} from "./dal-basic-info"
-export {
 	createSingleCleaningCommon,
 	createSingleDehearing,
 	createSingleGrooming,

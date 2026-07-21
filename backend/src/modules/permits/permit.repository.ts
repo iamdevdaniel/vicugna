@@ -1,7 +1,6 @@
 import { db } from "@db"
 import { eq } from "drizzle-orm"
 import {
-	basicInfo,
 	cleaningCommonRecords,
 	cleaningHeaders,
 	dehearingDetails,
@@ -38,7 +37,6 @@ export async function savePermitSyncData(data: PermitSyncData) {
 }
 
 async function deletePermitChildData(data: PermitSyncData, tx: DbTransaction) {
-	await tx.delete(basicInfo).where(eq(basicInfo.permitId, data.permit.id))
 	await tx
 		.delete(participants)
 		.where(eq(participants.permitId, data.permit.id))
@@ -57,7 +55,6 @@ async function deletePermitChildData(data: PermitSyncData, tx: DbTransaction) {
 }
 
 async function insertPermitChildData(data: PermitSyncData, tx: DbTransaction) {
-	await tx.insert(basicInfo).values(data.basicInfo)
 	await tx.insert(shearingHeaders).values(data.shearingHeader)
 	await tx.insert(cleaningHeaders).values(data.cleaningHeader)
 	await tx.insert(participants).values(data.participants)

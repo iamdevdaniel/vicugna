@@ -4,7 +4,6 @@ import type { PermitSyncData } from "./permit.types"
 
 export async function syncPermitData(data: PermitSyncData) {
 	validatePermit(data)
-	validateBasicInfo(data)
 	validateParticipants(data)
 	validateShearing(data)
 	validateCleaning(data)
@@ -15,16 +14,6 @@ export async function syncPermitData(data: PermitSyncData) {
 function validatePermit(data: PermitSyncData): void {
 	if (!data.permit.id) {
 		throw new PermitValidationError("Permit id is required")
-	}
-}
-
-function validateBasicInfo(data: PermitSyncData): void {
-	if (!data.basicInfo) {
-		throw new PermitValidationError("Basic info is required")
-	}
-
-	if (data.basicInfo.permitId !== data.permit.id) {
-		throw new PermitValidationError("Basic info permit id does not match")
 	}
 }
 

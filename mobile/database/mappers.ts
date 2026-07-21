@@ -1,6 +1,4 @@
 import type {
-	BasicInfoData,
-	BasicInfoFormData,
 	CleaningCommonData,
 	CleaningCommonFormData,
 	CleaningHeaderData,
@@ -18,7 +16,6 @@ import type {
 	ShearingRecordFormData,
 } from "@definitions/types"
 import type {
-	BasicInfoModel,
 	CleaningCommonModel,
 	CleaningHeaderModel,
 	DehearingModel,
@@ -41,8 +38,6 @@ export function mapToPermit(model: PermitModel): PermitData {
 		userId: model.userId,
 		userFullName: model.userFullName,
 		isActiveAssignmentUser: model.isActiveAssignmentUser,
-		site: model.site,
-		date: model.date,
 	}
 }
 
@@ -56,28 +51,6 @@ export function applyPermitToModel(model: PermitModel, data: PermitData): void {
 	model.userId = data.userId
 	model.userFullName = data.userFullName
 	model.isActiveAssignmentUser = data.isActiveAssignmentUser
-	model.site = data.site
-	model.date = data.date
-}
-
-export function mapToBasicInfo(m: BasicInfoModel): BasicInfoData {
-	return {
-		id: m.id,
-		permitId: m.permitId,
-		site: m.site,
-		date: m.date,
-		isCompleted: m.isCompleted,
-	}
-}
-
-export function applyBasicInfoToModel(
-	model: BasicInfoModel,
-	data: BasicInfoFormData,
-	isCompleted: boolean,
-): void {
-	model.site = data.site
-	model.date = data.date
-	model.isCompleted = isCompleted
 }
 
 export function mapToParticipant(m: ParticipantModel): ParticipantData {

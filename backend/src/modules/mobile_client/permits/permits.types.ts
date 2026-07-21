@@ -9,6 +9,4 @@ export interface MobilePermitData {
 	userId: string
 	userFullName: string
 	isActiveAssignmentUser: boolean
-	site: string
-	date: string
 }

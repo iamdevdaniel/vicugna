@@ -5,10 +5,6 @@ export const ROUTES = {
 		pathname: "/[permitId]" as const,
 		params: { permitId },
 	}),
-	BASIC_INFO: (permitId: string) => ({
-		pathname: "/[permitId]/basic-info" as const,
-		params: { permitId },
-	}),
 	PARTICIPANTS: {
 		OVERVIEW: (permitId: string) => ({
 			pathname: "/[permitId]/participants" as const,
