@@ -138,7 +138,6 @@ CREATE TABLE "users" (
 	"role" text NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"avatar_seed" text NOT NULL,
-	"avatar_style" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );

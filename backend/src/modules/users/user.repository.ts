@@ -12,7 +12,6 @@ interface CreateUserRecord {
 	role: ManagedUserRole
 	isActive: boolean
 	avatarSeed: string
-	avatarStyle: string
 }
 
 export async function listUsers(): Promise<UserListItem[]> {
@@ -27,6 +26,7 @@ export async function listUsers(): Promise<UserListItem[]> {
 		email: user.email,
 		role: normalizeUserRole(user.role),
 		isActive: user.isActive,
+		avatarSeed: user.avatarSeed,
 	}))
 }
 

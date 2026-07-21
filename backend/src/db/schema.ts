@@ -58,7 +58,6 @@ export const users = pgTable(
 		role: text("role").notNull(),
 		isActive: boolean("is_active").notNull().default(true),
 		avatarSeed: text("avatar_seed").notNull(),
-		avatarStyle: text("avatar_style").notNull(),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
 	},

@@ -97,6 +97,16 @@
 			<%- include("../partials/users-list", { users }) %>
 				<div id="toast-container" class="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex justify-center px-5"></div>
 		</main>
+		<script src="/vendor/jdenticon.min.js"></script>
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				window.jdenticon?.update()
+			})
+
+			document.body.addEventListener("htmx:afterSwap", () => {
+				window.jdenticon?.update()
+			})
+		</script>
 	</body>
 
 </html>

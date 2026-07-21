@@ -8,6 +8,7 @@ export interface UserListItem {
 	email: string | null
 	role: ManagedUserRole
 	isActive: boolean
+	avatarSeed: string
 }
 
 // HTTP

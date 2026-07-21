@@ -3,8 +3,6 @@ import { db } from "@db"
 import bcrypt from "bcrypt"
 import { users } from "../schema"
 
-const DEFAULT_AVATAR_STYLE = "marble"
-
 const TEST_USERS = [
 	{
 		id: "user-seed-01",
@@ -61,7 +59,6 @@ async function seedUsers() {
 				role: "user",
 				isActive: true,
 				avatarSeed: user.avatarSeed,
-				avatarStyle: DEFAULT_AVATAR_STYLE,
 			})
 			.onConflictDoUpdate({
 				target: users.phoneNumber,
@@ -72,7 +69,6 @@ async function seedUsers() {
 					role: "user",
 					isActive: true,
 					avatarSeed: user.avatarSeed,
-					avatarStyle: DEFAULT_AVATAR_STYLE,
 					updatedAt: new Date(),
 				},
 			})

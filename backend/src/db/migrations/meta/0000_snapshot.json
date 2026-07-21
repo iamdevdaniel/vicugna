@@ -1119,12 +1119,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "avatar_style": {
-          "name": "avatar_style",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",

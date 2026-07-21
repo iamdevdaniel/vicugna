@@ -8,7 +8,6 @@ import { UserManagementError } from "./user.errors"
 import { createUser, listUsers } from "./user.repository"
 import type { CreateUserFormData, UserListItem } from "./user.types"
 
-const DEFAULT_AVATAR_STYLE = "marble"
 const PASSWORD_WORDS = [
 	"alpaca",
 	"brisa",
@@ -62,7 +61,6 @@ export async function registerUser(data: CreateUserFormData) {
 			role: "user",
 			isActive: true,
 			avatarSeed: `vicugna-${crypto.randomUUID()}`,
-			avatarStyle: DEFAULT_AVATAR_STYLE,
 		})
 	} catch (error) {
 		throwUserCreationError(error)
