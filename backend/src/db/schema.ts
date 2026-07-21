@@ -336,13 +336,23 @@ export const permitRelations = relations(permits, ({ one, many }) => ({
 		fields: [permits.communityId],
 		references: [communities.id],
 	}),
-	assignment: one(assignments),
-	basicInfo: one(basicInfo),
+	assignments: many(assignments),
+	basicInfo: one(basicInfo, {
+		fields: [permits.id],
+		references: [basicInfo.permitId],
+	}),
 	participants: many(participants),
 	shearingHeader: one(shearingHeaders),
 	shearingRecords: many(shearingRecords),
 	cleaningHeader: one(cleaningHeaders),
 	cleaningCommonRecords: many(cleaningCommonRecords),
+}))
+
+export const basicInfoRelations = relations(basicInfo, ({ one }) => ({
+	permit: one(permits, {
+		fields: [basicInfo.permitId],
+		references: [permits.id],
+	}),
 }))
 
 export const cleaningCommonRecordRelations = relations(

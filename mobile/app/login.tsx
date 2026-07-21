@@ -1,4 +1,4 @@
-import { useMobileAuthStore } from "@utils/auth-store"
+import { useLoginFlow } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { Redirect } from "expo-router"
@@ -18,11 +18,18 @@ export default function LoginScreen() {
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-	const { token, user, error, isHydrated, isLoggingIn, login, clearError } =
-		useMobileAuthStore()
+	const {
+		token,
+		user,
+		error,
+		isHydrated,
+		isLoggingIn,
+		submitLogin,
+		clearError,
+	} = useLoginFlow()
 
 	const onLogin = async () => {
-		const ok = await login(email, password)
+		const ok = await submitLogin(email, password)
 
 		if (ok) {
 			setPassword("")

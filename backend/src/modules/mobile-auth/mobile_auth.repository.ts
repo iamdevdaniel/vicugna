@@ -8,3 +8,9 @@ export async function findMobileUserByEmail(email: string) {
 		where: eq(users.email, email),
 	})
 }
+
+export async function findMobileUserById(userId: string) {
+	return db.query.users.findFirst({
+		where: eq(users.id, userId),
+	})
+}

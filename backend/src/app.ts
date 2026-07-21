@@ -11,6 +11,7 @@ import express, {
 import session from "express-session"
 
 import { adminRoutes } from "./modules/admin/admin.routes"
+import { mobileClientRoutes } from "./modules/mobile_client/mobile_client.routes"
 import { mobileAuthRoutes } from "./modules/mobile-auth/mobile_auth.routes"
 
 export const app = express()
@@ -41,6 +42,7 @@ app.set("view engine", "ejs")
 app.use(express.static(path.join(srcDir, "public")))
 app.use("/admin", adminRoutes)
 app.use("/mobile/auth", mobileAuthRoutes)
+app.use("/mobile", mobileClientRoutes)
 app.use("/permits", permitRoutes)
 
 app.get("/", (_req: Request, res: Response) => {

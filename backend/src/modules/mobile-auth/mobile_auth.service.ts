@@ -1,8 +1,14 @@
 import bcrypt from "bcrypt"
 
 import { MobileAuthError } from "./mobile_auth.errors"
-import { findMobileUserByEmail } from "./mobile_auth.repository"
-import { createMobileAuthToken } from "./mobile_auth.token"
+import {
+	findMobileUserByEmail,
+	findMobileUserById,
+} from "./mobile_auth.repository"
+import {
+	createMobileAuthToken,
+	verifyMobileAuthToken,
+} from "./mobile_auth.token"
 import type {
 	MobileLoginRequestBody,
 	MobileLoginResult,
@@ -44,4 +50,32 @@ export async function loginMobileUser(
 		expiresAt,
 		user: sessionUser,
 	}
+}
+
+export async function getMobileUserFromAuthorization(
+	authorizationHeader?: string,
+) {
+	const token = getBearerToken(authorizationHeader)
+	const payload = verifyMobileAuthToken(token)
+	const user = await findMobileUserById(payload.sub)
+
+	if (!user?.isActive || user.role !== "user") {
+		throw new MobileAuthError("Credenciales inválidas")
+	}
+
+	return user
+}
+
+function getBearerToken(authorizationHeader?: string) {
+	if (!authorizationHeader) {
+		throw new MobileAuthError("Token faltante")
+	}
+
+	const [scheme, token] = authorizationHeader.split(" ")
+
+	if (scheme !== "Bearer" || !token) {
+		throw new MobileAuthError("Token invalido")
+	}
+
+	return token
 }
