@@ -1,4 +1,4 @@
-import { useLoginFlow } from "@hooks"
+import { useMobileLogin } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { Redirect } from "expo-router"
@@ -19,14 +19,13 @@ export default function LoginScreen() {
 	const [password, setPassword] = useState("")
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const {
-		token,
-		user,
 		error,
 		isHydrated,
+		isAuthenticated,
 		isLoggingIn,
 		submitLogin,
 		clearError,
-	} = useLoginFlow()
+	} = useMobileLogin()
 
 	const onLogin = async () => {
 		const ok = await submitLogin(email, password)
@@ -36,7 +35,7 @@ export default function LoginScreen() {
 		}
 	}
 
-	if (isHydrated && token && user) {
+	if (isHydrated && isAuthenticated) {
 		return <Redirect href={ROUTES.HOME} />
 	}
 

@@ -1,12 +1,19 @@
 import { fetchPermits } from "@api"
 import { savePermits } from "@database"
+import { useMobileAuthStore } from "@utils/auth-store"
 import { useCallback, useState } from "react"
 
 export function useLoadPermits() {
 	const [loadingPermits, setLoadingPermits] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const token = useMobileAuthStore((state) => state.token)
 
-	const loadPermits = useCallback(async (token: string) => {
+	const loadPermits = useCallback(async () => {
+		if (!token) {
+			setError("Sesión no disponible")
+			return false
+		}
+
 		setLoadingPermits(true)
 		setError(null)
 
@@ -24,7 +31,7 @@ export function useLoadPermits() {
 		} finally {
 			setLoadingPermits(false)
 		}
-	}, [])
+	}, [token])
 
 	const clearError = useCallback(() => setError(null), [])
 

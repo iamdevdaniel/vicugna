@@ -23,15 +23,11 @@ export default function HomeScreen() {
 	const hasPermits = permits.length > 0
 
 	const onLoadPermits = async () => {
-		if (!token) {
-			return
-		}
-
 		if (permitError) {
 			clearPermitError()
 		}
 
-		await loadPermits(token)
+		await loadPermits()
 	}
 
 	return (
