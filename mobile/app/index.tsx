@@ -1,4 +1,4 @@
-import { AuthStatusCard } from "@components"
+import { AuthStatusCard, HomeUserHeader } from "@components"
 import { useLoadPermits, useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
@@ -60,6 +60,13 @@ export default function HomeScreen() {
 								surfaceVariantColor={
 									theme.colors.surfaceVariant
 								}
+							/>
+						) : null}
+						{isHydrated && isAuthenticated && user ? (
+							<HomeUserHeader
+								fullName={user.fullName}
+								email={user.email}
+								avatarSeed={user.avatarSeed}
 							/>
 						) : null}
 						{isHydrated && isAuthenticated && !hasPermits ? (

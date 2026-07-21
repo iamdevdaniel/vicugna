@@ -45,6 +45,7 @@ export type MobileAuthUser = {
 	email: string
 	fullName: string
 	role: "user"
+	avatarSeed: string
 }
 
 export type MobileLoginResponseData = {

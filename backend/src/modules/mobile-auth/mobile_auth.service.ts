@@ -42,6 +42,7 @@ export async function loginMobileUser(
 		email: user.email ?? email,
 		fullName: user.fullName,
 		role: "user",
+		avatarSeed: user.avatarSeed,
 	}
 	const { token, expiresAt } = createMobileAuthToken(sessionUser)
 

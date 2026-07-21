@@ -8,6 +8,7 @@ export interface MobileSessionUser {
 	email: string
 	fullName: string
 	role: "user"
+	avatarSeed: string
 }
 
 export interface MobileLoginResult {
