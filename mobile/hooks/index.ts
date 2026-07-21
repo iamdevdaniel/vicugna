@@ -9,7 +9,6 @@ export { useReadBulkDehearing, useReadSingleDehearing } from "./dehearing-read"
 export { useSingleDehearingActions } from "./dehearing-write"
 export { useReadBulkGrooming, useReadSingleGrooming } from "./grooming-read"
 export { useSingleGroomingActions } from "./grooming-write"
-export { useMobileLogin } from "./mobile-login"
 export {
 	useReadBulkParticipants,
 	useReadSingleParticipant,

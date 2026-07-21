@@ -1,4 +1,4 @@
-import { AuthStatusCard, HomeUserHeader } from "@components"
+import { HomeUserHeader } from "@components"
 import { useLoadPermits, useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
@@ -7,10 +7,16 @@ import { router } from "expo-router"
 import { FlatList, View } from "react-native"
 import { Button, Card, Icon, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { useShallow } from "zustand/react/shallow"
 
 export default function HomeScreen() {
 	const theme = useAppTheme()
-	const { token, user, isHydrated } = useMobileAuthStore()
+	const { user, isAuthenticated } = useMobileAuthStore(
+		useShallow((state) => ({
+			user: state.user,
+			isAuthenticated: state.isAuthenticated,
+		})),
+	)
 	const { data: permits, loading } = useReadPermits()
 	const {
 		loadPermits,
@@ -19,8 +25,12 @@ export default function HomeScreen() {
 		clearError: clearPermitError,
 	} = useLoadPermits()
 
-	const isAuthenticated = Boolean(token && user)
 	const hasPermits = permits.length > 0
+	const isPermitListLoading = loading || loadingPermits
+	const shouldShowPermitLoadCard = isAuthenticated && !hasPermits
+	const permitLoadButtonLabel = permitError
+		? "Reintentar carga de permisos"
+		: "Cargar permisos"
 
 	const onLoadPermits = async () => {
 		if (permitError) {
@@ -28,6 +38,10 @@ export default function HomeScreen() {
 		}
 
 		await loadPermits()
+	}
+
+	const onGoToLogin = () => {
+		router.push(ROUTES.LOGIN)
 	}
 
 	return (
@@ -45,37 +59,17 @@ export default function HomeScreen() {
 				}}
 				ListHeaderComponent={
 					<View style={{ gap: 10 }}>
-						{isHydrated && !isAuthenticated ? (
-							<AuthStatusCard
-								isAuthenticated={false}
-								userEmail={null}
-								onLogin={() => router.push(ROUTES.LOGIN)}
-								onLogout={() =>
-									useMobileAuthStore.getState().logout()
-								}
-								surfaceVariantColor={
-									theme.colors.surfaceVariant
-								}
-							/>
-						) : null}
-						{isHydrated && isAuthenticated && user ? (
-							<HomeUserHeader
-								fullName={user.fullName}
-								email={user.email}
-								avatarSeed={user.avatarSeed}
-							/>
-						) : null}
-						{isHydrated && isAuthenticated && !hasPermits ? (
+						<HomeUserHeader
+							user={isAuthenticated ? user : null}
+							onLogin={onGoToLogin}
+						/>
+						{shouldShowPermitLoadCard && (
 							<Card>
 								<Card.Content style={{ gap: 12 }}>
 									<Text variant="titleMedium">
 										Cargar permisos
 									</Text>
-									<Text variant="bodyMedium">
-										Todavia no hay permisos en este
-										dispositivo.
-									</Text>
-									{permitError ? (
+									{permitError && (
 										<Text
 											style={{
 												color: theme.colors.error,
@@ -83,20 +77,18 @@ export default function HomeScreen() {
 										>
 											{permitError}
 										</Text>
-									) : null}
+									)}
 									<Button
 										mode="contained"
 										onPress={onLoadPermits}
 										loading={loadingPermits}
 										disabled={loadingPermits}
 									>
-										{permitError
-											? "Reintentar carga de permisos"
-											: "Cargar permisos"}
+										{permitLoadButtonLabel}
 									</Button>
 								</Card.Content>
 							</Card>
-						) : null}
+						)}
 					</View>
 				}
 				ListEmptyComponent={
@@ -115,9 +107,9 @@ export default function HomeScreen() {
 							color={theme.colors.outline}
 						/>
 						<Text variant="bodyLarge">
-							{loading || loadingPermits
-								? "Cargando permisos"
-								: "Sin permisos aún"}
+							{isPermitListLoading
+								? "Cargando permisos..."
+								: "No hay permisos disponibles."}
 						</Text>
 					</View>
 				}

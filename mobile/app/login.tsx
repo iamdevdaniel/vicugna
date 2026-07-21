@@ -1,17 +1,12 @@
-import { useMobileLogin } from "@hooks"
+import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { Redirect } from "expo-router"
 import { useState } from "react"
 import { View } from "react-native"
-import {
-	ActivityIndicator,
-	Button,
-	Card,
-	Text,
-	TextInput,
-} from "react-native-paper"
+import { Button, Card, Text, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { useShallow } from "zustand/react/shallow"
 
 export default function LoginScreen() {
 	const theme = useAppTheme()
@@ -19,16 +14,25 @@ export default function LoginScreen() {
 	const [password, setPassword] = useState("")
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const {
-		error,
 		isHydrated,
 		isAuthenticated,
+		error,
 		isLoggingIn,
-		submitLogin,
+		login,
 		clearError,
-	} = useMobileLogin()
+	} = useMobileAuthStore(
+		useShallow((state) => ({
+			isHydrated: state.isHydrated,
+			isAuthenticated: state.isAuthenticated,
+			error: state.error,
+			isLoggingIn: state.isLoggingIn,
+			login: state.login,
+			clearError: state.clearError,
+		})),
+	)
 
 	const onLogin = async () => {
-		const ok = await submitLogin(email, password)
+		const ok = await login(email, password)
 
 		if (ok) {
 			setPassword("")
@@ -55,78 +59,58 @@ export default function LoginScreen() {
 						<Text variant="titleMedium">
 							Inicio de sesión móvil
 						</Text>
-						{!isHydrated ? (
-							<View
-								style={{
-									alignItems: "center",
-									justifyContent: "center",
-									paddingVertical: 24,
-								}}
-							>
-								<ActivityIndicator animating size="small" />
-							</View>
-						) : (
-							<>
-								<TextInput
-									mode="outlined"
-									label="Correo"
-									value={email}
-									onChangeText={(value) => {
-										if (error) {
-											clearError()
-										}
+						<TextInput
+							mode="outlined"
+							label="Correo"
+							value={email}
+							onChangeText={(value) => {
+								if (error) {
+									clearError()
+								}
 
-										setEmail(value)
-									}}
-									autoCapitalize="none"
-									keyboardType="email-address"
-								/>
-								<TextInput
-									mode="outlined"
-									label="Contraseña"
-									value={password}
-									onChangeText={(value) => {
-										if (error) {
-											clearError()
-										}
+								setEmail(value)
+							}}
+							autoCapitalize="none"
+							keyboardType="email-address"
+						/>
+						<TextInput
+							mode="outlined"
+							label="Contraseña"
+							value={password}
+							onChangeText={(value) => {
+								if (error) {
+									clearError()
+								}
 
-										setPassword(value)
-									}}
-									secureTextEntry={!isPasswordVisible}
-									right={
-										<TextInput.Icon
-											icon={
-												isPasswordVisible
-													? "eye-off-outline"
-													: "eye-outline"
-											}
-											onPress={() =>
-												setIsPasswordVisible(
-													(value) => !value,
-												)
-											}
-										/>
+								setPassword(value)
+							}}
+							secureTextEntry={!isPasswordVisible}
+							right={
+								<TextInput.Icon
+									icon={
+										isPasswordVisible
+											? "eye-off-outline"
+											: "eye-outline"
+									}
+									onPress={() =>
+										setIsPasswordVisible((value) => !value)
 									}
 								/>
-								{error ? (
-									<Text style={{ color: theme.colors.error }}>
-										{error}
-									</Text>
-								) : null}
-								<Button
-									mode="contained"
-									onPress={onLogin}
-									loading={isLoggingIn}
-									disabled={
-										isLoggingIn ||
-										!email.trim() ||
-										!password
-									}
-								>
-									Iniciar sesión
-								</Button>
-							</>
-						)}
+							}
+						/>
+						{error ? (
+							<Text style={{ color: theme.colors.error }}>
+								{error}
+							</Text>
+						) : null}
+						<Button
+							mode="contained"
+							onPress={onLogin}
+							loading={isLoggingIn}
+							disabled={isLoggingIn || !email.trim() || !password}
+						>
+							Iniciar sesión
+						</Button>
 					</Card.Content>
 				</Card>
 			</View>
