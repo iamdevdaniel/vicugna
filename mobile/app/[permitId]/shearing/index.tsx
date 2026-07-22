@@ -10,7 +10,7 @@ import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
-import { Button } from "react-native-paper"
+import { Button, Icon } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 export default function () {
@@ -49,6 +49,7 @@ export default function () {
 
 	return (
 		<SafeAreaView
+			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
 			<Stack.Screen
@@ -56,7 +57,9 @@ export default function () {
 			/>
 			<ScrollView
 				contentContainerStyle={{
+					paddingTop: 20,
 					paddingHorizontal: 20,
+					paddingBottom: 25 + insets.bottom,
 					backgroundColor: "transparent",
 				}}
 				style={{ flex: 1 }}
@@ -74,6 +77,57 @@ export default function () {
 										ROUTES.SHEARING.HEADER(permitId),
 									),
 							},
+							details: shearingForm?.isCompleted ? (
+								<View style={{ gap: 4 }}>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 8,
+										}}
+									>
+										<Icon
+											source="map-marker"
+											size={16}
+											color={
+												theme.colors.onSurfaceVariant
+											}
+										/>
+										<Text
+											style={{
+												color: theme.colors
+													.onSurfaceVariant,
+											}}
+										>
+											{shearingForm.site}
+										</Text>
+									</View>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 8,
+										}}
+									>
+										<Icon
+											source="clock-outline"
+											size={16}
+											color={
+												theme.colors.onSurfaceVariant
+											}
+										/>
+										<Text
+											style={{
+												color: theme.colors
+													.onSurfaceVariant,
+											}}
+										>
+											{shearingForm.startTime} -{" "}
+											{shearingForm.endTime}
+										</Text>
+									</View>
+								</View>
+							) : null,
 						},
 						{
 							title: "Registros de esquila",
