@@ -1,4 +1,9 @@
-import { LabeledInput, ReadOnlyNotice, TimeInput } from "@components"
+import {
+	HeaderBreadcrumb,
+	LabeledInput,
+	ReadOnlyNotice,
+	TimeInput,
+} from "@components"
 import type { ShearingHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -25,6 +30,7 @@ export default function () {
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleShearingHeader(permitId)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
 
@@ -74,7 +80,15 @@ export default function () {
 			>
 				<Stack.Screen
 					options={{
-						title: "Información general",
+						headerTitle: () => (
+							<HeaderBreadcrumb
+								parts={[
+									permitLabel,
+									"Esquila",
+									"Información general",
+								]}
+							/>
+						),
 					}}
 				/>
 				<ScrollView

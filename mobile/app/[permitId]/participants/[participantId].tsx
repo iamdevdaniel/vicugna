@@ -1,5 +1,6 @@
 import {
 	CustomDeleteButton,
+	HeaderBreadcrumb,
 	LabeledInput,
 	ReadOnlyNotice,
 	SignaturePad,
@@ -33,6 +34,7 @@ export default function () {
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data, loading } = useReadSingleParticipant(participantId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const {
 		createSingleParticipant,
 		updateSingleParticipant,
@@ -112,9 +114,15 @@ export default function () {
 			>
 				<Stack.Screen
 					options={{
-						title: isEditForm
-							? "Editar participante"
-							: "Nuevo participante",
+						headerTitle: () => (
+							<HeaderBreadcrumb
+								parts={[
+									permitLabel,
+									"Participantes",
+									"Registro",
+								]}
+							/>
+						),
 					}}
 				/>
 				<ScrollView

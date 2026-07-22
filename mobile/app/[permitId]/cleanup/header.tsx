@@ -1,4 +1,4 @@
-import { LabeledInput, ReadOnlyNotice } from "@components"
+import { HeaderBreadcrumb, LabeledInput, ReadOnlyNotice } from "@components"
 import type { CleaningHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -35,6 +35,7 @@ export default function () {
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleCleaningHeader(permitId)
 	const { updateSingleCleaningHeader, saving } =
 		useSingleCleaningHeaderActions()
@@ -80,7 +81,19 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen options={{ title: "Información general" }} />
+				<Stack.Screen
+					options={{
+						headerTitle: () => (
+							<HeaderBreadcrumb
+								parts={[
+									permitLabel,
+									"Limpieza",
+									"Información general",
+								]}
+							/>
+						),
+					}}
+				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}

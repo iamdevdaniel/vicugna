@@ -1,5 +1,6 @@
 export { AccentCard } from "./basics/AccentCard"
 export { CustomDeleteButton } from "./basics/CustomDeleteButton"
+export { HeaderBreadcrumb } from "./basics/HeaderBreadcrumb"
 export { LabeledInput } from "./basics/LabeledInput"
 export { OverviewStep } from "./basics/OverviewStep"
 export { RadioGroup, RadioGroupProps, RadioOption } from "./basics/RadioGroup"

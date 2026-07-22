@@ -19,7 +19,13 @@ export default function RootLayout() {
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<PaperProvider theme={theme}>
-				<Stack>
+				<Stack
+					screenOptions={{
+						headerTitleStyle: {
+							fontSize: 15,
+						},
+					}}
+				>
 					<Stack.Screen
 						name="index"
 						options={{ headerShown: false }}

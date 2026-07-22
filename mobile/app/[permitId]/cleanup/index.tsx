@@ -1,4 +1,10 @@
-import { AccentCard, ReadOnlyNotice, StepList, TotalChip } from "@components"
+import {
+	AccentCard,
+	HeaderBreadcrumb,
+	ReadOnlyNotice,
+	StepList,
+	TotalChip,
+} from "@components"
 import type { CleaningCommonData } from "@definitions/types"
 import {
 	useReadBulkCleaningCommon,
@@ -127,12 +133,13 @@ function CleaningRecordCard({
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { permitId } = useLocalSearchParams<{
+	const { permitId, permitNumber } = useLocalSearchParams<{
 		permitId: string
 		permitNumber?: string
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? permitNumber ?? "Sin número"
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningCommon } = useReadBulkCleaningCommon(permitId)
 
@@ -144,7 +151,13 @@ export default function () {
 			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen options={{ title: "Limpieza" }} />
+			<Stack.Screen
+				options={{
+					headerTitle: () => (
+						<HeaderBreadcrumb parts={[permitLabel, "Limpieza"]} />
+					),
+				}}
+			/>
 			<ScrollView
 				contentContainerStyle={{
 					paddingTop: 20,

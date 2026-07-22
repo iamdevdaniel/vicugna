@@ -1,4 +1,10 @@
-import { AccentCard, ReadOnlyNotice, StepList, TotalChip } from "@components"
+import {
+	AccentCard,
+	HeaderBreadcrumb,
+	ReadOnlyNotice,
+	StepList,
+	TotalChip,
+} from "@components"
 import {
 	useReadBulkShearingRecords,
 	useReadSinglePermit,
@@ -21,6 +27,7 @@ export default function () {
 	const [pressedRecordId, setPressedRecordId] = useState<string | null>(null)
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data: shearingForm } = useReadSingleShearingHeader(permitId)
 	const { data: shearingRecords } = useReadBulkShearingRecords(permitId)
 
@@ -49,7 +56,13 @@ export default function () {
 			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen options={{ title: "Registros de esquila" }} />
+			<Stack.Screen
+				options={{
+					headerTitle: () => (
+						<HeaderBreadcrumb parts={[permitLabel, "Esquila"]} />
+					),
+				}}
+			/>
 			<ScrollView
 				contentContainerStyle={{
 					paddingTop: 20,

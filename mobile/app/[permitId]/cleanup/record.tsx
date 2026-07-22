@@ -1,4 +1,4 @@
-import { LabeledInput, ReadOnlyNotice } from "@components"
+import { HeaderBreadcrumb, LabeledInput, ReadOnlyNotice } from "@components"
 import type { CleaningCommonFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -35,6 +35,7 @@ export default function () {
 	const isEditForm = !!recordId
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleCleaningCommon(recordId)
 	const { createSingleCleaningCommon, updateSingleCleaningCommon, saving } =
 		useSingleCleaningCommonActions()
@@ -76,7 +77,15 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen options={{ title: "Registros de limpieza" }} />
+				<Stack.Screen
+					options={{
+						headerTitle: () => (
+							<HeaderBreadcrumb
+								parts={[permitLabel, "Limpieza", "Registros"]}
+							/>
+						),
+					}}
+				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{

@@ -1,5 +1,6 @@
 import {
 	CustomDeleteButton,
+	HeaderBreadcrumb,
 	LabeledInput,
 	ReadOnlyNotice,
 	ToggleButtonGroup,
@@ -39,6 +40,7 @@ export default function () {
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const isEditForm = !!recordId
 	const { data, loading: loadingData } =
 		useReadSingleShearingRecordFormData(recordId)
@@ -111,7 +113,15 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen options={{ title: "Registro de esquila" }} />
+				<Stack.Screen
+					options={{
+						headerTitle: () => (
+							<HeaderBreadcrumb
+								parts={[permitLabel, "Esquila", "Registros"]}
+							/>
+						),
+					}}
+				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}

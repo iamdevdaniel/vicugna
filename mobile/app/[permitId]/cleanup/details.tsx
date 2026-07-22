@@ -3,6 +3,7 @@ import {
 	CustomDeleteButton,
 	DehearingFields,
 	GroomingFields,
+	HeaderBreadcrumb,
 	LabeledInput,
 	ReadOnlyNotice,
 	ToggleButtonGroup,
@@ -43,6 +44,7 @@ export default function () {
 	const [detailKind, setDetailKind] = useState<CleaningDetailKind>("grooming")
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 
 	const { data: commonData, loading: loadingCommon } =
 		useReadSingleCleaningCommon(recordId)
@@ -223,7 +225,15 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen options={{ title: "Registros de limpieza" }} />
+				<Stack.Screen
+					options={{
+						headerTitle: () => (
+							<HeaderBreadcrumb
+								parts={[permitLabel, "Limpieza", "Registros"]}
+							/>
+						),
+					}}
+				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}

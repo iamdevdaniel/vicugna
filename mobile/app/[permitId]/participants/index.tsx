@@ -1,4 +1,4 @@
-import { AccentCard, ReadOnlyNotice } from "@components"
+import { AccentCard, HeaderBreadcrumb, ReadOnlyNotice } from "@components"
 import { useReadBulkParticipants, useReadSinglePermit } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
@@ -16,6 +16,7 @@ export default function () {
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? "Sin número"
 
 	const total = participants?.length || 0
 	const maleCount = participants?.filter((p) => p.gender === "M").length || 0
@@ -27,7 +28,15 @@ export default function () {
 			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen options={{ title: "Participantes" }} />
+			<Stack.Screen
+				options={{
+					headerTitle: () => (
+						<HeaderBreadcrumb
+							parts={[permitLabel, "Participantes"]}
+						/>
+					),
+				}}
+			/>
 			<View style={{ marginHorizontal: 16, marginTop: 20 }}>
 				{isPermitReadOnly && <ReadOnlyNotice />}
 			</View>

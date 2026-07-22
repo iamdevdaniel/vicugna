@@ -31,7 +31,6 @@ import {
 import {
 	ActivityIndicator,
 	Button,
-	Icon,
 	Modal,
 	Portal,
 	Snackbar,
@@ -95,6 +94,7 @@ export default function () {
 		shearingState === "done" &&
 		cleaningState === "done"
 	const isPermitSynced = permit?.isSynced === true
+	const permitLabel = permit?.permitNumber ?? permitNumber ?? "Sin número"
 	const communityName = permit
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
@@ -187,61 +187,12 @@ export default function () {
 		>
 			<Stack.Screen
 				options={{
+					title: "Permiso",
 					gestureEnabled: !syncingPermit,
 					headerTintColor: syncingPermit
 						? theme.colors.outline
 						: theme.colors.onSurface,
 					headerTitleAlign: "left",
-					headerTitle: () => (
-						<View
-							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								justifyContent: "space-between",
-								gap: 10,
-								flex: 1,
-								marginLeft: -17,
-							}}
-						>
-							<View
-								style={{
-									flexDirection: "row",
-									alignItems: "center",
-									gap: 8,
-									flexShrink: 1,
-								}}
-							>
-								<Icon
-									source="file-key"
-									size={18}
-									color={theme.colors.onSurface}
-								/>
-								<Text
-									style={{
-										fontSize: 16,
-										fontWeight: "700",
-										color: theme.colors.onSurface,
-										flexShrink: 1,
-									}}
-									numberOfLines={1}
-								>
-									{permitNumber ?? "Sin número"}
-								</Text>
-							</View>
-							<Text
-								style={{
-									fontSize: 12,
-									fontWeight: "500",
-									color: theme.colors.onSurfaceVariant,
-									flexShrink: 1,
-									textAlign: "right",
-								}}
-								numberOfLines={1}
-							>
-								{communityName}
-							</Text>
-						</View>
-					),
 				}}
 			/>
 			<ScrollView
@@ -253,6 +204,33 @@ export default function () {
 				style={{ flex: 1 }}
 			>
 				{isPermitSynced && <ReadOnlyNotice />}
+				<View
+					style={{
+						marginBottom: 16,
+						gap: 2,
+					}}
+				>
+					<Text
+						style={{
+							fontSize: 20,
+							fontWeight: "700",
+							color: theme.colors.onSurface,
+						}}
+						numberOfLines={1}
+					>
+						{permitLabel}
+					</Text>
+					<Text
+						style={{
+							fontSize: 12,
+							fontWeight: "500",
+							color: theme.colors.onSurfaceVariant,
+						}}
+						numberOfLines={2}
+					>
+						{communityName}
+					</Text>
+				</View>
 				<StepList
 					steps={[
 						{
