@@ -1,4 +1,4 @@
-import { HomeUserHeader } from "@components"
+import { DevSeedFab, HomeUserHeader } from "@components"
 import { useLoadPermits, useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
@@ -150,6 +150,7 @@ export default function HomeScreen() {
 					</Card>
 				)}
 			/>
+			<DevSeedFab permits={permits} />
 		</SafeAreaView>
 	)
 }

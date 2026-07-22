@@ -17,6 +17,7 @@ export {
 	updateSingleDehearing,
 	updateSingleGrooming,
 } from "./dal-cleaning"
+export { clearPermitFieldData, seedPermitFieldData } from "./dal-dev"
 export {
 	createSingleParticipant,
 	deleteSingleParticipant,
