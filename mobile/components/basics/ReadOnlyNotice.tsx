@@ -7,7 +7,7 @@ type ReadOnlyNoticeProps = {
 }
 
 export function ReadOnlyNotice({
-	message = "Este permiso esta en modo solo lectura.",
+	message = "Solo lectura",
 }: ReadOnlyNoticeProps) {
 	const theme = useAppTheme()
 

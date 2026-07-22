@@ -1,4 +1,9 @@
-import { StepList, type StepState, TotalChip } from "@components"
+import {
+	ReadOnlyNotice,
+	StepList,
+	type StepState,
+	TotalChip,
+} from "@components"
 import {
 	useReadBulkCleaningCommon,
 	useReadBulkDehearing,
@@ -247,6 +252,7 @@ export default function () {
 				}}
 				style={{ flex: 1 }}
 			>
+				{isPermitSynced && <ReadOnlyNotice />}
 				<StepList
 					steps={[
 						{
@@ -322,7 +328,7 @@ export default function () {
 					}}
 				>
 					{isPermitSynced
-						? "Solicita al admin permiso para editar este envio."
+						? "Pide permiso al admin para editar."
 						: canSendPermit
 							? "Finaliza este permiso cuando ya no queden cambios por hacer."
 							: "Completa los pasos de arriba para poder enviar este permiso."}
