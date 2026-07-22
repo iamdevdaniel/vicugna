@@ -1,11 +1,11 @@
 import { type Model, Q } from "@nozbe/watermelondb"
+import { updatePermitSyncStatus } from "./dal-permit"
 import type {
 	CleaningCommonModel,
 	CleaningHeaderModel,
 	DehearingModel,
 	GroomingModel,
 	ParticipantModel,
-	PermitModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
@@ -13,7 +13,6 @@ import { database } from "./setup"
 
 export async function clearPermitFieldData(permitId: string): Promise<void> {
 	await database.write(async () => {
-		const permit = await database.get<PermitModel>("permits").find(permitId)
 		const participants = await database
 			.get<ParticipantModel>("participants")
 			.query(Q.where("permitId", permitId))
@@ -84,13 +83,6 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 
 		const batchOps: Model[] = []
 
-		batchOps.push(
-			permit.prepareUpdate((model) => {
-				model.isSynced = false
-				model.syncedAt = null
-			}),
-		)
-
 		const shearingHeader = shearingHeaders[0]
 		if (shearingHeader) {
 			batchOps.push(
@@ -122,6 +114,12 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 		if (batchOps.length > 0) {
 			await database.batch(...batchOps)
 		}
+	})
+
+	await updatePermitSyncStatus({
+		permitId,
+		isSynced: false,
+		syncedAt: null,
 	})
 }
 

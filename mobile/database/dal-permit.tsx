@@ -23,7 +23,12 @@ export function subscribePermits(
 	const sub = database
 		.get<PermitModel>("permits")
 		.query(Q.sortBy("permitNumber", Q.asc))
-		.observe()
+		.observeWithColumns([
+			"permitNumber",
+			"communityId",
+			"isSynced",
+			"syncedAt",
+		])
 		.subscribe({
 			next: (records) =>
 				callbacks.onChange(
