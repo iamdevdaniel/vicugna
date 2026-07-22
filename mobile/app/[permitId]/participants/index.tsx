@@ -1,5 +1,5 @@
-import { AccentCard } from "@components"
-import { useReadBulkParticipants } from "@hooks"
+import { AccentCard, ReadOnlyNotice } from "@components"
+import { usePermitReadOnly, useReadBulkParticipants } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
@@ -14,6 +14,7 @@ export default function () {
 	const insets = useSafeAreaInsets()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: participants } = useReadBulkParticipants(permitId)
+	const isPermitReadOnly = usePermitReadOnly(permitId)
 
 	const total = participants?.length || 0
 	const maleCount = participants?.filter((p) => p.gender === "M").length || 0
@@ -22,9 +23,13 @@ export default function () {
 
 	return (
 		<SafeAreaView
+			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
 			<Stack.Screen options={{ title: "Participantes" }} />
+			<View style={{ marginHorizontal: 16, marginTop: 20 }}>
+				{isPermitReadOnly && <ReadOnlyNotice />}
+			</View>
 			<View
 				style={{
 					flexDirection: "row",
@@ -33,7 +38,7 @@ export default function () {
 					flexWrap: "wrap",
 					gap: 10,
 					marginBottom: 12,
-					marginTop: 8,
+					marginTop: 4,
 					marginHorizontal: 16,
 				}}
 			>
@@ -142,6 +147,7 @@ export default function () {
 					mode="contained"
 					icon="plus"
 					contentStyle={{ height: 48 }}
+					disabled={isPermitReadOnly}
 					onPress={() =>
 						router.push(ROUTES.PARTICIPANTS.FORM(permitId, "new"))
 					}

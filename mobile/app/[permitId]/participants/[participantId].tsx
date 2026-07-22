@@ -1,7 +1,16 @@
-import { LabeledInput, SignaturePad, ToggleButtonGroup } from "@components"
+import {
+	LabeledInput,
+	ReadOnlyNotice,
+	SignaturePad,
+	ToggleButtonGroup,
+} from "@components"
 import type { ParticipantFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useReadSingleParticipant, useSingleParticipantActions } from "@hooks"
+import {
+	usePermitReadOnly,
+	useReadSingleParticipant,
+	useSingleParticipantActions,
+} from "@hooks"
 import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesParticipant,
@@ -23,6 +32,7 @@ export default function () {
 		participantId: string
 	}>()
 	const { data, loading } = useReadSingleParticipant(participantId)
+	const isPermitReadOnly = usePermitReadOnly(permitId)
 	const {
 		createSingleParticipant,
 		updateSingleParticipant,
@@ -32,6 +42,7 @@ export default function () {
 	} = useSingleParticipantActions()
 
 	const isEditForm = participantId !== "new"
+	const isDeleteDisabled = isPermitReadOnly || saving || deleting
 
 	const {
 		control,
@@ -108,13 +119,15 @@ export default function () {
 				/>
 				<ScrollView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+					contentContainerStyle={{ padding: 20 }}
 					keyboardShouldPersistTaps="handled"
 				>
+					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Nombre"
 						labelPrefix="1"
 						error={errors.name?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -129,6 +142,7 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.name}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -138,6 +152,7 @@ export default function () {
 						label="Apellidos"
 						labelPrefix="2"
 						error={errors.lastNames?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -152,6 +167,7 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.lastNames}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -161,6 +177,7 @@ export default function () {
 						label="Género"
 						labelPrefix="3"
 						error={errors.gender?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -173,6 +190,7 @@ export default function () {
 										{ label: "Masculino", value: "M" },
 										{ label: "Femenino", value: "F" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -182,6 +200,7 @@ export default function () {
 						label="Cédula de Identidad"
 						labelPrefix="4"
 						error={errors.identityNumber?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -196,6 +215,7 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.identityNumber}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -205,6 +225,7 @@ export default function () {
 						label="Firma"
 						labelPrefix="5"
 						error={errors.signature?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -213,6 +234,7 @@ export default function () {
 								<SignaturePad
 									value={value}
 									onChange={onChange}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -222,6 +244,7 @@ export default function () {
 						label="Notas"
 						labelPrefix="6"
 						error={errors.notes?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -242,6 +265,7 @@ export default function () {
 										textAlignVertical: "top",
 									}}
 									error={!!errors.notes}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -257,7 +281,12 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
-							disabled={!isValid || saving || deleting}
+							disabled={
+								isPermitReadOnly ||
+								!isValid ||
+								saving ||
+								deleting
+							}
 							style={{ flex: 1 }}
 							loading={saving}
 						>
@@ -267,6 +296,7 @@ export default function () {
 						<Button
 							mode="outlined"
 							onPress={() => reset(defaultValuesParticipant)}
+							disabled={isPermitReadOnly}
 							style={{ flex: 1 }}
 						>
 							Limpiar
@@ -276,13 +306,19 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={onDelete}
-							disabled={saving || deleting}
+							disabled={isDeleteDisabled}
 							style={{
 								flex: 1,
-								backgroundColor: theme.colors.custom.crimson,
+								backgroundColor: isDeleteDisabled
+									? theme.colors.surfaceDisabled
+									: theme.colors.custom.crimson,
 								marginTop: 16,
 							}}
-							textColor={theme.colors.onError}
+							textColor={
+								isDeleteDisabled
+									? theme.colors.onSurfaceDisabled
+									: theme.colors.onError
+							}
 							loading={deleting}
 						>
 							Borrar

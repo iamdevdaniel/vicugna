@@ -41,3 +41,9 @@ export function useReadSinglePermit(
 
 	return state
 }
+
+export function usePermitReadOnly(permitId?: string) {
+	const { data } = useReadSinglePermit(permitId)
+
+	return data?.isSynced === true
+}

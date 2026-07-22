@@ -13,7 +13,11 @@ export {
 	useReadBulkParticipants,
 	useReadSingleParticipant,
 } from "./participant-read"
-export { useReadPermits, useReadSinglePermit } from "./permit-read"
+export {
+	usePermitReadOnly,
+	useReadPermits,
+	useReadSinglePermit,
+} from "./permit-read"
 export { useLoadPermits } from "./permit-load"
 export { useSyncPermit } from "./permit-write"
 export { useSingleParticipantActions } from "./participant-write"

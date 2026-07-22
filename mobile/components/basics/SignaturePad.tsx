@@ -8,11 +8,16 @@ import { IconButton, useTheme } from "react-native-paper"
 type SignaturePadProps = {
 	value: string
 	onChange: (value: string) => void
+	disabled?: boolean
 }
 
 type PathEntry = { id: string; path: SkPath }
 
-export function SignaturePad({ value, onChange }: SignaturePadProps) {
+export function SignaturePad({
+	value,
+	onChange,
+	disabled = false,
+}: SignaturePadProps) {
 	const theme = useTheme()
 	const [completedPaths, setCompletedPaths] = useState<PathEntry[]>([])
 	const currentPathRef = useRef<SkPath | null>(null)
@@ -87,9 +92,12 @@ export function SignaturePad({ value, onChange }: SignaturePadProps) {
 				borderColor: theme.colors.outline,
 				borderRadius: 4,
 				overflow: "hidden",
+				opacity: disabled ? 0.6 : 1,
 			}}
 		>
-			<GestureDetector gesture={gesture}>
+			<GestureDetector
+				gesture={disabled ? Gesture.Pan().enabled(false) : gesture}
+			>
 				<Canvas
 					style={{
 						height: 200,
@@ -126,6 +134,7 @@ export function SignaturePad({ value, onChange }: SignaturePadProps) {
 				mode="contained"
 				style={{ position: "absolute", top: 4, right: 4, margin: 0 }}
 				onPress={handleClear}
+				disabled={disabled}
 			/>
 		</View>
 	)

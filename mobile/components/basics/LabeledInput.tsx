@@ -6,6 +6,7 @@ type LabeledInputProps = {
 	labelPrefix?: string
 	labelSuffix?: string
 	error?: string
+	disabled?: boolean
 	children: React.ReactNode
 }
 
@@ -14,6 +15,7 @@ export function LabeledInput({
 	labelPrefix,
 	labelSuffix,
 	error,
+	disabled = false,
 	children,
 }: LabeledInputProps) {
 	const theme = useAppTheme()
@@ -33,7 +35,9 @@ export function LabeledInput({
 						style={{
 							backgroundColor: error
 								? theme.colors.custom.crimson
-								: theme.colors.custom.blue,
+								: disabled
+									? theme.colors.outlineVariant
+									: theme.colors.custom.blue,
 							width: 24,
 							height: 24,
 							borderRadius: 12,
@@ -57,8 +61,10 @@ export function LabeledInput({
 					style={{
 						flex: 1,
 						textAlign: "left",
-						fontWeight: "bold",
-						color: theme.colors.onSurface,
+						fontWeight: disabled ? "500" : "bold",
+						color: disabled
+							? theme.colors.onSurfaceVariant
+							: theme.colors.onSurface,
 					}}
 				>
 					{label}
@@ -67,7 +73,9 @@ export function LabeledInput({
 					<Text
 						style={{
 							textAlign: "right",
-							color: theme.colors.onSurfaceVariant,
+							color: disabled
+								? theme.colors.outline
+								: theme.colors.onSurfaceVariant,
 							marginLeft: 8,
 						}}
 					>
