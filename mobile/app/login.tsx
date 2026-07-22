@@ -71,6 +71,7 @@ export default function LoginScreen() {
 								setEmail(value)
 							}}
 							autoCapitalize="none"
+							autoCorrect={false}
 							keyboardType="email-address"
 						/>
 						<TextInput
@@ -84,6 +85,8 @@ export default function LoginScreen() {
 
 								setPassword(value)
 							}}
+							autoCapitalize="none"
+							autoCorrect={false}
 							secureTextEntry={!isPasswordVisible}
 							right={
 								<TextInput.Icon
