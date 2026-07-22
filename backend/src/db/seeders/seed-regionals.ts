@@ -86,7 +86,7 @@ async function seedRegionalsCatalog() {
 seedRegionalsCatalog()
 	.then(async () => {
 		await pool.end()
-		console.log("Regionals catalog seeded")
+		console.log("🌿 Regionals catalog seeded")
 	})
 	.catch(async (error: unknown) => {
 		await pool.end()

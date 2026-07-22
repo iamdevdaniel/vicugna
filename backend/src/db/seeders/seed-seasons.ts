@@ -48,7 +48,7 @@ async function seedSeasons() {
 seedSeasons()
 	.then(async () => {
 		await pool.end()
-		console.log("Seasons seeded")
+		console.log("🌵 Seasons seeded")
 	})
 	.catch(async (error: unknown) => {
 		await pool.end()

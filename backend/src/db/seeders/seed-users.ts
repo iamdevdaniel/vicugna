@@ -78,7 +78,7 @@ async function seedUsers() {
 seedUsers()
 	.then(async () => {
 		await pool.end()
-		console.log("Users seeded")
+		console.log("🪴 Users seeded")
 	})
 	.catch(async (error: unknown) => {
 		await pool.end()
