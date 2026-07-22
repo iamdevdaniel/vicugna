@@ -5,7 +5,7 @@ export type {
 	GroomingData,
 	ParticipantData,
 	PermitData,
-	PermitSyncData,
 	ShearingHeaderData,
 	ShearingRecordData,
+	SyncFieldData,
 } from "@shared"

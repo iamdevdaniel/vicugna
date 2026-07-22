@@ -1,4 +1,4 @@
-export type PermitSyncData = {
+export type SyncFieldData = {
 	permit: PermitData
 	participants: ParticipantData[]
 	shearingHeader: ShearingHeaderData
@@ -11,9 +11,15 @@ export type PermitSyncData = {
 
 export type PermitData = {
 	id: string
-	date: string
-	site: string
-	authorizationCode: string
+	permitNumber: string
+	seasonId: string
+	seasonName: string
+	communityId: string
+	regionalId: string
+	departmentId: string
+	userId: string
+	userFullName: string
+	isActiveAssignmentUser: boolean
 }
 
 export type GenderData = "M" | "F"

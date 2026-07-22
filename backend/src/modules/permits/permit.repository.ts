@@ -12,11 +12,11 @@ import {
 } from "../../db/schema"
 import { PermitNotFoundError } from "./permit.errors"
 
-import type { PermitSyncData } from "./permit.types"
+import type { SyncFieldData } from "./permit.types"
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
-export async function savePermitSyncData(data: PermitSyncData) {
+export async function saveSyncFieldData(data: SyncFieldData) {
 	await db.transaction(async (tx) => {
 		const existingPermit = await tx.query.permits.findFirst({
 			where: eq(permits.id, data.permit.id),
@@ -36,7 +36,7 @@ export async function savePermitSyncData(data: PermitSyncData) {
 	}
 }
 
-async function deletePermitChildData(data: PermitSyncData, tx: DbTransaction) {
+async function deletePermitChildData(data: SyncFieldData, tx: DbTransaction) {
 	await tx
 		.delete(participants)
 		.where(eq(participants.permitId, data.permit.id))
@@ -54,7 +54,7 @@ async function deletePermitChildData(data: PermitSyncData, tx: DbTransaction) {
 		.where(eq(cleaningCommonRecords.permitId, data.permit.id))
 }
 
-async function insertPermitChildData(data: PermitSyncData, tx: DbTransaction) {
+async function insertPermitChildData(data: SyncFieldData, tx: DbTransaction) {
 	await tx.insert(shearingHeaders).values(data.shearingHeader)
 	await tx.insert(cleaningHeaders).values(data.cleaningHeader)
 	await tx.insert(participants).values(data.participants)

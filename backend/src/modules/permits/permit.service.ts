@@ -1,23 +1,23 @@
 import { PermitValidationError } from "./permit.errors"
-import { savePermitSyncData } from "./permit.repository"
-import type { PermitSyncData } from "./permit.types"
+import { saveSyncFieldData } from "./permit.repository"
+import type { SyncFieldData } from "./permit.types"
 
-export async function syncPermitData(data: PermitSyncData) {
+export async function submitSyncFieldData(data: SyncFieldData) {
 	validatePermit(data)
 	validateParticipants(data)
 	validateShearing(data)
 	validateCleaning(data)
 
-	return savePermitSyncData(data)
+	return saveSyncFieldData(data)
 }
 
-function validatePermit(data: PermitSyncData): void {
+function validatePermit(data: SyncFieldData): void {
 	if (!data.permit.id) {
 		throw new PermitValidationError("Permit id is required")
 	}
 }
 
-function validateParticipants(data: PermitSyncData): void {
+function validateParticipants(data: SyncFieldData): void {
 	if (!data.participants.length) {
 		throw new PermitValidationError("There are no participants")
 	}
@@ -36,7 +36,7 @@ function validateParticipants(data: PermitSyncData): void {
 	}
 }
 
-function validateShearing(data: PermitSyncData): void {
+function validateShearing(data: SyncFieldData): void {
 	if (!data.shearingHeader) {
 		throw new PermitValidationError("Shearing header is required")
 	}
@@ -65,7 +65,7 @@ function validateShearing(data: PermitSyncData): void {
 	}
 }
 
-function validateCleaning(data: PermitSyncData): void {
+function validateCleaning(data: SyncFieldData): void {
 	if (!data.cleaningHeader) {
 		throw new PermitValidationError("Cleaning header is required")
 	}

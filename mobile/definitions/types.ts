@@ -15,9 +15,9 @@ export type {
 	GenderData,
 	GroomingData,
 	ParticipantData,
-	PermitSyncData,
 	ShearingHeaderData,
 	ShearingRecordData,
+	SyncFieldData,
 } from "@vicugna/shared"
 
 export type PermitData = {

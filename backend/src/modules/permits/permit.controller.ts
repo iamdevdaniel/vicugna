@@ -1,14 +1,14 @@
 import type { Request, Response } from "express"
 import { PermitNotFoundError, PermitValidationError } from "./permit.errors"
-import { syncPermitData } from "./permit.service"
-import type { PermitSyncData } from "./permit.types"
+import { submitSyncFieldData } from "./permit.service"
+import type { SyncFieldData } from "./permit.types"
 
 export async function syncPermit(
-	req: Request<Record<string, never>, Record<string, never>, PermitSyncData>,
+	req: Request<Record<string, never>, Record<string, never>, SyncFieldData>,
 	res: Response,
 ) {
 	try {
-		const result = await syncPermitData(req.body)
+		const result = await submitSyncFieldData(req.body)
 		res.status(200).json({
 			ok: true,
 			data: result,

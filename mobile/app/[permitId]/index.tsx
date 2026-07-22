@@ -1,4 +1,5 @@
 import { StepList, type StepState, TotalChip } from "@components"
+import { getFieldSyncData } from "@database"
 import {
 	useReadBulkCleaningCommon,
 	useReadBulkDehearing,
@@ -13,7 +14,7 @@ import { getDependentStepState } from "@utils/misc"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
-import { ScrollView, Text, View } from "react-native"
+import { Alert, ScrollView, Text, View } from "react-native"
 import { Button, Icon } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -65,6 +66,35 @@ export default function () {
 	const communityName = permit
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
+
+	const onPressSend = () => {
+		Alert.alert(
+			"Finalizar y enviar",
+			"Al enviar este permiso, ya no podras modificarlo hasta que un admin lo habilite otra vez.",
+			[
+				{
+					text: "Cancelar",
+					style: "cancel",
+				},
+				{
+					text: "Continuar",
+					onPress: async () => {
+						try {
+							const payload = await getFieldSyncData(permitId)
+							console.log("syncFieldData", payload)
+						} catch (error) {
+							Alert.alert(
+								"Error",
+								error instanceof Error
+									? error.message
+									: "No se pudo preparar el envio",
+							)
+						}
+					},
+				},
+			],
+		)
+	}
 
 	return (
 		<SafeAreaView
@@ -217,7 +247,7 @@ export default function () {
 					buttonColor={theme.colors.custom.green}
 					textColor={theme.colors.custom.white}
 					disabled={!canSendPermit}
-					onPress={() => {}}
+					onPress={onPressSend}
 				>
 					Finalizar y enviar
 				</Button>

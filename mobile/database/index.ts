@@ -34,3 +34,4 @@ export {
 	updateShearingHeader,
 	updateSingleShearingRecord,
 } from "./dal-shearing"
+export { getFieldSyncData } from "./dal-sync"
