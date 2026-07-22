@@ -57,6 +57,10 @@ export default function () {
 		shearingState === "done",
 		cleaningHeader?.isCompleted === true && cleaningRecordsCompleted,
 	)
+	const canSendPermit =
+		participantsState === "done" &&
+		shearingState === "done" &&
+		cleaningState === "done"
 	const permit = permits.find((item) => item.id === permitId)
 	const communityName = permit
 		? getCommunityName(permit.communityId)
@@ -202,7 +206,9 @@ export default function () {
 						textAlign: "center",
 					}}
 				>
-					Finaliza este permiso cuando ya no queden cambios por hacer.
+					{canSendPermit
+						? "Finaliza este permiso cuando ya no queden cambios por hacer."
+						: "Completa los pasos de arriba para poder enviar este permiso."}
 				</Text>
 				<Button
 					mode="contained"
@@ -210,6 +216,7 @@ export default function () {
 					contentStyle={{ height: 48 }}
 					buttonColor={theme.colors.custom.green}
 					textColor={theme.colors.custom.white}
+					disabled={!canSendPermit}
 					onPress={() => {}}
 				>
 					Finalizar y enviar
