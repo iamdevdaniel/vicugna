@@ -39,31 +39,30 @@ export function HomeUserHeader({ user, onLogin }: HomeUserHeaderProps) {
 	const svg = jdenticon.toSvg(user.avatarSeed, 44)
 
 	return (
-		<Card>
-			<Card.Content
+		<View
+			style={{
+				flexDirection: "row",
+				alignItems: "center",
+				gap: 12,
+				marginBottom: 16,
+			}}
+		>
+			<View
 				style={{
-					flexDirection: "row",
+					width: 48,
+					height: 48,
+					borderRadius: 999,
+					backgroundColor: "#f8f885",
 					alignItems: "center",
-					gap: 12,
+					justifyContent: "center",
 				}}
 			>
-				<View
-					style={{
-						width: 48,
-						height: 48,
-						borderRadius: 999,
-						backgroundColor: "#f8f885",
-						alignItems: "center",
-						justifyContent: "center",
-					}}
-				>
-					<SvgXml xml={svg} width={40} height={40} />
-				</View>
-				<View style={{ flex: 1 }}>
-					<Text variant="titleMedium">{user.fullName}</Text>
-					<Text variant="bodySmall">{user.email}</Text>
-				</View>
-			</Card.Content>
-		</Card>
+				<SvgXml xml={svg} width={40} height={40} />
+			</View>
+			<View style={{ flex: 1 }}>
+				<Text variant="titleLarge">{user.fullName}</Text>
+				<Text variant="bodySmall">{user.email}</Text>
+			</View>
+		</View>
 	)
 }

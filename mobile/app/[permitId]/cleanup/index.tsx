@@ -1,4 +1,4 @@
-import { AccentCard, StepList } from "@components"
+import { AccentCard, StepList, TotalChip } from "@components"
 import type { CleaningCommonData } from "@definitions/types"
 import {
 	useReadBulkCleaningCommon,
@@ -181,7 +181,7 @@ export default function () {
 							state: recordsState,
 							details: (
 								<View style={{ gap: 8 }}>
-									<Text>Total: {cleaningCommon.length}</Text>
+									<TotalChip total={cleaningCommon.length} />
 									{cleaningCommon.map((record, index) => (
 										<CleaningRecordCard
 											key={record.id}

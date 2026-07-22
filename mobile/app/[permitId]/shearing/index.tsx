@@ -1,4 +1,4 @@
-import { AccentCard, StepList } from "@components"
+import { AccentCard, StepList, TotalChip } from "@components"
 import { useReadBulkShearingRecords, useReadSingleShearingHeader } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
@@ -52,7 +52,7 @@ export default function () {
 							state: shearingRecordsStepState,
 							details: (
 								<View style={{ gap: 8 }}>
-									<Text>Total: {shearingRecords.length}</Text>
+									<TotalChip total={shearingRecords.length} />
 									{shearingRecords.map((record, index) => (
 										<AccentCard
 											key={record.id}

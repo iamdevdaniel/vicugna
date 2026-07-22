@@ -2,6 +2,7 @@ import { HomeUserHeader } from "@components"
 import { useLoadPermits, useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
+import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router } from "expo-router"
 import { FlatList, View } from "react-native"
@@ -125,13 +126,26 @@ export default function HomeScreen() {
 							)
 						}
 					>
-						<Card.Content>
-							<Text variant="titleSmall">
-								{permit.permitNumber}
-							</Text>
-							<Text variant="bodyMedium">
-								{permit.userFullName}
-							</Text>
+						<Card.Content
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: 12,
+							}}
+						>
+							<View style={{ flex: 1, gap: 2 }}>
+								<Text variant="titleMedium">
+									{permit.permitNumber}
+								</Text>
+								<Text variant="bodyMedium">
+									{getCommunityName(permit.communityId)}
+								</Text>
+							</View>
+							<Icon
+								source="file-key-outline"
+								size={26}
+								color={theme.colors.outline}
+							/>
 						</Card.Content>
 					</Card>
 				)}

@@ -4,7 +4,7 @@ import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { FlatList, Text, View } from "react-native"
-import { Button, IconButton } from "react-native-paper"
+import { Button, Chip, Icon, IconButton } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // PARTICIPANTS.OVERVIEW /[permitId]/participants
@@ -29,44 +29,63 @@ export default function () {
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
-					gap: 16,
+					justifyContent: "space-between",
+					flexWrap: "wrap",
+					gap: 10,
 					marginBottom: 12,
 					marginTop: 8,
 					marginHorizontal: 16,
 				}}
 			>
-				<Text style={{ fontWeight: "bold", fontSize: 16 }}>
-					Total: {total}
-				</Text>
+				<Chip
+					compact
+					style={{ backgroundColor: theme.colors.surfaceVariant }}
+				>
+					Total {total}
+				</Chip>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 6,
+						gap: 10,
 					}}
 				>
-					<IconButton
-						icon="human-male"
-						size={20}
-						iconColor={theme.colors.custom.blue}
-						style={{ margin: 0 }}
-					/>
-					<Text>{maleCount}</Text>
-				</View>
-				<View
-					style={{
-						flexDirection: "row",
-						alignItems: "center",
-						gap: 6,
-					}}
-				>
-					<IconButton
-						icon="human-female"
-						size={20}
-						iconColor={theme.colors.custom.pink}
-						style={{ margin: 0 }}
-					/>
-					<Text>{femaleCount}</Text>
+					<Chip
+						compact
+						icon={({ size }) => (
+							<Icon
+								source="human-female"
+								size={size}
+								color={theme.colors.custom.pink}
+							/>
+						)}
+						style={{ backgroundColor: "#FCE7F3" }}
+						showSelectedCheck={false}
+						textStyle={{
+							color: theme.colors.custom.pink,
+							fontWeight: "700",
+						}}
+					>
+						{femaleCount}
+					</Chip>
+					<Chip
+						compact
+						icon={({ size }) => (
+							<Icon
+								source="human-male"
+								size={size}
+								color={theme.colors.custom.blue}
+							/>
+						)}
+						style={{ backgroundColor: "#DBEAFE" }}
+						showSelectedCheck={false}
+						textStyle={{
+							color: theme.colors.custom.blue,
+							fontWeight: "700",
+						}}
+					>
+						{maleCount}
+					</Chip>
 				</View>
 			</View>
 			<FlatList
