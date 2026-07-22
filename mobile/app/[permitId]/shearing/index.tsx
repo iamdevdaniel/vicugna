@@ -16,10 +16,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { permitId, permitNumber } = useLocalSearchParams<{
-		permitId: string
-		permitNumber?: string
-	}>()
+	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const [openingRecordId, setOpeningRecordId] = useState<string | null>(null)
 	const [pressedRecordId, setPressedRecordId] = useState<string | null>(null)
 	const { data: permit } = useReadSinglePermit(permitId)
@@ -52,9 +49,7 @@ export default function () {
 			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen
-				options={{ title: `Permiso ${permitNumber ?? "sin número"}` }}
-			/>
+			<Stack.Screen options={{ title: "Registros de esquila" }} />
 			<ScrollView
 				contentContainerStyle={{
 					paddingTop: 20,

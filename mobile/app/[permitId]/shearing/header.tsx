@@ -74,7 +74,7 @@ export default function () {
 			>
 				<Stack.Screen
 					options={{
-						title: "Datos de esquila",
+						title: "Información general",
 					}}
 				/>
 				<ScrollView

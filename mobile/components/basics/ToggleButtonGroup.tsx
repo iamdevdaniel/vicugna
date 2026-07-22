@@ -34,6 +34,12 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 }) => {
 	const theme = useAppTheme()
 	const columnCount = columns && columns > 0 ? columns : 1
+	const selectedBackgroundColor = disabled
+		? theme.colors.surfaceVariant
+		: theme.colors.secondary
+	const selectedTextColor = disabled
+		? theme.colors.onSurfaceVariant
+		: theme.colors.onSecondary
 
 	if (columns) {
 		return (
@@ -63,7 +69,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 								{
 									width: `${100 / columnCount}%`,
 									backgroundColor: selected
-										? theme.colors.secondary
+										? selectedBackgroundColor
 										: theme.colors.surface,
 									borderColor: theme.colors.outlineVariant,
 									borderRightWidth: isLastColumn ? 0 : 1,
@@ -76,7 +82,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 									styles.gridButtonLabel,
 									{
 										color: selected
-											? theme.colors.onSecondary
+											? selectedTextColor
 											: theme.colors.onSurface,
 									},
 								]}
@@ -103,7 +109,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 					style: {
 						backgroundColor:
 							value === opt.value
-								? theme.colors.secondary
+								? selectedBackgroundColor
 								: theme.colors.surface,
 					},
 					labelStyle: styles.buttonLabel,
@@ -111,8 +117,8 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 				theme={{
 					roundness: 2,
 					colors: {
-						secondaryContainer: theme.colors.primary,
-						onSecondaryContainer: theme.colors.onPrimary,
+						secondaryContainer: selectedBackgroundColor,
+						onSecondaryContainer: selectedTextColor,
 						outline: theme.colors.outlineVariant,
 						onSurface: theme.colors.onSurface,
 					},
