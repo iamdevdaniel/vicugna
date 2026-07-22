@@ -1,7 +1,7 @@
 import { useAppTheme } from "@utils/useAppTheme"
 import type { ReactNode } from "react"
 import { Text, View } from "react-native"
-import { Button, Card, IconButton } from "react-native-paper"
+import { Button, Card, Icon } from "react-native-paper"
 import type { IconSource } from "react-native-paper/lib/typescript/components/Icon"
 
 export type OverviewStepAction = {
@@ -27,8 +27,13 @@ export const OverviewStep = ({
 	const done = state === "done"
 	const hasDetails = !!details
 	const showActionButton = !done && !!action
+	const cardOnPress = done && action ? action.onPress : undefined
 	return (
-		<Card mode="elevated" style={{ marginBottom: 20 }}>
+		<Card
+			mode="elevated"
+			style={{ marginBottom: 20 }}
+			onPress={cardOnPress}
+		>
 			<Card.Content>
 				<View
 					style={{
@@ -92,15 +97,13 @@ export const OverviewStep = ({
 								justifyContent: "center",
 								alignItems: "center",
 								alignSelf: "stretch",
-								paddingLeft: 4,
+								paddingLeft: 8,
 							}}
 						>
-							<IconButton
-								icon={action.icon}
+							<Icon
+								source={action.icon}
 								size={22}
-								iconColor={theme.colors.custom.green}
-								onPress={action.onPress}
-								style={{ margin: 0 }}
+								color={theme.colors.custom.green}
 							/>
 						</View>
 					)}
@@ -113,7 +116,6 @@ export const OverviewStep = ({
 						style={{ width: "100%", marginTop: 12 }}
 						buttonColor={theme.colors.custom.blue}
 						textColor={theme.colors.custom.white}
-						icon={action.icon}
 					>
 						LLENAR
 					</Button>
