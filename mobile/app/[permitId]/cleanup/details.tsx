@@ -1,8 +1,10 @@
 import {
 	CleaningCommonSummary,
+	CustomDeleteButton,
 	DehearingFields,
 	GroomingFields,
 	LabeledInput,
+	ReadOnlyNotice,
 	ToggleButtonGroup,
 } from "@components"
 import type { DehearingFormData, GroomingFormData } from "@definitions/types"
@@ -11,12 +13,12 @@ import {
 	useReadSingleCleaningCommon,
 	useReadSingleDehearing,
 	useReadSingleGrooming,
+	useReadSinglePermit,
 	useSingleCleaningCommonActions,
 	useSingleDehearingActions,
 	useSingleGroomingActions,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
-import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesDehearing,
 	defaultValuesGrooming,
@@ -33,13 +35,14 @@ import { SafeAreaView } from "react-native-safe-area-context"
 type CleaningDetailKind = "grooming" | "dehearing"
 
 export default function () {
-	const theme = useAppTheme()
 	const router = useRouter()
 	const { permitId, recordId } = useLocalSearchParams<{
 		permitId: string
 		recordId: string
 	}>()
 	const [detailKind, setDetailKind] = useState<CleaningDetailKind>("grooming")
+	const { data: permit } = useReadSinglePermit(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 
 	const { data: commonData, loading: loadingCommon } =
 		useReadSingleCleaningCommon(recordId)
@@ -115,6 +118,7 @@ export default function () {
 	const deletingDetail = deletingGrooming || deletingDehearing
 	const isSavingGrooming = detailKind === "grooming"
 	const saveDisabled =
+		isPermitReadOnly ||
 		deletingCommon ||
 		deletingDetail ||
 		savingDetail ||
@@ -219,29 +223,42 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen options={{ title: "Registro de limpieza" }} />
+				<Stack.Screen options={{ title: "Registros de limpieza" }} />
 				<ScrollView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
 					keyboardShouldPersistTaps="handled"
 				>
+					{isPermitReadOnly && <ReadOnlyNotice />}
 					<CleaningCommonSummary
+						disabled={isPermitReadOnly}
 						fleeceNumber={commonData?.fleeceNumber}
 						grossWeight={commonData?.grossWeight}
-						onEdit={() =>
-							router.push(
-								ROUTES.CLEANUP.RECORD(permitId, recordId),
-							)
+						onEdit={
+							isPermitReadOnly
+								? undefined
+								: () =>
+										router.push(
+											ROUTES.CLEANUP.RECORD(
+												permitId,
+												recordId,
+											),
+										)
 						}
 					/>
 
 					{commonData && (
-						<View style={{ marginTop: 20, gap: 16 }}>
+						<View style={{ gap: 16 }}>
 							<Divider />
-							<LabeledInput label="Tipo" labelPrefix="1">
+							<LabeledInput
+								label="Tipo"
+								labelPrefix="1"
+								disabled={isPermitReadOnly}
+							>
 								<ToggleButtonGroup
 									value={detailKind}
 									onChange={(value) => {
+										if (isPermitReadOnly) return
 										const nextType =
 											value as CleaningDetailKind
 										if (detailLocked) {
@@ -260,6 +277,7 @@ export default function () {
 											value: "dehearing",
 										},
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							</LabeledInput>
 
@@ -268,6 +286,7 @@ export default function () {
 									<GroomingFields
 										control={groomingControl}
 										errors={groomingErrors}
+										disabled={isPermitReadOnly}
 									/>
 								</View>
 							) : (
@@ -275,6 +294,7 @@ export default function () {
 									<DehearingFields
 										control={dehearingControl}
 										errors={dehearingErrors}
+										disabled={isPermitReadOnly}
 									/>
 								</View>
 							)}
@@ -289,21 +309,19 @@ export default function () {
 						>
 							{saveLabel}
 						</Button>
-						<Button
-							mode="contained"
+						<CustomDeleteButton
 							onPress={onDelete}
 							disabled={
-								savingDetail || deletingDetail || deletingCommon
+								isPermitReadOnly ||
+								savingDetail ||
+								deletingDetail ||
+								deletingCommon
 							}
 							loading={deletingCommon}
-							textColor={theme.colors.onError}
-							style={{
-								flex: 1,
-								backgroundColor: theme.colors.custom.crimson,
-							}}
+							style={{ flex: 1 }}
 						>
 							Borrar
-						</Button>
+						</CustomDeleteButton>
 					</View>
 				</ScrollView>
 			</KeyboardAvoidingView>

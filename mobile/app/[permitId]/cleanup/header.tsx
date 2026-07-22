@@ -1,8 +1,9 @@
-import { LabeledInput } from "@components"
+import { LabeledInput, ReadOnlyNotice } from "@components"
 import type { CleaningHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
 	useReadSingleCleaningHeader,
+	useReadSinglePermit,
 	useSingleCleaningHeaderActions,
 } from "@hooks"
 import DateTimePicker from "@react-native-community/datetimepicker"
@@ -32,6 +33,8 @@ function getDateValue(value: string) {
 export default function () {
 	const router = useRouter()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { data: permit } = useReadSinglePermit(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 	const { data, loading } = useReadSingleCleaningHeader(permitId)
 	const { updateSingleCleaningHeader, saving } =
 		useSingleCleaningHeaderActions()
@@ -77,16 +80,18 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen options={{ title: "Datos de limpieza" }} />
+				<Stack.Screen options={{ title: "Información general" }} />
 				<ScrollView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
 					keyboardShouldPersistTaps="handled"
 				>
+					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Fecha inicio"
 						labelPrefix="1"
 						error={errors.startDate?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -94,6 +99,7 @@ export default function () {
 							render={({ field: { onChange, value } }) => (
 								<>
 									<Pressable
+										disabled={isPermitReadOnly}
 										onPress={() =>
 											setDatePickerField("startDate")
 										}
@@ -104,6 +110,7 @@ export default function () {
 											placeholder="DD/MM/YYYY"
 											editable={false}
 											error={!!errors.startDate}
+											disabled={isPermitReadOnly}
 											right={
 												<TextInput.Icon icon="calendar" />
 											}
@@ -138,6 +145,7 @@ export default function () {
 						label="Fecha conclusión"
 						labelPrefix="2"
 						error={errors.endDate?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -145,6 +153,7 @@ export default function () {
 							render={({ field: { onChange, value } }) => (
 								<>
 									<Pressable
+										disabled={isPermitReadOnly}
 										onPress={() =>
 											setDatePickerField("endDate")
 										}
@@ -155,6 +164,7 @@ export default function () {
 											placeholder="DD/MM/YYYY"
 											editable={false}
 											error={!!errors.endDate}
+											disabled={isPermitReadOnly}
 											right={
 												<TextInput.Icon icon="calendar" />
 											}
@@ -189,6 +199,7 @@ export default function () {
 						label="Lugar"
 						labelPrefix="3"
 						error={errors.site?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -203,6 +214,7 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.site}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -212,6 +224,7 @@ export default function () {
 						label="Responsables"
 						labelPrefix="4"
 						error={errors.supervisors?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -226,6 +239,7 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.supervisors}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -237,7 +251,7 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
-							disabled={!isValid || saving}
+							disabled={isPermitReadOnly || !isValid || saving}
 							style={{ flex: 1 }}
 							loading={saving}
 						>
@@ -246,6 +260,7 @@ export default function () {
 						<Button
 							mode="outlined"
 							onPress={() => reset(defaultValuesCleaningHeader)}
+							disabled={isPermitReadOnly}
 							style={{ flex: 1 }}
 						>
 							Limpiar

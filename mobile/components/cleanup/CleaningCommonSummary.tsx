@@ -5,22 +5,28 @@ import { IconButton } from "react-native-paper"
 type CleaningCommonSummaryProps = {
 	fleeceNumber?: string
 	grossWeight?: number
-	onEdit: () => void
+	onEdit?: () => void
+	disabled?: boolean
 }
 
 export function CleaningCommonSummary({
 	fleeceNumber,
 	grossWeight,
 	onEdit,
+	disabled = false,
 }: CleaningCommonSummaryProps) {
 	const theme = useAppTheme()
+	const labelColor = disabled
+		? theme.colors.onSurfaceDisabled
+		: theme.colors.onSurfaceVariant
+	const valueColor = disabled
+		? theme.colors.onSurfaceDisabled
+		: theme.colors.onSurface
 
 	return (
 		<View
 			style={{
 				paddingVertical: 10,
-				borderBottomWidth: 1,
-				borderBottomColor: theme.colors.outlineVariant,
 				gap: 6,
 			}}
 		>
@@ -34,15 +40,15 @@ export function CleaningCommonSummary({
 				<View style={{ flex: 1 }}>
 					<Text
 						style={{
-							color: theme.colors.onSurfaceVariant,
+							color: labelColor,
 							fontSize: 12,
 						}}
 					>
-						Vellon
+						Nro de vellon
 					</Text>
 					<Text
 						style={{
-							color: theme.colors.onSurface,
+							color: valueColor,
 							fontSize: 18,
 							fontWeight: "700",
 						}}
@@ -54,7 +60,7 @@ export function CleaningCommonSummary({
 				<View style={{ flex: 1 }}>
 					<Text
 						style={{
-							color: theme.colors.onSurfaceVariant,
+							color: labelColor,
 							fontSize: 12,
 						}}
 					>
@@ -62,7 +68,7 @@ export function CleaningCommonSummary({
 					</Text>
 					<Text
 						style={{
-							color: theme.colors.onSurface,
+							color: valueColor,
 							fontSize: 18,
 							fontWeight: "700",
 						}}
@@ -75,6 +81,7 @@ export function CleaningCommonSummary({
 					icon="chevron-right"
 					mode="outlined"
 					size={18}
+					disabled={!onEdit}
 					onPress={onEdit}
 				/>
 			</View>

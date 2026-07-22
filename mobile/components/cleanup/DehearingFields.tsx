@@ -8,6 +8,7 @@ import { ToggleButtonGroup } from "../basics/ToggleButtonGroup"
 type DehearingFieldsProps = {
 	control: Control<DehearingFormData>
 	errors: FieldErrors<DehearingFormData>
+	disabled?: boolean
 }
 
 function formatNumber(value: number) {
@@ -19,7 +20,11 @@ function parseNumber(value: string) {
 	return digits === "" ? Number.NaN : Number(digits)
 }
 
-export function DehearingFields({ control, errors }: DehearingFieldsProps) {
+export function DehearingFields({
+	control,
+	errors,
+	disabled = false,
+}: DehearingFieldsProps) {
 	return (
 		<>
 			<LabeledInput
@@ -27,6 +32,7 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 				labelPrefix="2"
 				labelSuffix="gramos"
 				error={errors.dehairedWeight?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -39,6 +45,7 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.dehairedWeight}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -49,6 +56,7 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 				labelPrefix="3"
 				labelSuffix="gramos"
 				error={errors.bristleWeight?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -61,12 +69,13 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.bristleWeight}
+							disabled={disabled}
 						/>
 					)}
 				/>
 			</LabeledInput>
 
-			<LabeledInput label="Caspa" labelPrefix="4">
+			<LabeledInput label="Caspa" labelPrefix="4" disabled={disabled}>
 				<Controller
 					control={control}
 					name="hasDandruff"
@@ -80,6 +89,7 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 								{ label: "No", value: "No" },
 								{ label: "Si", value: "Si" },
 							]}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -89,6 +99,7 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 				label="Nombre del predescerdador (a)"
 				labelPrefix="5"
 				error={errors.dehairerName?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -101,6 +112,7 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 							onBlur={onBlur}
 							autoCapitalize="words"
 							error={!!errors.dehairerName}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -110,12 +122,17 @@ export function DehearingFields({ control, errors }: DehearingFieldsProps) {
 				label="Firma"
 				labelPrefix="6"
 				error={errors.signature?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
 					name="signature"
 					render={({ field: { onChange, value } }) => (
-						<SignaturePad value={value} onChange={onChange} />
+						<SignaturePad
+							value={value}
+							onChange={onChange}
+							disabled={disabled}
+						/>
 					)}
 				/>
 			</LabeledInput>

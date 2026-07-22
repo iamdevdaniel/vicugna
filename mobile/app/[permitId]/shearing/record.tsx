@@ -1,4 +1,9 @@
-import { LabeledInput, ReadOnlyNotice, ToggleButtonGroup } from "@components"
+import {
+	CustomDeleteButton,
+	LabeledInput,
+	ReadOnlyNotice,
+	ToggleButtonGroup,
+} from "@components"
 import type { ShearingRecordFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -6,7 +11,6 @@ import {
 	useReadSingleShearingRecordFormData,
 	useSingleShearingRecordActions,
 } from "@hooks"
-import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesShearingRecord,
 	yupShearingRecord,
@@ -29,7 +33,6 @@ function parseNumber(value: string) {
 // SHEARING.RECORD /[permitId]/shearing/record
 export default function () {
 	const router = useRouter()
-	const theme = useAppTheme()
 	const { permitId, recordId } = useLocalSearchParams<{
 		permitId: string
 		recordId?: string
@@ -478,28 +481,16 @@ export default function () {
 							{isEditForm ? "Actualizar" : "Guardar"}
 						</Button>
 						{isEditForm && (
-							<Button
-								mode="contained"
+							<CustomDeleteButton
 								onPress={onDelete}
 								disabled={
 									isPermitReadOnly || saving || deleting
 								}
-								style={{
-									flex: 1,
-									backgroundColor:
-										isPermitReadOnly || saving || deleting
-											? theme.colors.surfaceDisabled
-											: theme.colors.custom.crimson,
-								}}
-								textColor={
-									isPermitReadOnly || saving || deleting
-										? theme.colors.onSurfaceDisabled
-										: theme.colors.onError
-								}
+								style={{ flex: 1 }}
 								loading={deleting}
 							>
 								Borrar
-							</Button>
+							</CustomDeleteButton>
 						)}
 					</View>
 				</ScrollView>

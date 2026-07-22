@@ -1,4 +1,5 @@
 import {
+	CustomDeleteButton,
 	LabeledInput,
 	ReadOnlyNotice,
 	SignaturePad,
@@ -11,7 +12,6 @@ import {
 	useReadSinglePermit,
 	useSingleParticipantActions,
 } from "@hooks"
-import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesParticipant,
 	yupParticipant,
@@ -25,7 +25,6 @@ import { SafeAreaView } from "react-native-safe-area-context"
 
 // PARTICIPANTS.FORM /[permitId]/participants/[participantId]
 export default function () {
-	const theme = useAppTheme()
 	const router = useRouter()
 	const { permitId, participantId } = useLocalSearchParams<{
 		permitId: string
@@ -304,26 +303,14 @@ export default function () {
 						</Button>
 					</View>
 					{isEditForm && (
-						<Button
-							mode="contained"
+						<CustomDeleteButton
 							onPress={onDelete}
 							disabled={isDeleteDisabled}
-							style={{
-								flex: 1,
-								backgroundColor: isDeleteDisabled
-									? theme.colors.surfaceDisabled
-									: theme.colors.custom.crimson,
-								marginTop: 16,
-							}}
-							textColor={
-								isDeleteDisabled
-									? theme.colors.onSurfaceDisabled
-									: theme.colors.onError
-							}
+							style={{ flex: 1, marginTop: 16 }}
 							loading={deleting}
 						>
 							Borrar
-						</Button>
+						</CustomDeleteButton>
 					)}
 				</ScrollView>
 			</KeyboardAvoidingView>

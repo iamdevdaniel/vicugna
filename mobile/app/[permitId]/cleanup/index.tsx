@@ -1,16 +1,17 @@
-import { AccentCard, StepList, TotalChip } from "@components"
+import { AccentCard, ReadOnlyNotice, StepList, TotalChip } from "@components"
 import type { CleaningCommonData } from "@definitions/types"
 import {
 	useReadBulkCleaningCommon,
 	useReadSingleCleaningHeader,
 	useReadSingleDehearing,
 	useReadSingleGrooming,
+	useReadSinglePermit,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
-import { Button } from "react-native-paper"
+import { Button, Icon } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 function CleaningRecordCard({
@@ -34,7 +35,7 @@ function CleaningRecordCard({
 	const status = isGroomingCompleted
 		? "LIMPIADO"
 		: isDehearingCompleted
-			? "PREDESCERDADO"
+			? "PREDESC"
 			: "PENDIENTE"
 
 	return (
@@ -54,37 +55,39 @@ function CleaningRecordCard({
 					paddingVertical: 6,
 					flexDirection: "row",
 					alignItems: "center",
+					justifyContent: "space-between",
 				}}
 			>
-				<View
+				<Text
+					numberOfLines={1}
+					ellipsizeMode="tail"
 					style={{
-						flex: 1,
-						flexDirection: "row",
-						alignItems: "center",
+						width: 88,
+						textAlign: "left",
+						color: theme.colors.onSurface,
 					}}
 				>
-					<Text
-						style={{
-							flex: 1,
-							textAlign: "center",
-							color: theme.colors.onSurface,
-						}}
-					>
-						{record.fleeceNumber}
-					</Text>
-					<Text
-						style={{
-							flex: 1,
-							textAlign: "center",
-							color: accent,
-							fontSize: 11,
-							fontWeight: "600",
-						}}
-					>
-						{status}
-					</Text>
-				</View>
-				<View style={{ width: 86, alignItems: "flex-end" }}>
+					{record.fleeceNumber}
+				</Text>
+				<Text
+					style={{
+						flex: 1,
+						textAlign: "center",
+						color: accent,
+						fontSize: 11,
+						fontWeight: "600",
+						paddingHorizontal: 8,
+					}}
+				>
+					{status}
+				</Text>
+				<View
+					style={{
+						width: 86,
+						alignItems: "flex-end",
+						marginLeft: 8,
+					}}
+				>
 					<Button
 						mode="outlined"
 						compact
@@ -113,7 +116,7 @@ function CleaningRecordCard({
 							)
 						}
 					>
-						{isCompleted ? "Editar" : "Seguir"}
+						{isCompleted ? "Editar" : "Continuar"}
 					</Button>
 				</View>
 			</View>
@@ -124,10 +127,12 @@ function CleaningRecordCard({
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { permitId, permitNumber } = useLocalSearchParams<{
+	const { permitId } = useLocalSearchParams<{
 		permitId: string
 		permitNumber?: string
 	}>()
+	const { data: permit } = useReadSinglePermit(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningCommon } = useReadBulkCleaningCommon(permitId)
 
@@ -136,18 +141,20 @@ export default function () {
 
 	return (
 		<SafeAreaView
+			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen
-				options={{ title: `Permiso ${permitNumber ?? "sin número"}` }}
-			/>
+			<Stack.Screen options={{ title: "Limpieza" }} />
 			<ScrollView
 				contentContainerStyle={{
+					paddingTop: 20,
 					paddingHorizontal: 20,
+					paddingBottom: 30 + insets.bottom,
 					backgroundColor: "transparent",
 				}}
 				style={{ flex: 1 }}
 			>
+				{isPermitReadOnly && <ReadOnlyNotice />}
 				<StepList
 					steps={[
 						{
@@ -162,17 +169,76 @@ export default function () {
 							},
 							details: cleaningHeader?.isCompleted ? (
 								<View style={{ gap: 4 }}>
-									<Text>
-										Inicio: {cleaningHeader.startDate}
-									</Text>
-									<Text>
-										Conclusión: {cleaningHeader.endDate}
-									</Text>
-									<Text>Lugar: {cleaningHeader.site}</Text>
-									<Text>
-										Responsables:{" "}
-										{cleaningHeader.supervisors}
-									</Text>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 8,
+										}}
+									>
+										<Icon
+											source="calendar-range"
+											size={16}
+											color={
+												theme.colors.onSurfaceVariant
+											}
+										/>
+										<Text
+											style={{
+												color: theme.colors
+													.onSurfaceVariant,
+											}}
+										>
+											{cleaningHeader.startDate} •{" "}
+											{cleaningHeader.endDate}
+										</Text>
+									</View>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 8,
+										}}
+									>
+										<Icon
+											source="map-marker-outline"
+											size={16}
+											color={
+												theme.colors.onSurfaceVariant
+											}
+										/>
+										<Text
+											style={{
+												color: theme.colors
+													.onSurfaceVariant,
+											}}
+										>
+											{cleaningHeader.site}
+										</Text>
+									</View>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 8,
+										}}
+									>
+										<Icon
+											source="account-group-outline"
+											size={16}
+											color={
+												theme.colors.onSurfaceVariant
+											}
+										/>
+										<Text
+											style={{
+												color: theme.colors
+													.onSurfaceVariant,
+											}}
+										>
+											{cleaningHeader.supervisors}
+										</Text>
+									</View>
 								</View>
 							) : null,
 						},
@@ -211,6 +277,7 @@ export default function () {
 					mode="contained"
 					icon="plus"
 					contentStyle={{ height: 48 }}
+					disabled={isPermitReadOnly}
 					onPress={() => router.push(ROUTES.CLEANUP.RECORD(permitId))}
 				>
 					Añadir registro

@@ -1,8 +1,9 @@
-import { LabeledInput } from "@components"
+import { LabeledInput, ReadOnlyNotice } from "@components"
 import type { CleaningCommonFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
 	useReadSingleCleaningCommon,
+	useReadSinglePermit,
 	useSingleCleaningCommonActions,
 } from "@hooks"
 import {
@@ -32,6 +33,8 @@ export default function () {
 		recordId?: string
 	}>()
 	const isEditForm = !!recordId
+	const { data: permit } = useReadSinglePermit(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 	const { data, loading } = useReadSingleCleaningCommon(recordId)
 	const { createSingleCleaningCommon, updateSingleCleaningCommon, saving } =
 		useSingleCleaningCommonActions()
@@ -73,26 +76,22 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen
-					options={{
-						title: isEditForm
-							? "Editar registro"
-							: "Nuevo registro",
-					}}
-				/>
+				<Stack.Screen options={{ title: "Registros de limpieza" }} />
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{
 						flexGrow: 1,
 						padding: 20,
-						paddingBottom: 40,
+						paddingBottom: 20,
 					}}
 					keyboardShouldPersistTaps="handled"
 				>
+					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
-						label="Numero de vellon"
+						label="Nro de vellon"
 						labelPrefix="1"
 						error={errors.fleeceNumber?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -107,6 +106,7 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.fleeceNumber}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -117,6 +117,7 @@ export default function () {
 						labelPrefix="2"
 						labelSuffix="gramos"
 						error={errors.grossWeight?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -133,6 +134,7 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.grossWeight}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -143,6 +145,7 @@ export default function () {
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
 							disabled={
+								isPermitReadOnly ||
 								!isValid ||
 								saving ||
 								(isEditForm && (loading || !data))

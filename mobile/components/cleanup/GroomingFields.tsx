@@ -6,6 +6,7 @@ import { LabeledInput } from "../basics/LabeledInput"
 type GroomingFieldsProps = {
 	control: Control<GroomingFormData>
 	errors: FieldErrors<GroomingFormData>
+	disabled?: boolean
 }
 
 function formatNumber(value: number) {
@@ -17,7 +18,11 @@ function parseNumber(value: string) {
 	return digits === "" ? Number.NaN : Number(digits)
 }
 
-export function GroomingFields({ control, errors }: GroomingFieldsProps) {
+export function GroomingFields({
+	control,
+	errors,
+	disabled = false,
+}: GroomingFieldsProps) {
 	return (
 		<>
 			<LabeledInput
@@ -25,6 +30,7 @@ export function GroomingFields({ control, errors }: GroomingFieldsProps) {
 				labelPrefix="2"
 				labelSuffix="gramos"
 				error={errors.cleanWeight?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -37,6 +43,7 @@ export function GroomingFields({ control, errors }: GroomingFieldsProps) {
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.cleanWeight}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -47,6 +54,7 @@ export function GroomingFields({ control, errors }: GroomingFieldsProps) {
 				labelPrefix="3"
 				labelSuffix="gramos"
 				error={errors.dirtyWeight?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -59,6 +67,7 @@ export function GroomingFields({ control, errors }: GroomingFieldsProps) {
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.dirtyWeight}
+							disabled={disabled}
 						/>
 					)}
 				/>
@@ -69,6 +78,7 @@ export function GroomingFields({ control, errors }: GroomingFieldsProps) {
 				labelPrefix="4"
 				labelSuffix="gramos"
 				error={errors.totalWeight?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -81,6 +91,7 @@ export function GroomingFields({ control, errors }: GroomingFieldsProps) {
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.totalWeight}
+							disabled={disabled}
 						/>
 					)}
 				/>
