@@ -4,7 +4,7 @@ import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { FlatList, Text, View } from "react-native"
-import { Button, Chip, Icon, IconButton } from "react-native-paper"
+import { Button, Chip, Icon } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // PARTICIPANTS.OVERVIEW /[permitId]/participants
@@ -104,35 +104,25 @@ export default function () {
 								: theme.colors.custom.pink
 						}
 						prefix={index + 1}
+						onPress={() =>
+							router.push(
+								ROUTES.PARTICIPANTS.FORM(
+									permitId,
+									participant.id,
+								),
+							)
+						}
 					>
 						<View
 							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								paddingRight: 4,
+								justifyContent: "center",
 								paddingVertical: 6,
 							}}
 						>
-							<View style={{ flex: 1 }}>
-								<Text style={{ fontWeight: "bold" }}>
-									{participant.name} {participant.lastNames}
-								</Text>
-								<Text>{participant.identityNumber}</Text>
-							</View>
-							<IconButton
-								icon="pencil"
-								size={18}
-								iconColor={theme.colors.custom.green}
-								onPress={() =>
-									router.push(
-										ROUTES.PARTICIPANTS.FORM(
-											permitId,
-											participant.id,
-										),
-									)
-								}
-								style={{ margin: 0 }}
-							/>
+							<Text style={{ fontWeight: "bold" }}>
+								{participant.name} {participant.lastNames}
+							</Text>
+							<Text>{participant.identityNumber}</Text>
 						</View>
 					</AccentCard>
 				)}

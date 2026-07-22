@@ -154,7 +154,7 @@ export default function () {
 							title: "Información general",
 							state: headerState,
 							action: {
-								icon: "pencil",
+								icon: "chevron-right",
 								onPress: () =>
 									router.push(
 										ROUTES.CLEANUP.HEADER(permitId),

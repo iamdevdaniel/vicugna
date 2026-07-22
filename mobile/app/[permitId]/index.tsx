@@ -186,6 +186,7 @@ export default function () {
 					headerTintColor: syncingPermit
 						? theme.colors.outline
 						: theme.colors.onSurface,
+					headerTitleAlign: "left",
 					headerTitle: () => (
 						<View
 							style={{
@@ -194,6 +195,7 @@ export default function () {
 								justifyContent: "space-between",
 								gap: 10,
 								flex: 1,
+								marginLeft: -17,
 							}}
 						>
 							<View
@@ -251,7 +253,7 @@ export default function () {
 							title: "Participantes",
 							state: participantsState,
 							action: {
-								icon: "pencil",
+								icon: "chevron-right",
 								onPress: () =>
 									onOpenStep(
 										ROUTES.PARTICIPANTS.OVERVIEW({
@@ -266,7 +268,7 @@ export default function () {
 							title: "Esquila",
 							state: shearingState,
 							action: {
-								icon: "pencil",
+								icon: "chevron-right",
 								onPress: () =>
 									onOpenStep(
 										ROUTES.SHEARING.OVERVIEW({
@@ -281,7 +283,7 @@ export default function () {
 							title: "Limpieza",
 							state: cleaningState,
 							action: {
-								icon: "pencil",
+								icon: "chevron-right",
 								onPress: () =>
 									onOpenStep(
 										ROUTES.CLEANUP.OVERVIEW({

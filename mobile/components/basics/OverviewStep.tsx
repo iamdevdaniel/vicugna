@@ -33,59 +33,78 @@ export const OverviewStep = ({
 				<View
 					style={{
 						flexDirection: "row",
-						alignItems: "center",
-						marginBottom: done && hasDetails ? 8 : 0,
+						alignItems: "stretch",
+						gap: done && action ? 12 : 0,
 					}}
 				>
-					<View
-						style={{
-							backgroundColor: done
-								? theme.colors.custom.green
-								: disabled
-									? theme.colors.onSurfaceVariant
-									: theme.colors.custom.blue,
-							borderRadius: 4,
-							justifyContent: "center",
-							alignItems: "center",
-							marginRight: done ? 8 : 16,
-							...(done
-								? { width: 24, height: 24 }
-								: { width: 32, height: 32 }),
-						}}
-					>
-						<Text
+					<View style={{ flex: 1 }}>
+						<View
 							style={{
-								color: theme.colors.custom.white,
-								fontSize: done ? 14 : 16,
-								fontWeight: "bold",
+								flexDirection: "row",
+								alignItems: "center",
+								marginBottom: done && hasDetails ? 8 : 0,
 							}}
 						>
-							{number}
-						</Text>
+							<View
+								style={{
+									backgroundColor: done
+										? theme.colors.custom.green
+										: disabled
+											? theme.colors.onSurfaceVariant
+											: theme.colors.custom.blue,
+									borderRadius: 4,
+									justifyContent: "center",
+									alignItems: "center",
+									marginRight: done ? 8 : 16,
+									...(done
+										? { width: 24, height: 24 }
+										: { width: 32, height: 32 }),
+								}}
+							>
+								<Text
+									style={{
+										color: theme.colors.custom.white,
+										fontSize: done ? 14 : 16,
+										fontWeight: "bold",
+									}}
+								>
+									{number}
+								</Text>
+							</View>
+							<Text
+								style={{
+									fontSize: done ? 14 : 16,
+									fontWeight: done ? "500" : "bold",
+									color: disabled
+										? theme.colors.onSurfaceVariant
+										: theme.colors.onSurface,
+									flex: 1,
+								}}
+							>
+								{title}
+							</Text>
+						</View>
+						{done && hasDetails && <View>{details}</View>}
 					</View>
-					<Text
-						style={{
-							fontSize: done ? 14 : 16,
-							fontWeight: done ? "500" : "bold",
-							color: disabled
-								? theme.colors.onSurfaceVariant
-								: theme.colors.onSurface,
-							flex: 1,
-						}}
-					>
-						{title}
-					</Text>
 					{done && action && (
-						<IconButton
-							icon={action.icon}
-							size={18}
-							iconColor={theme.colors.custom.green}
-							onPress={action.onPress}
-							style={{ margin: 0 }}
-						/>
+						<View
+							style={{
+								justifyContent: "center",
+								alignItems: "center",
+								alignSelf: "stretch",
+								paddingLeft: 4,
+							}}
+						>
+							<IconButton
+								icon={action.icon}
+								size={22}
+								iconColor={theme.colors.custom.green}
+								onPress={action.onPress}
+								style={{ margin: 0 }}
+							/>
+						</View>
 					)}
 				</View>
-				{done && hasDetails && <View>{details}</View>}
 				{showActionButton && (
 					<Button
 						mode="contained"

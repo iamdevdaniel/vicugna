@@ -72,7 +72,7 @@ export function CleaningCommonSummary({
 				</View>
 
 				<IconButton
-					icon="pencil"
+					icon="chevron-right"
 					mode="outlined"
 					size={18}
 					onPress={onEdit}

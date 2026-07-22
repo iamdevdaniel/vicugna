@@ -40,7 +40,7 @@ export default function () {
 							title: "Información general",
 							state: shearingStepState,
 							action: {
-								icon: "pencil",
+								icon: "chevron-right",
 								onPress: () =>
 									router.push(
 										ROUTES.SHEARING.HEADER(permitId),
@@ -77,7 +77,7 @@ export default function () {
 													</Text>
 												</View>
 												<IconButton
-													icon="pencil"
+													icon="chevron-right"
 													size={18}
 													iconColor={
 														theme.colors.custom
