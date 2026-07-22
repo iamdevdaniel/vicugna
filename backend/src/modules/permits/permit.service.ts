@@ -1,4 +1,5 @@
 import { PermitValidationError } from "./permit.errors"
+import { saveSyncFieldData } from "./permit.repository"
 import type { SyncFieldData } from "./permit.types"
 
 export async function submitSyncFieldData(data: SyncFieldData) {
@@ -6,13 +7,8 @@ export async function submitSyncFieldData(data: SyncFieldData) {
 	validateParticipants(data)
 	validateShearing(data)
 	validateCleaning(data)
-	console.log("syncFieldData", JSON.stringify(data, null, 2))
 
-	return {
-		permitId: data.permit.id,
-		isSynced: true,
-		syncedAt: new Date().toISOString(),
-	}
+	return saveSyncFieldData(data)
 }
 
 function validatePermit(data: SyncFieldData): void {

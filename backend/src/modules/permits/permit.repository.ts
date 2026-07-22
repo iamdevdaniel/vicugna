@@ -17,6 +17,8 @@ import type { SyncFieldData } from "./permit.types"
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
 export async function saveSyncFieldData(data: SyncFieldData) {
+	const syncedAt = new Date()
+
 	await db.transaction(async (tx) => {
 		const existingPermit = await tx.query.permits.findFirst({
 			where: eq(permits.id, data.permit.id),
@@ -32,7 +34,7 @@ export async function saveSyncFieldData(data: SyncFieldData) {
 			.update(permits)
 			.set({
 				isSynced: true,
-				syncedAt: new Date(),
+				syncedAt,
 				updatedAt: new Date(),
 			})
 			.where(eq(permits.id, data.permit.id))
@@ -40,7 +42,8 @@ export async function saveSyncFieldData(data: SyncFieldData) {
 
 	return {
 		permitId: data.permit.id,
-		synced: true,
+		isSynced: true,
+		syncedAt: syncedAt.toISOString(),
 	}
 }
 
