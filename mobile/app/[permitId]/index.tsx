@@ -41,6 +41,9 @@ export default function () {
 	const snackbarTranslateY = useRef(new Animated.Value(80)).current
 	const [snackbarVisible, setSnackbarVisible] = useState(false)
 	const [snackbarMessage, setSnackbarMessage] = useState("")
+	const [snackbarType, setSnackbarType] = useState<"success" | "error">(
+		"success",
+	)
 	const { permitId, permitNumber } = useLocalSearchParams<{
 		permitId: string
 		permitNumber?: string
@@ -125,8 +128,12 @@ export default function () {
 		setSnackbarVisible(false)
 	}
 
-	const showSuccessSnackbar = (message: string) => {
+	const showSnackbar = (
+		message: string,
+		type: "success" | "error" = "success",
+	) => {
 		setSnackbarMessage(message)
+		setSnackbarType(type)
 		setSnackbarVisible(true)
 	}
 
@@ -151,15 +158,16 @@ export default function () {
 						const result = await syncPermit(permitId)
 
 						if (result.ok) {
-							showSuccessSnackbar(
+							showSnackbar(
 								"El permiso se envio correctamente",
+								"success",
 							)
 							return
 						}
 
-						Alert.alert(
-							"Error",
+						showSnackbar(
 							result.error ?? "No se pudo enviar el permiso",
+							"error",
 						)
 					},
 				},
@@ -345,15 +353,28 @@ export default function () {
 					onDismiss={hideSnackbar}
 					duration={3500}
 					style={{
-						backgroundColor: theme.colors.inverseSurface,
+						backgroundColor:
+							snackbarType === "error"
+								? theme.colors.error
+								: theme.colors.inverseSurface,
 					}}
 					action={{
 						label: "Cerrar",
-						textColor: theme.colors.inverseOnSurface,
+						textColor:
+							snackbarType === "error"
+								? theme.colors.onError
+								: theme.colors.inverseOnSurface,
 						onPress: hideSnackbar,
 					}}
 				>
-					<Text style={{ color: theme.colors.inverseOnSurface }}>
+					<Text
+						style={{
+							color:
+								snackbarType === "error"
+									? theme.colors.onError
+									: theme.colors.inverseOnSurface,
+						}}
+					>
 						{snackbarMessage}
 					</Text>
 				</Snackbar>
