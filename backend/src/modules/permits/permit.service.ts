@@ -6,7 +6,6 @@ export async function submitSyncFieldData(data: SyncFieldData) {
 	validateParticipants(data)
 	validateShearing(data)
 	validateCleaning(data)
-
 	console.log("syncFieldData", JSON.stringify(data, null, 2))
 
 	return {

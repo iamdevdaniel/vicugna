@@ -1,4 +1,4 @@
-import { DevSeedFab, HomeUserHeader } from "@components"
+import { AccentCard, DevSeedFab, HomeUserHeader } from "@components"
 import { useLoadPermits, useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
@@ -115,7 +115,23 @@ export default function HomeScreen() {
 					</View>
 				}
 				renderItem={({ item: permit }) => (
-					<Card
+					<AccentCard
+						accent={
+							permit.isSynced
+								? theme.colors.custom.green
+								: theme.colors.surfaceVariant
+						}
+						prefix={
+							<Icon
+								source="file-key-outline"
+								size={20}
+								color={
+									permit.isSynced
+										? theme.colors.custom.white
+										: theme.colors.onSurfaceVariant
+								}
+							/>
+						}
 						style={{ marginBottom: 10 }}
 						onPress={() =>
 							router.push(
@@ -126,11 +142,13 @@ export default function HomeScreen() {
 							)
 						}
 					>
-						<Card.Content
+						<View
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
 								gap: 12,
+								paddingVertical: 12,
+								paddingRight: 12,
 							}}
 						>
 							<View style={{ flex: 1, gap: 2 }}>
@@ -141,13 +159,22 @@ export default function HomeScreen() {
 									{getCommunityName(permit.communityId)}
 								</Text>
 							</View>
-							<Icon
-								source="file-key-outline"
-								size={26}
-								color={theme.colors.outline}
-							/>
-						</Card.Content>
-					</Card>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+								}}
+							>
+								{permit.isSynced ? (
+									<Icon
+										source="cloud-check-outline"
+										size={26}
+										color={theme.colors.custom.green}
+									/>
+								) : null}
+							</View>
+						</View>
+					</AccentCard>
 				)}
 			/>
 			<DevSeedFab permits={permits} />

@@ -13,16 +13,31 @@ import { ROUTES } from "@utils/constants"
 import { getDependentStepState } from "@utils/misc"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
-import { router, Stack, useLocalSearchParams } from "expo-router"
+import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router"
 import { useEffect, useRef, useState } from "react"
-import { Alert, Animated, ScrollView, Text, View } from "react-native"
-import { Button, Icon, Snackbar } from "react-native-paper"
+import {
+	Alert,
+	Animated,
+	BackHandler,
+	ScrollView,
+	Text,
+	View,
+} from "react-native"
+import {
+	ActivityIndicator,
+	Button,
+	Icon,
+	Modal,
+	Portal,
+	Snackbar,
+} from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // OVERVIEW /[permitId]
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
+	const navigation = useNavigation()
 	const snackbarTranslateY = useRef(new Animated.Value(80)).current
 	const [snackbarVisible, setSnackbarVisible] = useState(false)
 	const [snackbarMessage, setSnackbarMessage] = useState("")
@@ -35,7 +50,11 @@ export default function () {
 	const { data: records } = useReadBulkShearingRecords(permitId)
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningRecords } = useReadBulkCleaningCommon(permitId)
-	const { syncPermit, clearError: clearSyncError } = useSyncPermit()
+	const {
+		syncPermit,
+		syncingPermit,
+		clearError: clearSyncError,
+	} = useSyncPermit()
 	const cleaningRecordIds = cleaningRecords.map((record) => record.id)
 	const { data: groomingRecords } = useReadBulkGrooming(cleaningRecordIds)
 	const { data: dehearingRecords } = useReadBulkDehearing(cleaningRecordIds)
@@ -79,6 +98,28 @@ export default function () {
 			useNativeDriver: true,
 		}).start()
 	}, [snackbarTranslateY, snackbarVisible])
+
+	useEffect(() => {
+		if (!syncingPermit) {
+			return
+		}
+
+		const backHandlerSubscription = BackHandler.addEventListener(
+			"hardwareBackPress",
+			() => true,
+		)
+		const beforeRemoveSubscription = navigation.addListener(
+			"beforeRemove",
+			(event) => {
+				event.preventDefault()
+			},
+		)
+
+		return () => {
+			backHandlerSubscription.remove()
+			beforeRemoveSubscription()
+		}
+	}, [navigation, syncingPermit])
 
 	const hideSnackbar = () => {
 		setSnackbarVisible(false)
@@ -133,6 +174,10 @@ export default function () {
 		>
 			<Stack.Screen
 				options={{
+					gestureEnabled: !syncingPermit,
+					headerTintColor: syncingPermit
+						? theme.colors.outline
+						: theme.colors.onSurface,
 					headerTitle: () => (
 						<View
 							style={{
@@ -313,6 +358,42 @@ export default function () {
 					</Text>
 				</Snackbar>
 			</Animated.View>
+			<Portal>
+				<Modal
+					visible={syncingPermit}
+					dismissable={false}
+					contentContainerStyle={{
+						marginHorizontal: 24,
+						borderRadius: 20,
+						paddingHorizontal: 24,
+						paddingVertical: 20,
+						backgroundColor: theme.colors.surface,
+						alignItems: "center",
+						gap: 12,
+					}}
+					theme={{
+						colors: {
+							backdrop: "rgba(0, 0, 0, 0.28)",
+						},
+					}}
+				>
+					<ActivityIndicator
+						animating
+						size="large"
+						color={theme.colors.custom.green}
+					/>
+					<Text
+						style={{
+							fontSize: 14,
+							fontWeight: "600",
+							color: theme.colors.onSurface,
+							textAlign: "center",
+						}}
+					>
+						Enviando permiso...
+					</Text>
+				</Modal>
+			</Portal>
 		</SafeAreaView>
 	)
 }
