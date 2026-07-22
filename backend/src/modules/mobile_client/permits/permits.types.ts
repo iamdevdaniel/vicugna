@@ -9,4 +9,6 @@ export interface MobilePermitData {
 	userId: string
 	userFullName: string
 	isActiveAssignmentUser: boolean
+	isSynced: boolean
+	syncedAt: string | null
 }

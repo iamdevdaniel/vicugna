@@ -28,6 +28,14 @@ export async function saveSyncFieldData(data: SyncFieldData) {
 
 		await deletePermitChildData(data, tx)
 		await insertPermitChildData(data, tx)
+		await tx
+			.update(permits)
+			.set({
+				isSynced: true,
+				syncedAt: new Date(),
+				updatedAt: new Date(),
+			})
+			.where(eq(permits.id, data.permit.id))
 	})
 
 	return {

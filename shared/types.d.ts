@@ -20,6 +20,8 @@ export type PermitData = {
 	userId: string
 	userFullName: string
 	isActiveAssignmentUser: boolean
+	isSynced: boolean
+	syncedAt: string | null
 }
 
 export type GenderData = "M" | "F"

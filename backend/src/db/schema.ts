@@ -88,6 +88,8 @@ export const permits = pgTable(
 			.notNull()
 			.references(() => communities.id),
 		permitNumber: text("permit_number").notNull(),
+		isSynced: boolean("is_synced").notNull().default(false),
+		syncedAt: timestamp("synced_at"),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
 	},

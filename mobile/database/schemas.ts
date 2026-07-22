@@ -15,6 +15,8 @@ export const appDbSchema = appSchema({
 				{ name: "userId", type: "string", isIndexed: true },
 				{ name: "userFullName", type: "string" },
 				{ name: "isActiveAssignmentUser", type: "boolean" },
+				{ name: "isSynced", type: "boolean" },
+				{ name: "syncedAt", type: "string", isOptional: true },
 			],
 		}),
 		tableSchema({

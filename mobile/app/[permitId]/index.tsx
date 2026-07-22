@@ -1,3 +1,4 @@
+import { submitSyncFieldData } from "@api"
 import { StepList, type StepState, TotalChip } from "@components"
 import { getFieldSyncData } from "@database"
 import {
@@ -9,19 +10,24 @@ import {
 	useReadPermits,
 	useReadSingleCleaningHeader,
 } from "@hooks"
+import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
 import { getDependentStepState } from "@utils/misc"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
-import { Alert, ScrollView, Text, View } from "react-native"
-import { Button, Icon } from "react-native-paper"
+import { useEffect, useRef, useState } from "react"
+import { Alert, Animated, ScrollView, Text, View } from "react-native"
+import { Button, Icon, Snackbar } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 // OVERVIEW /[permitId]
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
+	const snackbarTranslateY = useRef(new Animated.Value(80)).current
+	const [snackbarVisible, setSnackbarVisible] = useState(false)
+	const [snackbarMessage, setSnackbarMessage] = useState("")
 	const { permitId, permitNumber } = useLocalSearchParams<{
 		permitId: string
 		permitNumber?: string
@@ -67,6 +73,28 @@ export default function () {
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
 
+	useEffect(() => {
+		Animated.timing(snackbarTranslateY, {
+			toValue: snackbarVisible ? 0 : 80,
+			duration: 180,
+			useNativeDriver: true,
+		}).start()
+	}, [snackbarTranslateY, snackbarVisible])
+
+	const hideSnackbar = () => {
+		setSnackbarVisible(false)
+	}
+
+	const showSuccessSnackbar = (message: string) => {
+		setSnackbarMessage(message)
+		setSnackbarVisible(true)
+	}
+
+	const onOpenStep = (route: Parameters<typeof router.push>[0]) => {
+		hideSnackbar()
+		router.push(route)
+	}
+
 	const onPressSend = () => {
 		Alert.alert(
 			"Finalizar y enviar",
@@ -81,7 +109,20 @@ export default function () {
 					onPress: async () => {
 						try {
 							const payload = await getFieldSyncData(permitId)
-							console.log("syncFieldData", payload)
+							const token = useMobileAuthStore.getState().token
+
+							if (!token) {
+								Alert.alert(
+									"Error",
+									"Debes iniciar sesion para enviar este permiso",
+								)
+								return
+							}
+
+							await submitSyncFieldData(token, payload)
+							showSuccessSnackbar(
+								"El permiso se valido correctamente",
+							)
 						} catch (error) {
 							Alert.alert(
 								"Error",
@@ -170,7 +211,7 @@ export default function () {
 							action: {
 								icon: "pencil",
 								onPress: () =>
-									router.push(
+									onOpenStep(
 										ROUTES.PARTICIPANTS.OVERVIEW({
 											permitId,
 											permitNumber,
@@ -185,7 +226,7 @@ export default function () {
 							action: {
 								icon: "pencil",
 								onPress: () =>
-									router.push(
+									onOpenStep(
 										ROUTES.SHEARING.OVERVIEW({
 											permitId,
 											permitNumber,
@@ -200,7 +241,7 @@ export default function () {
 							action: {
 								icon: "pencil",
 								onPress: () =>
-									router.push(
+									onOpenStep(
 										ROUTES.CLEANUP.OVERVIEW({
 											permitId,
 											permitNumber,
@@ -252,6 +293,35 @@ export default function () {
 					Finalizar y enviar
 				</Button>
 			</View>
+			<Animated.View
+				pointerEvents="box-none"
+				style={{
+					position: "absolute",
+					left: 16,
+					right: 16,
+					bottom: 92 + insets.bottom,
+					zIndex: 20,
+					transform: [{ translateY: snackbarTranslateY }],
+				}}
+			>
+				<Snackbar
+					visible={snackbarVisible}
+					onDismiss={hideSnackbar}
+					duration={3500}
+					style={{
+						backgroundColor: theme.colors.inverseSurface,
+					}}
+					action={{
+						label: "Cerrar",
+						textColor: theme.colors.inverseOnSurface,
+						onPress: hideSnackbar,
+					}}
+				>
+					<Text style={{ color: theme.colors.inverseOnSurface }}>
+						{snackbarMessage}
+					</Text>
+				</Snackbar>
+			</Animated.View>
 		</SafeAreaView>
 	)
 }

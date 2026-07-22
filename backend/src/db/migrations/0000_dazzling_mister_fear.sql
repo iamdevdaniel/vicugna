@@ -73,6 +73,8 @@ CREATE TABLE "permits" (
 	"season_id" text NOT NULL,
 	"community_id" text NOT NULL,
 	"permit_number" text NOT NULL,
+	"is_synced" boolean DEFAULT false NOT NULL,
+	"synced_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );

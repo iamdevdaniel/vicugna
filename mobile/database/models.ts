@@ -12,6 +12,8 @@ export class PermitModel extends Model {
 	@text("userId") userId!: string
 	@text("userFullName") userFullName!: string
 	@field("isActiveAssignmentUser") isActiveAssignmentUser!: boolean
+	@field("isSynced") isSynced!: boolean
+	@text("syncedAt") syncedAt!: string | null
 }
 
 export class ParticipantModel extends Model {

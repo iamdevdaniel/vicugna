@@ -38,6 +38,8 @@ export function mapToPermit(model: PermitModel): PermitData {
 		userId: model.userId,
 		userFullName: model.userFullName,
 		isActiveAssignmentUser: model.isActiveAssignmentUser,
+		isSynced: model.isSynced,
+		syncedAt: model.syncedAt,
 	}
 }
 
@@ -51,6 +53,8 @@ export function applyPermitToModel(model: PermitModel, data: PermitData): void {
 	model.userId = data.userId
 	model.userFullName = data.userFullName
 	model.isActiveAssignmentUser = data.isActiveAssignmentUser
+	model.isSynced = data.isSynced
+	model.syncedAt = data.syncedAt
 }
 
 export function mapToParticipant(m: ParticipantModel): ParticipantData {
