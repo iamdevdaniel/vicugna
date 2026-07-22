@@ -4,8 +4,8 @@ type SyncFieldResponse = {
 	ok: boolean
 	data?: {
 		permitId: string
-		validated: boolean
-		dryRun: boolean
+		isSynced: boolean
+		syncedAt: string
 	}
 	error?: string
 }

@@ -1,4 +1,4 @@
-import { subscribePermits } from "@database"
+import { subscribePermits, subscribeSinglePermit } from "@database"
 import type { PermitData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
@@ -15,6 +15,29 @@ export function useReadPermits(): DbState<PermitData[]> {
 			onError: (error) => dispatch({ type: "error", error }),
 		})
 	}, [])
+
+	return state
+}
+
+export function useReadSinglePermit(
+	permitId?: string,
+): DbState<PermitData | null> {
+	const [state, dispatch] = useReducer(
+		readReducer<PermitData | null>,
+		makeReadInitial<PermitData | null>(null),
+	)
+
+	useEffect(() => {
+		if (!permitId) {
+			dispatch({ type: "success", data: null })
+			return
+		}
+
+		return subscribeSinglePermit(permitId, {
+			onChange: (permit) => dispatch({ type: "success", data: permit }),
+			onError: (error) => dispatch({ type: "error", error }),
+		})
+	}, [permitId])
 
 	return state
 }

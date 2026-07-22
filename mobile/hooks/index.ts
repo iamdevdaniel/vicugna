@@ -13,8 +13,9 @@ export {
 	useReadBulkParticipants,
 	useReadSingleParticipant,
 } from "./participant-read"
-export { useReadPermits } from "./permit-read"
+export { useReadPermits, useReadSinglePermit } from "./permit-read"
 export { useLoadPermits } from "./permit-load"
+export { useSyncPermit } from "./permit-write"
 export { useSingleParticipantActions } from "./participant-write"
 export { useReadSingleShearingHeader } from "./shearing-header-read"
 export { useSingleShearingHeaderActions } from "./shearing-header-write"

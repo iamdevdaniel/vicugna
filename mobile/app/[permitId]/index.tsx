@@ -1,16 +1,14 @@
-import { submitSyncFieldData } from "@api"
 import { StepList, type StepState, TotalChip } from "@components"
-import { getFieldSyncData } from "@database"
 import {
 	useReadBulkCleaningCommon,
 	useReadBulkDehearing,
 	useReadBulkGrooming,
 	useReadBulkParticipants,
 	useReadBulkShearingRecords,
-	useReadPermits,
 	useReadSingleCleaningHeader,
+	useReadSinglePermit,
+	useSyncPermit,
 } from "@hooks"
-import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
 import { getDependentStepState } from "@utils/misc"
 import { getCommunityName } from "@utils/regionals"
@@ -32,11 +30,12 @@ export default function () {
 		permitId: string
 		permitNumber?: string
 	}>()
-	const { data: permits } = useReadPermits()
+	const { data: permit } = useReadSinglePermit(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const { data: records } = useReadBulkShearingRecords(permitId)
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningRecords } = useReadBulkCleaningCommon(permitId)
+	const { syncPermit, clearError: clearSyncError } = useSyncPermit()
 	const cleaningRecordIds = cleaningRecords.map((record) => record.id)
 	const { data: groomingRecords } = useReadBulkGrooming(cleaningRecordIds)
 	const { data: dehearingRecords } = useReadBulkDehearing(cleaningRecordIds)
@@ -68,7 +67,7 @@ export default function () {
 		participantsState === "done" &&
 		shearingState === "done" &&
 		cleaningState === "done"
-	const permit = permits.find((item) => item.id === permitId)
+	const isPermitSynced = permit?.isSynced === true
 	const communityName = permit
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
@@ -92,6 +91,7 @@ export default function () {
 
 	const onOpenStep = (route: Parameters<typeof router.push>[0]) => {
 		hideSnackbar()
+		clearSyncError()
 		router.push(route)
 	}
 
@@ -107,30 +107,19 @@ export default function () {
 				{
 					text: "Continuar",
 					onPress: async () => {
-						try {
-							const payload = await getFieldSyncData(permitId)
-							const token = useMobileAuthStore.getState().token
+						const result = await syncPermit(permitId)
 
-							if (!token) {
-								Alert.alert(
-									"Error",
-									"Debes iniciar sesion para enviar este permiso",
-								)
-								return
-							}
-
-							await submitSyncFieldData(token, payload)
+						if (result.ok) {
 							showSuccessSnackbar(
-								"El permiso se valido correctamente",
+								"El permiso se envio correctamente",
 							)
-						} catch (error) {
-							Alert.alert(
-								"Error",
-								error instanceof Error
-									? error.message
-									: "No se pudo preparar el envio",
-							)
+							return
 						}
+
+						Alert.alert(
+							"Error",
+							result.error ?? "No se pudo enviar el permiso",
+						)
 					},
 				},
 			],
@@ -277,20 +266,22 @@ export default function () {
 						textAlign: "center",
 					}}
 				>
-					{canSendPermit
-						? "Finaliza este permiso cuando ya no queden cambios por hacer."
-						: "Completa los pasos de arriba para poder enviar este permiso."}
+					{isPermitSynced
+						? "Solicita al admin permiso para editar este envio."
+						: canSendPermit
+							? "Finaliza este permiso cuando ya no queden cambios por hacer."
+							: "Completa los pasos de arriba para poder enviar este permiso."}
 				</Text>
 				<Button
 					mode="contained"
-					icon="cloud-upload"
+					icon={isPermitSynced ? "lock" : "cloud-upload"}
 					contentStyle={{ height: 48 }}
 					buttonColor={theme.colors.custom.green}
 					textColor={theme.colors.custom.white}
-					disabled={!canSendPermit}
+					disabled={!canSendPermit || isPermitSynced}
 					onPress={onPressSend}
 				>
-					Finalizar y enviar
+					{isPermitSynced ? "Envío bloqueado" : "Finalizar y enviar"}
 				</Button>
 			</View>
 			<Animated.View

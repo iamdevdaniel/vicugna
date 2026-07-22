@@ -11,8 +11,8 @@ export async function submitSyncFieldData(data: SyncFieldData) {
 
 	return {
 		permitId: data.permit.id,
-		validated: true,
-		dryRun: true,
+		isSynced: true,
+		syncedAt: new Date().toISOString(),
 	}
 }
 

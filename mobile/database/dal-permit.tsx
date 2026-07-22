@@ -35,6 +35,21 @@ export function subscribePermits(
 	return () => sub.unsubscribe()
 }
 
+export function subscribeSinglePermit(
+	permitId: string,
+	callbacks: SubscriptionCallback<PermitData>,
+): () => void {
+	const sub = database
+		.get<PermitModel>("permits")
+		.findAndObserve(permitId)
+		.subscribe({
+			next: (record) => callbacks.onChange(mapToPermit(record)),
+			error: (error) => callbacks.onError(error as Error),
+		})
+
+	return () => sub.unsubscribe()
+}
+
 //-------------------WRITE-------------------
 
 export async function savePermits(permits: PermitData[]): Promise<void> {
@@ -136,4 +151,21 @@ export async function savePermits(permits: PermitData[]): Promise<void> {
 	} finally {
 		savingPermits = false
 	}
+}
+
+export async function updatePermitSyncStatus(data: {
+	permitId: string
+	isSynced: boolean
+	syncedAt: string | null
+}): Promise<void> {
+	const permit = await database
+		.get<PermitModel>("permits")
+		.find(data.permitId)
+
+	await database.write(async () => {
+		await permit.update((model) => {
+			model.isSynced = data.isSynced
+			model.syncedAt = data.syncedAt
+		})
+	})
 }
