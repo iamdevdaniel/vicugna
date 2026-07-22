@@ -1,10 +1,14 @@
-import { AccentCard, StepList, TotalChip } from "@components"
-import { useReadBulkShearingRecords, useReadSingleShearingHeader } from "@hooks"
+import { AccentCard, ReadOnlyNotice, StepList, TotalChip } from "@components"
+import {
+	useReadBulkShearingRecords,
+	useReadSinglePermit,
+	useReadSingleShearingHeader,
+} from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
-import { Button, IconButton } from "react-native-paper"
+import { Button } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 export default function () {
@@ -14,6 +18,8 @@ export default function () {
 		permitId: string
 		permitNumber?: string
 	}>()
+	const { data: permit } = useReadSinglePermit(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 	const { data: shearingForm } = useReadSingleShearingHeader(permitId)
 	const { data: shearingRecords } = useReadBulkShearingRecords(permitId)
 
@@ -34,6 +40,7 @@ export default function () {
 				}}
 				style={{ flex: 1 }}
 			>
+				{isPermitReadOnly && <ReadOnlyNotice />}
 				<StepList
 					steps={[
 						{
@@ -58,6 +65,14 @@ export default function () {
 											key={record.id}
 											accent={theme.colors.tertiary}
 											prefix={index + 1}
+											onPress={() =>
+												router.push(
+													ROUTES.SHEARING.RECORD(
+														permitId,
+														record.id,
+													),
+												)
+											}
 											style={{
 												backgroundColor:
 													theme.colors.surfaceVariant,
@@ -65,34 +80,13 @@ export default function () {
 										>
 											<View
 												style={{
-													flexDirection: "row",
-													alignItems: "center",
-													paddingRight: 4,
-													paddingVertical: 6,
+													justifyContent: "center",
+													paddingVertical: 10,
 												}}
 											>
-												<View style={{ flex: 1 }}>
-													<Text>
-														{record.liveWeight} kg
-													</Text>
-												</View>
-												<IconButton
-													icon="chevron-right"
-													size={18}
-													iconColor={
-														theme.colors.custom
-															.green
-													}
-													onPress={() =>
-														router.push(
-															ROUTES.SHEARING.RECORD(
-																permitId,
-																record.id,
-															),
-														)
-													}
-													style={{ margin: 0 }}
-												/>
+												<Text>
+													{record.liveWeight} kg
+												</Text>
 											</View>
 										</AccentCard>
 									))}
@@ -117,6 +111,7 @@ export default function () {
 					mode="contained"
 					icon="plus"
 					contentStyle={{ height: 48 }}
+					disabled={isPermitReadOnly}
 					onPress={() =>
 						router.push(ROUTES.SHEARING.RECORD(permitId))
 					}

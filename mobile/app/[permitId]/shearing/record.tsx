@@ -1,7 +1,8 @@
-import { LabeledInput, ToggleButtonGroup } from "@components"
+import { LabeledInput, ReadOnlyNotice, ToggleButtonGroup } from "@components"
 import type { ShearingRecordFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
+	useReadSinglePermit,
 	useReadSingleShearingRecordFormData,
 	useSingleShearingRecordActions,
 } from "@hooks"
@@ -33,6 +34,8 @@ export default function () {
 		permitId: string
 		recordId?: string
 	}>()
+	const { data: permit } = useReadSinglePermit(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 	const isEditForm = !!recordId
 	const { data, loading: loadingData } =
 		useReadSingleShearingRecordFormData(recordId)
@@ -108,13 +111,15 @@ export default function () {
 				<Stack.Screen options={{ title: "Registro de esquila" }} />
 				<ScrollView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
 					keyboardShouldPersistTaps="handled"
 				>
+					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Numero de arete"
 						labelPrefix="1"
 						error={errors.tagNumber?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -131,6 +136,7 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.tagNumber}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -140,6 +146,7 @@ export default function () {
 						label="Sexo"
 						labelPrefix="2"
 						error={errors.sex?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -152,6 +159,7 @@ export default function () {
 										{ label: "Macho", value: "M" },
 										{ label: "Hembra", value: "F" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -161,6 +169,7 @@ export default function () {
 						label="Edad"
 						labelPrefix="3"
 						error={errors.ageCategory?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -174,6 +183,7 @@ export default function () {
 										{ label: "Juvenil", value: "Juvenil" },
 										{ label: "Adulto", value: "Adulto" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -184,6 +194,7 @@ export default function () {
 						labelPrefix="4"
 						labelSuffix="kg"
 						error={errors.liveWeight?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -200,6 +211,7 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="decimal-pad"
 									error={!!errors.liveWeight}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -210,6 +222,7 @@ export default function () {
 						labelPrefix="5"
 						labelSuffix="cm"
 						error={errors.fiberLength?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -226,6 +239,7 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="decimal-pad"
 									error={!!errors.fiberLength}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -235,6 +249,7 @@ export default function () {
 						label="Condicion corporal"
 						labelPrefix="6"
 						error={errors.bodyCondition?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -248,6 +263,7 @@ export default function () {
 										{ label: "Regular", value: "Regular" },
 										{ label: "Bueno", value: "Bueno" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -257,6 +273,7 @@ export default function () {
 						label="Gestacion"
 						labelPrefix="7"
 						error={errors.gestationStatus?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -273,6 +290,7 @@ export default function () {
 											value: "Si ultimo tercio",
 										},
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -282,6 +300,7 @@ export default function () {
 						label="Parasitos externos"
 						labelPrefix="8"
 						error={errors.externalParasites?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -301,6 +320,7 @@ export default function () {
 										},
 										{ label: "Piojos", value: "Piojos" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -310,6 +330,7 @@ export default function () {
 						label="Sarna"
 						labelPrefix="9"
 						error={errors.mangeSeverity?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -331,12 +352,17 @@ export default function () {
 										{ label: "Severo", value: "Severo" },
 									]}
 									columns={2}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
 					</LabeledInput>
 
-					<LabeledInput label="Caspa" labelPrefix="10">
+					<LabeledInput
+						label="Caspa"
+						labelPrefix="10"
+						disabled={isPermitReadOnly}
+					>
 						<Controller
 							control={control}
 							name="hasDandruff"
@@ -348,12 +374,17 @@ export default function () {
 										{ label: "No", value: "No" },
 										{ label: "Si", value: "Si" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
 					</LabeledInput>
 
-					<LabeledInput label="Esquilado" labelPrefix="11">
+					<LabeledInput
+						label="Esquilado"
+						labelPrefix="11"
+						disabled={isPermitReadOnly}
+					>
 						<Controller
 							control={control}
 							name="isSheared"
@@ -365,12 +396,17 @@ export default function () {
 										{ label: "No", value: "No" },
 										{ label: "Si", value: "Si" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
 					</LabeledInput>
 
-					<LabeledInput label="Muerto" labelPrefix="12">
+					<LabeledInput
+						label="Muerto"
+						labelPrefix="12"
+						disabled={isPermitReadOnly}
+					>
 						<Controller
 							control={control}
 							name="isDead"
@@ -382,6 +418,7 @@ export default function () {
 										{ label: "No", value: "No" },
 										{ label: "Si", value: "Si" },
 									]}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -391,6 +428,7 @@ export default function () {
 						label="Observaciones"
 						labelPrefix="13"
 						error={errors.observations?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -411,6 +449,7 @@ export default function () {
 										textAlignVertical: "top",
 									}}
 									error={!!errors.observations}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -427,6 +466,7 @@ export default function () {
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
 							disabled={
+								isPermitReadOnly ||
 								!isValid ||
 								isWaitingForEditData ||
 								saving ||
@@ -441,13 +481,21 @@ export default function () {
 							<Button
 								mode="contained"
 								onPress={onDelete}
-								disabled={saving || deleting}
+								disabled={
+									isPermitReadOnly || saving || deleting
+								}
 								style={{
 									flex: 1,
 									backgroundColor:
-										theme.colors.custom.crimson,
+										isPermitReadOnly || saving || deleting
+											? theme.colors.surfaceDisabled
+											: theme.colors.custom.crimson,
 								}}
-								textColor={theme.colors.onError}
+								textColor={
+									isPermitReadOnly || saving || deleting
+										? theme.colors.onSurfaceDisabled
+										: theme.colors.onError
+								}
 								loading={deleting}
 							>
 								Borrar

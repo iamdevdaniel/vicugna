@@ -7,8 +7,8 @@ import {
 import type { ParticipantFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
-	usePermitReadOnly,
 	useReadSingleParticipant,
+	useReadSinglePermit,
 	useSingleParticipantActions,
 } from "@hooks"
 import { useAppTheme } from "@utils/useAppTheme"
@@ -31,8 +31,9 @@ export default function () {
 		permitId: string
 		participantId: string
 	}>()
+	const { data: permit } = useReadSinglePermit(permitId)
 	const { data, loading } = useReadSingleParticipant(participantId)
-	const isPermitReadOnly = usePermitReadOnly(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 	const {
 		createSingleParticipant,
 		updateSingleParticipant,

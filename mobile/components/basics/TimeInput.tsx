@@ -11,6 +11,7 @@ type TimeInputProps = {
 	onChange: (value: string) => void
 	error?: boolean
 	placeholder?: string
+	disabled?: boolean
 }
 
 const formatDisplayTime = (time: string | undefined) => {
@@ -26,6 +27,7 @@ export function TimeInput({
 	onChange,
 	error,
 	placeholder = "Seleccionar hora",
+	disabled = false,
 }: TimeInputProps) {
 	const theme = useAppTheme()
 	const [show, setShow] = useState(false)
@@ -48,7 +50,10 @@ export function TimeInput({
 	return (
 		<>
 			<Pressable
-				onPress={() => setShow(true)}
+				onPress={() => {
+					if (!disabled) setShow(true)
+				}}
+				disabled={disabled}
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
@@ -62,6 +67,7 @@ export function TimeInput({
 					height: 56,
 					backgroundColor: theme.colors.surface,
 					marginVertical: 4,
+					opacity: disabled ? 0.6 : 1,
 				}}
 			>
 				<Text
@@ -82,7 +88,7 @@ export function TimeInput({
 				/>
 			</Pressable>
 
-			{show && (
+			{show && !disabled && (
 				<DateTimePicker
 					value={
 						value ? new Date(`1970-01-01T${value}:00`) : new Date()

@@ -14,7 +14,6 @@ export {
 	useReadSingleParticipant,
 } from "./participant-read"
 export {
-	usePermitReadOnly,
 	useReadPermits,
 	useReadSinglePermit,
 } from "./permit-read"

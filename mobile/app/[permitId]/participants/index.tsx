@@ -1,5 +1,5 @@
 import { AccentCard, ReadOnlyNotice } from "@components"
-import { usePermitReadOnly, useReadBulkParticipants } from "@hooks"
+import { useReadBulkParticipants, useReadSinglePermit } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams } from "expo-router"
@@ -13,8 +13,9 @@ export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { data: permit } = useReadSinglePermit(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
-	const isPermitReadOnly = usePermitReadOnly(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 
 	const total = participants?.length || 0
 	const maleCount = participants?.filter((p) => p.gender === "M").length || 0

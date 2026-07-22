@@ -1,7 +1,8 @@
-import { LabeledInput, TimeInput } from "@components"
+import { LabeledInput, ReadOnlyNotice, TimeInput } from "@components"
 import type { ShearingHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
+	useReadSinglePermit,
 	useReadSingleShearingHeader,
 	useSingleShearingHeaderActions,
 } from "@hooks"
@@ -22,6 +23,8 @@ export default function () {
 		permitId: string
 		headerId: string
 	}>()
+	const { data: permit } = useReadSinglePermit(permitId)
+	const isPermitReadOnly = permit?.isSynced === true
 	const { data, loading } = useReadSingleShearingHeader(permitId)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
 
@@ -76,13 +79,15 @@ export default function () {
 				/>
 				<ScrollView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
 					keyboardShouldPersistTaps="handled"
 				>
+					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Sitio"
 						labelPrefix="1"
 						error={errors.site?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -97,6 +102,7 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.site}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -106,6 +112,7 @@ export default function () {
 						label="Latitud"
 						labelPrefix="2"
 						error={errors.latitude?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -122,6 +129,7 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.latitude}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -131,6 +139,7 @@ export default function () {
 						label="Longitud"
 						labelPrefix="3"
 						error={errors.longitude?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -147,15 +156,17 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.longitude}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
 					</LabeledInput>
 
 					<LabeledInput
-						label="Cantidad de encierros"
+						label="Cantidad de arreos"
 						labelPrefix="4"
 						error={errors.roundupCount?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -172,6 +183,7 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.roundupCount}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -181,6 +193,7 @@ export default function () {
 						label="Hora de inicio"
 						labelPrefix="5"
 						error={errors.startTime?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -190,6 +203,7 @@ export default function () {
 									value={value}
 									onChange={onChange}
 									error={!!errors.startTime}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -199,6 +213,7 @@ export default function () {
 						label="Hora de fin"
 						labelPrefix="6"
 						error={errors.endTime?.message}
+						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -208,6 +223,7 @@ export default function () {
 									value={value}
 									onChange={onChange}
 									error={!!errors.endTime}
+									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -219,7 +235,7 @@ export default function () {
 						<Button
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
-							disabled={!isValid || saving}
+							disabled={isPermitReadOnly || !isValid || saving}
 							style={{ flex: 1 }}
 							loading={saving}
 						>
@@ -228,6 +244,7 @@ export default function () {
 						<Button
 							mode="outlined"
 							onPress={() => reset(defaultValuesShearingHeader)}
+							disabled={isPermitReadOnly}
 							style={{ flex: 1 }}
 						>
 							Limpiar
