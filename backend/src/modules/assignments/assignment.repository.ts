@@ -9,21 +9,6 @@ import type {
 	SelectOption,
 } from "./assignment.types"
 
-export async function listSeasons(): Promise<SelectOption[]> {
-	const rows = await db.query.seasons.findMany({
-		orderBy: (table, { desc, asc: sortAsc }) => [
-			desc(table.isActive),
-			sortAsc(table.startDate),
-			sortAsc(table.name),
-		],
-	})
-
-	return rows.map((season) => ({
-		id: season.id,
-		name: season.name,
-	}))
-}
-
 export async function listCommunities(): Promise<SelectOption[]> {
 	const rows = await db.query.communities.findMany({
 		orderBy: (table, { asc: sortAsc }) => [sortAsc(table.name)],

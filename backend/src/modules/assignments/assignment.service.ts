@@ -1,3 +1,4 @@
+import { listSeasons } from "@common"
 import {
 	getPostgresConstraintName,
 	POSTGRES_ERROR_CODES,
@@ -14,7 +15,6 @@ import {
 	listCommunities,
 	listEligibleAssignmentUsersByPermit,
 	listPermitsBySeason,
-	listSeasons,
 	replaceAssignmentsForPermit as replaceAssignmentsForPermitRecord,
 	setActiveAssignment as setActiveAssignmentRecord,
 	updatePermitNumber as updatePermitNumberRecord,
