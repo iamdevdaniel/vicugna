@@ -9,23 +9,25 @@ function monitoringPageState(initialData) {
 		seasonId: initialData.seasonId,
 		communityGroups: initialData.communityGroups,
 		search: savedState?.search ?? "",
+		showSyncedOnly: savedState?.showSyncedOnly ?? false,
 		expandedCommunityIds: initialExpandedIds,
+		scrollSaveTimeout: null,
 		init() {
 			this.$nextTick(() => {
 				if (
 					!this.$refs.scrollContainer ||
 					typeof savedState?.scrollTop !== "number"
-				) {
+				)
 					return
-				}
 
 				this.$refs.scrollContainer.scrollTop = savedState.scrollTop
 			})
 		},
 		get filteredCommunityGroups() {
 			const search = this.search.trim().toLowerCase()
+			const showSyncedOnly = this.showSyncedOnly
 
-			if (!search) {
+			if (!search && !showSyncedOnly) {
 				return this.communityGroups
 			}
 
@@ -33,6 +35,10 @@ function monitoringPageState(initialData) {
 				.map((community) => ({
 					...community,
 					permits: community.permits.filter((permit) => {
+						if (showSyncedOnly && !permit.isSynced) {
+							return false
+						}
+
 						const haystack = [
 							community.communityName,
 							permit.permitNumber,
@@ -41,17 +47,27 @@ function monitoringPageState(initialData) {
 							.join(" ")
 							.toLowerCase()
 
+						if (!search) {
+							return true
+						}
+
 						return haystack.includes(search)
 					}),
 				}))
 				.filter((community) => community.permits.length > 0)
 		},
 		isExpanded(communityId) {
-			if (this.search.trim()) {
+			if (this.search.trim() || this.showSyncedOnly) {
 				return true
 			}
 
 			return this.expandedCommunityIds.includes(communityId)
+		},
+		get areAllCommunitiesExpanded() {
+			return (
+				this.communityGroups.length > 0 &&
+				this.expandedCommunityIds.length === this.communityGroups.length
+			)
 		},
 		toggleCommunity(communityId) {
 			if (this.expandedCommunityIds.includes(communityId)) {
@@ -67,18 +83,27 @@ function monitoringPageState(initialData) {
 
 			this.saveState()
 		},
-		expandAll() {
-			this.expandedCommunityIds = this.communityGroups.map(
-				(community) => community.communityId,
-			)
+		toggleAllCommunities() {
+			if (this.areAllCommunitiesExpanded) {
+				this.expandedCommunityIds = []
+			} else {
+				this.expandedCommunityIds = this.communityGroups.map(
+					(community) => community.communityId,
+				)
+			}
+
 			this.saveState()
 		},
-		collapseAll() {
-			this.expandedCommunityIds = []
+		toggleShowSyncedOnly() {
+			this.showSyncedOnly = !this.showSyncedOnly
 			this.saveState()
 		},
 		handleScroll() {
-			this.saveState()
+			clearTimeout(this.scrollSaveTimeout)
+
+			this.scrollSaveTimeout = setTimeout(() => {
+				this.saveState()
+			}, 150)
 		},
 		principalUserName(permit) {
 			const principalUser = permit.users.find((user) => user.active)
@@ -96,6 +121,7 @@ function monitoringPageState(initialData) {
 		saveState() {
 			const stateToSave = {
 				search: this.search,
+				showSyncedOnly: this.showSyncedOnly,
 				expandedCommunityIds: this.expandedCommunityIds,
 				scrollTop: this.$refs.scrollContainer?.scrollTop ?? 0,
 			}
