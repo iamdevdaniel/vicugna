@@ -16,6 +16,9 @@ export interface MonitoringPermitGroup {
 	permitNumber: string
 	isSynced: boolean
 	syncedAt: string | null
+	participantsCount: number | null
+	cleaningRecordsCount: number | null
+	shearingRecordsCount: number | null
 	users: MonitoringAssignedUser[]
 }
 
