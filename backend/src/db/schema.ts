@@ -328,6 +328,43 @@ export const permitRelations = relations(permits, ({ one, many }) => ({
 	cleaningCommonRecords: many(cleaningCommonRecords),
 }))
 
+export const participantRelations = relations(participants, ({ one }) => ({
+	permit: one(permits, {
+		fields: [participants.permitId],
+		references: [permits.id],
+	}),
+}))
+
+export const shearingHeaderRelations = relations(
+	shearingHeaders,
+	({ one }) => ({
+		permit: one(permits, {
+			fields: [shearingHeaders.permitId],
+			references: [permits.id],
+		}),
+	}),
+)
+
+export const shearingRecordRelations = relations(
+	shearingRecords,
+	({ one }) => ({
+		permit: one(permits, {
+			fields: [shearingRecords.permitId],
+			references: [permits.id],
+		}),
+	}),
+)
+
+export const cleaningHeaderRelations = relations(
+	cleaningHeaders,
+	({ one }) => ({
+		permit: one(permits, {
+			fields: [cleaningHeaders.permitId],
+			references: [permits.id],
+		}),
+	}),
+)
+
 export const cleaningCommonRecordRelations = relations(
 	cleaningCommonRecords,
 	({ one }) => ({

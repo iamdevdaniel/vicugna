@@ -6,7 +6,13 @@ export async function listMonitoringAssignments(seasonId: string) {
 		where: eq(assignments.seasonId, seasonId),
 		with: {
 			community: true,
-			permit: true,
+			permit: {
+				with: {
+					participants: true,
+					shearingRecords: true,
+					cleaningCommonRecords: true,
+				},
+			},
 			user: true,
 		},
 		orderBy: (table, { asc: sortAsc }) => [

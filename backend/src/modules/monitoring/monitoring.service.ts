@@ -98,11 +98,6 @@ function buildCommunityGroups(
 function createPermitGroup(
 	assignment: Awaited<ReturnType<typeof listMonitoringAssignments>>[number],
 ): MonitoringPermitGroup {
-	const mockedMetrics = buildMockedPermitMetrics(
-		assignment.permitId,
-		assignment.permit.isSynced,
-	)
-
 	return {
 		permitId: assignment.permitId,
 		communityId: assignment.communityId,
@@ -110,31 +105,16 @@ function createPermitGroup(
 		permitNumber: assignment.permit.permitNumber,
 		isSynced: assignment.permit.isSynced,
 		syncedAt: assignment.permit.syncedAt?.toISOString() ?? null,
-		participantsCount: mockedMetrics.participantsCount,
-		cleaningRecordsCount: mockedMetrics.cleaningRecordsCount,
-		shearingRecordsCount: mockedMetrics.shearingRecordsCount,
+		participantsCount: assignment.permit.isSynced
+			? assignment.permit.participants.length
+			: null,
+		cleaningRecordsCount: assignment.permit.isSynced
+			? assignment.permit.cleaningCommonRecords.length
+			: null,
+		shearingRecordsCount: assignment.permit.isSynced
+			? assignment.permit.shearingRecords.length
+			: null,
 		users: [],
-	}
-}
-
-function buildMockedPermitMetrics(permitId: string, isSynced: boolean) {
-	if (!isSynced) {
-		return {
-			participantsCount: null,
-			cleaningRecordsCount: null,
-			shearingRecordsCount: null,
-		}
-	}
-
-	const seed = Array.from(permitId).reduce(
-		(total, character) => total + character.charCodeAt(0),
-		0,
-	)
-
-	return {
-		participantsCount: 8 + (seed % 9),
-		cleaningRecordsCount: 3 + (seed % 4),
-		shearingRecordsCount: 5 + (seed % 6),
 	}
 }
 
