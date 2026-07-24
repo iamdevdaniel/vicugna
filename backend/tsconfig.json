@@ -11,10 +11,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@common": ["./src/modules/common/common.repository"],
       "@config": ["./src/config/index"],
       "@db": ["./src/db/index"],
-      "@permits": ["./src/modules/permits/index"],
       "@shared": ["../shared/types.d.ts"],
       "@shared/*": ["../shared/*"]
     }

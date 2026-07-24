@@ -1,6 +1,6 @@
-import { getMobileUserFromAuthorization } from "../../mobile-auth/mobile_auth.service"
-import { listMobilePermitsByUserId } from "./permits.repository"
-import type { MobilePermitData } from "./permits.types"
+import { getMobileUserFromAuthorization } from "../mobile-auth/mobile_auth.service"
+import { listMobilePermitsByUserId } from "./mobile_out.repository"
+import type { MobilePermitData } from "./mobile_out.types"
 
 export async function listMobileUserPermits(
 	authorizationHeader?: string,

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 
-import { MobileAuthError } from "../../mobile-auth/mobile_auth.errors"
-import { listMobileUserPermits } from "./permits.service"
+import { MobileAuthError } from "../mobile-auth/mobile_auth.errors"
+import { listMobileUserPermits } from "./mobile_out.service"
 
 export async function listMobilePermits(req: Request, res: Response) {
 	try {

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
-import { PermitNotFoundError, PermitValidationError } from "./permit.errors"
-import { submitSyncFieldData } from "./permit.service"
-import type { SyncFieldData } from "./permit.types"
+import { PermitNotFoundError, PermitValidationError } from "./mobile_in.errors"
+import { submitSyncFieldData } from "./mobile_in.service"
+import type { SyncFieldData } from "./mobile_in.types"
 
 export async function syncPermit(
 	req: Request<Record<string, never>, Record<string, never>, SyncFieldData>,

@@ -1,8 +1,8 @@
-import { listSeasons } from "@common"
 import {
 	getPostgresConstraintName,
 	POSTGRES_ERROR_CODES,
 } from "../../db/errors"
+import { listSeasons } from "../common/common.repository"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
 	createPermit as createPermitRecord,

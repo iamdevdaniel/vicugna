@@ -1,4 +1,4 @@
-import { listSeasons } from "@common"
+import { listSeasons } from "../common/common.repository"
 import { listMonitoringAssignments } from "./monitoring.repository"
 import type {
 	MonitoringCommunityGroup,

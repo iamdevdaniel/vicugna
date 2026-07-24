@@ -1,8 +1,8 @@
 import { db } from "@db"
 import { eq } from "drizzle-orm"
 
-import { assignments } from "../../../db/schema"
-import type { MobilePermitData } from "./permits.types"
+import { assignments } from "../../db/schema"
+import type { MobilePermitData } from "./mobile_out.types"
 
 export async function listMobilePermitsByUserId(
 	userId: string,

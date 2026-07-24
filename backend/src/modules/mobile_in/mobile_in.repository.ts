@@ -10,9 +10,9 @@ import {
 	shearingHeaders,
 	shearingRecords,
 } from "../../db/schema"
-import { PermitNotFoundError } from "./permit.errors"
+import { PermitNotFoundError } from "./mobile_in.errors"
 
-import type { SyncFieldData } from "./permit.types"
+import type { SyncFieldData } from "./mobile_in.types"
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 

@@ -16,6 +16,7 @@ npm run db -- seed seasons
 npm run db -- seed regionals
 npm run db -- seed users
 npm run db -- seed asg
+npm run db -- seed asg-reset
 */
 
 const backendDir = path.resolve(__dirname, "..")
@@ -29,6 +30,7 @@ const seedTargets = {
 	seasons: "dist/db/seeders/seed-seasons.js",
 	users: "dist/db/seeders/seed-users.js",
 	asg: "dist/db/seeders/seed-assignments.js",
+	"asg-reset": "dist/db/seeders/reset-assignments-sync.js",
 }
 
 const action = process.argv[2]
@@ -72,7 +74,9 @@ switch (action) {
 
 function runSeed(target) {
 	if (!target || !seedTargets[target]) {
-		console.error("Unknown seed target. Use: regionals, seasons, users or asg")
+		console.error(
+			"Unknown seed target. Use: regionals, seasons, users, asg or asg-reset",
+		)
 		process.exit(1)
 	}
 

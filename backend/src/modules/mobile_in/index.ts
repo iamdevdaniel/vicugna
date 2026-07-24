@@ -1,4 +1,4 @@
-export { permitRoutes } from "./permit.routes"
+export { mobileInRoutes } from "./mobile_in.routes"
 export type {
 	CleaningCommonData,
 	CleaningHeaderData,
@@ -9,4 +9,4 @@ export type {
 	ShearingHeaderData,
 	ShearingRecordData,
 	SyncFieldData,
-} from "./permit.types"
+} from "./mobile_in.types"

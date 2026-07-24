@@ -1,6 +1,5 @@
 import path from "node:path"
 import { env, isDatabaseConnectionError, pool } from "@config"
-import { permitRoutes } from "@permits"
 import connectPgSimple from "connect-pg-simple"
 import cors from "cors"
 import express, {
@@ -11,7 +10,8 @@ import express, {
 import session from "express-session"
 
 import { adminRoutes } from "./modules/admin/admin.routes"
-import { mobileClientRoutes } from "./modules/mobile_client/mobile_client.routes"
+import { mobileInRoutes } from "./modules/mobile_in"
+import { mobileOutRoutes } from "./modules/mobile_out"
 import { mobileAuthRoutes } from "./modules/mobile-auth/mobile_auth.routes"
 
 export const app = express()
@@ -42,8 +42,8 @@ app.set("view engine", "ejs")
 app.use(express.static(path.join(srcDir, "public")))
 app.use("/admin", adminRoutes)
 app.use("/mobile/auth", mobileAuthRoutes)
-app.use("/mobile", mobileClientRoutes)
-app.use("/permits", permitRoutes)
+app.use("/mobile", mobileOutRoutes)
+app.use("/permits", mobileInRoutes)
 
 app.get("/", (_req: Request, res: Response) => {
 	res.json({ message: "Vicugna backend is running" })

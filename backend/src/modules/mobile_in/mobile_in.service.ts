@@ -1,6 +1,6 @@
-import { PermitValidationError } from "./permit.errors"
-import { saveSyncFieldData } from "./permit.repository"
-import type { SyncFieldData } from "./permit.types"
+import { PermitValidationError } from "./mobile_in.errors"
+import { saveSyncFieldData } from "./mobile_in.repository"
+import type { SyncFieldData } from "./mobile_in.types"
 
 export async function submitSyncFieldData(data: SyncFieldData) {
 	validatePermit(data)
