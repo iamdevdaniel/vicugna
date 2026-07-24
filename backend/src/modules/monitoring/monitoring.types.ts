@@ -29,7 +29,12 @@ export interface SelectedMonitoringPermit {
 	permitNumber: string
 	isSynced: boolean
 	syncedAt: string | null
+	syncedAtLabel: string | null
 	assignedUsersCount: number
+	participantsCount: number | null
+	cleaningRecordsCount: number | null
+	shearingRecordsCount: number | null
+	users: MonitoringAssignedUser[]
 }
 
 export interface MonitoringCommunityGroup {

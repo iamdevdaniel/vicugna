@@ -142,9 +142,29 @@ function getSelectedPermit(
 			permitNumber: permit.permitNumber,
 			isSynced: permit.isSynced,
 			syncedAt: permit.syncedAt,
+			syncedAtLabel: formatSyncedAtLabel(permit.syncedAt),
 			assignedUsersCount: permit.users.length,
+			participantsCount: permit.participantsCount,
+			cleaningRecordsCount: permit.cleaningRecordsCount,
+			shearingRecordsCount: permit.shearingRecordsCount,
+			users: permit.users,
 		}
 	}
 
 	return null
+}
+
+function formatSyncedAtLabel(syncedAt: string | null) {
+	if (!syncedAt) {
+		return null
+	}
+
+	return new Intl.DateTimeFormat("es-BO", {
+		weekday: "long",
+		day: "2-digit",
+		month: "2-digit",
+		year: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+	}).format(new Date(syncedAt))
 }
