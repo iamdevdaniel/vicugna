@@ -1,34 +1,7 @@
-import { readFile } from "node:fs/promises"
-import path from "node:path"
 import { pool } from "@config"
 import { db } from "@db"
+import { readRegionalsCatalog } from "../../modules/common/common.catalog"
 import { communities, departments, regionals } from "../schema"
-
-type CommunitySeed = {
-	id: string
-	name: string
-}
-
-type RegionalSeed = {
-	id: string
-	name: string
-	communities: CommunitySeed[]
-}
-
-type DepartmentSeed = {
-	id: string
-	name: string
-	regionals: RegionalSeed[]
-}
-
-type RegionalsCatalog = Record<string, DepartmentSeed>
-
-async function readRegionalsCatalog(): Promise<RegionalsCatalog> {
-	const filePath = path.resolve(process.cwd(), "../shared/regionals.json")
-	const file = await readFile(filePath, "utf8")
-
-	return JSON.parse(file) as RegionalsCatalog
-}
 
 async function seedRegionalsCatalog() {
 	const catalog = await readRegionalsCatalog()

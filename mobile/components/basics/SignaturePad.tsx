@@ -100,7 +100,8 @@ export function SignaturePad({
 			>
 				<Canvas
 					style={{
-						height: 200,
+						width: "100%",
+						aspectRatio: 3.2,
 						backgroundColor: "white",
 					}}
 				>

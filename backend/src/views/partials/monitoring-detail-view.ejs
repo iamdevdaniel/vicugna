@@ -23,20 +23,20 @@
 				</div>
 
 				<div class="flex flex-wrap items-center gap-2 md:justify-end">
-					<% if (selectedPermit.isSynced) { %>
-						<button
-							type="button"
-							class="btn btn-outline btn-sm">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-								<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/>
-								<path d="M14 2v5a1 1 0 0 0 1 1h5"/>
-								<path d="M8 13h2"/>
+						<% if (selectedPermit.isSynced) { %>
+							<a
+								href="/admin/exports/participants/<%= selectedPermit.permitId %>"
+								class="btn btn-outline btn-sm">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/>
+									<path d="M14 2v5a1 1 0 0 0 1 1h5"/>
+									<path d="M8 13h2"/>
 								<path d="M14 13h2"/>
 								<path d="M8 17h2"/>
-								<path d="M14 17h2"/>
-							</svg>
-							Generar reportes
-						</button>
+									<path d="M14 17h2"/>
+								</svg>
+								Generar reportes
+							</a>
 						<span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-2 text-xs font-medium text-emerald-700">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 								<path d="m17 15-5.5 5.5L9 18"/>

@@ -50,3 +50,6 @@ AGENTS.md
 
 # Tailwind
 backend/src/public/admin.css
+
+# Excel templates
+.~lock.*

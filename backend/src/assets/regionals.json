@@ -1,0 +1,536 @@
+{
+	"COCHABAMBA": {
+		"id": "cochabamba",
+		"name": "COCHABAMBA",
+		"regionals": [
+			{
+				"id": "huaripucara-region-altamachi",
+				"name": "HUARIPUCARA REGIÓN ALTAMACHI",
+				"communities": [
+					{
+						"id": "huaripucara",
+						"name": "HUARIPUCARA"
+					},
+					{
+						"id": "incacasani-villavinto",
+						"name": "INCACASANI - VILLAVINTO"
+					},
+					{
+						"id": "machacayma",
+						"name": "MACHACAYMA"
+					}
+				]
+			}
+		]
+	},
+	"LA PAZ": {
+		"id": "la-paz",
+		"name": "LA PAZ",
+		"regionals": [
+			{
+				"id": "apolobamba",
+				"name": "APOLOBAMBA",
+				"communities": [
+					{
+						"id": "alto-hichocollo",
+						"name": "ALTO HICHOCOLLO"
+					},
+					{
+						"id": "amarka",
+						"name": "AMARKA"
+					},
+					{
+						"id": "apacheta",
+						"name": "APACHETA"
+					},
+					{
+						"id": "canuhuma",
+						"name": "CAÑUHUMA"
+					},
+					{
+						"id": "chari",
+						"name": "CHARI"
+					},
+					{
+						"id": "chuxna-quta",
+						"name": "CHUXÑA QUTA"
+					},
+					{
+						"id": "cotapampa",
+						"name": "COTAPAMPA"
+					},
+					{
+						"id": "hichocollo",
+						"name": "HICHOCOLLO"
+					},
+					{
+						"id": "hilo-hilo",
+						"name": "HILO HILO"
+					},
+					{
+						"id": "huacochani",
+						"name": "HUACOCHANI"
+					},
+					{
+						"id": "marka-cololo",
+						"name": "MARKA COLOLO"
+					},
+					{
+						"id": "medallani",
+						"name": "MEDALLANI"
+					},
+					{
+						"id": "nubepapa-y-antaquilla",
+						"name": "NUBEPAPA Y ANTAQUILLA"
+					},
+					{
+						"id": "plan-aeropuerto",
+						"name": "PLAN AEROPUERTO"
+					},
+					{
+						"id": "puyo-puyo-alto",
+						"name": "PUYO PUYO ALTO"
+					},
+					{
+						"id": "puyo-puyo-bajo",
+						"name": "PUYO PUYO BAJO"
+					},
+					{
+						"id": "taypi-canuhuma",
+						"name": "TAYPI CAÑUHUMA"
+					},
+					{
+						"id": "ucha-ucha",
+						"name": "UCHA UCHA"
+					},
+					{
+						"id": "ulla-ulla",
+						"name": "ULLA ULLA"
+					},
+					{
+						"id": "qutapampa",
+						"name": "QUTAPAMPA"
+					}
+				]
+			},
+			{
+				"id": "calacoto",
+				"name": "CALACOTO",
+				"communities": [
+					{
+						"id": "agua-rica",
+						"name": "AGUA RICA"
+					},
+					{
+						"id": "aylu-collana-baja",
+						"name": "AYLU COLLANA BAJA"
+					},
+					{
+						"id": "ninoca-chico",
+						"name": "NINOCA CHICO"
+					},
+					{
+						"id": "rosario",
+						"name": "ROSARIO"
+					},
+					{
+						"id": "ticapata",
+						"name": "TICAPATA"
+					}
+				]
+			},
+			{
+				"id": "san-andres-de-machaca",
+				"name": "SAN ANDRES DE MACHACA",
+				"communities": [
+					{
+						"id": "ayllu-erben-kallla-yaru",
+						"name": "AYLLU ERBEN KALLLA YARU"
+					},
+					{
+						"id": "ayllu-rosapata-yaru",
+						"name": "AYLLU ROSAPATA YARU"
+					},
+					{
+						"id": "communities-de-ayllu-levita-laquinamaya",
+						"name": "COMUNIDADES DE AYLLU LEVITA LAQUINAMAYA"
+					},
+					{
+						"id": "kanapata",
+						"name": "KANAPATA"
+					}
+				]
+			},
+			{
+				"id": "cmv-suelta-la-paz",
+				"name": "CMV SUELTA LA PAZ",
+				"communities": [
+					{
+						"id": "capinota",
+						"name": "CAPINOTA"
+					},
+					{
+						"id": "jachapampa",
+						"name": "JACHAPAMPA"
+					},
+					{
+						"id": "ulla-copa",
+						"name": "ULLA COPA"
+					}
+				]
+			}
+		]
+	},
+	"ORURO": {
+		"id": "oruro",
+		"name": "ORURO",
+		"regionals": [
+			{
+				"id": "carangas",
+				"name": "CARANGAS",
+				"communities": [
+					{
+						"id": "ayllu-ayocata-andapata-lupe",
+						"name": "AYLLU AYOCATA ANDAPATA LUPE"
+					},
+					{
+						"id": "san-pedro-de-huaylloco",
+						"name": "SAN PEDRO DE HUAYLLOCO"
+					},
+					{
+						"id": "wari-warito",
+						"name": "WARI WARITO"
+					}
+				]
+			},
+			{
+				"id": "quri-qarwa",
+				"name": "QURI QARWA",
+				"communities": [
+					{
+						"id": "ancorcaya",
+						"name": "ANCORCAYA"
+					},
+					{
+						"id": "ayllu-canal-collo",
+						"name": "AYLLU CANAL COLLO"
+					},
+					{
+						"id": "ayllu-sulka-de-calavillca",
+						"name": "AYLLU SULKA DE CALAVILLCA"
+					},
+					{
+						"id": "eduardo-avaroa",
+						"name": "EDUARDO AVAROA"
+					},
+					{
+						"id": "inca-tama-yuruna",
+						"name": "INCA TAMA YURUNA"
+					},
+					{
+						"id": "qori-qarwa-del-ayllu-qollana",
+						"name": "QORI QARWA DEL AYLLU QOLLANA"
+					},
+					{
+						"id": "quri-tama-ayllu-pocorcollo",
+						"name": "QURI TAMA AYLLU POCORCOLLO"
+					},
+					{
+						"id": "rosapata-oruro",
+						"name": "ROSAPATA"
+					},
+					{
+						"id": "sipe-sipe-marka",
+						"name": "SIPE SIPE MARKA"
+					},
+					{
+						"id": "tomaquipa",
+						"name": "TOMAQUIPA"
+					},
+					{
+						"id": "winay-tama-rosapata",
+						"name": "WINAY TAMA ROSAPATA"
+					}
+				]
+			},
+			{
+				"id": "quri-wari-del-sur",
+				"name": "QURI WARI DEL SUR",
+				"communities": [
+					{
+						"id": "belen-de-andamarca",
+						"name": "BELEN DE ANDAMARCA"
+					},
+					{
+						"id": "real-machacamarca",
+						"name": "REAL MACHACAMARCA"
+					}
+				]
+			},
+			{
+				"id": "wila-khollo",
+				"name": "WILA KHOLLO",
+				"communities": [
+					{
+						"id": "ayllu-collana-primero",
+						"name": "AYLLU COLLANA PRIMERO"
+					},
+					{
+						"id": "ayllu-collana-santiago-de-paria",
+						"name": "AYLLU COLLANA SANTIAGO DE PARIA"
+					},
+					{
+						"id": "ayllu-yanaque-belen-de-challamayu",
+						"name": "AYLLU YANAQUE BELÉN DE CHALLAMAYU"
+					},
+					{
+						"id": "cayni",
+						"name": "CAYÑI"
+					},
+					{
+						"id": "huchusuma-pucara",
+						"name": "HUCHUSUMA PUCARA"
+					},
+					{
+						"id": "papujio",
+						"name": "PAPUJIO"
+					},
+					{
+						"id": "sonaja-thola-collo",
+						"name": "SONAJA THOLA COLLO"
+					},
+					{
+						"id": "totorani",
+						"name": "TOTORANI"
+					}
+				]
+			},
+			{
+				"id": "cmv-suelta-oruro",
+				"name": "CMV SUELTA ORURO",
+				"communities": [
+					{
+						"id": "yurita-ucumasi",
+						"name": "YURITA UCUMASI"
+					}
+				]
+			}
+		]
+	},
+	"POTOSÍ": {
+		"id": "potosi",
+		"name": "POTOSÍ",
+		"regionals": [
+			{
+				"id": "colcha-k",
+				"name": "COLCHA K",
+				"communities": [
+					{
+						"id": "aguaquisa",
+						"name": "AGUAQUISA"
+					},
+					{
+						"id": "atulcha",
+						"name": "ATULCHA"
+					},
+					{
+						"id": "calcha-k",
+						"name": "CALCHA K"
+					},
+					{
+						"id": "colcha-k-manica-villa-candelaria",
+						"name": "COLCHA K MAÑICA VILLA CANDELARIA"
+					},
+					{
+						"id": "culpina-k",
+						"name": "CULPINA K"
+					},
+					{
+						"id": "pampa-grande",
+						"name": "PAMPA GRANDE"
+					},
+					{
+						"id": "rio-grande",
+						"name": "RIO GRANDE"
+					},
+					{
+						"id": "san-juan-de-rosario",
+						"name": "SAN JUAN DE ROSARIO"
+					},
+					{
+						"id": "santiago-de-chuvica",
+						"name": "SANTIAGO DE CHUVICA"
+					},
+					{
+						"id": "santiago-rio-blanco",
+						"name": "SANTIAGO RIO BLANCO"
+					},
+					{
+						"id": "vila-vila",
+						"name": "VILA VILA"
+					},
+					{
+						"id": "villa-candelaria",
+						"name": "VILLA CANDELARIA"
+					},
+					{
+						"id": "viluyo-colcha",
+						"name": "VILUYO"
+					},
+					{
+						"id": "vinto-k",
+						"name": "VINTO K"
+					}
+				]
+			},
+			{
+				"id": "sud-lipez",
+				"name": "SUD LIPEZ",
+				"communities": [
+					{
+						"id": "cerrillos",
+						"name": "CERRILLOS"
+					},
+					{
+						"id": "cerro-colorado",
+						"name": "CERRO COLORADO"
+					},
+					{
+						"id": "guadalupe",
+						"name": "GUADALUPE"
+					},
+					{
+						"id": "kollpani",
+						"name": "KOLLPANI"
+					},
+					{
+						"id": "polulos",
+						"name": "POLULOS"
+					},
+					{
+						"id": "relave",
+						"name": "RELAVE"
+					},
+					{
+						"id": "rio-mojon",
+						"name": "RIO MOJON"
+					},
+					{
+						"id": "rio-san-pablo",
+						"name": "RÍO SAN PABLO"
+					},
+					{
+						"id": "san-antonio-de-lipez",
+						"name": "SAN ANTONIO DE LIPEZ"
+					},
+					{
+						"id": "san-pablo-de-lipez",
+						"name": "SAN PABLO DE LIPEZ"
+					},
+					{
+						"id": "santa-isabel",
+						"name": "SANTA ISABEL"
+					},
+					{
+						"id": "tholar",
+						"name": "THOLAR"
+					},
+					{
+						"id": "viluyo-sud-lipez",
+						"name": "VILUYO"
+					}
+				]
+			},
+			{
+				"id": "tomave",
+				"name": "TOMAVE",
+				"communities": [
+					{
+						"id": "el-asiento",
+						"name": "EL ASIENTO"
+					},
+					{
+						"id": "jancoyo",
+						"name": "JANCOYO"
+					},
+					{
+						"id": "parantaca",
+						"name": "PARANTACA"
+					},
+					{
+						"id": "san-pedro-de-opoco",
+						"name": "SAN PEDRO DE OPOCO"
+					},
+					{
+						"id": "saruyo-uracaya",
+						"name": "SARUYO URACAYA"
+					},
+					{
+						"id": "suntura",
+						"name": "SUNTURA"
+					},
+					{
+						"id": "tacora",
+						"name": "TACORA"
+					},
+					{
+						"id": "totora-k",
+						"name": "TOTORA \"K\""
+					},
+					{
+						"id": "viluyo-pisaqueri",
+						"name": "VILUYO PISAQUERI"
+					}
+				]
+			},
+			{
+				"id": "villazon",
+				"name": "VILLAZÓN",
+				"communities": [
+					{
+						"id": "hornos",
+						"name": "HORNOS"
+					},
+					{
+						"id": "sarcari",
+						"name": "SARCARI"
+					},
+					{
+						"id": "sausalito",
+						"name": "SAUSALITO"
+					}
+				]
+			},
+			{
+				"id": "cmv-suelta-potosi",
+				"name": "CMV SUELTA POTOSÍ",
+				"communities": [
+					{
+						"id": "apromi-leucasi",
+						"name": "APROMI LEUCASI"
+					},
+					{
+						"id": "carhuaycollo",
+						"name": "CARHUAYCOLLO"
+					}
+				]
+			}
+		]
+	},
+	"TARIJA": {
+		"id": "tarija",
+		"name": "TARIJA",
+		"regionals": [
+			{
+				"id": "cmv-suelta-tarija",
+				"name": "CMV SUELTA TARIJA",
+				"communities": [
+					{
+						"id": "quebrada-honda-pulario",
+						"name": "QUEBRADA HONDA PULARIO"
+					}
+				]
+			}
+		]
+	}
+}
