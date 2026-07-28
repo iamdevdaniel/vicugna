@@ -91,6 +91,7 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 					model.latitude = 0
 					model.longitude = 0
 					model.roundupCount = 0
+					model.eventDate = ""
 					model.startTime = ""
 					model.endTime = ""
 					model.isCompleted = false
@@ -146,6 +147,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 					model.latitude = -16.533
 					model.longitude = -68.087
 					model.roundupCount = 42
+					model.eventDate = "24/07/2026"
 					model.startTime = "07:30"
 					model.endTime = "12:15"
 					model.isCompleted = true

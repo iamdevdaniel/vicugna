@@ -34,6 +34,7 @@ export class ShearingHeaderModel extends Model {
 	@field("latitude") latitude!: number
 	@field("longitude") longitude!: number
 	@field("roundupCount") roundupCount!: number
+	@text("eventDate") eventDate!: string
 	@text("startTime") startTime!: string
 	@text("endTime") endTime!: string
 	@field("isCompleted") isCompleted!: boolean

@@ -6,6 +6,7 @@ export const defaultValuesShearingHeader: ShearingHeaderFormData = {
 	latitude: 0,
 	longitude: 0,
 	roundupCount: 0,
+	eventDate: "",
 	startTime: "",
 	endTime: "",
 }
@@ -25,6 +26,7 @@ export const yupShearingHeader = yup.object().shape({
 		.typeError("Debe ser un número")
 		.min(0, "No puede ser negativo")
 		.required("Campo requerido"),
+	eventDate: yup.string().required("Campo requerido"),
 	startTime: yup.string().required("Campo requerido"),
 	endTime: yup.string().required("Campo requerido"),
 })

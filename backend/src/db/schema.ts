@@ -158,6 +158,7 @@ export const shearingHeaders = pgTable(
 		latitude: doublePrecision("latitude").notNull(),
 		longitude: doublePrecision("longitude").notNull(),
 		roundupCount: integer("roundup_count").notNull(),
+		eventDate: text("event_date").notNull(),
 		startTime: text("start_time").notNull(),
 		endTime: text("end_time").notNull(),
 		isCompleted: boolean("is_completed").notNull(),

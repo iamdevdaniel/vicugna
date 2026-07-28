@@ -905,6 +905,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "event_date": {
+          "name": "event_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "start_time": {
           "name": "start_time",
           "type": "text",

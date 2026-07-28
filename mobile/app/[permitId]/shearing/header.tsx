@@ -11,14 +11,21 @@ import {
 	useReadSingleShearingHeader,
 	useSingleShearingHeaderActions,
 } from "@hooks"
+import DateTimePicker from "@react-native-community/datetimepicker"
 import {
 	defaultValuesShearingHeader,
 	yupShearingHeader,
 } from "@utils/yup-shearing-header"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
+import {
+	Alert,
+	KeyboardAvoidingView,
+	Pressable,
+	ScrollView,
+	View,
+} from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
@@ -33,6 +40,7 @@ export default function () {
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleShearingHeader(permitId)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
+	const [showDatePicker, setShowDatePicker] = useState(false)
 
 	const {
 		control,
@@ -52,6 +60,7 @@ export default function () {
 			latitude: data.latitude,
 			longitude: data.longitude,
 			roundupCount: data.roundupCount,
+			eventDate: data.eventDate,
 			startTime: data.startTime,
 			endTime: data.endTime,
 		})
@@ -204,8 +213,69 @@ export default function () {
 					</LabeledInput>
 
 					<LabeledInput
-						label="Hora de inicio"
+						label="Fecha"
 						labelPrefix="5"
+						error={errors.eventDate?.message}
+						disabled={isPermitReadOnly}
+					>
+						<Controller
+							control={control}
+							name="eventDate"
+							render={({ field: { onChange, value } }) => (
+								<>
+									<Pressable
+										disabled={isPermitReadOnly}
+										onPress={() => setShowDatePicker(true)}
+									>
+										<TextInput
+											mode="outlined"
+											value={value}
+											placeholder="DD/MM/YYYY"
+											editable={false}
+											error={!!errors.eventDate}
+											disabled={isPermitReadOnly}
+											right={
+												<TextInput.Icon icon="calendar" />
+											}
+										/>
+									</Pressable>
+									{showDatePicker && (
+										<DateTimePicker
+											value={
+												value
+													? new Date(
+															value
+																.split("/")
+																.reverse()
+																.join("-"),
+														)
+													: new Date()
+											}
+											mode="date"
+											display="default"
+											onChange={(event, selectedDate) => {
+												setShowDatePicker(false)
+												if (
+													event.type === "set" &&
+													selectedDate
+												) {
+													onChange(
+														selectedDate.toLocaleDateString(
+															"es-ES",
+														),
+													)
+												}
+											}}
+										/>
+									)}
+								</>
+							)}
+						/>
+					</LabeledInput>
+
+					<LabeledInput
+						label="Hora de inicio"
+						labelPrefix="6"
 						error={errors.startTime?.message}
 						disabled={isPermitReadOnly}
 					>
@@ -225,7 +295,7 @@ export default function () {
 
 					<LabeledInput
 						label="Hora de fin"
-						labelPrefix="6"
+						labelPrefix="7"
 						error={errors.endTime?.message}
 						disabled={isPermitReadOnly}
 					>

@@ -39,6 +39,7 @@ export const appDbSchema = appSchema({
 				{ name: "latitude", type: "number" },
 				{ name: "longitude", type: "number" },
 				{ name: "roundupCount", type: "number" },
+				{ name: "eventDate", type: "string" },
 				{ name: "startTime", type: "string" },
 				{ name: "endTime", type: "string" },
 				{ name: "isCompleted", type: "boolean" },

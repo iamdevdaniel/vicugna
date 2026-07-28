@@ -4,6 +4,10 @@ import {
 	getCommunityNameById,
 	getRegionalNameByCommunityId,
 } from "../common/common.catalog"
+import {
+	alignCenterMiddleCells,
+	alignLeftMiddleCells,
+} from "./export.excel_format"
 import { findSyncedPermitForParticipantExport } from "./export.repository"
 import { renderSignaturePng } from "./export.signature_renderer"
 
@@ -50,9 +54,7 @@ export async function generateParticipantsRegisterExport(
 	worksheet.getCell("D6").value = await getCommunityNameById(
 		permit.communityId,
 	)
-	// TODO: fill the shearing date once that field is persisted in the synced data.
-
-	worksheet.getCell("I5").value = ""
+	worksheet.getCell("I5").value = permit.shearingHeader?.eventDate ?? ""
 	worksheet.getCell("I6").value = permit.shearingHeader?.site ?? ""
 
 	alignLeftMiddleCells(worksheet, ["D5", "D6", "I5", "I6"])
@@ -81,41 +83,6 @@ export async function generateParticipantsRegisterExport(
 	return {
 		buffer: await workbook.xlsx.writeBuffer(),
 		fileName: `registro-participantes-${permit.permitNumber}.xlsx`,
-	}
-}
-
-function alignLeftMiddleCells(
-	worksheet: ExcelJS.Worksheet,
-	addresses: string[],
-) {
-	alignCells(worksheet, addresses, {
-		horizontal: "left",
-		vertical: "middle",
-	})
-}
-
-function alignCenterMiddleCells(
-	worksheet: ExcelJS.Worksheet,
-	addresses: string[],
-) {
-	alignCells(worksheet, addresses, {
-		horizontal: "center",
-		vertical: "middle",
-	})
-}
-
-function alignCells(
-	worksheet: ExcelJS.Worksheet,
-	addresses: string[],
-	alignment: Partial<ExcelJS.Alignment>,
-) {
-	for (const address of addresses) {
-		const cell = worksheet.getCell(address)
-
-		cell.alignment = {
-			...cell.alignment,
-			...alignment,
-		}
 	}
 }
 

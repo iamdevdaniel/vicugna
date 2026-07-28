@@ -108,6 +108,7 @@ CREATE TABLE "shearing_headers" (
 	"latitude" double precision NOT NULL,
 	"longitude" double precision NOT NULL,
 	"roundup_count" integer NOT NULL,
+	"event_date" text NOT NULL,
 	"start_time" text NOT NULL,
 	"end_time" text NOT NULL,
 	"is_completed" boolean NOT NULL

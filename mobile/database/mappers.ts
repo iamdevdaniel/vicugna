@@ -92,6 +92,7 @@ export function mapToShearingHeader(
 		latitude: model.latitude,
 		longitude: model.longitude,
 		roundupCount: model.roundupCount,
+		eventDate: model.eventDate,
 		startTime: model.startTime,
 		endTime: model.endTime,
 		isCompleted: model.isCompleted,
@@ -107,6 +108,7 @@ export function applyShearingHeaderToModel(
 	model.latitude = data.latitude
 	model.longitude = data.longitude
 	model.roundupCount = data.roundupCount
+	model.eventDate = data.eventDate
 	model.startTime = data.startTime
 	model.endTime = data.endTime
 	model.isCompleted = isCompleted

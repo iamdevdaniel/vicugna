@@ -126,6 +126,7 @@ export async function savePermits(permits: PermitData[]): Promise<void> {
 								model.latitude = 0
 								model.longitude = 0
 								model.roundupCount = 0
+								model.eventDate = ""
 								model.startTime = ""
 								model.endTime = ""
 								model.isCompleted = false

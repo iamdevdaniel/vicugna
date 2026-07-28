@@ -44,6 +44,7 @@ export type ShearingHeaderData = {
 	latitude: number
 	longitude: number
 	roundupCount: number
+	eventDate: string
 	startTime: string
 	endTime: string
 	isCompleted: boolean

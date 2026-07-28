@@ -118,6 +118,29 @@ export default function () {
 										}}
 									>
 										<Icon
+											source="calendar-range"
+											size={16}
+											color={
+												theme.colors.onSurfaceVariant
+											}
+										/>
+										<Text
+											style={{
+												color: theme.colors
+													.onSurfaceVariant,
+											}}
+										>
+											{shearingForm.eventDate}
+										</Text>
+									</View>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 8,
+										}}
+									>
+										<Icon
 											source="clock-outline"
 											size={16}
 											color={

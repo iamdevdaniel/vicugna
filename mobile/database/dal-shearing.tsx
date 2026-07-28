@@ -34,6 +34,7 @@ export function subscribeSingleShearingHeader(
 			"latitude",
 			"longitude",
 			"roundupCount",
+			"eventDate",
 			"startTime",
 			"endTime",
 			"isCompleted",
