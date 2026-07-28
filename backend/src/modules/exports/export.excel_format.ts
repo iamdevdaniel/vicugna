@@ -1,5 +1,9 @@
 import type ExcelJS from "exceljs"
 
+function getWritableCell(cell: ExcelJS.Cell) {
+	return cell.isMerged ? cell.master : cell
+}
+
 export function alignLeftMiddleCells(
 	worksheet: ExcelJS.Worksheet,
 	addresses: string[],
@@ -26,7 +30,7 @@ export function alignCells(
 	alignment: Partial<ExcelJS.Alignment>,
 ) {
 	for (const address of addresses) {
-		const cell = worksheet.getCell(address)
+		const cell = getWritableCell(worksheet.getCell(address))
 
 		cell.alignment = {
 			...cell.alignment,

@@ -1,5 +1,6 @@
 import path from "node:path"
 import ExcelJS from "exceljs"
+import JSZip from "jszip"
 import {
 	getCommunityNameById,
 	getRegionalNameByCommunityId,
@@ -8,11 +9,11 @@ import {
 	alignCenterMiddleCells,
 	alignLeftMiddleCells,
 } from "./export.excel_format"
-import { findSyncedPermitForParticipantExport } from "./export.repository"
+import { findSyncedPermitForExport } from "./export.repository"
 import { renderSignaturePng } from "./export.signature_renderer"
 
 type ExportFile = {
-	buffer: Awaited<ReturnType<ExcelJS.Workbook["xlsx"]["writeBuffer"]>>
+	buffer: Buffer
 	fileName: string
 }
 
@@ -21,6 +22,10 @@ const PARTICIPANTS_TEMPLATE_FILE =
 const PARTICIPANTS_SHEET_NAME = "Hoja1"
 const FIRST_PARTICIPANT_ROW = 12
 const LAST_TEMPLATE_PARTICIPANT_ROW = 31
+const SHEARING_TEMPLATE_FILE =
+	"Form 10 - Registro de captura y esquila-v SISTEMA 17ago23.xlsx"
+const SHEARING_SHEET_NAME = "2. Registro de Esquila"
+const FIRST_SHEARING_ROW = 14
 const SIGNATURE_IMAGE_RANGE = {
 	topLeftColumn: 7.05,
 	topOffset: 0.9,
@@ -28,23 +33,93 @@ const SIGNATURE_IMAGE_RANGE = {
 	height: 20,
 } as const
 
-export async function generateParticipantsRegisterExport(
+type SyncedPermitForExport = Awaited<
+	ReturnType<typeof findSyncedPermitForExport>
+>
+
+export async function generatePermitReportsArchive(
 	permitId: string,
 ): Promise<ExportFile> {
-	const permit = await findSyncedPermitForParticipantExport(permitId)
+	const permit = await getSyncedPermitForExport(permitId)
+
+	const [participantsExport, shearingExport] = await Promise.all([
+		generateParticipantsRegisterExportFromPermit(permit),
+		generateShearingRegisterExportFromPermit(permit),
+	])
+
+	const zip = new JSZip()
+
+	zip.file(participantsExport.fileName, participantsExport.buffer)
+	zip.file(shearingExport.fileName, shearingExport.buffer)
+
+	return {
+		buffer: toNodeBuffer(await zip.generateAsync({ type: "nodebuffer" })),
+		fileName: `reportes-${permit.permitNumber}.zip`,
+	}
+}
+
+function toNodeBuffer(data: ArrayBuffer | Buffer) {
+	return Buffer.isBuffer(data) ? data : Buffer.from(data)
+}
+
+async function getSyncedPermitForExport(permitId: string) {
+	const permit = await findSyncedPermitForExport(permitId)
 
 	if (!permit?.isSynced) {
 		throw new Error("Permit sync data is not available")
 	}
 
+	return permit
+}
+
+function getTemplatePath(fileName: string) {
+	return path.resolve(
+		process.cwd(),
+		"src/modules/exports/templates",
+		fileName,
+	)
+}
+
+function resetWorksheetOpenView(
+	worksheet: ExcelJS.Worksheet,
+	topLeftCell: string,
+) {
+	worksheet.views = [
+		{
+			state: "frozen",
+			xSplit: 0,
+			ySplit: 0,
+			topLeftCell,
+			activeCell: topLeftCell,
+		},
+	]
+}
+
+// ==========================================
+// PARTICIPANTS
+// ==========================================
+
+export async function generateParticipantsRegisterExport(
+	permitId: string,
+): Promise<ExportFile> {
+	const permit = await getSyncedPermitForExport(permitId)
+
+	return generateParticipantsRegisterExportFromPermit(permit)
+}
+
+async function generateParticipantsRegisterExportFromPermit(
+	permit: NonNullable<SyncedPermitForExport>,
+): Promise<ExportFile> {
 	const workbook = new ExcelJS.Workbook()
-	await workbook.xlsx.readFile(getParticipantsTemplatePath())
+	await workbook.xlsx.readFile(getTemplatePath(PARTICIPANTS_TEMPLATE_FILE))
 
 	const worksheet = workbook.getWorksheet(PARTICIPANTS_SHEET_NAME)
 
 	if (!worksheet) {
 		throw new Error("Participants template sheet was not found")
 	}
+
+	resetWorksheetOpenView(worksheet, "A1")
 
 	ensureParticipantRows(worksheet, permit.participants.length)
 
@@ -81,7 +156,7 @@ export async function generateParticipantsRegisterExport(
 	}
 
 	return {
-		buffer: await workbook.xlsx.writeBuffer(),
+		buffer: toNodeBuffer(await workbook.xlsx.writeBuffer()),
 		fileName: `registro-participantes-${permit.permitNumber}.xlsx`,
 	}
 }
@@ -89,14 +164,6 @@ export async function generateParticipantsRegisterExport(
 function alignParticipantRow(worksheet: ExcelJS.Worksheet, rowNumber: number) {
 	alignCenterMiddleCells(worksheet, [`E${rowNumber}`, `F${rowNumber}`])
 	alignLeftMiddleCells(worksheet, [`B${rowNumber}`, `G${rowNumber}`])
-}
-
-function getParticipantsTemplatePath() {
-	return path.resolve(
-		process.cwd(),
-		"src/modules/exports/templates",
-		PARTICIPANTS_TEMPLATE_FILE,
-	)
 }
 
 function ensureParticipantRows(
@@ -164,3 +231,99 @@ async function writeParticipantSignatureCell(
 		editAs: "oneCell",
 	})
 }
+
+// ==========================================
+// SHEARING
+// ==========================================
+
+export async function generateShearingRegisterExport(
+	permitId: string,
+): Promise<ExportFile> {
+	const permit = await getSyncedPermitForExport(permitId)
+
+	return generateShearingRegisterExportFromPermit(permit)
+}
+
+async function generateShearingRegisterExportFromPermit(
+	permit: NonNullable<SyncedPermitForExport>,
+): Promise<ExportFile> {
+	const workbook = new ExcelJS.Workbook()
+	await workbook.xlsx.readFile(getTemplatePath(SHEARING_TEMPLATE_FILE))
+
+	const worksheet = workbook.getWorksheet(SHEARING_SHEET_NAME)
+
+	if (!worksheet) {
+		throw new Error("Shearing template sheet was not found")
+	}
+
+	resetWorksheetOpenView(worksheet, "A6")
+
+	const shearingHeader = permit.shearingHeader
+
+	worksheet.getCell("F8").value = await getRegionalNameByCommunityId(
+		permit.communityId,
+	)
+	worksheet.getCell("F9").value = await getCommunityNameById(
+		permit.communityId,
+	)
+	worksheet.getCell("G10").value = shearingHeader?.latitude ?? ""
+	worksheet.getCell("J10").value = shearingHeader?.longitude ?? ""
+	worksheet.getCell("Q8").value = shearingHeader?.site ?? ""
+	worksheet.getCell("Q9").value = shearingHeader?.eventDate ?? ""
+	worksheet.getCell("Q10").value = shearingHeader?.roundupCount ?? ""
+	worksheet.getCell("Y8").value = shearingHeader?.startTime ?? ""
+	worksheet.getCell("Y9").value = shearingHeader?.endTime ?? ""
+	worksheet.getCell("Y10").value = permit.permitNumber
+
+	for (const [index, record] of permit.shearingRecords.entries()) {
+		const rowNumber = FIRST_SHEARING_ROW + index
+
+		worksheet.getCell(`B${rowNumber}`).value = record.tagNumber
+		worksheet.getCell(`C${rowNumber}`).value = record.sex === "M" ? "X" : ""
+		worksheet.getCell(`D${rowNumber}`).value = record.sex === "F" ? "X" : ""
+		worksheet.getCell(`E${rowNumber}`).value =
+			record.ageCategory === "Cria" ? "X" : ""
+		worksheet.getCell(`F${rowNumber}`).value =
+			record.ageCategory === "Juvenil" ? "X" : ""
+		worksheet.getCell(`G${rowNumber}`).value =
+			record.ageCategory === "Adulto" ? "X" : ""
+		worksheet.getCell(`H${rowNumber}`).value = record.liveWeight
+		worksheet.getCell(`I${rowNumber}`).value = record.fiberLength
+		worksheet.getCell(`J${rowNumber}`).value =
+			record.bodyCondition === "Malo" ? "X" : ""
+		worksheet.getCell(`K${rowNumber}`).value =
+			record.bodyCondition === "Regular" ? "X" : ""
+		worksheet.getCell(`L${rowNumber}`).value =
+			record.bodyCondition === "Bueno" ? "X" : ""
+		worksheet.getCell(`M${rowNumber}`).value =
+			record.gestationStatus === "Si" ? "X" : ""
+		worksheet.getCell(`N${rowNumber}`).value =
+			record.gestationStatus === "No" ? "X" : ""
+		worksheet.getCell(`O${rowNumber}`).value =
+			record.gestationStatus === "Si ultimo tercio" ? "X" : ""
+		worksheet.getCell(`P${rowNumber}`).value =
+			record.externalParasites === "Garrapata" ? "X" : ""
+		worksheet.getCell(`Q${rowNumber}`).value =
+			record.externalParasites === "Piojos" ? "X" : ""
+		worksheet.getCell(`R${rowNumber}`).value =
+			record.mangeSeverity === "Leve" ? "X" : ""
+		worksheet.getCell(`S${rowNumber}`).value =
+			record.mangeSeverity === "Moderado" ? "X" : ""
+		worksheet.getCell(`T${rowNumber}`).value =
+			record.mangeSeverity === "Severo" ? "X" : ""
+		worksheet.getCell(`U${rowNumber}`).value = record.hasDandruff ? "X" : ""
+		worksheet.getCell(`V${rowNumber}`).value = record.isSheared ? "X" : ""
+		worksheet.getCell(`W${rowNumber}`).value = record.isSheared ? "" : "X"
+		worksheet.getCell(`X${rowNumber}`).value = record.isDead ? "X" : ""
+		worksheet.getCell(`Y${rowNumber}`).value = record.observations
+	}
+
+	return {
+		buffer: toNodeBuffer(await workbook.xlsx.writeBuffer()),
+		fileName: `registro-esquila-${permit.permitNumber}.xlsx`,
+	}
+}
+
+// ==========================================
+// CLEANING
+// ==========================================

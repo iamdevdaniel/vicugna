@@ -1,19 +1,16 @@
 import type { Request, Response } from "express"
-import { generateParticipantsRegisterExport } from "./export.service"
+import { generatePermitReportsArchive } from "./export.service"
 
-export async function downloadParticipantsRegister(
+export async function downloadPermitReports(
 	req: Request<{ permitId: string }>,
 	res: Response,
 ) {
 	try {
-		const { buffer, fileName } = await generateParticipantsRegisterExport(
+		const { buffer, fileName } = await generatePermitReportsArchive(
 			req.params.permitId,
 		)
 
-		res.setHeader(
-			"Content-Type",
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-		)
+		res.setHeader("Content-Type", "application/zip")
 		res.setHeader(
 			"Content-Disposition",
 			`attachment; filename="${fileName}"`,
