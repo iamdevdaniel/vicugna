@@ -113,7 +113,7 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 		}
 
 		if (batchOps.length > 0) {
-			await database.batch(...batchOps)
+			await database.batch(batchOps)
 		}
 	})
 
@@ -549,29 +549,52 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 			)
 		}
 
-		const shearingSeeds = [
-			{
-				tagNumber: 101,
-				sex: "F" as const,
-				ageCategory: "Adulto" as const,
-				liveWeight: 46.5,
-				fiberLength: 9.2,
-			},
-			{
-				tagNumber: 102,
-				sex: "M" as const,
-				ageCategory: "Juvenil" as const,
-				liveWeight: 42.1,
-				fiberLength: 8.7,
-			},
-			{
-				tagNumber: 103,
-				sex: "F" as const,
-				ageCategory: "Adulto" as const,
-				liveWeight: 44.8,
-				fiberLength: 9.5,
-			},
-		]
+		const shearingSeeds = Array.from({ length: 400 }, (_, index) => {
+			const recordNumber = index + 1
+
+			return {
+				tagNumber: 100 + recordNumber,
+				sex: recordNumber % 2 === 0 ? ("M" as const) : ("F" as const),
+				ageCategory:
+					recordNumber % 3 === 0
+						? ("Cria" as const)
+						: recordNumber % 3 === 1
+							? ("Juvenil" as const)
+							: ("Adulto" as const),
+				liveWeight: 35 + (recordNumber % 18) + (recordNumber % 10) / 10,
+				fiberLength: 7 + (recordNumber % 5) + (recordNumber % 10) / 10,
+				bodyCondition:
+					recordNumber % 3 === 0
+						? ("Malo" as const)
+						: recordNumber % 3 === 1
+							? ("Regular" as const)
+							: ("Bueno" as const),
+				gestationStatus:
+					recordNumber % 4 === 0
+						? ("Si" as const)
+						: recordNumber % 4 === 1
+							? ("No" as const)
+							: ("Si ultimo tercio" as const),
+				externalParasites:
+					recordNumber % 3 === 0
+						? ("Garrapata" as const)
+						: recordNumber % 3 === 1
+							? ("Piojos" as const)
+							: ("Ninguno" as const),
+				mangeSeverity:
+					recordNumber % 4 === 0
+						? ("Leve" as const)
+						: recordNumber % 4 === 1
+							? ("Moderado" as const)
+							: recordNumber % 4 === 2
+								? ("Severo" as const)
+								: ("Ninguna" as const),
+				hasDandruff: recordNumber % 5 === 0,
+				isSheared: recordNumber % 6 !== 0,
+				isDead: recordNumber % 25 === 0,
+				observations: recordNumber % 10 === 0 ? "Con observacion" : "",
+			}
+		})
 
 		for (const seed of shearingSeeds) {
 			batchOps.push(
@@ -584,14 +607,14 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 						model.ageCategory = seed.ageCategory
 						model.liveWeight = seed.liveWeight
 						model.fiberLength = seed.fiberLength
-						model.bodyCondition = "Bueno"
-						model.gestationStatus = "No"
-						model.externalParasites = "Ninguno"
-						model.mangeSeverity = "Ninguna"
-						model.hasDandruff = false
-						model.isSheared = true
-						model.isDead = false
-						model.observations = ""
+						model.bodyCondition = seed.bodyCondition
+						model.gestationStatus = seed.gestationStatus
+						model.externalParasites = seed.externalParasites
+						model.mangeSeverity = seed.mangeSeverity
+						model.hasDandruff = seed.hasDandruff
+						model.isSheared = seed.isSheared
+						model.isDead = seed.isDead
+						model.observations = seed.observations
 					}),
 			)
 		}
@@ -660,7 +683,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 		}
 
 		if (batchOps.length > 0) {
-			await database.batch(...batchOps)
+			await database.batch(batchOps)
 		}
 	})
 }

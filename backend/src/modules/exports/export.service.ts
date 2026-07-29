@@ -26,6 +26,7 @@ const SHEARING_TEMPLATE_FILE =
 	"Form 10 - Registro de captura y esquila-v SISTEMA 17ago23.xlsx"
 const SHEARING_SHEET_NAME = "2. Registro de Esquila"
 const FIRST_SHEARING_ROW = 14
+const LAST_TEMPLATE_SHEARING_ROW = 31
 const SIGNATURE_IMAGE_RANGE = {
 	topLeftColumn: 7.05,
 	topOffset: 0.9,
@@ -302,6 +303,9 @@ async function generateShearingRegisterExportFromPermit(
 	}
 
 	resetWorksheetOpenView(worksheet, "A6")
+	ensureShearingRows(worksheet, permit.shearingRecords.length)
+	setShearingTotalsFormula(worksheet, permit.shearingRecords.length)
+	setShearingPrintLayout(worksheet, permit.shearingRecords.length)
 
 	const shearingHeader = permit.shearingHeader
 
@@ -367,6 +371,90 @@ async function generateShearingRegisterExportFromPermit(
 		buffer: toNodeBuffer(await workbook.xlsx.writeBuffer()),
 		fileName: `registro-esquila-${permit.permitNumber}.xlsx`,
 	}
+}
+
+function ensureShearingRows(
+	worksheet: ExcelJS.Worksheet,
+	shearingRecordsCount: number,
+) {
+	const extraRows =
+		shearingRecordsCount -
+		(LAST_TEMPLATE_SHEARING_ROW - FIRST_SHEARING_ROW + 1)
+
+	if (extraRows <= 0) {
+		return
+	}
+
+	worksheet.duplicateRow(LAST_TEMPLATE_SHEARING_ROW, extraRows, true)
+}
+
+function setShearingTotalsFormula(
+	worksheet: ExcelJS.Worksheet,
+	shearingRecordsCount: number,
+) {
+	const extraRows = Math.max(
+		0,
+		shearingRecordsCount -
+			(LAST_TEMPLATE_SHEARING_ROW - FIRST_SHEARING_ROW + 1),
+	)
+	const lastRow = Math.max(
+		LAST_TEMPLATE_SHEARING_ROW,
+		FIRST_SHEARING_ROW + shearingRecordsCount - 1,
+	)
+	const totalsRow = LAST_TEMPLATE_SHEARING_ROW + extraRows + 1
+
+	const countedColumns = [
+		"C",
+		"D",
+		"E",
+		"F",
+		"G",
+		"J",
+		"K",
+		"L",
+		"M",
+		"N",
+		"O",
+		"P",
+		"Q",
+		"R",
+		"S",
+		"T",
+		"U",
+		"V",
+		"W",
+		"X",
+	]
+
+	for (const column of countedColumns) {
+		worksheet.getCell(`${column}${totalsRow}`).value = {
+			formula: `COUNTIF(${column}${FIRST_SHEARING_ROW}:${column}${lastRow},"X")`,
+		}
+	}
+
+	worksheet.getCell(`H${totalsRow}`).value = {
+		formula: `SUM(H${FIRST_SHEARING_ROW}:H${lastRow})`,
+	}
+	worksheet.getCell(`I${totalsRow}`).value = {
+		formula: `SUM(I${FIRST_SHEARING_ROW}:I${lastRow})`,
+	}
+}
+
+function setShearingPrintLayout(
+	worksheet: ExcelJS.Worksheet,
+	shearingRecordsCount: number,
+) {
+	const extraRows = Math.max(
+		0,
+		shearingRecordsCount -
+			(LAST_TEMPLATE_SHEARING_ROW - FIRST_SHEARING_ROW + 1),
+	)
+	const totalsRow = LAST_TEMPLATE_SHEARING_ROW + extraRows + 1
+
+	worksheet.pageSetup.fitToPage = true
+	worksheet.pageSetup.fitToWidth = 1
+	worksheet.pageSetup.fitToHeight = 0
+	worksheet.pageSetup.printArea = `A6:Z${totalsRow + 1}`
 }
 
 // ==========================================
