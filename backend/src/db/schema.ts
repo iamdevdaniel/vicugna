@@ -373,7 +373,33 @@ export const cleaningCommonRecordRelations = relations(
 			fields: [cleaningCommonRecords.permitId],
 			references: [permits.id],
 		}),
-		grooming: one(groomingDetails),
-		dehearing: one(dehearingDetails),
+		grooming: one(groomingDetails, {
+			fields: [cleaningCommonRecords.id],
+			references: [groomingDetails.cleaningCommonId],
+		}),
+		dehearing: one(dehearingDetails, {
+			fields: [cleaningCommonRecords.id],
+			references: [dehearingDetails.cleaningCommonId],
+		}),
+	}),
+)
+
+export const groomingDetailRelations = relations(
+	groomingDetails,
+	({ one }) => ({
+		cleaningCommon: one(cleaningCommonRecords, {
+			fields: [groomingDetails.cleaningCommonId],
+			references: [cleaningCommonRecords.id],
+		}),
+	}),
+)
+
+export const dehearingDetailRelations = relations(
+	dehearingDetails,
+	({ one }) => ({
+		cleaningCommon: one(cleaningCommonRecords, {
+			fields: [dehearingDetails.cleaningCommonId],
+			references: [cleaningCommonRecords.id],
+		}),
 	}),
 )

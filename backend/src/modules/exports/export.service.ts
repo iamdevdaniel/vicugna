@@ -27,11 +27,21 @@ const SHEARING_TEMPLATE_FILE =
 const SHEARING_SHEET_NAME = "2. Registro de Esquila"
 const FIRST_SHEARING_ROW = 14
 const LAST_TEMPLATE_SHEARING_ROW = 31
+const CLEANING_TEMPLATE_FILE = "Form 11 - Registro de fibra v17ago23.xlsx"
+const CLEANING_SHEET_NAME = "Hoja1"
+const FIRST_CLEANING_ROW = 14
+const LAST_TEMPLATE_CLEANING_ROW = 23
 const SIGNATURE_IMAGE_RANGE = {
 	topLeftColumn: 7.05,
 	topOffset: 0.9,
 	width: 52,
 	height: 20,
+} as const
+const CLEANING_SIGNATURE_IMAGE_RANGE = {
+	topLeftColumn: 12.1,
+	topOffset: 0.9,
+	width: 44,
+	height: 18,
 } as const
 
 type SyncedPermitForExport = Awaited<
@@ -43,15 +53,18 @@ export async function generatePermitReportsArchive(
 ): Promise<ExportFile> {
 	const permit = await getSyncedPermitForExport(permitId)
 
-	const [participantsExport, shearingExport] = await Promise.all([
-		generateParticipantsRegisterExportFromPermit(permit),
-		generateShearingRegisterExportFromPermit(permit),
-	])
+	const [participantsExport, shearingExport, cleaningExport] =
+		await Promise.all([
+			generateParticipantsRegisterExportFromPermit(permit),
+			generateShearingRegisterExportFromPermit(permit),
+			generateCleaningRegisterExportFromPermit(permit),
+		])
 
 	const zip = new JSZip()
 
 	zip.file(participantsExport.fileName, participantsExport.buffer)
 	zip.file(shearingExport.fileName, shearingExport.buffer)
+	zip.file(cleaningExport.fileName, cleaningExport.buffer)
 
 	return {
 		buffer: toNodeBuffer(await zip.generateAsync({ type: "nodebuffer" })),
@@ -460,3 +473,202 @@ function setShearingPrintLayout(
 // ==========================================
 // CLEANING
 // ==========================================
+
+export async function generateCleaningRegisterExport(
+	permitId: string,
+): Promise<ExportFile> {
+	const permit = await getSyncedPermitForExport(permitId)
+
+	return generateCleaningRegisterExportFromPermit(permit)
+}
+
+async function generateCleaningRegisterExportFromPermit(
+	permit: NonNullable<SyncedPermitForExport>,
+): Promise<ExportFile> {
+	const workbook = new ExcelJS.Workbook()
+	await workbook.xlsx.readFile(getTemplatePath(CLEANING_TEMPLATE_FILE))
+
+	const worksheet = workbook.getWorksheet(CLEANING_SHEET_NAME)
+
+	if (!worksheet) {
+		throw new Error("Cleaning template sheet was not found")
+	}
+
+	resetWorksheetOpenView(worksheet, "A1")
+	ensureCleaningRows(worksheet, permit.cleaningCommonRecords.length)
+	setCleaningTotalsFormula(worksheet, permit.cleaningCommonRecords.length)
+	setCleaningPrintLayout(worksheet, permit.cleaningCommonRecords.length)
+
+	const shearingHeader = permit.shearingHeader
+	const cleaningHeader = permit.cleaningHeader
+
+	worksheet.getCell("D6").value = await getRegionalNameByCommunityId(
+		permit.communityId,
+	)
+	worksheet.getCell("D7").value = await getCommunityNameById(
+		permit.communityId,
+	)
+	worksheet.getCell("D8").value = shearingHeader?.site ?? ""
+	worksheet.getCell("D9").value = shearingHeader?.eventDate ?? ""
+	worksheet.getCell("D10").value = permit.permitNumber
+	worksheet.getCell("L6").value = cleaningHeader?.startDate ?? ""
+	worksheet.getCell("L7").value = cleaningHeader?.endDate ?? ""
+	worksheet.getCell("L8").value = cleaningHeader?.site ?? ""
+	worksheet.getCell("L9").value = cleaningHeader?.supervisors ?? ""
+
+	for (const [index, record] of permit.cleaningCommonRecords.entries()) {
+		const rowNumber = FIRST_CLEANING_ROW + index
+
+		worksheet.getCell(`A${rowNumber}`).value = index + 1
+		worksheet.getCell(`B${rowNumber}`).value = record.fleeceNumber
+		worksheet.getCell(`C${rowNumber}`).value = record.grossWeight
+		worksheet.getCell(`D${rowNumber}`).value =
+			record.grooming?.cleanWeight ?? ""
+		worksheet.getCell(`E${rowNumber}`).value =
+			record.grooming?.dirtyWeight ?? ""
+		worksheet.getCell(`F${rowNumber}`).value =
+			record.grooming?.totalWeight ?? ""
+		worksheet.getCell(`H${rowNumber}`).value =
+			record.dehearing?.dehairedWeight ?? ""
+		worksheet.getCell(`I${rowNumber}`).value =
+			record.dehearing?.bristleWeight ?? ""
+		worksheet.getCell(`J${rowNumber}`).value = record.dehearing?.hasDandruff
+			? "X"
+			: ""
+		worksheet.getCell(`K${rowNumber}`).value =
+			record.dehearing?.dehairerName ?? ""
+		await writeCleaningSignatureCell(
+			workbook,
+			worksheet,
+			rowNumber,
+			record.dehearing?.signature ?? "",
+		)
+	}
+
+	return {
+		buffer: toNodeBuffer(await workbook.xlsx.writeBuffer()),
+		fileName: `registro-fibra-${permit.permitNumber}.xlsx`,
+	}
+}
+
+function ensureCleaningRows(
+	worksheet: ExcelJS.Worksheet,
+	cleaningRecordsCount: number,
+) {
+	const extraRows =
+		cleaningRecordsCount -
+		(LAST_TEMPLATE_CLEANING_ROW - FIRST_CLEANING_ROW + 1)
+
+	if (extraRows <= 0) {
+		return
+	}
+
+	worksheet.duplicateRow(LAST_TEMPLATE_CLEANING_ROW, extraRows, true)
+
+	for (
+		let rowNumber = LAST_TEMPLATE_CLEANING_ROW + 1;
+		rowNumber <= LAST_TEMPLATE_CLEANING_ROW + extraRows;
+		rowNumber++
+	) {
+		worksheet.unMergeCells(`F${rowNumber}:G${rowNumber}`)
+		worksheet.mergeCells(`F${rowNumber}:G${rowNumber}`)
+		worksheet.unMergeCells(`K${rowNumber}:L${rowNumber}`)
+		worksheet.mergeCells(`K${rowNumber}:L${rowNumber}`)
+	}
+}
+
+function setCleaningTotalsFormula(
+	worksheet: ExcelJS.Worksheet,
+	cleaningRecordsCount: number,
+) {
+	const extraRows = Math.max(
+		0,
+		cleaningRecordsCount -
+			(LAST_TEMPLATE_CLEANING_ROW - FIRST_CLEANING_ROW + 1),
+	)
+	const lastRow = Math.max(
+		LAST_TEMPLATE_CLEANING_ROW,
+		FIRST_CLEANING_ROW + cleaningRecordsCount - 1,
+	)
+	const totalsRow = LAST_TEMPLATE_CLEANING_ROW + extraRows + 1
+
+	worksheet.getCell(`B${totalsRow}`).value = {
+		formula: `COUNTA(B${FIRST_CLEANING_ROW}:B${lastRow})`,
+	}
+	worksheet.getCell(`C${totalsRow}`).value = {
+		formula: `SUM(C${FIRST_CLEANING_ROW}:C${lastRow})`,
+	}
+	worksheet.getCell(`D${totalsRow}`).value = {
+		formula: `SUM(D${FIRST_CLEANING_ROW}:D${lastRow})`,
+	}
+	worksheet.getCell(`E${totalsRow}`).value = {
+		formula: `SUM(E${FIRST_CLEANING_ROW}:E${lastRow})`,
+	}
+	worksheet.getCell(`F${totalsRow}`).value = {
+		formula: `SUM(F${FIRST_CLEANING_ROW}:F${lastRow})`,
+	}
+	worksheet.getCell(`H${totalsRow}`).value = {
+		formula: `SUM(H${FIRST_CLEANING_ROW}:H${lastRow})`,
+	}
+	worksheet.getCell(`I${totalsRow}`).value = {
+		formula: `SUM(I${FIRST_CLEANING_ROW}:I${lastRow})`,
+	}
+	worksheet.getCell(`J${totalsRow}`).value = {
+		formula: `COUNTIF(J${FIRST_CLEANING_ROW}:J${lastRow},"X")`,
+	}
+}
+
+function setCleaningPrintLayout(
+	worksheet: ExcelJS.Worksheet,
+	cleaningRecordsCount: number,
+) {
+	const extraRows = Math.max(
+		0,
+		cleaningRecordsCount -
+			(LAST_TEMPLATE_CLEANING_ROW - FIRST_CLEANING_ROW + 1),
+	)
+	const totalsRow = LAST_TEMPLATE_CLEANING_ROW + extraRows + 1
+
+	worksheet.pageSetup.fitToPage = true
+	worksheet.pageSetup.fitToWidth = 1
+	worksheet.pageSetup.fitToHeight = 0
+	worksheet.pageSetup.printArea = `A1:M${totalsRow}`
+}
+
+async function writeCleaningSignatureCell(
+	workbook: ExcelJS.Workbook,
+	worksheet: ExcelJS.Worksheet,
+	rowNumber: number,
+	signature: string,
+) {
+	const cell = worksheet.getCell(`M${rowNumber}`)
+
+	if (!signature) {
+		cell.value = ""
+		return
+	}
+
+	const imageBuffer = await renderSignaturePng(signature)
+
+	if (!imageBuffer) {
+		cell.value = signature
+		return
+	}
+
+	const imageId = workbook.addImage({
+		buffer: imageBuffer,
+		extension: "png",
+	})
+
+	worksheet.addImage(imageId, {
+		tl: {
+			col: CLEANING_SIGNATURE_IMAGE_RANGE.topLeftColumn,
+			row: rowNumber - CLEANING_SIGNATURE_IMAGE_RANGE.topOffset,
+		},
+		ext: {
+			width: CLEANING_SIGNATURE_IMAGE_RANGE.width,
+			height: CLEANING_SIGNATURE_IMAGE_RANGE.height,
+		},
+		editAs: "oneCell",
+	})
+}

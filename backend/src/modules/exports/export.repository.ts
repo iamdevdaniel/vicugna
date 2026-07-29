@@ -8,6 +8,13 @@ export async function findSyncedPermitForExport(permitId: string) {
 			participants: true,
 			shearingHeader: true,
 			shearingRecords: true,
+			cleaningHeader: true,
+			cleaningCommonRecords: {
+				with: {
+					grooming: true,
+					dehearing: true,
+				},
+			},
 		},
 	})
 }
