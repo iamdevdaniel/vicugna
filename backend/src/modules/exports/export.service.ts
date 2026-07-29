@@ -120,8 +120,28 @@ async function generateParticipantsRegisterExportFromPermit(
 	}
 
 	resetWorksheetOpenView(worksheet, "A1")
+	const margins = worksheet.pageSetup.margins ?? {
+		top: 0.75,
+		left: 0.7,
+		right: 0.7,
+		bottom: 0.75,
+		header: 0.3,
+		footer: 0.3,
+	}
+	worksheet.pageSetup.margins = {
+		top: margins.top,
+		left: margins.left,
+		right: 0.2,
+		bottom: margins.bottom,
+		header: margins.header,
+		footer: margins.footer,
+	}
+	worksheet.pageSetup.fitToPage = true
+	worksheet.pageSetup.fitToWidth = 1
+	worksheet.pageSetup.fitToHeight = 0
 
 	ensureParticipantRows(worksheet, permit.participants.length)
+	setParticipantTotalsFormula(worksheet, permit.participants.length)
 
 	worksheet.getCell("D5").value = await getRegionalNameByCommunityId(
 		permit.communityId,
@@ -137,6 +157,7 @@ async function generateParticipantsRegisterExportFromPermit(
 	for (const [index, participant] of permit.participants.entries()) {
 		const rowNumber = FIRST_PARTICIPANT_ROW + index
 
+		worksheet.getCell(`A${rowNumber}`).value = index + 1
 		worksheet.getCell(`B${rowNumber}`).value =
 			`${participant.name} ${participant.lastNames}`.trim()
 		worksheet.getCell(`E${rowNumber}`).value =
@@ -185,7 +206,31 @@ function ensureParticipantRows(
 		rowNumber <= LAST_TEMPLATE_PARTICIPANT_ROW + extraRows;
 		rowNumber++
 	) {
+		worksheet.unMergeCells(`B${rowNumber}:D${rowNumber}`)
 		worksheet.mergeCells(`B${rowNumber}:D${rowNumber}`)
+	}
+}
+
+function setParticipantTotalsFormula(
+	worksheet: ExcelJS.Worksheet,
+	participantsCount: number,
+) {
+	const extraRows = Math.max(
+		0,
+		participantsCount -
+			(LAST_TEMPLATE_PARTICIPANT_ROW - FIRST_PARTICIPANT_ROW + 1),
+	)
+	const lastRow = Math.max(
+		LAST_TEMPLATE_PARTICIPANT_ROW,
+		FIRST_PARTICIPANT_ROW + participantsCount - 1,
+	)
+	const totalsRow = LAST_TEMPLATE_PARTICIPANT_ROW + extraRows + 1
+
+	worksheet.getCell(`E${totalsRow}`).value = {
+		formula: `COUNTIF(E12:E${lastRow},"X")`,
+	}
+	worksheet.getCell(`F${totalsRow}`).value = {
+		formula: `COUNTIF(F12:F${lastRow},"X")`,
 	}
 }
 
