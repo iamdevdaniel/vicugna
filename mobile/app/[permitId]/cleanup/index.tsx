@@ -118,7 +118,7 @@ function CleaningRecordCard({
 						}}
 						onPress={() =>
 							router.push(
-								ROUTES.CLEANUP.DETAILS(permitId, record.id),
+								ROUTES.CLEANUP.RECORD(permitId, record.id),
 							)
 						}
 					>

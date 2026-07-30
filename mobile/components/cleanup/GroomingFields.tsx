@@ -6,7 +6,8 @@ import { LabeledInput } from "../basics/LabeledInput"
 type GroomingFieldsProps = {
 	control: Control<GroomingFormData>
 	errors: FieldErrors<GroomingFormData>
-	disabled?: boolean
+	disabled: boolean
+	startIndex: number
 }
 
 function formatNumber(value: number) {
@@ -21,13 +22,14 @@ function parseNumber(value: string) {
 export function GroomingFields({
 	control,
 	errors,
-	disabled = false,
+	disabled,
+	startIndex,
 }: GroomingFieldsProps) {
 	return (
 		<>
 			<LabeledInput
 				label="Peso vellon limpio"
-				labelPrefix="2"
+				labelPrefix={String(startIndex)}
 				labelSuffix="gramos"
 				error={errors.cleanWeight?.message}
 				disabled={disabled}
@@ -51,7 +53,7 @@ export function GroomingFields({
 
 			<LabeledInput
 				label="Peso braga"
-				labelPrefix="3"
+				labelPrefix={String(startIndex + 1)}
 				labelSuffix="gramos"
 				error={errors.dirtyWeight?.message}
 				disabled={disabled}
@@ -75,7 +77,7 @@ export function GroomingFields({
 
 			<LabeledInput
 				label="Peso total fibra"
-				labelPrefix="4"
+				labelPrefix={String(startIndex + 2)}
 				labelSuffix="gramos"
 				error={errors.totalWeight?.message}
 				disabled={disabled}

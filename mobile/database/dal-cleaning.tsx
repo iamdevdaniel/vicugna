@@ -230,15 +230,20 @@ export async function createSingleCleaningCommon(
 export async function updateSingleCleaningCommon(
 	cleaningCommonId: string,
 	data: CleaningCommonFormData,
-): Promise<void> {
+): Promise<CleaningCommonData> {
+	let record: CleaningCommonModel | undefined
 	await database.write(async () => {
-		const record = await database
+		record = await database
 			.get<CleaningCommonModel>("cleaningCommon")
 			.find(cleaningCommonId)
 		await record.update((model) => {
 			applyCleaningCommonToModel(model, data)
 		})
 	})
+
+	if (!record) throw new Error("Failed to update cleaning common")
+
+	return mapToCleaningCommon(record)
 }
 
 export async function deleteSingleCleaningCommon(

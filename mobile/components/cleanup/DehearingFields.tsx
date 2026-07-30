@@ -8,7 +8,8 @@ import { ToggleButtonGroup } from "../basics/ToggleButtonGroup"
 type DehearingFieldsProps = {
 	control: Control<DehearingFormData>
 	errors: FieldErrors<DehearingFormData>
-	disabled?: boolean
+	disabled: boolean
+	startIndex: number
 }
 
 function formatNumber(value: number) {
@@ -23,13 +24,14 @@ function parseNumber(value: string) {
 export function DehearingFields({
 	control,
 	errors,
-	disabled = false,
+	disabled,
+	startIndex,
 }: DehearingFieldsProps) {
 	return (
 		<>
 			<LabeledInput
 				label="Peso fibra predescerdada"
-				labelPrefix="2"
+				labelPrefix={String(startIndex)}
 				labelSuffix="gramos"
 				error={errors.dehairedWeight?.message}
 				disabled={disabled}
@@ -53,7 +55,7 @@ export function DehearingFields({
 
 			<LabeledInput
 				label="Peso cerda"
-				labelPrefix="3"
+				labelPrefix={String(startIndex + 1)}
 				labelSuffix="gramos"
 				error={errors.bristleWeight?.message}
 				disabled={disabled}
@@ -75,7 +77,11 @@ export function DehearingFields({
 				/>
 			</LabeledInput>
 
-			<LabeledInput label="Caspa" labelPrefix="4" disabled={disabled}>
+			<LabeledInput
+				label="Caspa"
+				labelPrefix={String(startIndex + 2)}
+				disabled={disabled}
+			>
 				<Controller
 					control={control}
 					name="hasDandruff"
@@ -97,7 +103,7 @@ export function DehearingFields({
 
 			<LabeledInput
 				label="Nombre del predescerdador (a)"
-				labelPrefix="5"
+				labelPrefix={String(startIndex + 3)}
 				error={errors.dehairerName?.message}
 				disabled={disabled}
 			>
@@ -120,7 +126,7 @@ export function DehearingFields({
 
 			<LabeledInput
 				label="Firma"
-				labelPrefix="6"
+				labelPrefix={String(startIndex + 4)}
 				error={errors.signature?.message}
 				disabled={disabled}
 			>

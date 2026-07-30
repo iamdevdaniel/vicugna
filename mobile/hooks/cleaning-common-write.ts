@@ -3,7 +3,7 @@ import {
 	deleteSingleCleaningCommon as deleteSingleCleaningCommonData,
 	updateSingleCleaningCommon as updateSingleCleaningCommonData,
 } from "@database"
-import type { CleaningCommonFormData } from "@definitions/types"
+import type { CleaningCommonData, CleaningCommonFormData } from "@definitions/types"
 import { useCallback, useState } from "react"
 
 export function useSingleCleaningCommonActions() {
@@ -16,11 +16,10 @@ export function useSingleCleaningCommonActions() {
 			setSaving(true)
 			setError(null)
 			try {
-				await createSingleCleaningCommonData(permitId, data)
-				return true
+				return await createSingleCleaningCommonData(permitId, data)
 			} catch (e) {
 				setError(e as Error)
-				return false
+				return null as CleaningCommonData | null
 			} finally {
 				setSaving(false)
 			}
@@ -33,11 +32,13 @@ export function useSingleCleaningCommonActions() {
 			setSaving(true)
 			setError(null)
 			try {
-				await updateSingleCleaningCommonData(cleaningCommonId, data)
-				return true
+				return await updateSingleCleaningCommonData(
+					cleaningCommonId,
+					data,
+				)
 			} catch (e) {
 				setError(e as Error)
-				return false
+				return null as CleaningCommonData | null
 			} finally {
 				setSaving(false)
 			}
