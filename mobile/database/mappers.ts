@@ -11,7 +11,7 @@ import type {
 	ParticipantFormData,
 	PermitData,
 	ShearingHeaderData,
-	ShearingHeaderFormData,
+	ShearingHeaderSaveData,
 	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
@@ -101,7 +101,7 @@ export function mapToShearingHeader(
 
 export function applyShearingHeaderToModel(
 	model: ShearingHeaderModel,
-	data: ShearingHeaderFormData,
+	data: ShearingHeaderSaveData,
 	isCompleted: boolean,
 ) {
 	model.site = data.site

@@ -1,6 +1,6 @@
 import type {
 	ShearingHeaderData,
-	ShearingHeaderFormData,
+	ShearingHeaderSaveData,
 	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
@@ -101,7 +101,7 @@ export function subscribeSingleShearingRecordFormData(
 
 export async function updateShearingHeader(
 	id: string,
-	data: ShearingHeaderFormData,
+	data: ShearingHeaderSaveData,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database

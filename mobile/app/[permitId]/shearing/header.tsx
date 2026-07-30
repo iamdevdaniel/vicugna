@@ -55,11 +55,12 @@ export default function () {
 
 	useEffect(() => {
 		if (loading || !data) return
+
 		reset({
 			site: data.site,
-			latitude: data.latitude,
-			longitude: data.longitude,
-			roundupCount: data.roundupCount,
+			latitude: data.latitude.toString(),
+			longitude: data.longitude.toString(),
+			roundupCount: data.roundupCount.toString(),
 			eventDate: data.eventDate,
 			startTime: data.startTime,
 			endTime: data.endTime,
@@ -68,7 +69,12 @@ export default function () {
 
 	const onSubmit = async (formData: ShearingHeaderFormData) => {
 		if (data) {
-			const ok = await updateShearingHeader(data.id, formData)
+			const ok = await updateShearingHeader(data.id, {
+				...formData,
+				latitude: Number(formData.latitude),
+				longitude: Number(formData.longitude),
+				roundupCount: Number(formData.roundupCount),
+			})
 			if (ok) {
 				router.back()
 			} else {
@@ -145,10 +151,8 @@ export default function () {
 							}) => (
 								<TextInput
 									mode="outlined"
-									value={value?.toString()}
-									onChangeText={(text) =>
-										onChange(Number(text))
-									}
+									value={value}
+									onChangeText={onChange}
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.latitude}
@@ -172,10 +176,8 @@ export default function () {
 							}) => (
 								<TextInput
 									mode="outlined"
-									value={value?.toString()}
-									onChangeText={(text) =>
-										onChange(Number(text))
-									}
+									value={value}
+									onChangeText={onChange}
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.longitude}
@@ -199,10 +201,8 @@ export default function () {
 							}) => (
 								<TextInput
 									mode="outlined"
-									value={value?.toString()}
-									onChangeText={(text) =>
-										onChange(Number(text))
-									}
+									value={value}
+									onChangeText={onChange}
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.roundupCount}

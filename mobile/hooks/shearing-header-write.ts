@@ -1,5 +1,5 @@
 import { updateShearingHeader as updateShearingHeaderData } from "@database"
-import type { ShearingHeaderFormData } from "@definitions/types"
+import type { ShearingHeaderSaveData } from "@definitions/types"
 import { useCallback, useState } from "react"
 
 export function useSingleShearingHeaderActions() {
@@ -7,7 +7,7 @@ export function useSingleShearingHeaderActions() {
 	const [error, setError] = useState<Error | null>(null)
 
 	const updateShearingHeader = useCallback(
-		async (headerId: string, data: ShearingHeaderFormData) => {
+		async (headerId: string, data: ShearingHeaderSaveData) => {
 			setSaving(true)
 			setError(null)
 			try {
@@ -21,7 +21,7 @@ export function useSingleShearingHeaderActions() {
 			}
 		},
 		[],
-	) 
+	)
 
 	const clearError = useCallback(() => setError(null), [])
 

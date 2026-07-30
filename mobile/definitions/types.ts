@@ -62,10 +62,19 @@ export type ParticipantFormData = Omit<ParticipantData, "id" | "permitId">
 
 // SHEARING
 
-export type ShearingHeaderFormData = Omit<
+export type ShearingHeaderSaveData = Omit<
 	ShearingHeaderData,
 	"id" | "permitId" | "isCompleted"
 >
+
+export type ShearingHeaderFormData = Omit<
+	ShearingHeaderSaveData,
+	"latitude" | "longitude" | "roundupCount"
+> & {
+	latitude: string
+	longitude: string
+	roundupCount: string
+}
 
 export type ShearingRecordFormData = Omit<ShearingRecordData, "id" | "permitId">
 
