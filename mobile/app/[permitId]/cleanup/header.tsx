@@ -1,4 +1,9 @@
-import { HeaderBreadcrumb, LabeledInput, ReadOnlyNotice } from "@components"
+import {
+	DateInput,
+	HeaderBreadcrumb,
+	LabeledInput,
+	ReadOnlyNotice,
+} from "@components"
 import type { CleaningHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -6,29 +11,16 @@ import {
 	useReadSinglePermit,
 	useSingleCleaningHeaderActions,
 } from "@hooks"
-import DateTimePicker from "@react-native-community/datetimepicker"
 import {
 	defaultValuesCleaningHeader,
 	yupCleaningHeader,
 } from "@utils/yup-cleaning-header"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import {
-	Alert,
-	KeyboardAvoidingView,
-	Pressable,
-	ScrollView,
-	View,
-} from "react-native"
+import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
-
-type DateField = "startDate" | "endDate"
-
-function getDateValue(value: string) {
-	return value ? new Date(value.split("/").reverse().join("-")) : new Date()
-}
 
 export default function () {
 	const router = useRouter()
@@ -39,9 +31,6 @@ export default function () {
 	const { data, loading } = useReadSingleCleaningHeader(permitId)
 	const { updateSingleCleaningHeader, saving } =
 		useSingleCleaningHeaderActions()
-	const [datePickerField, setDatePickerField] = useState<DateField | null>(
-		null,
-	)
 
 	const {
 		control,
@@ -110,46 +99,12 @@ export default function () {
 							control={control}
 							name="startDate"
 							render={({ field: { onChange, value } }) => (
-								<>
-									<Pressable
-										disabled={isPermitReadOnly}
-										onPress={() =>
-											setDatePickerField("startDate")
-										}
-									>
-										<TextInput
-											mode="outlined"
-											value={value}
-											placeholder="DD/MM/YYYY"
-											editable={false}
-											error={!!errors.startDate}
-											disabled={isPermitReadOnly}
-											right={
-												<TextInput.Icon icon="calendar" />
-											}
-										/>
-									</Pressable>
-									{datePickerField === "startDate" && (
-										<DateTimePicker
-											value={getDateValue(value)}
-											mode="date"
-											display="default"
-											onChange={(event, selectedDate) => {
-												setDatePickerField(null)
-												if (
-													event.type === "set" &&
-													selectedDate
-												) {
-													onChange(
-														selectedDate.toLocaleDateString(
-															"es-ES",
-														),
-													)
-												}
-											}}
-										/>
-									)}
-								</>
+								<DateInput
+									value={value}
+									onChange={onChange}
+									error={!!errors.startDate}
+									disabled={isPermitReadOnly}
+								/>
 							)}
 						/>
 					</LabeledInput>
@@ -164,46 +119,12 @@ export default function () {
 							control={control}
 							name="endDate"
 							render={({ field: { onChange, value } }) => (
-								<>
-									<Pressable
-										disabled={isPermitReadOnly}
-										onPress={() =>
-											setDatePickerField("endDate")
-										}
-									>
-										<TextInput
-											mode="outlined"
-											value={value}
-											placeholder="DD/MM/YYYY"
-											editable={false}
-											error={!!errors.endDate}
-											disabled={isPermitReadOnly}
-											right={
-												<TextInput.Icon icon="calendar" />
-											}
-										/>
-									</Pressable>
-									{datePickerField === "endDate" && (
-										<DateTimePicker
-											value={getDateValue(value)}
-											mode="date"
-											display="default"
-											onChange={(event, selectedDate) => {
-												setDatePickerField(null)
-												if (
-													event.type === "set" &&
-													selectedDate
-												) {
-													onChange(
-														selectedDate.toLocaleDateString(
-															"es-ES",
-														),
-													)
-												}
-											}}
-										/>
-									)}
-								</>
+								<DateInput
+									value={value}
+									onChange={onChange}
+									error={!!errors.endDate}
+									disabled={isPermitReadOnly}
+								/>
 							)}
 						/>
 					</LabeledInput>

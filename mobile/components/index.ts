@@ -1,5 +1,6 @@
 export { AccentCard } from "./basics/AccentCard"
 export { CustomDeleteButton } from "./basics/CustomDeleteButton"
+export { DateInput } from "./basics/DateInput"
 export { HeaderBreadcrumb } from "./basics/HeaderBreadcrumb"
 export { LabeledInput } from "./basics/LabeledInput"
 export { OverviewStep } from "./basics/OverviewStep"
