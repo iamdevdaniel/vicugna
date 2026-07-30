@@ -12,6 +12,7 @@ type TimeInputProps = {
 	error?: boolean
 	placeholder?: string
 	disabled?: boolean
+	minuteInterval?: 1 | 2 | 3 | 4 | 5 | 6 | 10 | 12 | 15 | 20 | 30
 }
 
 const formatDisplayTime = (time: string | undefined) => {
@@ -28,6 +29,7 @@ export function TimeInput({
 	error,
 	placeholder = "Seleccionar hora",
 	disabled = false,
+	minuteInterval = 1,
 }: TimeInputProps) {
 	const theme = useAppTheme()
 	const [show, setShow] = useState(false)
@@ -97,6 +99,7 @@ export function TimeInput({
 					is24Hour={true}
 					display="spinner"
 					locale="es-ES"
+					minuteInterval={minuteInterval}
 					positiveButton={{
 						label: "Aceptar",
 						textColor: theme.colors.primary,

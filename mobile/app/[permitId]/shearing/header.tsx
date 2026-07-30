@@ -47,11 +47,16 @@ export default function () {
 		reset,
 		formState: { errors, isValid },
 		handleSubmit,
+		trigger,
+		watch,
 	} = useForm<ShearingHeaderFormData>({
 		mode: "onChange",
 		defaultValues: defaultValuesShearingHeader,
 		resolver: yupResolver(yupShearingHeader),
 	})
+
+	const startTime = watch("startTime")
+	const endTime = watch("endTime")
 
 	useEffect(() => {
 		if (loading || !data) return
@@ -66,6 +71,14 @@ export default function () {
 			endTime: data.endTime,
 		})
 	}, [loading, reset, data])
+
+	useEffect(() => {
+		if (!startTime || !endTime) {
+			return
+		}
+
+		void trigger("endTime")
+	}, [endTime, startTime, trigger])
 
 	const onSubmit = async (formData: ShearingHeaderFormData) => {
 		if (data) {
@@ -274,7 +287,7 @@ export default function () {
 					</LabeledInput>
 
 					<LabeledInput
-						label="Hora de inicio"
+						label="Hora inicial"
 						labelPrefix="6"
 						error={errors.startTime?.message}
 						disabled={isPermitReadOnly}
@@ -288,13 +301,14 @@ export default function () {
 									onChange={onChange}
 									error={!!errors.startTime}
 									disabled={isPermitReadOnly}
+									minuteInterval={5}
 								/>
 							)}
 						/>
 					</LabeledInput>
 
 					<LabeledInput
-						label="Hora de fin"
+						label="Hora conclusión"
 						labelPrefix="7"
 						error={errors.endTime?.message}
 						disabled={isPermitReadOnly}
@@ -308,6 +322,7 @@ export default function () {
 									onChange={onChange}
 									error={!!errors.endTime}
 									disabled={isPermitReadOnly}
+									minuteInterval={5}
 								/>
 							)}
 						/>
