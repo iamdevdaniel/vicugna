@@ -1,6 +1,7 @@
 import {
 	AccentCard,
 	HeaderBreadcrumb,
+	LoadingOverlay,
 	ReadOnlyNotice,
 	StepList,
 	TotalChip,
@@ -28,8 +29,11 @@ export default function () {
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.isSynced === true
 	const permitLabel = permit?.permitNumber ?? "Sin número"
-	const { data: shearingForm } = useReadSingleShearingHeader(permitId)
-	const { data: shearingRecords } = useReadBulkShearingRecords(permitId)
+	const { data: shearingForm, loading: loadingShearingHeader } =
+		useReadSingleShearingHeader(permitId)
+	const { data: shearingRecords, loading: loadingShearingRecords } =
+		useReadBulkShearingRecords(permitId)
+	const isLoadingScreen = loadingShearingHeader || loadingShearingRecords
 
 	const shearingStepState = shearingForm?.isCompleted ? "done" : "ready"
 	const shearingRecordsStepState = shearingRecords.length ? "done" : "ready"
@@ -226,6 +230,9 @@ export default function () {
 					Añadir registro
 				</Button>
 			</View>
+			{isLoadingScreen && (
+				<LoadingOverlay message="Cargando registros..." />
+			)}
 		</SafeAreaView>
 	)
 }
