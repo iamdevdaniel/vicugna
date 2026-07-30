@@ -150,55 +150,61 @@ export default function () {
 						/>
 					</LabeledInput>
 
-					<LabeledInput
-						label="Latitud"
-						labelPrefix="2"
-						error={errors.latitude?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="latitude"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									mode="outlined"
-									value={value}
-									onChangeText={onChange}
-									onBlur={onBlur}
-									keyboardType="numeric"
-									error={!!errors.latitude}
-									disabled={isPermitReadOnly}
+					<View style={{ flexDirection: "row", gap: 12 }}>
+						<View style={{ flex: 1 }}>
+							<LabeledInput
+								label="Latitud"
+								labelPrefix="2"
+								error={errors.latitude?.message}
+								disabled={isPermitReadOnly}
+							>
+								<Controller
+									control={control}
+									name="latitude"
+									render={({
+										field: { onChange, onBlur, value },
+									}) => (
+										<TextInput
+											mode="outlined"
+											value={value}
+											onChangeText={onChange}
+											onBlur={onBlur}
+											keyboardType="numeric"
+											error={!!errors.latitude}
+											disabled={isPermitReadOnly}
+										/>
+									)}
 								/>
-							)}
-						/>
-					</LabeledInput>
+							</LabeledInput>
+						</View>
 
-					<LabeledInput
-						label="Longitud"
-						labelPrefix="3"
-						error={errors.longitude?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="longitude"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									mode="outlined"
-									value={value}
-									onChangeText={onChange}
-									onBlur={onBlur}
-									keyboardType="numeric"
-									error={!!errors.longitude}
-									disabled={isPermitReadOnly}
+						<View style={{ flex: 1 }}>
+							<LabeledInput
+								label="Longitud"
+								labelPrefix="3"
+								error={errors.longitude?.message}
+								disabled={isPermitReadOnly}
+							>
+								<Controller
+									control={control}
+									name="longitude"
+									render={({
+										field: { onChange, onBlur, value },
+									}) => (
+										<TextInput
+											mode="outlined"
+											value={value}
+											onChangeText={onChange}
+											onBlur={onBlur}
+											keyboardType="numeric"
+											error={!!errors.longitude}
+											disabled={isPermitReadOnly}
+										/>
+									)}
 								/>
-							)}
-						/>
-					</LabeledInput>
+							</LabeledInput>
+						</View>
+					</View>
 
 					<LabeledInput
 						label="Cantidad de arreos"
