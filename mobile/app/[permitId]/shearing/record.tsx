@@ -2,6 +2,7 @@ import {
 	CustomDeleteButton,
 	HeaderBreadcrumb,
 	LabeledInput,
+	LoadingOverlay,
 	ReadOnlyNotice,
 	ToggleButtonGroup,
 } from "@components"
@@ -108,403 +109,431 @@ export default function () {
 
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-			<KeyboardAvoidingView
-				style={{ flex: 1 }}
-				behavior="height"
-				keyboardVerticalOffset={100}
-			>
-				<Stack.Screen
-					options={{
-						headerTitle: () => (
-							<HeaderBreadcrumb
-								parts={[permitLabel, "Esquila", "Registros"]}
-							/>
-						),
-					}}
-				/>
-				<ScrollView
+			<Stack.Screen
+				options={{
+					headerTitle: () => (
+						<HeaderBreadcrumb
+							parts={[permitLabel, "Esquila", "Registros"]}
+						/>
+					),
+				}}
+			/>
+			{isWaitingForEditData ? (
+				<LoadingOverlay message="Cargando registro..." />
+			) : (
+				<KeyboardAvoidingView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
-					keyboardShouldPersistTaps="handled"
+					behavior="height"
+					keyboardVerticalOffset={100}
 				>
-					{isPermitReadOnly && <ReadOnlyNotice />}
-					<LabeledInput
-						label="Numero de arete"
-						labelPrefix="1"
-						error={errors.tagNumber?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="tagNumber"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									mode="outlined"
-									value={formatNumber(value)}
-									onChangeText={(text) =>
-										onChange(parseNumber(text))
-									}
-									onBlur={onBlur}
-									keyboardType="numeric"
-									error={!!errors.tagNumber}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Sexo"
-						labelPrefix="2"
-						error={errors.sex?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="sex"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value}
-									onChange={onChange}
-									options={[
-										{ label: "Macho", value: "M" },
-										{ label: "Hembra", value: "F" },
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Edad"
-						labelPrefix="3"
-						error={errors.ageCategory?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="ageCategory"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value}
-									onChange={onChange}
-									options={[
-										{ label: "Cria", value: "Cria" },
-										{ label: "Juvenil", value: "Juvenil" },
-										{ label: "Adulto", value: "Adulto" },
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Peso vivo"
-						labelPrefix="4"
-						labelSuffix="kg"
-						error={errors.liveWeight?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="liveWeight"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									mode="outlined"
-									value={formatNumber(value)}
-									onChangeText={(text) =>
-										onChange(parseNumber(text))
-									}
-									onBlur={onBlur}
-									keyboardType="decimal-pad"
-									error={!!errors.liveWeight}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Longitud de fibra"
-						labelPrefix="5"
-						labelSuffix="cm"
-						error={errors.fiberLength?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="fiberLength"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									mode="outlined"
-									value={formatNumber(value)}
-									onChangeText={(text) =>
-										onChange(parseNumber(text))
-									}
-									onBlur={onBlur}
-									keyboardType="decimal-pad"
-									error={!!errors.fiberLength}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Condicion corporal"
-						labelPrefix="6"
-						error={errors.bodyCondition?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="bodyCondition"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value}
-									onChange={onChange}
-									options={[
-										{ label: "Malo", value: "Malo" },
-										{ label: "Regular", value: "Regular" },
-										{ label: "Bueno", value: "Bueno" },
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Gestacion"
-						labelPrefix="7"
-						error={errors.gestationStatus?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="gestationStatus"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value}
-									onChange={onChange}
-									options={[
-										{ label: "No", value: "No" },
-										{ label: "Si", value: "Si" },
-										{
-											label: "Si ultimo tercio",
-											value: "Si ultimo tercio",
-										},
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Parasitos externos"
-						labelPrefix="8"
-						error={errors.externalParasites?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="externalParasites"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value}
-									onChange={onChange}
-									options={[
-										{
-											label: "Ninguno",
-											value: "Ninguno",
-										},
-										{
-											label: "Garrapata",
-											value: "Garrapata",
-										},
-										{ label: "Piojos", value: "Piojos" },
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Sarna"
-						labelPrefix="9"
-						error={errors.mangeSeverity?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="mangeSeverity"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value}
-									onChange={onChange}
-									options={[
-										{
-											label: "Ninguna",
-											value: "Ninguna",
-										},
-										{ label: "Leve", value: "Leve" },
-										{
-											label: "Moderado",
-											value: "Moderado",
-										},
-										{ label: "Severo", value: "Severo" },
-									]}
-									columns={2}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Caspa"
-						labelPrefix="10"
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="hasDandruff"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value ? "Si" : "No"}
-									onChange={(val) => onChange(val === "Si")}
-									options={[
-										{ label: "No", value: "No" },
-										{ label: "Si", value: "Si" },
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Esquilado"
-						labelPrefix="11"
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="isSheared"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value ? "Si" : "No"}
-									onChange={(val) => onChange(val === "Si")}
-									options={[
-										{ label: "No", value: "No" },
-										{ label: "Si", value: "Si" },
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Muerto"
-						labelPrefix="12"
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="isDead"
-							render={({ field: { onChange, value } }) => (
-								<ToggleButtonGroup
-									value={value ? "Si" : "No"}
-									onChange={(val) => onChange(val === "Si")}
-									options={[
-										{ label: "No", value: "No" },
-										{ label: "Si", value: "Si" },
-									]}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<LabeledInput
-						label="Observaciones"
-						labelPrefix="13"
-						error={errors.observations?.message}
-						disabled={isPermitReadOnly}
-					>
-						<Controller
-							control={control}
-							name="observations"
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									mode="outlined"
-									value={value}
-									onChangeText={onChange}
-									onBlur={onBlur}
-									autoCapitalize="sentences"
-									multiline
-									style={{ height: 100 }}
-									contentStyle={{
-										height: 115,
-										textAlignVertical: "top",
-									}}
-									error={!!errors.observations}
-									disabled={isPermitReadOnly}
-								/>
-							)}
-						/>
-					</LabeledInput>
-
-					<View
-						style={{
-							flexDirection: "column",
-							gap: 12,
-							marginTop: 16,
+					<ScrollView
+						style={{ flex: 1 }}
+						contentContainerStyle={{
+							padding: 20,
+							paddingBottom: 20,
 						}}
+						keyboardShouldPersistTaps="handled"
 					>
-						<Button
-							mode="contained"
-							onPress={handleSubmit(onSubmit)}
-							disabled={
-								isPermitReadOnly ||
-								!isValid ||
-								isWaitingForEditData ||
-								saving ||
-								deleting
-							}
-							style={{ flex: 1 }}
-							loading={saving}
+						{isPermitReadOnly && <ReadOnlyNotice />}
+						<LabeledInput
+							label="Numero de arete"
+							labelPrefix="1"
+							error={errors.tagNumber?.message}
+							disabled={isPermitReadOnly}
 						>
-							{isEditForm ? "Actualizar" : "Guardar"}
-						</Button>
-						{isEditForm && (
-							<CustomDeleteButton
-								onPress={onDelete}
+							<Controller
+								control={control}
+								name="tagNumber"
+								render={({
+									field: { onChange, onBlur, value },
+								}) => (
+									<TextInput
+										mode="outlined"
+										value={formatNumber(value)}
+										onChangeText={(text) =>
+											onChange(parseNumber(text))
+										}
+										onBlur={onBlur}
+										keyboardType="numeric"
+										error={!!errors.tagNumber}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Sexo"
+							labelPrefix="2"
+							error={errors.sex?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="sex"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value}
+										onChange={onChange}
+										options={[
+											{ label: "Macho", value: "M" },
+											{ label: "Hembra", value: "F" },
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Edad"
+							labelPrefix="3"
+							error={errors.ageCategory?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="ageCategory"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value}
+										onChange={onChange}
+										options={[
+											{ label: "Cria", value: "Cria" },
+											{
+												label: "Juvenil",
+												value: "Juvenil",
+											},
+											{
+												label: "Adulto",
+												value: "Adulto",
+											},
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Peso vivo"
+							labelPrefix="4"
+							labelSuffix="kg"
+							error={errors.liveWeight?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="liveWeight"
+								render={({
+									field: { onChange, onBlur, value },
+								}) => (
+									<TextInput
+										mode="outlined"
+										value={formatNumber(value)}
+										onChangeText={(text) =>
+											onChange(parseNumber(text))
+										}
+										onBlur={onBlur}
+										keyboardType="decimal-pad"
+										error={!!errors.liveWeight}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Longitud de fibra"
+							labelPrefix="5"
+							labelSuffix="cm"
+							error={errors.fiberLength?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="fiberLength"
+								render={({
+									field: { onChange, onBlur, value },
+								}) => (
+									<TextInput
+										mode="outlined"
+										value={formatNumber(value)}
+										onChangeText={(text) =>
+											onChange(parseNumber(text))
+										}
+										onBlur={onBlur}
+										keyboardType="decimal-pad"
+										error={!!errors.fiberLength}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Condicion corporal"
+							labelPrefix="6"
+							error={errors.bodyCondition?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="bodyCondition"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value}
+										onChange={onChange}
+										options={[
+											{ label: "Malo", value: "Malo" },
+											{
+												label: "Regular",
+												value: "Regular",
+											},
+											{ label: "Bueno", value: "Bueno" },
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Gestacion"
+							labelPrefix="7"
+							error={errors.gestationStatus?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="gestationStatus"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value}
+										onChange={onChange}
+										options={[
+											{ label: "No", value: "No" },
+											{ label: "Si", value: "Si" },
+											{
+												label: "Si ultimo tercio",
+												value: "Si ultimo tercio",
+											},
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Parasitos externos"
+							labelPrefix="8"
+							error={errors.externalParasites?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="externalParasites"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value}
+										onChange={onChange}
+										options={[
+											{
+												label: "Ninguno",
+												value: "Ninguno",
+											},
+											{
+												label: "Garrapata",
+												value: "Garrapata",
+											},
+											{
+												label: "Piojos",
+												value: "Piojos",
+											},
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Sarna"
+							labelPrefix="9"
+							error={errors.mangeSeverity?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="mangeSeverity"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value}
+										onChange={onChange}
+										options={[
+											{
+												label: "Ninguna",
+												value: "Ninguna",
+											},
+											{ label: "Leve", value: "Leve" },
+											{
+												label: "Moderado",
+												value: "Moderado",
+											},
+											{
+												label: "Severo",
+												value: "Severo",
+											},
+										]}
+										columns={2}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Caspa"
+							labelPrefix="10"
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="hasDandruff"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value ? "Si" : "No"}
+										onChange={(val) =>
+											onChange(val === "Si")
+										}
+										options={[
+											{ label: "No", value: "No" },
+											{ label: "Si", value: "Si" },
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Esquilado"
+							labelPrefix="11"
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="isSheared"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value ? "Si" : "No"}
+										onChange={(val) =>
+											onChange(val === "Si")
+										}
+										options={[
+											{ label: "No", value: "No" },
+											{ label: "Si", value: "Si" },
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Muerto"
+							labelPrefix="12"
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="isDead"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value ? "Si" : "No"}
+										onChange={(val) =>
+											onChange(val === "Si")
+										}
+										options={[
+											{ label: "No", value: "No" },
+											{ label: "Si", value: "Si" },
+										]}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Observaciones"
+							labelPrefix="13"
+							error={errors.observations?.message}
+							disabled={isPermitReadOnly}
+						>
+							<Controller
+								control={control}
+								name="observations"
+								render={({
+									field: { onChange, onBlur, value },
+								}) => (
+									<TextInput
+										mode="outlined"
+										value={value}
+										onChangeText={onChange}
+										onBlur={onBlur}
+										autoCapitalize="sentences"
+										multiline
+										style={{ height: 100 }}
+										contentStyle={{
+											height: 115,
+											textAlignVertical: "top",
+										}}
+										error={!!errors.observations}
+										disabled={isPermitReadOnly}
+									/>
+								)}
+							/>
+						</LabeledInput>
+
+						<View
+							style={{
+								flexDirection: "column",
+								gap: 12,
+								marginTop: 16,
+							}}
+						>
+							<Button
+								mode="contained"
+								onPress={handleSubmit(onSubmit)}
 								disabled={
-									isPermitReadOnly || saving || deleting
+									isPermitReadOnly ||
+									!isValid ||
+									isWaitingForEditData ||
+									saving ||
+									deleting
 								}
 								style={{ flex: 1 }}
-								loading={deleting}
+								loading={saving}
 							>
-								Borrar
-							</CustomDeleteButton>
-						)}
-					</View>
-				</ScrollView>
-			</KeyboardAvoidingView>
+								{isEditForm ? "Actualizar" : "Guardar"}
+							</Button>
+							{isEditForm && (
+								<CustomDeleteButton
+									onPress={onDelete}
+									disabled={
+										isPermitReadOnly || saving || deleting
+									}
+									style={{ flex: 1 }}
+									loading={deleting}
+								>
+									Borrar
+								</CustomDeleteButton>
+							)}
+						</View>
+					</ScrollView>
+				</KeyboardAvoidingView>
+			)}
 		</SafeAreaView>
 	)
 }
