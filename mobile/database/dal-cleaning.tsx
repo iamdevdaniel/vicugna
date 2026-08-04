@@ -8,7 +8,8 @@ import type {
 	GroomingData,
 	GroomingFormData,
 } from "@definitions/types"
-import { Q } from "@nozbe/watermelondb"
+import { type Model, Q } from "@nozbe/watermelondb"
+import { recalculatePermitStatuses } from "./dal-permit"
 import {
 	applyCleaningCommonToModel,
 	applyCleaningHeaderToModel,
@@ -208,6 +209,7 @@ export async function updateSingleCleaningHeader(
 		await record.update((model) =>
 			applyCleaningHeaderToModel(model, data, true),
 		)
+		await recalculatePermitStatuses(record.permitId)
 	})
 }
 
@@ -222,6 +224,7 @@ export async function createSingleCleaningCommon(
 			.create((model) => {
 				applyCleaningCommonToModel(model, data, permitId)
 			})
+		await recalculatePermitStatuses(permitId)
 	})
 	if (!record) throw new Error("Failed to create cleaning common")
 	return mapToCleaningCommon(record)
@@ -261,14 +264,14 @@ export async function deleteSingleCleaningCommon(
 		const record = await database
 			.get<CleaningCommonModel>("cleaningCommon")
 			.find(cleaningCommonId)
-
-		for (const grooming of groomingRecords) {
-			await grooming.destroyPermanently()
-		}
-		for (const dehearing of dehearingRecords) {
-			await dehearing.destroyPermanently()
-		}
-		await record.destroyPermanently()
+		const { permitId } = record
+		const batchOps: Model[] = [
+			...groomingRecords.map((item) => item.prepareDestroyPermanently()),
+			...dehearingRecords.map((item) => item.prepareDestroyPermanently()),
+			record.prepareDestroyPermanently(),
+		]
+		await database.batch(batchOps)
+		await recalculatePermitStatuses(permitId)
 	})
 }
 
@@ -278,11 +281,15 @@ export async function createSingleGrooming(
 ): Promise<GroomingData> {
 	let record: GroomingModel | undefined
 	await database.write(async () => {
+		const commonRecord = await database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.find(cleaningCommonId)
 		record = await database
 			.get<GroomingModel>("grooming")
 			.create((model) => {
 				applyGroomingToModel(model, data, cleaningCommonId)
 			})
+		await recalculatePermitStatuses(commonRecord.permitId)
 	})
 	if (!record) throw new Error("Failed to create grooming")
 	return mapToGrooming(record)
@@ -296,9 +303,13 @@ export async function updateSingleGrooming(
 		const record = await database
 			.get<GroomingModel>("grooming")
 			.find(groomingId)
+		const commonRecord = await database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.find(record.cleaningCommonId)
 		await record.update((model) => {
 			applyGroomingToModel(model, data)
 		})
+		await recalculatePermitStatuses(commonRecord.permitId)
 	})
 }
 
@@ -307,7 +318,11 @@ export async function deleteSingleGrooming(groomingId: string): Promise<void> {
 		const record = await database
 			.get<GroomingModel>("grooming")
 			.find(groomingId)
+		const commonRecord = await database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.find(record.cleaningCommonId)
 		await record.destroyPermanently()
+		await recalculatePermitStatuses(commonRecord.permitId)
 	})
 }
 
@@ -317,11 +332,15 @@ export async function createSingleDehearing(
 ): Promise<DehearingData> {
 	let record: DehearingModel | undefined
 	await database.write(async () => {
+		const commonRecord = await database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.find(cleaningCommonId)
 		record = await database
 			.get<DehearingModel>("dehearing")
 			.create((model) => {
 				applyDehearingToModel(model, data, cleaningCommonId)
 			})
+		await recalculatePermitStatuses(commonRecord.permitId)
 	})
 	if (!record) throw new Error("Failed to create dehearing")
 	return mapToDehearing(record)
@@ -335,9 +354,13 @@ export async function updateSingleDehearing(
 		const record = await database
 			.get<DehearingModel>("dehearing")
 			.find(dehearingId)
+		const commonRecord = await database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.find(record.cleaningCommonId)
 		await record.update((model) => {
 			applyDehearingToModel(model, data)
 		})
+		await recalculatePermitStatuses(commonRecord.permitId)
 	})
 }
 
@@ -348,6 +371,10 @@ export async function deleteSingleDehearing(
 		const record = await database
 			.get<DehearingModel>("dehearing")
 			.find(dehearingId)
+		const commonRecord = await database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.find(record.cleaningCommonId)
 		await record.destroyPermanently()
+		await recalculatePermitStatuses(commonRecord.permitId)
 	})
 }

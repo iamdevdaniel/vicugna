@@ -1,5 +1,6 @@
 import type { ParticipantData, ParticipantFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
+import { recalculatePermitStatuses } from "./dal-permit"
 import { applyParticipantToModel, mapToParticipant } from "./mappers"
 import type { ParticipantModel } from "./models"
 import { database } from "./setup"
@@ -66,6 +67,7 @@ export async function createSingleParticipant(
 				model.permitId = permitId
 				applyParticipantToModel(model, data)
 			})
+		await recalculatePermitStatuses(permitId)
 	})
 	if (!record) throw new Error("Failed to create participant")
 	return mapToParticipant(record)
@@ -92,6 +94,8 @@ export async function deleteSingleParticipant(
 		const record = await database
 			.get<ParticipantModel>("participants")
 			.find(participantId)
+		const { permitId } = record
 		await record.destroyPermanently()
+		await recalculatePermitStatuses(permitId)
 	})
 }

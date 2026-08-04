@@ -2,7 +2,9 @@
 
 ## Mobile
 
-- TODO
+- TODO: Make related DAL data and status writes atomic. Currently, a data write
+  can succeed before its status recalculation fails, leaving stale persisted
+  statuses.
 
 ## Backend
 
@@ -28,4 +30,3 @@
 Links for future consideration (db and server):
 - [Render Dashboard](https://dashboard.render.com/) (Server)
 - [Supabase Pricing](https://supabase.com/pricing) (DB)
-

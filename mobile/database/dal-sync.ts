@@ -6,9 +6,9 @@ import {
 	mapToDehearing,
 	mapToGrooming,
 	mapToParticipant,
-	mapToPermit,
 	mapToShearingHeader,
 	mapToShearingRecord,
+	mapToSyncPermit,
 } from "./mappers"
 import type {
 	CleaningCommonModel,
@@ -81,7 +81,7 @@ export async function getFieldSyncData(
 	}
 
 	return {
-		permit: mapToPermit(permitRecord),
+		permit: mapToSyncPermit(permitRecord),
 		participants: participants.map(mapToParticipant),
 		shearingHeader: mapToShearingHeader(shearingHeader),
 		shearingRecords: shearingRecords.map(mapToShearingRecord),

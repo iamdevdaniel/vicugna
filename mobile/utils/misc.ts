@@ -1,8 +1,8 @@
-import type { StepState } from "@components"
-export const getDependentStepState = (
+import type { PermitStepStatus } from "@definitions/types"
+export const getDependentStepStatus = (
 	isUnlocked: boolean,
 	isDone: boolean,
-): StepState => {
+): PermitStepStatus => {
 	if (!isUnlocked) return "disabled"
 	if (isDone) return "done"
 	return "ready"

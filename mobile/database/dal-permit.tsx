@@ -1,10 +1,20 @@
 import type { PermitData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
-import { applyPermitToModel, mapToPermit } from "./mappers"
+import { getDependentStepStatus } from "@utils/misc"
+import {
+	applyPermitToModel,
+	applySyncPermitToModel,
+	mapToPermit,
+} from "./mappers"
 import type {
+	CleaningCommonModel,
 	CleaningHeaderModel,
+	DehearingModel,
+	GroomingModel,
+	ParticipantModel,
 	PermitModel,
 	ShearingHeaderModel,
+	ShearingRecordModel,
 } from "./models"
 import { database } from "./setup"
 
@@ -28,6 +38,9 @@ export function subscribePermits(
 			"communityId",
 			"isSynced",
 			"syncedAt",
+			"participantsStatus",
+			"shearingStatus",
+			"cleaningStatus",
 		])
 		.subscribe({
 			next: (records) =>
@@ -57,7 +70,14 @@ export function subscribeSinglePermit(
 
 //-------------------WRITE-------------------
 
-export async function savePermits(permits: PermitData[]): Promise<void> {
+export async function savePermits(
+	permits: Array<
+		Omit<
+			PermitData,
+			"participantsStatus" | "shearingStatus" | "cleaningStatus"
+		>
+	>,
+): Promise<void> {
 	if (savingPermits || permits.length === 0) return
 
 	savingPermits = true
@@ -97,24 +117,29 @@ export async function savePermits(permits: PermitData[]): Promise<void> {
 					const record = existingPermits.find(
 						(item) => item.id === permit.id,
 					)
-
 					if (record) {
 						batchOps.push(
 							record.prepareUpdate((model) => {
-								applyPermitToModel(model, permit)
+								applySyncPermitToModel(model, permit)
 							}),
 						)
 					}
-				} else {
-					batchOps.push(
-						database
-							.get<PermitModel>("permits")
-							.prepareCreate((model) => {
-								applyPermitToModel(model, permit)
-								model._raw.id = permit.id
-							}),
-					)
+					continue
 				}
+
+				batchOps.push(
+					database
+						.get<PermitModel>("permits")
+						.prepareCreate((model) => {
+							applyPermitToModel(model, {
+								...permit,
+								participantsStatus: "ready",
+								shearingStatus: "disabled",
+								cleaningStatus: "disabled",
+							})
+							model._raw.id = permit.id
+						}),
+				)
 
 				if (!existingHeaderIds.has(permit.id)) {
 					batchOps.push(
@@ -174,4 +199,97 @@ export async function updatePermitSyncStatus(data: {
 			model.syncedAt = data.syncedAt
 		})
 	})
+}
+
+export async function recalculatePermitStatuses(
+	permitId: string,
+): Promise<void> {
+	const [permit, participantCount, shearingRecordCount] = await Promise.all([
+		database.get<PermitModel>("permits").find(permitId),
+		database
+			.get<ParticipantModel>("participants")
+			.query(Q.where("permitId", permitId))
+			.fetchCount(),
+		database
+			.get<ShearingRecordModel>("shearingRecord")
+			.query(Q.where("permitId", permitId))
+			.fetchCount(),
+	])
+	const participantsStatus = participantCount > 0 ? "done" : "ready"
+	const shearingStatus = getDependentStepStatus(
+		participantsStatus === "done",
+		shearingRecordCount > 0,
+	)
+	const cleaningStatus = await readCleaningStatus(permitId, shearingStatus)
+
+	if (
+		permit.participantsStatus === participantsStatus &&
+		permit.shearingStatus === shearingStatus &&
+		permit.cleaningStatus === cleaningStatus
+	) {
+		return
+	}
+
+	await permit.update((model) => {
+		model.participantsStatus = participantsStatus
+		model.shearingStatus = shearingStatus
+		model.cleaningStatus = cleaningStatus
+	})
+}
+
+async function readCleaningStatus(
+	permitId: string,
+	shearingStatus: PermitData["shearingStatus"],
+): Promise<PermitData["cleaningStatus"]> {
+	if (shearingStatus !== "done") return "disabled"
+
+	const [cleaningHeaders, cleaningCommonRecords] = await Promise.all([
+		database
+			.get<CleaningHeaderModel>("cleaningHeader")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+		database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+	])
+	const cleaningHeader = cleaningHeaders[0]
+	if (!cleaningHeader?.isCompleted || cleaningCommonRecords.length === 0) {
+		return "ready"
+	}
+
+	const cleaningRecordIds = cleaningCommonRecords.map((record) => record.id)
+
+	const [groomingRecords, dehearingRecords] = await Promise.all([
+		database
+			.get<GroomingModel>("grooming")
+			.query(
+				Q.where("cleaningCommonId", Q.oneOf(cleaningRecordIds)),
+				Q.where("isCompleted", true),
+			)
+			.fetch(),
+		database
+			.get<DehearingModel>("dehearing")
+			.query(
+				Q.where("cleaningCommonId", Q.oneOf(cleaningRecordIds)),
+				Q.where("isCompleted", true),
+			)
+			.fetch(),
+	])
+
+	const completedGroomingIds = new Set(
+		groomingRecords.map((record) => record.cleaningCommonId),
+	)
+	const completedDehearingIds = new Set(
+		dehearingRecords.map((record) => record.cleaningCommonId),
+	)
+
+	return getDependentStepStatus(
+		true,
+		cleaningRecordIds.every(
+			(recordId) =>
+				completedGroomingIds.has(recordId) ||
+				completedDehearingIds.has(recordId),
+		),
+	)
 }

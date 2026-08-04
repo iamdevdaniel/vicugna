@@ -3,7 +3,10 @@ import {
 	deleteSingleCleaningCommon as deleteSingleCleaningCommonData,
 	updateSingleCleaningCommon as updateSingleCleaningCommonData,
 } from "@database"
-import type { CleaningCommonData, CleaningCommonFormData } from "@definitions/types"
+import type {
+	CleaningCommonData,
+	CleaningCommonFormData,
+} from "@definitions/types"
 import { useCallback, useState } from "react"
 
 export function useSingleCleaningCommonActions() {

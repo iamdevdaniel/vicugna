@@ -15,6 +15,7 @@ import type {
 	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
+import type { PermitData as SyncPermitData } from "@vicugna/shared"
 import type {
 	CleaningCommonModel,
 	CleaningHeaderModel,
@@ -27,6 +28,15 @@ import type {
 } from "./models"
 
 export function mapToPermit(model: PermitModel): PermitData {
+	return {
+		...mapToSyncPermit(model),
+		participantsStatus: model.participantsStatus,
+		shearingStatus: model.shearingStatus,
+		cleaningStatus: model.cleaningStatus,
+	}
+}
+
+export function mapToSyncPermit(model: PermitModel): SyncPermitData {
 	return {
 		id: model.id,
 		permitNumber: model.permitNumber,
@@ -44,6 +54,16 @@ export function mapToPermit(model: PermitModel): PermitData {
 }
 
 export function applyPermitToModel(model: PermitModel, data: PermitData): void {
+	applySyncPermitToModel(model, data)
+	model.participantsStatus = data.participantsStatus
+	model.shearingStatus = data.shearingStatus
+	model.cleaningStatus = data.cleaningStatus
+}
+
+export function applySyncPermitToModel(
+	model: PermitModel,
+	data: SyncPermitData,
+): void {
 	model.seasonId = data.seasonId
 	model.seasonName = data.seasonName
 	model.communityId = data.communityId

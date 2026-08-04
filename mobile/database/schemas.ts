@@ -17,6 +17,9 @@ export const appDbSchema = appSchema({
 				{ name: "isActiveAssignmentUser", type: "boolean" },
 				{ name: "isSynced", type: "boolean" },
 				{ name: "syncedAt", type: "string", isOptional: true },
+				{ name: "participantsStatus", type: "string" },
+				{ name: "shearingStatus", type: "string" },
+				{ name: "cleaningStatus", type: "string" },
 			],
 		}),
 		tableSchema({

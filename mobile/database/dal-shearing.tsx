@@ -5,6 +5,7 @@ import type {
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
+import { recalculatePermitStatuses } from "./dal-permit"
 import {
 	applyShearingHeaderToModel,
 	applyShearingRecordToModel,
@@ -124,6 +125,7 @@ export async function createSingleShearingRecord(
 			.create((model) => {
 				applyShearingRecordToModel(model, data, permitId)
 			})
+		await recalculatePermitStatuses(permitId)
 	})
 	if (!record) throw new Error("Failed to create shearing record")
 	return mapToShearingRecord(record)
@@ -150,6 +152,8 @@ export async function deleteSingleShearingRecord(
 		const record = await database
 			.get<ShearingRecordModel>("shearingRecord")
 			.find(recordId)
+		const { permitId } = record
 		await record.destroyPermanently()
+		await recalculatePermitStatuses(permitId)
 	})
 }

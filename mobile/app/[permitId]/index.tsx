@@ -1,21 +1,12 @@
-import {
-	ReadOnlyNotice,
-	StepList,
-	type StepState,
-	TotalChip,
-} from "@components"
+import { ReadOnlyNotice, StepList, TotalChip } from "@components"
 import {
 	useReadBulkCleaningCommon,
-	useReadBulkDehearing,
-	useReadBulkGrooming,
 	useReadBulkParticipants,
 	useReadBulkShearingRecords,
-	useReadSingleCleaningHeader,
 	useReadSinglePermit,
 	useSyncPermit,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
-import { getDependentStepState } from "@utils/misc"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router"
@@ -55,44 +46,19 @@ export default function () {
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const { data: records } = useReadBulkShearingRecords(permitId)
-	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningRecords } = useReadBulkCleaningCommon(permitId)
 	const {
 		syncPermit,
 		syncingPermit,
 		clearError: clearSyncError,
 	} = useSyncPermit()
-	const cleaningRecordIds = cleaningRecords.map((record) => record.id)
-	const { data: groomingRecords } = useReadBulkGrooming(cleaningRecordIds)
-	const { data: dehearingRecords } = useReadBulkDehearing(cleaningRecordIds)
-
-	const participantsState: StepState =
-		participants.length > 0 ? "done" : "ready"
-	const shearingState = getDependentStepState(
-		participantsState === "done",
-		records.length > 0,
-	)
-	const completedCleaningRecordIds = new Set([
-		...groomingRecords
-			.filter((record) => record.isCompleted)
-			.map((record) => record.cleaningCommonId),
-		...dehearingRecords
-			.filter((record) => record.isCompleted)
-			.map((record) => record.cleaningCommonId),
-	])
-	const cleaningRecordsCompleted =
-		cleaningRecords.length > 0 &&
-		cleaningRecords.every((record) =>
-			completedCleaningRecordIds.has(record.id),
-		)
-	const cleaningState = getDependentStepState(
-		shearingState === "done",
-		cleaningHeader?.isCompleted === true && cleaningRecordsCompleted,
-	)
+	const participantsStatus = permit?.participantsStatus ?? "ready"
+	const shearingStatus = permit?.shearingStatus ?? "disabled"
+	const cleaningStatus = permit?.cleaningStatus ?? "disabled"
 	const canSendPermit =
-		participantsState === "done" &&
-		shearingState === "done" &&
-		cleaningState === "done"
+		participantsStatus === "done" &&
+		shearingStatus === "done" &&
+		cleaningStatus === "done"
 	const isPermitSynced = permit?.isSynced === true
 	const permitLabel = permit?.permitNumber ?? permitNumber ?? "Sin número"
 	const communityName = permit
@@ -235,7 +201,7 @@ export default function () {
 					steps={[
 						{
 							title: "Participantes",
-							state: participantsState,
+							state: participantsStatus,
 							action: {
 								icon: "chevron-right",
 								onPress: () =>
@@ -250,7 +216,7 @@ export default function () {
 						},
 						{
 							title: "Esquila",
-							state: shearingState,
+							state: shearingStatus,
 							action: {
 								icon: "chevron-right",
 								onPress: () =>
@@ -265,7 +231,7 @@ export default function () {
 						},
 						{
 							title: "Limpieza",
-							state: cleaningState,
+							state: cleaningStatus,
 							action: {
 								icon: "chevron-right",
 								onPress: () =>

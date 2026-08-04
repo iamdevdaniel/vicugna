@@ -6,6 +6,7 @@ import type {
 	ParticipantData,
 	ShearingHeaderData,
 	ShearingRecordData,
+	PermitData as SyncPermitData,
 } from "@vicugna/shared"
 
 export type {
@@ -20,19 +21,12 @@ export type {
 	SyncFieldData,
 } from "@vicugna/shared"
 
-export type PermitData = {
-	id: string
-	permitNumber: string
-	seasonId: string
-	seasonName: string
-	communityId: string
-	regionalId: string
-	departmentId: string
-	userId: string
-	userFullName: string
-	isActiveAssignmentUser: boolean
-	isSynced: boolean
-	syncedAt: string | null
+export type PermitStepStatus = "ready" | "done" | "disabled"
+
+export interface PermitData extends SyncPermitData {
+	participantsStatus: PermitStepStatus
+	shearingStatus: PermitStepStatus
+	cleaningStatus: PermitStepStatus
 }
 
 export type AdminPermit = {

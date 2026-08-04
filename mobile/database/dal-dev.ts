@@ -6,6 +6,7 @@ import type {
 	DehearingModel,
 	GroomingModel,
 	ParticipantModel,
+	PermitModel,
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
@@ -60,28 +61,23 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 			.get<CleaningHeaderModel>("cleaningHeader")
 			.query(Q.where("permitId", permitId))
 			.fetch()
+		const permit = await database.get<PermitModel>("permits").find(permitId)
 
-		for (const record of participants) {
-			await record.destroyPermanently()
-		}
-
-		for (const record of shearingRecords) {
-			await record.destroyPermanently()
-		}
-
-		for (const record of groomingRecords) {
-			await record.destroyPermanently()
-		}
-
-		for (const record of dehearingRecords) {
-			await record.destroyPermanently()
-		}
-
-		for (const record of cleaningCommonRecords) {
-			await record.destroyPermanently()
-		}
-
-		const batchOps: Model[] = []
+		const batchOps: Model[] = [
+			...participants.map((record) => record.prepareDestroyPermanently()),
+			...shearingRecords.map((record) =>
+				record.prepareDestroyPermanently(),
+			),
+			...groomingRecords.map((record) =>
+				record.prepareDestroyPermanently(),
+			),
+			...dehearingRecords.map((record) =>
+				record.prepareDestroyPermanently(),
+			),
+			...cleaningCommonRecords.map((record) =>
+				record.prepareDestroyPermanently(),
+			),
+		]
 
 		const shearingHeader = shearingHeaders[0]
 		if (shearingHeader) {
@@ -112,9 +108,15 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 			)
 		}
 
-		if (batchOps.length > 0) {
-			await database.batch(batchOps)
-		}
+		batchOps.push(
+			permit.prepareUpdate((model) => {
+				model.participantsStatus = "ready"
+				model.shearingStatus = "disabled"
+				model.cleaningStatus = "disabled"
+			}),
+		)
+
+		await database.batch(batchOps)
 	})
 
 	await updatePermitSyncStatus({
@@ -136,6 +138,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 			.get<CleaningHeaderModel>("cleaningHeader")
 			.query(Q.where("permitId", permitId))
 			.fetch()
+		const permit = await database.get<PermitModel>("permits").find(permitId)
 
 		const batchOps: Model[] = []
 
@@ -682,8 +685,14 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 			}
 		}
 
-		if (batchOps.length > 0) {
-			await database.batch(batchOps)
-		}
+		batchOps.push(
+			permit.prepareUpdate((model) => {
+				model.participantsStatus = "done"
+				model.shearingStatus = "done"
+				model.cleaningStatus = "done"
+			}),
+		)
+
+		await database.batch(batchOps)
 	})
 }

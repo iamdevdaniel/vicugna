@@ -1,3 +1,4 @@
+import type { PermitStepStatus } from "@definitions/types"
 import { Model } from "@nozbe/watermelondb"
 import { field, text } from "@nozbe/watermelondb/decorators"
 
@@ -14,6 +15,9 @@ export class PermitModel extends Model {
 	@field("isActiveAssignmentUser") isActiveAssignmentUser!: boolean
 	@field("isSynced") isSynced!: boolean
 	@text("syncedAt") syncedAt!: string | null
+	@text("participantsStatus") participantsStatus!: PermitStepStatus
+	@text("shearingStatus") shearingStatus!: PermitStepStatus
+	@text("cleaningStatus") cleaningStatus!: PermitStepStatus
 }
 
 export class ParticipantModel extends Model {
