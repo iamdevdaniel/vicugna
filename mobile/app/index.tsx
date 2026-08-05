@@ -1,4 +1,9 @@
-import { AccentCard, DevSeedFab, HomeUserHeader } from "@components"
+import {
+	AccentCard,
+	DevSeedFab,
+	HomeUserHeader,
+	PermitStatusIndicator,
+} from "@components"
 import { useLoadPermits, useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
@@ -147,11 +152,11 @@ export default function HomeScreen() {
 								flexDirection: "row",
 								alignItems: "center",
 								gap: 12,
-								paddingVertical: 12,
+								paddingVertical: 10,
 								paddingRight: 12,
 							}}
 						>
-							<View style={{ flex: 1, gap: 2 }}>
+							<View style={{ gap: 2 }}>
 								<Text variant="titleMedium">
 									{permit.permitNumber}
 								</Text>
@@ -159,10 +164,17 @@ export default function HomeScreen() {
 									{getCommunityName(permit.communityId)}
 								</Text>
 							</View>
+							<PermitStatusIndicator
+								participantsStatus={permit.participantsStatus}
+								shearingStatus={permit.shearingStatus}
+								cleaningStatus={permit.cleaningStatus}
+							/>
 							<View
 								style={{
-									flexDirection: "row",
+									width: 26,
+									height: 26,
 									alignItems: "center",
+									justifyContent: "center",
 								}}
 							>
 								{permit.isSynced ? (
