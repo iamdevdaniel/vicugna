@@ -45,7 +45,7 @@ app-example
 /ios/
 
 # AI
-AGENTS.md
+AGENT_NOTES.local.md
 .env
 
 # Tailwind
