@@ -33,7 +33,7 @@ export async function saveSyncFieldData(data: SyncFieldData) {
 		await tx
 			.update(permits)
 			.set({
-				isSynced: true,
+				syncStatus: "synced",
 				syncedAt,
 				updatedAt: new Date(),
 			})
@@ -42,7 +42,7 @@ export async function saveSyncFieldData(data: SyncFieldData) {
 
 	return {
 		permitId: data.permit.id,
-		isSynced: true,
+		syncStatus: "synced",
 		syncedAt: syncedAt.toISOString(),
 	}
 }

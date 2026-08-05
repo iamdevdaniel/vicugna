@@ -1,3 +1,5 @@
+import type { PermitSyncStatus } from "@shared"
+
 export interface MonitoringSeasonOption {
 	id: string
 	name: string
@@ -14,7 +16,7 @@ export interface MonitoringPermitGroup {
 	communityId: string
 	communityName: string
 	permitNumber: string
-	isSynced: boolean
+	syncStatus: PermitSyncStatus
 	syncedAt: string | null
 	participantsCount: number | null
 	cleaningRecordsCount: number | null
@@ -27,7 +29,7 @@ export interface SelectedMonitoringPermit {
 	communityId: string
 	communityName: string
 	permitNumber: string
-	isSynced: boolean
+	syncStatus: PermitSyncStatus
 	syncedAt: string | null
 	syncedAtLabel: string | null
 	assignedUsersCount: number

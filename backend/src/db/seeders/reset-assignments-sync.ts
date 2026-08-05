@@ -66,7 +66,7 @@ async function resetAssignmentsSync() {
 			await tx
 				.update(permits)
 				.set({
-					isSynced: false,
+					syncStatus: "assigned",
 					syncedAt: null,
 					updatedAt: new Date(),
 				})

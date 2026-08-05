@@ -227,6 +227,14 @@ export async function replaceAssignmentsForPermit(
 				active: record.active,
 			})),
 		)
+
+		await tx
+			.update(permits)
+			.set({
+				syncStatus: "assigned",
+				updatedAt: new Date(),
+			})
+			.where(eq(permits.id, permitId))
 	})
 }
 

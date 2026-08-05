@@ -43,7 +43,7 @@ export async function listMobilePermitsByUserId(
 		userId: assignment.userId,
 		userFullName: assignment.user.fullName,
 		isActiveAssignmentUser: assignment.active,
-		isSynced: assignment.permit.isSynced,
+		syncStatus: assignment.permit.syncStatus,
 		syncedAt: assignment.permit.syncedAt?.toISOString() ?? null,
 	}))
 }

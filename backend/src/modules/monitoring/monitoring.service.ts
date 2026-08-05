@@ -1,3 +1,4 @@
+import { SYNCED_PERMIT_STATUSES } from "../common/common.constants"
 import { listSeasons } from "../common/common.repository"
 import { listMonitoringAssignments } from "./monitoring.repository"
 import type {
@@ -103,15 +104,21 @@ function createPermitGroup(
 		communityId: assignment.communityId,
 		communityName: assignment.community.name,
 		permitNumber: assignment.permit.permitNumber,
-		isSynced: assignment.permit.isSynced,
+		syncStatus: assignment.permit.syncStatus,
 		syncedAt: assignment.permit.syncedAt?.toISOString() ?? null,
-		participantsCount: assignment.permit.isSynced
+		participantsCount: SYNCED_PERMIT_STATUSES.includes(
+			assignment.permit.syncStatus,
+		)
 			? assignment.permit.participants.length
 			: null,
-		cleaningRecordsCount: assignment.permit.isSynced
+		cleaningRecordsCount: SYNCED_PERMIT_STATUSES.includes(
+			assignment.permit.syncStatus,
+		)
 			? assignment.permit.cleaningCommonRecords.length
 			: null,
-		shearingRecordsCount: assignment.permit.isSynced
+		shearingRecordsCount: SYNCED_PERMIT_STATUSES.includes(
+			assignment.permit.syncStatus,
+		)
 			? assignment.permit.shearingRecords.length
 			: null,
 		users: [],
@@ -140,7 +147,7 @@ function getSelectedPermit(
 			communityId: permit.communityId,
 			communityName: permit.communityName,
 			permitNumber: permit.permitNumber,
-			isSynced: permit.isSynced,
+			syncStatus: permit.syncStatus,
 			syncedAt: permit.syncedAt,
 			syncedAtLabel: formatSyncedAtLabel(permit.syncedAt),
 			assignedUsersCount: permit.users.length,

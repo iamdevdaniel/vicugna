@@ -8,6 +8,7 @@ function monitoringPageState(initialData) {
 	return {
 		seasonId: initialData.seasonId,
 		communityGroups: initialData.communityGroups,
+		syncedStatuses: ["synced", "reopened"],
 		search: savedState?.search ?? "",
 		showSyncedOnly: savedState?.showSyncedOnly ?? false,
 		expandedCommunityIds: initialExpandedIds,
@@ -35,7 +36,10 @@ function monitoringPageState(initialData) {
 				.map((community) => ({
 					...community,
 					permits: community.permits.filter((permit) => {
-						if (showSyncedOnly && !permit.isSynced) {
+						if (
+							showSyncedOnly &&
+							!this.syncedStatuses.includes(permit.syncStatus)
+						) {
 							return false
 						}
 

@@ -1,3 +1,4 @@
+import type { PermitSyncStatus } from "@vicugna/shared"
 import { relations, sql } from "drizzle-orm"
 import {
 	boolean,
@@ -88,7 +89,10 @@ export const permits = pgTable(
 			.notNull()
 			.references(() => communities.id),
 		permitNumber: text("permit_number").notNull(),
-		isSynced: boolean("is_synced").notNull().default(false),
+		syncStatus: text("sync_status")
+			.$type<PermitSyncStatus>()
+			.notNull()
+			.default("created"),
 		syncedAt: timestamp("synced_at"),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 		updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -97,6 +101,28 @@ export const permits = pgTable(
 		uniqueIndex("permits_season_permit_number_unique").on(
 			table.seasonId,
 			table.permitNumber,
+		),
+	],
+)
+
+export const permitSyncVersions = pgTable(
+	"permit_sync_versions",
+	{
+		id: text("id").primaryKey(),
+		permitId: text("permit_id")
+			.notNull()
+			.references(() => permits.id, { onDelete: "cascade" }),
+		version: integer("version").notNull(),
+		submittedByUserId: text("submitted_by_user_id")
+			.notNull()
+			.references(() => users.id),
+		submittedAt: timestamp("submitted_at").notNull().defaultNow(),
+		exportedAt: timestamp("exported_at"),
+	},
+	(table) => [
+		uniqueIndex("permit_sync_versions_permit_version_unique").on(
+			table.permitId,
+			table.version,
 		),
 	],
 )
@@ -291,6 +317,7 @@ export const communityRelations = relations(communities, ({ one, many }) => ({
 
 export const userRelations = relations(users, ({ many }) => ({
 	assignments: many(assignments),
+	permitSyncVersions: many(permitSyncVersions),
 }))
 
 export const assignmentRelations = relations(assignments, ({ one }) => ({
@@ -327,7 +354,22 @@ export const permitRelations = relations(permits, ({ one, many }) => ({
 	shearingRecords: many(shearingRecords),
 	cleaningHeader: one(cleaningHeaders),
 	cleaningCommonRecords: many(cleaningCommonRecords),
+	permitSyncVersions: many(permitSyncVersions),
 }))
+
+export const permitSyncVersionRelations = relations(
+	permitSyncVersions,
+	({ one }) => ({
+		permit: one(permits, {
+			fields: [permitSyncVersions.permitId],
+			references: [permits.id],
+		}),
+		submittedByUser: one(users, {
+			fields: [permitSyncVersions.submittedByUserId],
+			references: [users.id],
+		}),
+	}),
+)
 
 export const participantRelations = relations(participants, ({ one }) => ({
 	permit: one(permits, {

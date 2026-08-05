@@ -5,6 +5,7 @@ import {
 	getCommunityNameById,
 	getRegionalNameByCommunityId,
 } from "../common/common.catalog"
+import { SYNCED_PERMIT_STATUSES } from "../common/common.constants"
 import {
 	alignCenterMiddleCells,
 	alignLeftMiddleCells,
@@ -78,8 +79,10 @@ function toNodeBuffer(data: ArrayBuffer | Buffer) {
 
 async function getSyncedPermitForExport(permitId: string) {
 	const permit = await findSyncedPermitForExport(permitId)
+	const hasSyncedData =
+		permit && SYNCED_PERMIT_STATUSES.includes(permit.syncStatus)
 
-	if (!permit?.isSynced) {
+	if (!permit || !hasSyncedData) {
 		throw new Error("Permit sync data is not available")
 	}
 

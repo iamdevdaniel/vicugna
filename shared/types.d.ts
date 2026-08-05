@@ -9,6 +9,13 @@ export type SyncFieldData = {
 	dehearingDetails: DehearingData[]
 }
 
+export type PermitSyncStatus =
+	| "created"
+	| "assigned"
+	| "in_progress"
+	| "synced"
+	| "reopened"
+
 export type PermitData = {
 	id: string
 	permitNumber: string
@@ -20,7 +27,7 @@ export type PermitData = {
 	userId: string
 	userFullName: string
 	isActiveAssignmentUser: boolean
-	isSynced: boolean
+	syncStatus: PermitSyncStatus
 	syncedAt: string | null
 }
 

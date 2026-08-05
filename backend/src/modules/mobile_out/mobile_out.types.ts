@@ -1,3 +1,5 @@
+import type { PermitSyncStatus } from "@shared"
+
 export interface MobilePermitData {
 	id: string
 	permitNumber: string
@@ -9,6 +11,6 @@ export interface MobilePermitData {
 	userId: string
 	userFullName: string
 	isActiveAssignmentUser: boolean
-	isSynced: boolean
+	syncStatus: PermitSyncStatus
 	syncedAt: string | null
 }
