@@ -9,6 +9,14 @@ export type SyncFieldData = {
 	dehearingDetails: DehearingData[]
 }
 
+export type PermitFieldData = Omit<SyncFieldData, "permit">
+
+export type MobilePermitData = {
+	permit: PermitData
+	syncVersion: number | null
+	fieldData: PermitFieldData | null
+}
+
 export type PermitSyncStatus =
 	| "created"
 	| "assigned"
