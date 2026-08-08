@@ -30,7 +30,7 @@ export default function () {
 		headerId: string
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleShearingHeader(permitId)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()

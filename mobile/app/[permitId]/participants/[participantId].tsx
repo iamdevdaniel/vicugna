@@ -33,7 +33,7 @@ export default function () {
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data, loading } = useReadSingleParticipant(participantId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const {
 		createSingleParticipant,

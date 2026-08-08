@@ -59,7 +59,7 @@ export default function () {
 		participantsStatus === "done" &&
 		shearingStatus === "done" &&
 		cleaningStatus === "done"
-	const isPermitSynced = permit?.isSynced === true
+	const isPermitSynced = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? permitNumber ?? "Sin número"
 	const communityName = permit
 		? getCommunityName(permit.communityId)

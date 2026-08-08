@@ -122,7 +122,7 @@ export default function HomeScreen() {
 				renderItem={({ item: permit }) => (
 					<AccentCard
 						accent={
-							permit.isSynced
+							permit.syncStatus === "synced"
 								? theme.colors.custom.green
 								: theme.colors.surfaceVariant
 						}
@@ -131,7 +131,7 @@ export default function HomeScreen() {
 								source="file-key-outline"
 								size={20}
 								color={
-									permit.isSynced
+									permit.syncStatus === "synced"
 										? theme.colors.custom.white
 										: theme.colors.onSurfaceVariant
 								}
@@ -177,7 +177,7 @@ export default function HomeScreen() {
 									justifyContent: "center",
 								}}
 							>
-								{permit.isSynced ? (
+								{permit.syncStatus === "synced" ? (
 									<Icon
 										source="cloud-check-outline"
 										size={26}

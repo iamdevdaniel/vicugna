@@ -26,11 +26,11 @@ export {
 	updateSingleParticipant,
 } from "./dal-participants"
 export {
-	savePermits,
 	subscribePermits,
 	subscribeSinglePermit,
 	updatePermitSyncStatus,
 } from "./dal-permit"
+export { savePermits } from "./dal-permit-load"
 export {
 	createSingleShearingRecord,
 	deleteSingleShearingRecord,

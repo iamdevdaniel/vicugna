@@ -1,15 +1,15 @@
-import type { PermitData } from "@definitions/types"
+import type { MobilePermitData } from "@definitions/types"
 
 type MobilePermitsResponse = {
 	ok: boolean
-	data?: PermitData[]
+	data?: MobilePermitData[]
 	error?: string
 }
 
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
 
 if (!apiBaseUrl) {
-	throw new Error("Missing EXPO_PUBLIC_API_BASE_URL")
+	throw new Error("Falta configurar la dirección del servidor")
 }
 
 export async function fetchPermits(token: string) {

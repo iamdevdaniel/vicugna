@@ -26,7 +26,7 @@ export default function () {
 	const router = useRouter()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: permit } = useReadSinglePermit(permitId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleCleaningHeader(permitId)
 	const { updateSingleCleaningHeader, saving } =

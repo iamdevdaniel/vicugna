@@ -15,7 +15,7 @@ export default function () {
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 
 	const total = participants?.length || 0

@@ -138,7 +138,7 @@ export default function () {
 		permitNumber?: string
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? permitNumber ?? "Sin número"
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningCommon } = useReadBulkCleaningCommon(permitId)

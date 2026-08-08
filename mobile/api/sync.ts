@@ -4,7 +4,7 @@ type SyncFieldResponse = {
 	ok: boolean
 	data?: {
 		permitId: string
-		isSynced: boolean
+		syncStatus: "synced"
 		syncedAt: string
 	}
 	error?: string
@@ -13,13 +13,10 @@ type SyncFieldResponse = {
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
 
 if (!apiBaseUrl) {
-	throw new Error("Missing EXPO_PUBLIC_API_BASE_URL")
+	throw new Error("Falta configurar la dirección del servidor")
 }
 
-export async function submitSyncFieldData(
-	token: string,
-	data: SyncFieldData,
-) {
+export async function submitSyncFieldData(token: string, data: SyncFieldData) {
 	const response = await fetch(`${apiBaseUrl}/permits/sync`, {
 		method: "POST",
 		headers: {

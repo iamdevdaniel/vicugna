@@ -121,7 +121,7 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 
 	await updatePermitSyncStatus({
 		permitId,
-		isSynced: false,
+		syncStatus: "assigned",
 		syncedAt: null,
 	})
 }

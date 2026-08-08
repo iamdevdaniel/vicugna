@@ -40,7 +40,7 @@ export default function () {
 		recordId?: string
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const isEditForm = !!recordId
 	const { data, loading: loadingData } =

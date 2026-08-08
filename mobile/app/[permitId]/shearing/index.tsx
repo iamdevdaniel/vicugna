@@ -23,7 +23,7 @@ export default function () {
 	const insets = useSafeAreaInsets()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: permit } = useReadSinglePermit(permitId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data: shearingForm, loading: loadingShearingHeader } =
 		useReadSingleShearingHeader(permitId)

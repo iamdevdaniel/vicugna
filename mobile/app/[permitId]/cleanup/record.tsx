@@ -57,7 +57,7 @@ export default function () {
 	const isEditForm = !!recordId
 	const [detailKind, setDetailKind] = useState<CleaningDetailKind>("grooming")
 	const { data: permit } = useReadSinglePermit(permitId)
-	const isPermitReadOnly = permit?.isSynced === true
+	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
 
 	const { data: commonData, loading: loadingCommon } =
