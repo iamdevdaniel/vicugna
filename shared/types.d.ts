@@ -1,4 +1,5 @@
 export type SyncFieldData = {
+	expectedSyncVersion: number | null
 	permit: PermitData
 	participants: ParticipantData[]
 	shearingHeader: ShearingHeaderData
@@ -9,7 +10,17 @@ export type SyncFieldData = {
 	dehearingDetails: DehearingData[]
 }
 
-export type PermitFieldData = Omit<SyncFieldData, "permit">
+export type PermitFieldData = Omit<
+	SyncFieldData,
+	"permit" | "expectedSyncVersion"
+>
+
+export type PermitSyncResult = {
+	permitId: string
+	syncStatus: "synced"
+	syncVersion: number
+	syncedAt: string
+}
 
 export type MobilePermitData = {
 	permit: PermitData

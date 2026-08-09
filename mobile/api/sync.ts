@@ -1,12 +1,8 @@
-import type { SyncFieldData } from "@definitions/types"
+import type { PermitSyncResult, SyncFieldData } from "@definitions/types"
 
 type SyncFieldResponse = {
 	ok: boolean
-	data?: {
-		permitId: string
-		syncStatus: "synced"
-		syncedAt: string
-	}
+	data?: PermitSyncResult
 	error?: string
 }
 

@@ -1,36 +1,51 @@
+import { getMobileUserFromAuthorization } from "../mobile-auth/mobile_auth.service"
 import { PermitValidationError } from "./mobile_in.errors"
 import { saveSyncFieldData } from "./mobile_in.repository"
 import type { SyncFieldData } from "./mobile_in.types"
 
-export async function submitSyncFieldData(data: SyncFieldData) {
+export async function submitSyncFieldData(
+	data: SyncFieldData,
+	authorizationHeader: string,
+) {
+	const user = await getMobileUserFromAuthorization(authorizationHeader)
 	validatePermit(data)
 	validateParticipants(data)
 	validateShearing(data)
 	validateCleaning(data)
 
-	return saveSyncFieldData(data)
+	return saveSyncFieldData(data, user.id)
 }
 
 function validatePermit(data: SyncFieldData): void {
 	if (!data.permit.id) {
-		throw new PermitValidationError("Permit id is required")
+		throw new PermitValidationError(
+			"El identificador del permiso es obligatorio",
+		)
+	}
+
+	if (
+		data.expectedSyncVersion !== null &&
+		(!Number.isInteger(data.expectedSyncVersion) ||
+			data.expectedSyncVersion < 1)
+	) {
+		throw new PermitValidationError("La versión del permiso no es válida")
 	}
 }
 
 function validateParticipants(data: SyncFieldData): void {
 	if (!data.participants.length) {
-		throw new PermitValidationError("There are no participants")
+		throw new PermitValidationError("No hay participantes")
 	}
 
 	ensureUniqueIds(
 		data.participants.map((participant) => participant.id),
-		"Participant",
+		"El participante",
 	)
 
 	for (const participant of data.participants) {
 		if (participant.permitId !== data.permit.id) {
 			throw new PermitValidationError(
-				"Participant permit id does not match",
+				"El participante no pertenece al permiso",
 			)
 		}
 	}
@@ -38,28 +53,28 @@ function validateParticipants(data: SyncFieldData): void {
 
 function validateShearing(data: SyncFieldData): void {
 	if (!data.shearingHeader) {
-		throw new PermitValidationError("Shearing header is required")
+		throw new PermitValidationError("La cabecera de esquila es obligatoria")
 	}
 
 	if (data.shearingHeader.permitId !== data.permit.id) {
 		throw new PermitValidationError(
-			"Shearing header permit id does not match",
+			"La cabecera de esquila no pertenece al permiso",
 		)
 	}
 
 	if (!data.shearingRecords.length) {
-		throw new PermitValidationError("There are no shearing records")
+		throw new PermitValidationError("No hay registros de esquila")
 	}
 
 	ensureUniqueIds(
 		data.shearingRecords.map((record) => record.id),
-		"Shearing record",
+		"El registro de esquila",
 	)
 
 	for (const record of data.shearingRecords) {
 		if (record.permitId !== data.permit.id) {
 			throw new PermitValidationError(
-				"Shearing record permit id does not match",
+				"El registro de esquila no pertenece al permiso",
 			)
 		}
 	}
@@ -67,17 +82,19 @@ function validateShearing(data: SyncFieldData): void {
 
 function validateCleaning(data: SyncFieldData): void {
 	if (!data.cleaningHeader) {
-		throw new PermitValidationError("Cleaning header is required")
+		throw new PermitValidationError(
+			"La cabecera de limpieza es obligatoria",
+		)
 	}
 
 	if (data.cleaningHeader.permitId !== data.permit.id) {
 		throw new PermitValidationError(
-			"Cleaning header permit id does not match",
+			"La cabecera de limpieza no pertenece al permiso",
 		)
 	}
 
 	if (!data.cleaningCommonRecords.length) {
-		throw new PermitValidationError("The cleaning records are empty")
+		throw new PermitValidationError("No hay registros de limpieza")
 	}
 
 	if (
@@ -85,35 +102,35 @@ function validateCleaning(data: SyncFieldData): void {
 		data.cleaningCommonRecords.length
 	) {
 		throw new PermitValidationError(
-			"Cleaning details count must match the number of cleaning common records",
+			"Cada registro de limpieza debe tener un detalle",
 		)
 	}
 
 	ensureUniqueIds(
 		data.cleaningCommonRecords.map((record) => record.id),
-		"Cleaning common record",
+		"El registro de limpieza",
 	)
 	ensureUniqueIds(
 		data.groomingDetails.map((detail) => detail.cleaningCommonId),
-		"Grooming cleaning common id",
+		"La relación de descerdado",
 	)
 	ensureUniqueIds(
 		data.groomingDetails.map((detail) => detail.id),
-		"Grooming detail",
+		"El detalle de descerdado",
 	)
 	ensureUniqueIds(
 		data.dehearingDetails.map((detail) => detail.cleaningCommonId),
-		"Dehearing cleaning common id",
+		"La relación de depilado",
 	)
 	ensureUniqueIds(
 		data.dehearingDetails.map((detail) => detail.id),
-		"Dehearing detail",
+		"El detalle de depilado",
 	)
 
 	for (const record of data.cleaningCommonRecords) {
 		if (record.permitId !== data.permit.id) {
 			throw new PermitValidationError(
-				"Cleaning common permit id does not match",
+				"El registro de limpieza no pertenece al permiso",
 			)
 		}
 	}
@@ -126,7 +143,7 @@ function validateCleaning(data: SyncFieldData): void {
 	for (const detail of data.groomingDetails) {
 		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
-				"Grooming detail has invalid cleaning common id",
+				"El detalle de descerdado no pertenece al registro de limpieza",
 			)
 		}
 
@@ -136,13 +153,13 @@ function validateCleaning(data: SyncFieldData): void {
 	for (const detail of data.dehearingDetails) {
 		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
-				"Dehearing detail has invalid cleaning common id",
+				"El detalle de depilado no pertenece al registro de limpieza",
 			)
 		}
 
 		if (usedDetailIds.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
-				"A cleaning record cannot have both grooming and dehearing details",
+				"Un registro de limpieza no puede tener descerdado y depilado a la vez",
 			)
 		}
 	}
@@ -153,7 +170,7 @@ function ensureUniqueIds(ids: string[], label: string): void {
 
 	if (uniqueIds.size !== ids.length) {
 		throw new PermitValidationError(
-			`${label} is duplicated in the sync payload`,
+			`${label} está duplicado en los datos enviados`,
 		)
 	}
 }

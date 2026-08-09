@@ -18,6 +18,7 @@ export type {
 	MobilePermitData,
 	ParticipantData,
 	PermitFieldData,
+	PermitSyncResult,
 	PermitSyncStatus,
 	ShearingHeaderData,
 	ShearingRecordData,

@@ -11,3 +11,17 @@ export class PermitNotFoundError extends Error {
 		this.name = "PermitNotFoundError"
 	}
 }
+
+export class PermitSyncForbiddenError extends Error {
+	constructor(message: string) {
+		super(message)
+		this.name = "PermitSyncForbiddenError"
+	}
+}
+
+export class PermitSyncConflictError extends Error {
+	constructor(message: string) {
+		super(message)
+		this.name = "PermitSyncConflictError"
+	}
+}

@@ -5,6 +5,7 @@ export type {
 	GroomingData,
 	ParticipantData,
 	PermitData,
+	PermitSyncResult,
 	ShearingHeaderData,
 	ShearingRecordData,
 	SyncFieldData,

@@ -81,6 +81,7 @@ export async function getFieldSyncData(
 	}
 
 	return {
+		expectedSyncVersion: permitRecord.syncVersion || null,
 		permit: mapToSyncPermit(permitRecord),
 		participants: participants.map(mapToParticipant),
 		shearingHeader: mapToShearingHeader(shearingHeader),

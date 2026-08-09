@@ -1,4 +1,4 @@
-import type { PermitData } from "@definitions/types"
+import type { PermitData, PermitSyncResult } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
 import { getDependentStepStatus } from "@utils/misc"
 import { mapToPermit } from "./mappers"
@@ -63,11 +63,16 @@ export function subscribeSinglePermit(
 
 //-------------------WRITE-------------------
 
-export async function updatePermitSyncStatus(data: {
-	permitId: string
-	syncStatus: PermitData["syncStatus"]
-	syncedAt: string | null
-}): Promise<void> {
+export async function updatePermitSyncStatus(
+	data:
+		| PermitSyncResult
+		| {
+				permitId: string
+				syncStatus: PermitData["syncStatus"]
+				syncedAt: string | null
+				syncVersion: number | null
+		  },
+): Promise<void> {
 	const permit = await database
 		.get<PermitModel>("permits")
 		.find(data.permitId)
@@ -76,6 +81,7 @@ export async function updatePermitSyncStatus(data: {
 		await permit.update((model) => {
 			model.permitSyncStatus = data.syncStatus
 			model.syncedAt = data.syncedAt
+			model.syncVersion = data.syncVersion
 		})
 	})
 }

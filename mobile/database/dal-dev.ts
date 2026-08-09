@@ -123,6 +123,7 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 		permitId,
 		syncStatus: "assigned",
 		syncedAt: null,
+		syncVersion: null,
 	})
 }
 
