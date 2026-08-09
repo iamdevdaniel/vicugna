@@ -7,6 +7,7 @@ import {
 	dehearingDetails,
 	groomingDetails,
 	participants,
+	permitSyncVersions,
 	permits,
 	shearingHeaders,
 	shearingRecords,
@@ -61,6 +62,9 @@ async function resetAssignmentsSync() {
 		await tx
 			.delete(cleaningCommonRecords)
 			.where(inArray(cleaningCommonRecords.permitId, SEEDED_PERMIT_IDS))
+		await tx
+			.delete(permitSyncVersions)
+			.where(inArray(permitSyncVersions.permitId, SEEDED_PERMIT_IDS))
 
 		for (const permitId of SEEDED_PERMIT_IDS) {
 			await tx

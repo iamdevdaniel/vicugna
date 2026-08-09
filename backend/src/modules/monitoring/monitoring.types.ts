@@ -47,6 +47,7 @@ export interface MonitoringCommunityGroup {
 
 export interface MonitoringPageData {
 	pageTitle: string
+	syncedStatuses: readonly PermitSyncStatus[]
 	formMessage: string | null
 	formMessageType: "error" | "success" | null
 	adminUser: {

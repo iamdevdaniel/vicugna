@@ -1,4 +1,5 @@
 import type { Request, Response } from "express"
+import { SYNCED_PERMIT_STATUSES } from "../common/common.constants"
 import { MonitoringError } from "./monitoring.errors"
 import { getMonitoringPageState, reopenPermit } from "./monitoring.service"
 import type { MonitoringPageData } from "./monitoring.types"
@@ -79,13 +80,18 @@ function getMonitoringViewData(
 	req: Request,
 	data: Omit<
 		MonitoringPageData,
-		"pageTitle" | "adminUser" | "formMessage" | "formMessageType"
+		| "pageTitle"
+		| "adminUser"
+		| "syncedStatuses"
+		| "formMessage"
+		| "formMessageType"
 	>,
 	formMessage: string | null,
 	formMessageType: MonitoringPageData["formMessageType"],
 ): MonitoringPageData {
 	return {
 		pageTitle: "Seguimiento",
+		syncedStatuses: SYNCED_PERMIT_STATUSES,
 		adminUser: {
 			fullName: req.session.adminUser?.fullName ?? "",
 		},

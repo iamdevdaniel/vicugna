@@ -32,7 +32,11 @@ export async function getMonitoringPageState(
 ): Promise<
 	Omit<
 		MonitoringPageData,
-		"pageTitle" | "adminUser" | "formMessage" | "formMessageType"
+		| "pageTitle"
+		| "adminUser"
+		| "syncedStatuses"
+		| "formMessage"
+		| "formMessageType"
 	>
 > {
 	const seasons = await listSeasons()
