@@ -47,6 +47,8 @@ export interface MonitoringCommunityGroup {
 
 export interface MonitoringPageData {
 	pageTitle: string
+	formMessage: string | null
+	formMessageType: "error" | "success" | null
 	adminUser: {
 		fullName: string
 	}

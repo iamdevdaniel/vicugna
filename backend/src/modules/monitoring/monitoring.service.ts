@@ -1,6 +1,10 @@
 import { SYNCED_PERMIT_STATUSES } from "../common/common.constants"
 import { listSeasons } from "../common/common.repository"
-import { listMonitoringAssignments } from "./monitoring.repository"
+import { MonitoringError } from "./monitoring.errors"
+import {
+	listMonitoringAssignments,
+	reopenSyncedPermit,
+} from "./monitoring.repository"
 import type {
 	MonitoringCommunityGroup,
 	MonitoringPageData,
@@ -8,10 +12,29 @@ import type {
 	SelectedMonitoringPermit,
 } from "./monitoring.types"
 
+export async function reopenPermit(permitId: string): Promise<void> {
+	if (!permitId) {
+		throw new MonitoringError("El permiso es obligatorio")
+	}
+
+	const ok = await reopenSyncedPermit(permitId)
+
+	if (!ok) {
+		throw new MonitoringError(
+			"Solo se puede reabrir un permiso sincronizado",
+		)
+	}
+}
+
 export async function getMonitoringPageState(
 	selectedSeasonId?: string,
 	selectedPermitId?: string,
-): Promise<Omit<MonitoringPageData, "pageTitle" | "adminUser">> {
+): Promise<
+	Omit<
+		MonitoringPageData,
+		"pageTitle" | "adminUser" | "formMessage" | "formMessageType"
+	>
+> {
 	const seasons = await listSeasons()
 	const resolvedSeasonId = selectedSeasonId || seasons[0]?.id || ""
 	const assignments = resolvedSeasonId
