@@ -20,12 +20,10 @@ export async function listMobilePermits(req: Request, res: Response) {
 			return
 		}
 
+		console.error("Failed to load mobile permits", error)
 		res.status(500).json({
 			ok: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Internal server error",
+			error: "Error interno del servidor",
 		})
 	}
 }

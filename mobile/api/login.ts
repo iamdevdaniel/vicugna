@@ -9,7 +9,7 @@ type MobileLoginResponse = {
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
 
 if (!apiBaseUrl) {
-	throw new Error("Missing EXPO_PUBLIC_API_BASE_URL")
+	throw new Error("Falta configurar la dirección del servidor")
 }
 
 export async function login(email: string, password: string) {

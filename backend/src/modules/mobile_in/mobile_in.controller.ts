@@ -56,12 +56,10 @@ export async function syncPermit(
 			return
 		}
 
+		console.error("Failed to sync mobile permit", error)
 		res.status(500).json({
 			ok: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Error interno del servidor",
+			error: "Error interno del servidor",
 		})
 	}
 }

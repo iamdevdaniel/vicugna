@@ -10,13 +10,26 @@ import { ROUTES } from "@utils/constants"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router } from "expo-router"
+import { useEffect, useState } from "react"
 import { FlatList, View } from "react-native"
-import { Button, Card, Icon, Text } from "react-native-paper"
+import {
+	ActivityIndicator,
+	Button,
+	Card,
+	Icon,
+	Snackbar,
+	Text,
+} from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useShallow } from "zustand/react/shallow"
 
 export default function HomeScreen() {
 	const theme = useAppTheme()
+	const [isRefreshCoolingDown, setIsRefreshCoolingDown] = useState(false)
+	const [feedback, setFeedback] = useState<{
+		message: string
+		type: "success" | "error"
+	} | null>(null)
 	const { user, isAuthenticated } = useMobileAuthStore(
 		useShallow((state) => ({
 			user: state.user,
@@ -33,22 +46,53 @@ export default function HomeScreen() {
 
 	const hasPermits = permits.length > 0
 	const isPermitListLoading = loading || loadingPermits
-	const shouldShowPermitLoadCard = isAuthenticated && !hasPermits
+	const shouldShowPermitLoadCard =
+		isAuthenticated && !hasPermits && !loadingPermits
 	const permitLoadButtonLabel = permitError
 		? "Reintentar carga de permisos"
 		: "Cargar permisos"
 
-	const onLoadPermits = async () => {
+	const onManualRefresh = async () => {
+		if (loadingPermits || isRefreshCoolingDown) return
+
 		if (permitError) {
 			clearPermitError()
 		}
 
-		await loadPermits()
+		const result = await loadPermits()
+
+		if (!result.ok) {
+			clearPermitError()
+			setFeedback({ message: result.error, type: "error" })
+			return
+		}
+
+		setFeedback({
+			message: "Permisos actualizados",
+			type: "success",
+		})
+		setIsRefreshCoolingDown(true)
 	}
 
 	const onGoToLogin = () => {
 		router.push(ROUTES.LOGIN)
 	}
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			void loadPermits()
+		}
+	}, [isAuthenticated, loadPermits])
+
+	useEffect(() => {
+		if (!isRefreshCoolingDown) return
+
+		const cooldown = setTimeout(() => {
+			setIsRefreshCoolingDown(false)
+		}, 10_000)
+
+		return () => clearTimeout(cooldown)
+	}, [isRefreshCoolingDown])
 
 	return (
 		<SafeAreaView
@@ -69,6 +113,27 @@ export default function HomeScreen() {
 							user={isAuthenticated ? user : null}
 							onLogin={onGoToLogin}
 						/>
+						{isAuthenticated && hasPermits ? (
+							<Button
+								mode="outlined"
+								icon="refresh"
+								contentStyle={{ height: 48 }}
+								onPress={onManualRefresh}
+								loading={loadingPermits}
+								disabled={
+									loadingPermits || isRefreshCoolingDown
+								}
+							>
+								{isRefreshCoolingDown
+									? "Permisos actualizados"
+									: "Actualizar permisos"}
+							</Button>
+						) : null}
+						{permitError && hasPermits ? (
+							<Text style={{ color: theme.colors.error }}>
+								{permitError}
+							</Text>
+						) : null}
 						{shouldShowPermitLoadCard && (
 							<Card>
 								<Card.Content style={{ gap: 12 }}>
@@ -86,9 +151,12 @@ export default function HomeScreen() {
 									)}
 									<Button
 										mode="contained"
-										onPress={onLoadPermits}
+										onPress={onManualRefresh}
 										loading={loadingPermits}
-										disabled={loadingPermits}
+										disabled={
+											loadingPermits ||
+											isRefreshCoolingDown
+										}
 									>
 										{permitLoadButtonLabel}
 									</Button>
@@ -107,11 +175,15 @@ export default function HomeScreen() {
 							gap: 12,
 						}}
 					>
-						<Icon
-							source="file-document-outline"
-							size={40}
-							color={theme.colors.outline}
-						/>
+						{isPermitListLoading ? (
+							<ActivityIndicator animating size="large" />
+						) : (
+							<Icon
+								source="file-document-outline"
+								size={40}
+								color={theme.colors.outline}
+							/>
+						)}
 						<Text variant="bodyLarge">
 							{isPermitListLoading
 								? "Cargando permisos..."
@@ -183,6 +255,12 @@ export default function HomeScreen() {
 										size={26}
 										color={theme.colors.custom.green}
 									/>
+								) : permit.syncStatus === "reopened" ? (
+									<Icon
+										source="lock-open-variant-outline"
+										size={26}
+										color={theme.colors.primary}
+									/>
 								) : null}
 							</View>
 						</View>
@@ -190,6 +268,36 @@ export default function HomeScreen() {
 				)}
 			/>
 			<DevSeedFab permits={permits} />
+			<Snackbar
+				visible={feedback !== null}
+				onDismiss={() => setFeedback(null)}
+				duration={3500}
+				style={{
+					backgroundColor:
+						feedback?.type === "error"
+							? theme.colors.error
+							: theme.colors.inverseSurface,
+				}}
+				action={{
+					label: "Cerrar",
+					textColor:
+						feedback?.type === "error"
+							? theme.colors.onError
+							: theme.colors.inverseOnSurface,
+					onPress: () => setFeedback(null),
+				}}
+			>
+				<Text
+					style={{
+						color:
+							feedback?.type === "error"
+								? theme.colors.onError
+								: theme.colors.inverseOnSurface,
+					}}
+				>
+					{feedback?.message}
+				</Text>
+			</Snackbar>
 		</SafeAreaView>
 	)
 }

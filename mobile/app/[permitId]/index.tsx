@@ -117,7 +117,7 @@ export default function () {
 	const onPressSend = () => {
 		Alert.alert(
 			"Finalizar y enviar",
-			"Al enviar este permiso, ya no podras modificarlo hasta que un admin lo habilite otra vez.",
+			"Al enviar este permiso, ya no podrás modificarlo hasta que un administrador lo habilite otra vez.",
 			[
 				{
 					text: "Cancelar",
@@ -130,7 +130,7 @@ export default function () {
 
 						if (result.ok) {
 							showSnackbar(
-								"El permiso se envio correctamente",
+								"El permiso se envió correctamente",
 								"success",
 							)
 							return

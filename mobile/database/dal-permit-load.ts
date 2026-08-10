@@ -41,8 +41,17 @@ async function savePermitDownloads(
 			existingPermits.map((permit) => [permit.id, permit]),
 		)
 		const currentDownloads = downloads.filter(({ permit, syncVersion }) => {
-			const localVersion = permitsById.get(permit.id)?.syncVersion ?? 0
-			return (syncVersion ?? 0) >= localVersion
+			const existingPermit = permitsById.get(permit.id)
+			const localVersion = existingPermit?.syncVersion ?? 0
+			const backendVersion = syncVersion ?? 0
+
+			if (backendVersion < localVersion) return false
+
+			return !(
+				existingPermit &&
+				existingPermit.permitSyncStatus !== "synced" &&
+				backendVersion > localVersion
+			)
 		})
 		if (currentDownloads.length === 0) return
 
