@@ -21,7 +21,7 @@ export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
 	yup.object({
 		tagNumber: yup
 			.number()
-			.typeError("Debe ser un numero")
+			.typeError("Debe ser un número")
 			.min(0, "No puede ser negativo")
 			.required("Campo requerido"),
 		sex: yup
@@ -36,12 +36,12 @@ export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
 			.required("Campo requerido"),
 		liveWeight: yup
 			.number()
-			.typeError("Debe ser un numero")
+			.typeError("Debe ser un número")
 			.min(0, "No puede ser negativo")
 			.required("Campo requerido"),
 		fiberLength: yup
 			.number()
-			.typeError("Debe ser un numero")
+			.typeError("Debe ser un número")
 			.min(0, "No puede ser negativo")
 			.required("Campo requerido"),
 		bodyCondition: yup

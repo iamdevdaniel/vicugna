@@ -11,7 +11,7 @@ export function useSyncPermit() {
 	const syncPermit = useCallback(
 		async (permitId: string) => {
 			if (!token) {
-				const message = "Debes iniciar sesion para enviar este permiso"
+				const message = "Debes iniciar sesión para enviar este permiso"
 				setError(message)
 				return { ok: false, error: message }
 			}

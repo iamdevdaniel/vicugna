@@ -136,7 +136,7 @@ export default function () {
 					>
 						{isPermitReadOnly && <ReadOnlyNotice />}
 						<LabeledInput
-							label="Numero de arete"
+							label="Número de arete"
 							labelPrefix="1"
 							error={errors.tagNumber?.message}
 							disabled={isPermitReadOnly}

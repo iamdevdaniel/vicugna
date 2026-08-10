@@ -29,7 +29,7 @@ export const yupCleaningCommon: yup.ObjectSchema<CleaningCommonFormData> =
 		fleeceNumber: yup.string().required("Campo requerido"),
 		grossWeight: yup
 			.number()
-			.typeError("Debe ser un numero")
+			.typeError("Debe ser un número")
 			.moreThan(0, "Debe ser mayor a 0")
 			.required("Campo requerido"),
 	})
@@ -37,17 +37,17 @@ export const yupCleaningCommon: yup.ObjectSchema<CleaningCommonFormData> =
 export const yupGrooming: yup.ObjectSchema<GroomingFormData> = yup.object({
 	cleanWeight: yup
 		.number()
-		.typeError("Debe ser un numero")
+		.typeError("Debe ser un número")
 		.moreThan(0, "Debe ser mayor a 0")
 		.required("Campo requerido"),
 	dirtyWeight: yup
 		.number()
-		.typeError("Debe ser un numero")
+		.typeError("Debe ser un número")
 		.moreThan(0, "Debe ser mayor a 0")
 		.required("Campo requerido"),
 	totalWeight: yup
 		.number()
-		.typeError("Debe ser un numero")
+		.typeError("Debe ser un número")
 		.moreThan(0, "Debe ser mayor a 0")
 		.required("Campo requerido"),
 })
@@ -55,12 +55,12 @@ export const yupGrooming: yup.ObjectSchema<GroomingFormData> = yup.object({
 export const yupDehearing: yup.ObjectSchema<DehearingFormData> = yup.object({
 	dehairedWeight: yup
 		.number()
-		.typeError("Debe ser un numero")
+		.typeError("Debe ser un número")
 		.moreThan(0, "Debe ser mayor a 0")
 		.required("Campo requerido"),
 	bristleWeight: yup
 		.number()
-		.typeError("Debe ser un numero")
+		.typeError("Debe ser un número")
 		.moreThan(0, "Debe ser mayor a 0")
 		.required("Campo requerido"),
 	hasDandruff: yup.boolean().defined().required("Campo requerido"),

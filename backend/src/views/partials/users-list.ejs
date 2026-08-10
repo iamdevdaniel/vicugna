@@ -18,7 +18,7 @@
 				class="tab"
 				:class="activeUsersTab === 'admins' ? 'tab-active' : ''"
 				@click="activeUsersTab = 'admins'">
-				Admins
+				Administradores
 			</a>
 		</nav>
 	</div>
@@ -28,6 +28,6 @@
 	</div>
 
 	<div x-show="activeUsersTab === 'admins'">
-		<%- include("./users-list-panel", { users: adminUsers, emptyMessage: "No hay admins creados." }) %>
+		<%- include("./users-list-panel", { users: adminUsers, emptyMessage: "No hay administradores creados." }) %>
 	</div>
 </section>

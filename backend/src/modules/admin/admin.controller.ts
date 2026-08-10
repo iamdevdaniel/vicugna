@@ -15,7 +15,7 @@ export function renderAdminLogin(req: Request, res: Response) {
 	}
 
 	res.render("admin/login", {
-		pageTitle: "Inicio de sesion",
+		pageTitle: "Inicio de sesión",
 		errorMessage: null,
 		email: "",
 	})
@@ -49,10 +49,10 @@ export async function loginAdmin(
 
 		const errorMessage = isAuthenticationError
 			? error.message
-			: "No se pudo iniciar sesion en este momento"
+			: "No se pudo iniciar sesión en este momento"
 
 		res.status(isAuthenticationError ? 401 : 500).render("admin/login", {
-			pageTitle: "Inicio de sesion",
+			pageTitle: "Inicio de sesión",
 			errorMessage,
 			email: req.body.email ?? "",
 		})

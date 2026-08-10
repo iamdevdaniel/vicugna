@@ -47,7 +47,7 @@ export async function registerUser(data: CreateUserFormData) {
 
 	if (!fullName || !phoneNumber || !password) {
 		throw new UserManagementError(
-			"Nombre, telefono y contrasena son obligatorios",
+			"Nombre, teléfono y contraseña son obligatorios",
 		)
 	}
 
