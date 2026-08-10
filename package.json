@@ -6,6 +6,10 @@
     "mobile",
     "shared"
   ],
+  "scripts": {
+    "release:backend": "node scripts/release.cjs backend",
+    "release:mobile": "node scripts/release.cjs mobile"
+  },
   "devDependencies": {
     "lint-staged": "^15.5.2"
   }

@@ -8,6 +8,7 @@ import express, {
 	type Response,
 } from "express"
 import session from "express-session"
+import backendPackage from "../package.json"
 
 import { adminRoutes } from "./modules/admin/admin.routes"
 import { mobileInRoutes } from "./modules/mobile_in"
@@ -20,6 +21,7 @@ const PgSessionStore = connectPgSimple(session)
 
 app.locals.faviconPath =
 	env.nodeEnv === "development" ? "/favicon-dev.png" : "/favicon.png"
+app.locals.appVersion = backendPackage.version
 app.set("trust proxy", 1)
 app.use(cors())
 app.use(express.json({ limit: "10mb" }))

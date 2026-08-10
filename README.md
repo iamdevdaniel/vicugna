@@ -1,5 +1,14 @@
 # Vicugna
 
+## Releases
+
+- Daily work is pushed to `dev`; Render watches `main` for backend releases.
+- `npm run release:backend` publishes a patch release to `dev` and `main`.
+- `npm run release:mobile` publishes a patch release to `dev` only.
+- Pass `-- minor` or `-- major` to choose a larger version bump.
+- Releases update the version files, create a release commit, and create a Git
+  tag such as `backend-v1.0.1` or `mobile-v1.0.1`.
+
 ## Mobile
 
 - TODO: Make related DAL data and status writes atomic. Currently, a data write
