@@ -15,7 +15,7 @@ import { mobileOutRoutes } from "./modules/mobile_out"
 import { mobileAuthRoutes } from "./modules/mobile-auth/mobile_auth.routes"
 
 export const app = express()
-const srcDir = path.resolve(__dirname)
+const srcDir = path.resolve(__dirname, "..", "src")
 const PgSessionStore = connectPgSimple(session)
 
 app.use(cors())
