@@ -50,6 +50,7 @@
 					</div>
 
 					<form x-ref="createUserForm" class="mt-5 flex flex-col gap-4" hx-post="/admin/users"
+						autocomplete="off"
 						hx-target="#create-user-modal-message" hx-swap="innerHTML">
 						<div id="create-user-modal-message"></div>
 
@@ -57,14 +58,16 @@
 							<span class="label-text mb-2 font-semibold">Nombre completo</span>
 							<input
 								class="input input-bordered w-full"
-								type="text" name="fullName" autocomplete="name" />
+								autocomplete="off"
+								type="text" name="fullName" />
 						</label>
 
 						<label class="form-control">
 							<span class="label-text mb-2 font-semibold">Telefono</span>
 							<input
 								class="input input-bordered w-full"
-								type="tel" name="phoneNumber" autocomplete="tel" />
+								autocomplete="off"
+								type="tel" name="phoneNumber" />
 						</label>
 
 						<label class="form-control">
@@ -74,7 +77,8 @@
 							</span>
 							<input
 								class="input input-bordered w-full"
-								type="email" name="email" autocomplete="email" />
+								autocomplete="off"
+								type="email" name="email" />
 						</label>
 
 						<%- include("../partials/users-password-field", { suggestedPassword: "" }) %>
