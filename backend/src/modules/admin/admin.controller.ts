@@ -41,12 +41,17 @@ export async function loginAdmin(
 		req.session.adminUser = adminUser
 		res.redirect("/admin/mission-control")
 	} catch (error) {
-		const errorMessage =
-			error instanceof AdminAuthError
-				? error.message
-				: "No se pudo iniciar sesion en este momento"
+		const isAuthenticationError = error instanceof AdminAuthError
 
-		res.status(401).render("admin/login", {
+		if (!isAuthenticationError) {
+			console.error("Admin login failed", error)
+		}
+
+		const errorMessage = isAuthenticationError
+			? error.message
+			: "No se pudo iniciar sesion en este momento"
+
+		res.status(isAuthenticationError ? 401 : 500).render("admin/login", {
 			pageTitle: "Inicio de sesion",
 			errorMessage,
 			email: req.body.email ?? "",
