@@ -18,6 +18,8 @@ export const app = express()
 const srcDir = path.resolve(__dirname, "..", "src")
 const PgSessionStore = connectPgSimple(session)
 
+app.locals.faviconPath =
+	env.nodeEnv === "development" ? "/favicon-dev.png" : "/favicon.png"
 app.set("trust proxy", 1)
 app.use(cors())
 app.use(express.json({ limit: "10mb" }))
