@@ -1,4 +1,4 @@
-import type { PermitSyncStatus } from "@vicugna/shared"
+import type { PermitSyncStatus } from "@shared"
 import { relations, sql } from "drizzle-orm"
 import {
 	boolean,
