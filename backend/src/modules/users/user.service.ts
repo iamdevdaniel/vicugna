@@ -40,21 +40,31 @@ export function getSuggestedTemporaryPassword() {
 }
 
 export async function registerUser(data: CreateUserFormData) {
-	const fullName = data.fullName.trim()
-	const phoneNumber = data.phoneNumber.trim()
+	const firstName = normalizeRequiredText(data.firstName)
+	const paternalLastName = normalizeRequiredText(data.paternalLastName)
+	const maternalLastName = normalizeRequiredText(data.maternalLastName)
+	const phoneNumber = normalizeRequiredText(data.phoneNumber)
 	const email = normalizeEmail(data.email)
-	const password = data.password.trim()
+	const password = normalizeRequiredText(data.password)
 
-	if (!fullName || !phoneNumber || !password) {
+	if (
+		!firstName ||
+		!paternalLastName ||
+		!maternalLastName ||
+		!phoneNumber ||
+		!password
+	) {
 		throw new UserManagementError(
-			"Nombre, teléfono y contraseña son obligatorios",
+			"Nombres, apellidos, teléfono y contraseña son obligatorios",
 		)
 	}
 
 	try {
 		await createUser({
 			id: crypto.randomUUID(),
-			fullName,
+			firstName,
+			paternalLastName,
+			maternalLastName,
 			phoneNumber,
 			email,
 			passwordHash: await bcrypt.hash(password, 12),
@@ -67,8 +77,12 @@ export async function registerUser(data: CreateUserFormData) {
 	}
 }
 
-function normalizeEmail(email: string) {
-	const cleanEmail = email.trim().toLowerCase()
+function normalizeRequiredText(value: unknown) {
+	return typeof value === "string" ? value.trim() : ""
+}
+
+function normalizeEmail(email: unknown) {
+	const cleanEmail = normalizeRequiredText(email).toLowerCase()
 	return cleanEmail || null
 }
 

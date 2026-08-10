@@ -1,11 +1,11 @@
 import { db } from "@db"
 
 import { users } from "../../db/schema"
-import type { ManagedUserRole, UserListItem } from "./user.types"
+import type { ManagedUserRole, UserListItem, UserName } from "./user.types"
+import { getUserFullName } from "./user-name"
 
-interface CreateUserRecord {
+interface CreateUserRecord extends UserName {
 	id: string
-	fullName: string
 	phoneNumber: string
 	email: string | null
 	passwordHash: string
@@ -16,12 +16,16 @@ interface CreateUserRecord {
 
 export async function listUsers(): Promise<UserListItem[]> {
 	const rows = await db.query.users.findMany({
-		orderBy: (table, { asc }) => [asc(table.fullName)],
+		orderBy: (table, { asc }) => [
+			asc(table.paternalLastName),
+			asc(table.maternalLastName),
+			asc(table.firstName),
+		],
 	})
 
 	return rows.map((user) => ({
 		id: user.id,
-		fullName: user.fullName,
+		fullName: getUserFullName(user),
 		phoneNumber: user.phoneNumber,
 		email: user.email,
 		role: normalizeUserRole(user.role),

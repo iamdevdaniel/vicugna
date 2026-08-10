@@ -52,7 +52,9 @@ export const users = pgTable(
 	"users",
 	{
 		id: text("id").primaryKey(),
-		fullName: text("full_name").notNull(),
+		firstName: text("first_name").notNull(),
+		paternalLastName: text("paternal_last_name").notNull(),
+		maternalLastName: text("maternal_last_name").notNull(),
 		phoneNumber: text("phone_number").notNull(),
 		email: text("email"),
 		passwordHash: text("password_hash").notNull(),

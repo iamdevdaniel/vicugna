@@ -3,6 +3,7 @@ import type { PermitData, PermitFieldData } from "@shared"
 import { and, eq, inArray } from "drizzle-orm"
 
 import { assignments, permits } from "../../db/schema"
+import { getUserFullName } from "../users/user-name"
 import type { MobilePermitData } from "./mobile_out.types"
 
 export async function listMobilePermitsByUserId(
@@ -99,7 +100,7 @@ export async function listMobilePermitsByUserId(
 			regionalId: permit.community.regionalId,
 			departmentId: permit.community.regional.departmentId,
 			userId: assignment.userId,
-			userFullName: assignment.user.fullName,
+			userFullName: getUserFullName(assignment.user),
 			isActiveAssignmentUser: assignment.active,
 			syncStatus: permit.syncStatus,
 			syncedAt: permit.syncedAt?.toISOString() ?? null,

@@ -6,7 +6,9 @@ import { users } from "../schema"
 const TEST_USERS = [
 	{
 		id: "user-seed-01",
-		fullName: "Maria Quispe",
+		firstName: "María",
+		paternalLastName: "Quispe",
+		maternalLastName: "Flores",
 		phoneNumber: "70000001",
 		email: "maria.quispe@gmail.com",
 		password: "maria_pswd",
@@ -14,7 +16,9 @@ const TEST_USERS = [
 	},
 	{
 		id: "user-seed-02",
-		fullName: "Juan Mamani",
+		firstName: "Juan",
+		paternalLastName: "Mamani",
+		maternalLastName: "Choque",
 		phoneNumber: "70000002",
 		email: "juan.mamani@gmail.com",
 		password: "juan_pswd",
@@ -22,7 +26,9 @@ const TEST_USERS = [
 	},
 	{
 		id: "user-seed-03",
-		fullName: "Lucia Choque",
+		firstName: "Lucía",
+		paternalLastName: "Choque",
+		maternalLastName: "Condori",
 		phoneNumber: "70000003",
 		email: "lucia.choque@gmail.com",
 		password: "lucia_pswd",
@@ -30,7 +36,9 @@ const TEST_USERS = [
 	},
 	{
 		id: "user-seed-04",
-		fullName: "Carlos Huanca",
+		firstName: "Carlos",
+		paternalLastName: "Huanca",
+		maternalLastName: "Quispe",
 		phoneNumber: "70000004",
 		email: "carlos.huanca@gmail.com",
 		password: "carlos_pswd",
@@ -38,7 +46,9 @@ const TEST_USERS = [
 	},
 	{
 		id: "user-seed-05",
-		fullName: "Rosa Condori",
+		firstName: "Rosa",
+		paternalLastName: "Condori",
+		maternalLastName: "Mamani",
 		phoneNumber: "70000005",
 		email: "rosa.condori@gmail.com",
 		password: "rosa_pswd",
@@ -52,7 +62,9 @@ async function seedUsers() {
 			.insert(users)
 			.values({
 				id: user.id,
-				fullName: user.fullName,
+				firstName: user.firstName,
+				paternalLastName: user.paternalLastName,
+				maternalLastName: user.maternalLastName,
 				phoneNumber: user.phoneNumber,
 				email: user.email,
 				passwordHash: await bcrypt.hash(user.password, 12),
@@ -63,7 +75,9 @@ async function seedUsers() {
 			.onConflictDoUpdate({
 				target: users.phoneNumber,
 				set: {
-					fullName: user.fullName,
+					firstName: user.firstName,
+					paternalLastName: user.paternalLastName,
+					maternalLastName: user.maternalLastName,
 					email: user.email,
 					passwordHash: await bcrypt.hash(user.password, 12),
 					role: "user",

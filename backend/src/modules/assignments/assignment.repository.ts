@@ -2,6 +2,7 @@ import { db } from "@db"
 import { and, eq, notInArray } from "drizzle-orm"
 
 import { assignments, permits, users } from "../../db/schema"
+import { getUserFullName } from "../users/user-name"
 import type {
 	AssignmentListItem,
 	ManagedUserOption,
@@ -39,12 +40,16 @@ export async function listPermits(): Promise<PermitListItem[]> {
 export async function listAssignmentUsers(): Promise<ManagedUserOption[]> {
 	const rows = await db.query.users.findMany({
 		where: and(eq(users.role, "user"), eq(users.isActive, true)),
-		orderBy: (table, { asc: sortAsc }) => [sortAsc(table.fullName)],
+		orderBy: (table, { asc: sortAsc }) => [
+			sortAsc(table.paternalLastName),
+			sortAsc(table.maternalLastName),
+			sortAsc(table.firstName),
+		],
 	})
 
 	return rows.map((user) => ({
 		id: user.id,
-		name: user.fullName,
+		name: getUserFullName(user),
 		isActive: user.isActive,
 	}))
 }
@@ -75,7 +80,7 @@ export async function listAssignments(
 		active: assignment.active,
 		seasonName: assignment.season.name,
 		communityName: assignment.community.name,
-		userFullName: assignment.user.fullName,
+		userFullName: getUserFullName(assignment.user),
 		permitNumber: assignment.permit.permitNumber,
 	}))
 }
@@ -158,12 +163,16 @@ export async function listEligibleAssignmentUsersByPermit(
 				? notInArray(users.id, assignedUserIds)
 				: undefined,
 		),
-		orderBy: (table, { asc: sortAsc }) => [sortAsc(table.fullName)],
+		orderBy: (table, { asc: sortAsc }) => [
+			sortAsc(table.paternalLastName),
+			sortAsc(table.maternalLastName),
+			sortAsc(table.firstName),
+		],
 	})
 
 	return rows.map((user) => ({
 		id: user.id,
-		name: user.fullName,
+		name: getUserFullName(user),
 		isActive: user.isActive,
 	}))
 }

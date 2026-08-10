@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-
+import { getUserFullName } from "../users/user-name"
 import { MobileAuthError } from "./mobile_auth.errors"
 import {
 	findMobileUserByEmail,
@@ -40,7 +40,7 @@ export async function loginMobileUser(
 	const sessionUser: MobileSessionUser = {
 		id: user.id,
 		email: user.email ?? email,
-		fullName: user.fullName,
+		fullName: getUserFullName(user),
 		role: "user",
 		avatarSeed: user.avatarSeed,
 	}

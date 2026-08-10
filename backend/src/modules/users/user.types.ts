@@ -1,6 +1,12 @@
 // Domain
 export type ManagedUserRole = "admin" | "user"
 
+export interface UserName {
+	firstName: string
+	paternalLastName: string
+	maternalLastName: string
+}
+
 export interface UserListItem {
 	id: string
 	fullName: string
@@ -12,8 +18,7 @@ export interface UserListItem {
 }
 
 // HTTP
-export interface CreateUserFormData {
-	fullName: string
+export interface CreateUserFormData extends UserName {
 	phoneNumber: string
 	email: string
 	password: string

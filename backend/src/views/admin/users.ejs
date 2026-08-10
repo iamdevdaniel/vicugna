@@ -55,11 +55,30 @@
 						<div id="create-user-modal-message"></div>
 
 						<label class="form-control">
-							<span class="label-text mb-2 font-semibold">Nombre completo</span>
+							<span class="label-text mb-2 font-semibold">Nombres</span>
 							<input
 								class="input input-bordered w-full"
 								autocomplete="off"
-								type="text" name="fullName" />
+								required
+								type="text" name="firstName" />
+						</label>
+
+						<label class="form-control">
+							<span class="label-text mb-2 font-semibold">Apellido paterno</span>
+							<input
+								class="input input-bordered w-full"
+								autocomplete="off"
+								required
+								type="text" name="paternalLastName" />
+						</label>
+
+						<label class="form-control">
+							<span class="label-text mb-2 font-semibold">Apellido materno</span>
+							<input
+								class="input input-bordered w-full"
+								autocomplete="off"
+								required
+								type="text" name="maternalLastName" />
 						</label>
 
 						<label class="form-control">

@@ -1,5 +1,6 @@
 import { SYNCED_PERMIT_STATUSES } from "../common/common.constants"
 import { listSeasons } from "../common/common.repository"
+import { compareUserNames, getUserFullName } from "../users/user-name"
 import { MonitoringError } from "./monitoring.errors"
 import {
 	listMonitoringAssignments,
@@ -68,7 +69,15 @@ function buildCommunityGroups(
 ): MonitoringCommunityGroup[] {
 	const communitiesById = new Map<string, MonitoringCommunityGroup>()
 
-	for (const assignment of assignments) {
+	const sortedAssignments = [...assignments].sort((left, right) => {
+		if (left.active !== right.active) {
+			return left.active ? -1 : 1
+		}
+
+		return compareUserNames(left.user, right.user)
+	})
+
+	for (const assignment of sortedAssignments) {
 		let communityGroup = communitiesById.get(assignment.communityId)
 
 		if (!communityGroup) {
@@ -91,7 +100,7 @@ function buildCommunityGroups(
 
 		permitGroup.users.push({
 			userId: assignment.userId,
-			fullName: assignment.user.fullName,
+			fullName: getUserFullName(assignment.user),
 			active: assignment.active,
 		})
 	}
@@ -99,24 +108,11 @@ function buildCommunityGroups(
 	return Array.from(communitiesById.values())
 		.map((communityGroup) => ({
 			...communityGroup,
-			permits: communityGroup.permits
-				.map((permitGroup) => ({
-					...permitGroup,
-					users: permitGroup.users.sort((left, right) => {
-						if (left.active !== right.active) {
-							return left.active ? -1 : 1
-						}
-
-						return left.fullName.localeCompare(right.fullName)
-					}),
-				}))
-				.sort((left, right) =>
-					left.permitNumber.localeCompare(
-						right.permitNumber,
-						undefined,
-						{ numeric: true },
-					),
-				),
+			permits: communityGroup.permits.sort((left, right) =>
+				left.permitNumber.localeCompare(right.permitNumber, undefined, {
+					numeric: true,
+				}),
+			),
 		}))
 		.sort((left, right) =>
 			left.communityName.localeCompare(right.communityName),

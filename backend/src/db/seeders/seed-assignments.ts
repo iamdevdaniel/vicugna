@@ -37,7 +37,11 @@ async function seedAssignments() {
 
 	const availableUsers = await db.query.users.findMany({
 		where: and(eq(users.role, "user"), eq(users.isActive, true)),
-		orderBy: [asc(users.fullName)],
+		orderBy: [
+			asc(users.paternalLastName),
+			asc(users.maternalLastName),
+			asc(users.firstName),
+		],
 	})
 
 	if (availableUsers.length < 4) {

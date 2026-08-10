@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-
+import { getUserFullName } from "../users/user-name"
 import { AdminAuthError } from "./admin.errors"
 import { findUserByEmail } from "./admin.repository"
 import type { AdminSessionUser, LoginFormData } from "./admin.types"
@@ -33,7 +33,7 @@ export async function authenticateAdmin(
 	return {
 		id: user.id,
 		email: user.email ?? email,
-		fullName: user.fullName,
+		fullName: getUserFullName(user),
 		role: "admin",
 	}
 }
