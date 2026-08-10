@@ -67,6 +67,7 @@ async function seedAssignments() {
 						seasonId: activeSeason.id,
 						communityId: community.id,
 						permitNumber: permit.permitNumber,
+						syncStatus: "assigned",
 						updatedAt: new Date(),
 					},
 				})
