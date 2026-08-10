@@ -6,5 +6,5 @@
 
 <% if (successMessage) { %>
 	<%- include("./users-list", { users, useOobSwap: true }) %>
-	<%- include("./toast", { message: successMessage, type: "success" }) %>
+	<%- include("./toast", { message: successMessage, type: "success", useOobSwap: true, clearQueryParams: false }) %>
 <% } %>

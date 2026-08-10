@@ -1,15 +1,36 @@
-<div id="toast-container" hx-swap-oob="innerHTML">
+<div
+	id="toast-container"
+	<% if (useOobSwap) { %>hx-swap-oob="innerHTML"<% } %>
+	class="pointer-events-none fixed bottom-5 right-5 z-50 w-full max-w-md px-4 sm:px-0">
 	<div
-		class="alert pointer-events-auto w-auto shadow-lg <%= type === 'error' ? 'alert-error' : 'alert-success' %>"
+		class="alert pointer-events-auto flex w-full items-center gap-3 shadow-lg <%= type === 'error' ? 'alert-error' : 'alert-success' %>"
 		x-data="{ isVisible: true }"
-		x-init="setTimeout(() => isVisible = false, 3000)"
+		x-init="
+			<% if (clearQueryParams) { %>
+				const url = new URL(window.location.href)
+				url.searchParams.delete('success')
+				url.searchParams.delete('error')
+				window.history.replaceState({}, '', `${url.pathname}${url.search}`)
+			<% } %>
+			setTimeout(() => { isVisible = false }, 2500)
+		"
 		x-show="isVisible"
-		x-transition:enter="transition ease-out duration-200"
-		x-transition:enter-start="translate-y-4 opacity-0"
-		x-transition:enter-end="translate-y-0 opacity-100"
-		x-transition:leave="transition ease-in duration-200"
-		x-transition:leave-start="translate-y-0 opacity-100"
-		x-transition:leave-end="translate-y-4 opacity-0">
-		<%= message %>
+		x-transition:enter="transform transition ease-out duration-300"
+		x-transition:enter-start="translate-x-8 opacity-0"
+		x-transition:enter-end="translate-x-0 opacity-100"
+		x-transition:leave="transform transition ease-in duration-200"
+		x-transition:leave-start="translate-x-0 opacity-100"
+		x-transition:leave-end="translate-x-8 opacity-0">
+		<span class="min-w-0 flex-1"><%= message %></span>
+		<button
+			type="button"
+			class="btn btn-ghost btn-xs btn-circle ml-auto"
+			@click="isVisible = false"
+			aria-label="Cerrar notificacion">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M18 6 6 18"/>
+				<path d="m6 6 12 12"/>
+			</svg>
+		</button>
 	</div>
 </div>

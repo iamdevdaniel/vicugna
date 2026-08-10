@@ -80,11 +80,6 @@
 			</section>
 
 			<section class="mt-3 lg:min-h-0 lg:flex-1">
-				<% if (formMessage) { %>
-					<div class="alert mb-3 <%= formMessageType === 'error' ? 'alert-error' : 'alert-success' %>">
-						<span><%= formMessage %></span>
-					</div>
-				<% } %>
 				<% if (selectedPermit) { %>
 					<%- include("../partials/monitoring-detail-view", { selectedPermit, selectedSeasonId }) %>
 				<% } else if (communityGroups.length === 0) { %>
@@ -100,6 +95,9 @@
 				<% } %>
 			</section>
 		</main>
+		<% if (formMessage) { %>
+			<%- include("../partials/toast", { message: formMessage, type: formMessageType === "error" ? "error" : "success", clearQueryParams: true, useOobSwap: false }) %>
+		<% } %>
 		<script src="/views/admin/monitoring.js"></script>
 	</body>
 
