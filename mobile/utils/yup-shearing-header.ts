@@ -55,12 +55,12 @@ export const yupShearingHeader = yup.object().shape({
 
 			return Number.isInteger(Number(value))
 		})
-		.test("is-non-negative", "No puede ser negativo", (value) => {
+		.test("is-positive", "Debe ser mayor a 0", (value) => {
 			if (!value) {
 				return false
 			}
 
-			return Number(value) >= 0
+			return Number(value) > 0
 		}),
 	eventDate: yup.string().required("Campo requerido"),
 	startTime: yup.string().required("Campo requerido"),
