@@ -1,6 +1,5 @@
 import {
 	CustomDeleteButton,
-	HeaderBreadcrumb,
 	LabeledInput,
 	LoadingOverlay,
 	ReadOnlyNotice,
@@ -17,7 +16,7 @@ import {
 	defaultValuesShearingRecord,
 	yupShearingRecord,
 } from "@utils/yup-shearing-record"
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
@@ -33,7 +32,6 @@ export default function () {
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const isEditForm = !!recordId
 	const { data, loading: loadingData } =
 		useReadSingleShearingRecordFormData(recordId)
@@ -101,15 +99,6 @@ export default function () {
 
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-			<Stack.Screen
-				options={{
-					headerTitle: () => (
-						<HeaderBreadcrumb
-							parts={[permitLabel, "Esquila", "Registros"]}
-						/>
-					),
-				}}
-			/>
 			{isWaitingForEditData ? (
 				<LoadingOverlay message="Cargando registro..." />
 			) : (

@@ -1,3 +1,4 @@
+import { HeaderBreadcrumb } from "@components"
 import { warm } from "@utils/themes"
 import { Stack } from "expo-router"
 import { useColorScheme } from "react-native"
@@ -33,6 +34,26 @@ export default function RootLayout() {
 					<Stack.Screen
 						name="login"
 						options={{ headerShown: false }}
+					/>
+					<Stack.Screen
+						name="[permitId]/shearing/record"
+						options={({ route }) => {
+							const { permitNumber } = route.params as {
+								permitNumber: string
+							}
+
+							return {
+								headerTitle: () => (
+									<HeaderBreadcrumb
+										parts={[
+											permitNumber,
+											"Esquila",
+											"Registros",
+										]}
+									/>
+								),
+							}
+						}}
 					/>
 				</Stack>
 			</PaperProvider>

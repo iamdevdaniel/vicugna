@@ -158,6 +158,7 @@ export default function () {
 												router.push(
 													ROUTES.SHEARING.RECORD(
 														permitId,
+														permitLabel,
 														record.id,
 													),
 												)
@@ -255,7 +256,9 @@ export default function () {
 					contentStyle={{ height: 48 }}
 					disabled={isPermitReadOnly}
 					onPress={() =>
-						router.push(ROUTES.SHEARING.RECORD(permitId))
+						router.push(
+							ROUTES.SHEARING.RECORD(permitId, permitLabel),
+						)
 					}
 				>
 					Añadir registro

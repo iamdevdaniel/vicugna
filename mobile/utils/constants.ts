@@ -29,9 +29,17 @@ export const ROUTES = {
 			pathname: "/[permitId]/shearing/header" as const,
 			params: { permitId },
 		}),
-		RECORD: (permitId: string, recordId?: string) => ({
+		RECORD: (
+			permitId: string,
+			permitNumber: string,
+			recordId?: string,
+		) => ({
 			pathname: "/[permitId]/shearing/record" as const,
-			params: { permitId, ...(recordId ? { recordId } : {}) },
+			params: {
+				permitId,
+				permitNumber,
+				...(recordId ? { recordId } : {}),
+			},
 		}),
 	},
 	CLEANUP: {
