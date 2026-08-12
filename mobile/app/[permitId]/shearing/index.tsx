@@ -169,13 +169,66 @@ export default function () {
 										>
 											<View
 												style={{
-													justifyContent: "center",
-													paddingVertical: 10,
+													flexDirection: "row",
+													alignItems: "center",
+													gap: 12,
+													paddingVertical: 6,
 												}}
 											>
-												<Text>
-													{record.liveWeight} kg
-												</Text>
+												<View
+													style={{
+														width: 54,
+														flexDirection: "row",
+														alignItems: "center",
+														gap: 6,
+													}}
+												>
+													<Icon
+														source="tag"
+														size={18}
+														color={
+															theme.colors
+																.tertiary
+														}
+													/>
+													<Text
+														numberOfLines={1}
+														style={{
+															color: theme.colors
+																.tertiary,
+															fontWeight: "600",
+														}}
+													>
+														{record.tagNumber}
+													</Text>
+												</View>
+												<View
+													style={{
+														width: 110,
+														flexDirection: "row",
+														alignItems: "center",
+														gap: 6,
+													}}
+												>
+													<Icon
+														source="weight-kilogram"
+														size={18}
+														color={
+															theme.colors
+																.tertiary
+														}
+													/>
+													<Text
+														numberOfLines={1}
+														style={{
+															color: theme.colors
+																.tertiary,
+															fontWeight: "600",
+														}}
+													>
+														{record.liveWeight} kg
+													</Text>
+												</View>
 											</View>
 										</AccentCard>
 									))}
