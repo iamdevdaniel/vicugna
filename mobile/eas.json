@@ -1,8 +1,9 @@
 {
   "build": {
     "production": {
-      "distribution": "internal",
-      "channel": "production"
+		"environment": "production",
+      	"distribution": "internal",
+      	"channel": "production"
     }
   }
 }
