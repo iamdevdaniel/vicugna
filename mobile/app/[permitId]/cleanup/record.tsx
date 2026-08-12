@@ -37,16 +37,7 @@ import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
-type CleaningDetailKind = "grooming" | "dehearing"
-
-function formatNumber(value: number) {
-	return Number.isFinite(value) ? value.toString() : ""
-}
-
-function parseNumber(value: string) {
-	const digits = value.replace(/\D/g, "")
-	return digits === "" ? Number.NaN : Number(digits)
-}
+type CleaningType = "grooming" | "dehearing"
 
 export default function () {
 	const router = useRouter()
@@ -55,7 +46,7 @@ export default function () {
 		recordId?: string
 	}>()
 	const isEditForm = !!recordId
-	const [detailKind, setDetailKind] = useState<CleaningDetailKind>("grooming")
+	const [cleaningType, setCleaningType] = useState<CleaningType>("grooming")
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const permitLabel = permit?.permitNumber ?? "Sin número"
@@ -130,7 +121,7 @@ export default function () {
 
 		resetCommon({
 			fleeceNumber: commonData.fleeceNumber,
-			grossWeight: commonData.grossWeight,
+			grossWeight: commonData.grossWeight.toString(),
 		})
 	}, [commonData, loadingCommon, resetCommon])
 
@@ -139,11 +130,11 @@ export default function () {
 			return
 		}
 
-		setDetailKind("grooming")
+		setCleaningType("grooming")
 		resetGrooming({
-			cleanWeight: groomingData.cleanWeight,
-			dirtyWeight: groomingData.dirtyWeight,
-			totalWeight: groomingData.totalWeight,
+			cleanWeight: groomingData.cleanWeight.toString(),
+			dirtyWeight: groomingData.dirtyWeight.toString(),
+			totalWeight: groomingData.totalWeight.toString(),
 		})
 	}, [groomingData, resetGrooming])
 
@@ -152,10 +143,10 @@ export default function () {
 			return
 		}
 
-		setDetailKind("dehearing")
+		setCleaningType("dehearing")
 		resetDehearing({
-			dehairedWeight: dehearingData.dehairedWeight,
-			bristleWeight: dehearingData.bristleWeight,
+			dehairedWeight: dehearingData.dehairedWeight.toString(),
+			bristleWeight: dehearingData.bristleWeight.toString(),
 			hasDandruff: dehearingData.hasDandruff,
 			dehairerName: dehearingData.dehairerName,
 			signature: dehearingData.signature,
@@ -171,9 +162,11 @@ export default function () {
 		deleting ||
 		isWaitingForData ||
 		!isCommonValid ||
-		(detailKind === "grooming" ? !isGroomingValid : !isDehearingValid)
+		(cleaningType === "grooming" ? !isGroomingValid : !isDehearingValid)
 	const saveLabel =
-		detailKind === "grooming" ? "Guardar limpiado" : "Guardar predescerdado"
+		cleaningType === "grooming"
+			? "Guardar limpiado"
+			: "Guardar predescerdado"
 
 	const saveGrooming = async (
 		cleaningCommonId: string,
@@ -228,7 +221,7 @@ export default function () {
 			return
 		}
 
-		if (detailKind === "grooming") {
+		if (cleaningType === "grooming") {
 			const isGroomingFormValid = await triggerGrooming()
 
 			if (!isGroomingFormValid) {
@@ -323,13 +316,13 @@ export default function () {
 						disabled={isPermitReadOnly}
 					>
 						<ToggleButtonGroup
-							value={detailKind}
+							value={cleaningType}
 							onChange={(value) => {
 								if (isPermitReadOnly) {
 									return
 								}
 
-								setDetailKind(value as CleaningDetailKind)
+								setCleaningType(value as CleaningType)
 							}}
 							options={[
 								{ label: "Limpiado", value: "grooming" },
@@ -359,7 +352,7 @@ export default function () {
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
-									autoCapitalize="words"
+									keyboardType="numeric"
 									error={!!commonErrors.fleeceNumber}
 									disabled={isPermitReadOnly}
 								/>
@@ -382,10 +375,8 @@ export default function () {
 							}) => (
 								<TextInput
 									mode="outlined"
-									value={formatNumber(value)}
-									onChangeText={(text) =>
-										onChange(parseNumber(text))
-									}
+									value={value}
+									onChangeText={onChange}
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!commonErrors.grossWeight}
@@ -395,7 +386,7 @@ export default function () {
 						/>
 					</LabeledInput>
 
-					{detailKind === "grooming" ? (
+					{cleaningType === "grooming" ? (
 						<GroomingFields
 							control={groomingControl}
 							errors={groomingErrors}

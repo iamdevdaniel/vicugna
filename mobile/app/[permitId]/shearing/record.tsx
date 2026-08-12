@@ -24,14 +24,6 @@ import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
 import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
-function formatNumber(value: number) {
-	return value ? value.toString() : ""
-}
-
-function parseNumber(value: string) {
-	return value === "" ? 0 : Number(value)
-}
-
 // SHEARING.RECORD /[permitId]/shearing/record
 export default function () {
 	const router = useRouter()
@@ -149,10 +141,8 @@ export default function () {
 								}) => (
 									<TextInput
 										mode="outlined"
-										value={formatNumber(value)}
-										onChangeText={(text) =>
-											onChange(parseNumber(text))
-										}
+										value={value}
+										onChangeText={onChange}
 										onBlur={onBlur}
 										keyboardType="numeric"
 										error={!!errors.tagNumber}
@@ -230,10 +220,8 @@ export default function () {
 								}) => (
 									<TextInput
 										mode="outlined"
-										value={formatNumber(value)}
-										onChangeText={(text) =>
-											onChange(parseNumber(text))
-										}
+										value={value}
+										onChangeText={onChange}
 										onBlur={onBlur}
 										keyboardType="decimal-pad"
 										error={!!errors.liveWeight}
@@ -258,10 +246,8 @@ export default function () {
 								}) => (
 									<TextInput
 										mode="outlined"
-										value={formatNumber(value)}
-										onChangeText={(text) =>
-											onChange(parseNumber(text))
-										}
+										value={value}
+										onChangeText={onChange}
 										onBlur={onBlur}
 										keyboardType="decimal-pad"
 										error={!!errors.fiberLength}

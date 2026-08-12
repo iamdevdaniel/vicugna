@@ -160,11 +160,11 @@ export function mapToShearingRecordFormData(
 	model: ShearingRecordModel,
 ): ShearingRecordFormData {
 	return {
-		tagNumber: model.tagNumber,
+		tagNumber: model.tagNumber.toString(),
 		sex: model.sex,
 		ageCategory: model.ageCategory,
-		liveWeight: model.liveWeight,
-		fiberLength: model.fiberLength,
+		liveWeight: model.liveWeight.toString(),
+		fiberLength: model.fiberLength.toString(),
 		bodyCondition: model.bodyCondition,
 		gestationStatus: model.gestationStatus,
 		externalParasites: model.externalParasites,
@@ -182,11 +182,11 @@ export function applyShearingRecordToModel(
 	permitId?: string,
 ): void {
 	if (permitId) model.permitId = permitId
-	model.tagNumber = data.tagNumber
+	model.tagNumber = Number(data.tagNumber)
 	model.sex = data.sex
 	model.ageCategory = data.ageCategory
-	model.liveWeight = data.liveWeight
-	model.fiberLength = data.fiberLength
+	model.liveWeight = Number(data.liveWeight)
+	model.fiberLength = Number(data.fiberLength)
 	model.bodyCondition = data.bodyCondition
 	model.gestationStatus = data.gestationStatus
 	model.externalParasites = data.externalParasites
@@ -241,7 +241,7 @@ export function applyCleaningCommonToModel(
 ): void {
 	if (permitId) model.permitId = permitId
 	model.fleeceNumber = data.fleeceNumber
-	model.grossWeight = data.grossWeight
+	model.grossWeight = Number(data.grossWeight)
 }
 
 export function mapToGrooming(model: GroomingModel): GroomingData {
@@ -261,9 +261,9 @@ export function applyGroomingToModel(
 	cleaningCommonId?: string,
 ): void {
 	if (cleaningCommonId) model.cleaningCommonId = cleaningCommonId
-	model.cleanWeight = data.cleanWeight
-	model.dirtyWeight = data.dirtyWeight
-	model.totalWeight = data.totalWeight
+	model.cleanWeight = Number(data.cleanWeight)
+	model.dirtyWeight = Number(data.dirtyWeight)
+	model.totalWeight = Number(data.totalWeight)
 	model.isCompleted = true
 }
 
@@ -286,8 +286,8 @@ export function applyDehearingToModel(
 	cleaningCommonId?: string,
 ): void {
 	if (cleaningCommonId) model.cleaningCommonId = cleaningCommonId
-	model.dehairedWeight = data.dehairedWeight
-	model.bristleWeight = data.bristleWeight
+	model.dehairedWeight = Number(data.dehairedWeight)
+	model.bristleWeight = Number(data.bristleWeight)
 	model.hasDandruff = data.hasDandruff
 	model.dehairerName = data.dehairerName
 	model.signature = data.signature

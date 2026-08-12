@@ -1,5 +1,6 @@
 import type { ParticipantFormData } from "@definitions/types"
 import * as yup from "yup"
+import { yupRequiredPositiveIntegerText } from "./yup-utils"
 
 export const yupParticipant = yup.object().shape({
 	name: yup.string().required("Requerido"),
@@ -9,7 +10,7 @@ export const yupParticipant = yup.object().shape({
 		.oneOf(["M", "F"], "Seleccionar M o F")
 		.defined()
 		.required("Requerido"),
-	identityNumber: yup.string().required("Requerido"),
+	identityNumber: yupRequiredPositiveIntegerText(),
 	signature: yup.string().required("Requerido"),
 	notes: yup.string().defined(),
 })

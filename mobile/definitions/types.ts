@@ -74,7 +74,14 @@ export type ShearingHeaderFormData = Omit<
 	roundupCount: string
 }
 
-export type ShearingRecordFormData = Omit<ShearingRecordData, "id" | "permitId">
+export type ShearingRecordFormData = Omit<
+	ShearingRecordData,
+	"id" | "permitId" | "tagNumber" | "liveWeight" | "fiberLength"
+> & {
+	tagNumber: string
+	liveWeight: string
+	fiberLength: string
+}
 
 // CLEANING
 
@@ -83,14 +90,35 @@ export type CleaningHeaderFormData = Omit<
 	"id" | "permitId" | "isCompleted"
 >
 
-export type CleaningCommonFormData = Omit<CleaningCommonData, "id" | "permitId">
+export type CleaningCommonFormData = Omit<
+	CleaningCommonData,
+	"id" | "permitId" | "grossWeight"
+> & {
+	grossWeight: string
+}
 
 export type GroomingFormData = Omit<
 	GroomingData,
-	"id" | "cleaningCommonId" | "isCompleted"
->
+	| "id"
+	| "cleaningCommonId"
+	| "isCompleted"
+	| "cleanWeight"
+	| "dirtyWeight"
+	| "totalWeight"
+> & {
+	cleanWeight: string
+	dirtyWeight: string
+	totalWeight: string
+}
 
 export type DehearingFormData = Omit<
 	DehearingData,
-	"id" | "cleaningCommonId" | "isCompleted"
->
+	| "id"
+	| "cleaningCommonId"
+	| "isCompleted"
+	| "dehairedWeight"
+	| "bristleWeight"
+> & {
+	dehairedWeight: string
+	bristleWeight: string
+}

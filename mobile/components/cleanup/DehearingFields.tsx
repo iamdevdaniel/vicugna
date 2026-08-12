@@ -12,15 +12,6 @@ type DehearingFieldsProps = {
 	startIndex: number
 }
 
-function formatNumber(value: number) {
-	return Number.isFinite(value) ? value.toString() : ""
-}
-
-function parseNumber(value: string) {
-	const digits = value.replace(/\D/g, "")
-	return digits === "" ? Number.NaN : Number(digits)
-}
-
 export function DehearingFields({
 	control,
 	errors,
@@ -42,8 +33,8 @@ export function DehearingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							mode="outlined"
-							value={formatNumber(value)}
-							onChangeText={(text) => onChange(parseNumber(text))}
+							value={value}
+							onChangeText={onChange}
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.dehairedWeight}
@@ -66,8 +57,8 @@ export function DehearingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							mode="outlined"
-							value={formatNumber(value)}
-							onChangeText={(text) => onChange(parseNumber(text))}
+							value={value}
+							onChangeText={onChange}
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.bristleWeight}

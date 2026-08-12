@@ -1,5 +1,9 @@
 import type { ShearingHeaderFormData } from "@definitions/types"
 import * as yup from "yup"
+import {
+	yupRequiredNumericText,
+	yupRequiredPositiveIntegerText,
+} from "./yup-utils"
 
 export const defaultValuesShearingHeader: ShearingHeaderFormData = {
 	site: "",
@@ -9,19 +13,6 @@ export const defaultValuesShearingHeader: ShearingHeaderFormData = {
 	eventDate: "",
 	startTime: "",
 	endTime: "",
-}
-
-function yupRequiredNumericText() {
-	return yup
-		.string()
-		.required("Campo requerido")
-		.test("is-number", "Debe ser un número", (value) => {
-			if (!value) {
-				return false
-			}
-
-			return !Number.isNaN(Number(value))
-		})
 }
 
 function parseTimeToMinutes(value: string) {
@@ -47,21 +38,7 @@ export const yupShearingHeader = yup.object().shape({
 	site: yup.string().required("Campo requerido"),
 	latitude: yupRequiredNumericText(),
 	longitude: yupRequiredNumericText(),
-	roundupCount: yupRequiredNumericText()
-		.test("is-integer", "Debe ser un número entero", (value) => {
-			if (!value) {
-				return false
-			}
-
-			return Number.isInteger(Number(value))
-		})
-		.test("is-positive", "Debe ser mayor a 0", (value) => {
-			if (!value) {
-				return false
-			}
-
-			return Number(value) > 0
-		}),
+	roundupCount: yupRequiredPositiveIntegerText(),
 	eventDate: yup.string().required("Campo requerido"),
 	startTime: yup.string().required("Campo requerido"),
 	endTime: yup

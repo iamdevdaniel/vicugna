@@ -10,15 +10,6 @@ type GroomingFieldsProps = {
 	startIndex: number
 }
 
-function formatNumber(value: number) {
-	return Number.isFinite(value) ? value.toString() : ""
-}
-
-function parseNumber(value: string) {
-	const digits = value.replace(/\D/g, "")
-	return digits === "" ? Number.NaN : Number(digits)
-}
-
 export function GroomingFields({
 	control,
 	errors,
@@ -40,8 +31,8 @@ export function GroomingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							mode="outlined"
-							value={formatNumber(value)}
-							onChangeText={(text) => onChange(parseNumber(text))}
+							value={value}
+							onChangeText={onChange}
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.cleanWeight}
@@ -64,8 +55,8 @@ export function GroomingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							mode="outlined"
-							value={formatNumber(value)}
-							onChangeText={(text) => onChange(parseNumber(text))}
+							value={value}
+							onChangeText={onChange}
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.dirtyWeight}
@@ -88,8 +79,8 @@ export function GroomingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							mode="outlined"
-							value={formatNumber(value)}
-							onChangeText={(text) => onChange(parseNumber(text))}
+							value={value}
+							onChangeText={onChange}
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.totalWeight}

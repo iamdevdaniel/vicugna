@@ -1,12 +1,16 @@
 import type { ShearingRecordFormData } from "@definitions/types"
 import * as yup from "yup"
+import {
+	yupRequiredPositiveIntegerText,
+	yupRequiredPositiveNumericText,
+} from "./yup-utils"
 
 export const defaultValuesShearingRecord: ShearingRecordFormData = {
-	tagNumber: 0,
+	tagNumber: "",
 	sex: "M",
 	ageCategory: "Adulto",
-	liveWeight: 0,
-	fiberLength: 0,
+	liveWeight: "",
+	fiberLength: "",
 	bodyCondition: "Bueno",
 	gestationStatus: "No",
 	externalParasites: "Ninguno",
@@ -19,11 +23,7 @@ export const defaultValuesShearingRecord: ShearingRecordFormData = {
 
 export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
 	yup.object({
-		tagNumber: yup
-			.number()
-			.typeError("Debe ser un número")
-			.moreThan(0, "Debe ser mayor a 0")
-			.required("Campo requerido"),
+		tagNumber: yupRequiredPositiveIntegerText(),
 		sex: yup
 			.mixed<"F" | "M">()
 			.oneOf(["F", "M"], "Selecciona una opcion")
@@ -34,16 +34,8 @@ export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
 			.oneOf(["Cria", "Juvenil", "Adulto"], "Selecciona una opcion")
 			.defined()
 			.required("Campo requerido"),
-		liveWeight: yup
-			.number()
-			.typeError("Debe ser un número")
-			.moreThan(0, "Debe ser mayor a 0")
-			.required("Campo requerido"),
-		fiberLength: yup
-			.number()
-			.typeError("Debe ser un número")
-			.moreThan(0, "Debe ser mayor a 0")
-			.required("Campo requerido"),
+		liveWeight: yupRequiredPositiveNumericText(),
+		fiberLength: yupRequiredPositiveNumericText(),
 		bodyCondition: yup
 			.mixed<"Malo" | "Regular" | "Bueno">()
 			.oneOf(["Malo", "Regular", "Bueno"], "Selecciona una opcion")

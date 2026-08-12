@@ -53,6 +53,10 @@ export default function () {
 
 	useEffect(() => {
 		if (loading || !data) return
+		if (!data.isCompleted) {
+			reset(defaultValuesShearingHeader)
+			return
+		}
 
 		reset({
 			site: data.site,
