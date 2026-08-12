@@ -1,10 +1,4 @@
-import {
-	DateInput,
-	HeaderBreadcrumb,
-	LabeledInput,
-	ReadOnlyNotice,
-	TimeInput,
-} from "@components"
+import { DateInput, LabeledInput, ReadOnlyNotice, TimeInput } from "@components"
 import type { ShearingHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -16,7 +10,7 @@ import {
 	defaultValuesShearingHeader,
 	yupShearingHeader,
 } from "@utils/yup-shearing-header"
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
@@ -31,7 +25,6 @@ export default function () {
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleShearingHeader(permitId)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
 
@@ -103,19 +96,6 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen
-					options={{
-						headerTitle: () => (
-							<HeaderBreadcrumb
-								parts={[
-									permitLabel,
-									"Esquila",
-									"Información general",
-								]}
-							/>
-						),
-					}}
-				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}

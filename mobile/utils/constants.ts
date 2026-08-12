@@ -1,6 +1,6 @@
 type PermitRouteParams = {
 	permitId: string
-	permitNumber?: string
+	permitNumber: string
 }
 
 export const ROUTES = {
@@ -8,26 +8,30 @@ export const ROUTES = {
 	LOGIN: "/login",
 	OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 		pathname: "/[permitId]" as const,
-		params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
+		params: { permitId, permitNumber },
 	}),
 	PARTICIPANTS: {
 		OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 			pathname: "/[permitId]/participants" as const,
-			params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
+			params: { permitId, permitNumber },
 		}),
-		FORM: (permitId: string, participantId: string) => ({
+		FORM: (
+			permitId: string,
+			permitNumber: string,
+			participantId: string,
+		) => ({
 			pathname: "/[permitId]/participants/[participantId]" as const,
-			params: { permitId, participantId },
+			params: { permitId, permitNumber, participantId },
 		}),
 	},
 	SHEARING: {
 		OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 			pathname: "/[permitId]/shearing" as const,
-			params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
+			params: { permitId, permitNumber },
 		}),
-		HEADER: (permitId: string) => ({
+		HEADER: (permitId: string, permitNumber: string) => ({
 			pathname: "/[permitId]/shearing/header" as const,
-			params: { permitId },
+			params: { permitId, permitNumber },
 		}),
 		RECORD: (
 			permitId: string,
@@ -45,15 +49,23 @@ export const ROUTES = {
 	CLEANUP: {
 		OVERVIEW: ({ permitId, permitNumber }: PermitRouteParams) => ({
 			pathname: "/[permitId]/cleanup" as const,
-			params: { permitId, ...(permitNumber ? { permitNumber } : {}) },
+			params: { permitId, permitNumber },
 		}),
-		HEADER: (permitId: string) => ({
+		HEADER: (permitId: string, permitNumber: string) => ({
 			pathname: "/[permitId]/cleanup/header" as const,
-			params: { permitId },
+			params: { permitId, permitNumber },
 		}),
-		RECORD: (permitId: string, recordId?: string) => ({
+		RECORD: (
+			permitId: string,
+			permitNumber: string,
+			recordId?: string,
+		) => ({
 			pathname: "/[permitId]/cleanup/record" as const,
-			params: { permitId, ...(recordId ? { recordId } : {}) },
+			params: {
+				permitId,
+				permitNumber,
+				...(recordId ? { recordId } : {}),
+			},
 		}),
 	},
 } as const

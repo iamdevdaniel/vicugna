@@ -1,8 +1,8 @@
-import { AccentCard, HeaderBreadcrumb, ReadOnlyNotice } from "@components"
+import { AccentCard, ReadOnlyNotice } from "@components"
 import { useReadBulkParticipants, useReadSinglePermit } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
-import { router, Stack, useLocalSearchParams } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import { FlatList, Text, View } from "react-native"
 import { Button, Chip, Icon } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -12,11 +12,13 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { permitId, permitNumber } = useLocalSearchParams<{
+		permitId: string
+		permitNumber: string
+	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? "Sin número"
 
 	const total = participants?.length || 0
 	const maleCount = participants?.filter((p) => p.gender === "M").length || 0
@@ -28,15 +30,6 @@ export default function () {
 			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen
-				options={{
-					headerTitle: () => (
-						<HeaderBreadcrumb
-							parts={[permitLabel, "Participantes"]}
-						/>
-					),
-				}}
-			/>
 			<View style={{ marginHorizontal: 16, marginTop: 20 }}>
 				{isPermitReadOnly && <ReadOnlyNotice />}
 			</View>
@@ -123,6 +116,7 @@ export default function () {
 							router.push(
 								ROUTES.PARTICIPANTS.FORM(
 									permitId,
+									permitNumber,
 									participant.id,
 								),
 							)
@@ -159,7 +153,13 @@ export default function () {
 					contentStyle={{ height: 48 }}
 					disabled={isPermitReadOnly}
 					onPress={() =>
-						router.push(ROUTES.PARTICIPANTS.FORM(permitId, "new"))
+						router.push(
+							ROUTES.PARTICIPANTS.FORM(
+								permitId,
+								permitNumber,
+								"new",
+							),
+						)
 					}
 				>
 					Añadir participante

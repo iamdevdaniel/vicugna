@@ -1,6 +1,5 @@
 import {
 	AccentCard,
-	HeaderBreadcrumb,
 	LoadingOverlay,
 	ReadOnlyNotice,
 	StepList,
@@ -13,7 +12,7 @@ import {
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
-import { router, Stack, useLocalSearchParams } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { Button, Icon } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -21,10 +20,12 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 export default function () {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
-	const { permitId } = useLocalSearchParams<{ permitId: string }>()
+	const { permitId, permitNumber } = useLocalSearchParams<{
+		permitId: string
+		permitNumber: string
+	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data: shearingForm, loading: loadingShearingHeader } =
 		useReadSingleShearingHeader(permitId)
 	const { data: shearingRecords, loading: loadingShearingRecords } =
@@ -39,13 +40,6 @@ export default function () {
 			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen
-				options={{
-					headerTitle: () => (
-						<HeaderBreadcrumb parts={[permitLabel, "Esquila"]} />
-					),
-				}}
-			/>
 			<ScrollView
 				contentContainerStyle={{
 					paddingTop: 20,
@@ -65,7 +59,10 @@ export default function () {
 								icon: "chevron-right",
 								onPress: () =>
 									router.push(
-										ROUTES.SHEARING.HEADER(permitId),
+										ROUTES.SHEARING.HEADER(
+											permitId,
+											permitNumber,
+										),
 									),
 							},
 							details: shearingForm?.isCompleted ? (
@@ -158,7 +155,7 @@ export default function () {
 												router.push(
 													ROUTES.SHEARING.RECORD(
 														permitId,
-														permitLabel,
+														permitNumber,
 														record.id,
 													),
 												)
@@ -257,7 +254,7 @@ export default function () {
 					disabled={isPermitReadOnly}
 					onPress={() =>
 						router.push(
-							ROUTES.SHEARING.RECORD(permitId, permitLabel),
+							ROUTES.SHEARING.RECORD(permitId, permitNumber),
 						)
 					}
 				>

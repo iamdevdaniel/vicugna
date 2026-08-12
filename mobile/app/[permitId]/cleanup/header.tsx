@@ -1,9 +1,4 @@
-import {
-	DateInput,
-	HeaderBreadcrumb,
-	LabeledInput,
-	ReadOnlyNotice,
-} from "@components"
+import { DateInput, LabeledInput, ReadOnlyNotice } from "@components"
 import type { CleaningHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -15,7 +10,7 @@ import {
 	defaultValuesCleaningHeader,
 	yupCleaningHeader,
 } from "@utils/yup-cleaning-header"
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
@@ -27,7 +22,6 @@ export default function () {
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const { data, loading } = useReadSingleCleaningHeader(permitId)
 	const { updateSingleCleaningHeader, saving } =
 		useSingleCleaningHeaderActions()
@@ -70,19 +64,6 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen
-					options={{
-						headerTitle: () => (
-							<HeaderBreadcrumb
-								parts={[
-									permitLabel,
-									"Limpieza",
-									"Información general",
-								]}
-							/>
-						),
-					}}
-				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}

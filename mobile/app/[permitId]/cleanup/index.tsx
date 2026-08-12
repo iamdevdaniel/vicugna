@@ -1,10 +1,4 @@
-import {
-	AccentCard,
-	HeaderBreadcrumb,
-	ReadOnlyNotice,
-	StepList,
-	TotalChip,
-} from "@components"
+import { AccentCard, ReadOnlyNotice, StepList, TotalChip } from "@components"
 import type { CleaningCommonData } from "@definitions/types"
 import {
 	useReadBulkCleaningCommon,
@@ -15,7 +9,7 @@ import {
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
-import { router, Stack, useLocalSearchParams } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { Button, Icon } from "react-native-paper"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -23,10 +17,12 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 function CleaningRecordCard({
 	index,
 	permitId,
+	permitNumber,
 	record,
 }: {
 	index: number
 	permitId: string
+	permitNumber: string
 	record: CleaningCommonData
 }) {
 	const theme = useAppTheme()
@@ -118,7 +114,11 @@ function CleaningRecordCard({
 						}}
 						onPress={() =>
 							router.push(
-								ROUTES.CLEANUP.RECORD(permitId, record.id),
+								ROUTES.CLEANUP.RECORD(
+									permitId,
+									permitNumber,
+									record.id,
+								),
 							)
 						}
 					>
@@ -135,11 +135,10 @@ export default function () {
 	const insets = useSafeAreaInsets()
 	const { permitId, permitNumber } = useLocalSearchParams<{
 		permitId: string
-		permitNumber?: string
+		permitNumber: string
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? permitNumber ?? "Sin número"
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningCommon } = useReadBulkCleaningCommon(permitId)
 
@@ -151,13 +150,6 @@ export default function () {
 			edges={["bottom"]}
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
-			<Stack.Screen
-				options={{
-					headerTitle: () => (
-						<HeaderBreadcrumb parts={[permitLabel, "Limpieza"]} />
-					),
-				}}
-			/>
 			<ScrollView
 				contentContainerStyle={{
 					paddingTop: 20,
@@ -177,7 +169,10 @@ export default function () {
 								icon: "chevron-right",
 								onPress: () =>
 									router.push(
-										ROUTES.CLEANUP.HEADER(permitId),
+										ROUTES.CLEANUP.HEADER(
+											permitId,
+											permitNumber,
+										),
 									),
 							},
 							details: cleaningHeader?.isCompleted ? (
@@ -266,6 +261,7 @@ export default function () {
 											key={record.id}
 											index={index}
 											permitId={permitId}
+											permitNumber={permitNumber}
 											record={record}
 										/>
 									))}
@@ -291,7 +287,11 @@ export default function () {
 					icon="plus"
 					contentStyle={{ height: 48 }}
 					disabled={isPermitReadOnly}
-					onPress={() => router.push(ROUTES.CLEANUP.RECORD(permitId))}
+					onPress={() =>
+						router.push(
+							ROUTES.CLEANUP.RECORD(permitId, permitNumber),
+						)
+					}
 				>
 					Añadir registro
 				</Button>

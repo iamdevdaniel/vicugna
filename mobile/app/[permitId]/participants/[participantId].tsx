@@ -1,6 +1,5 @@
 import {
 	CustomDeleteButton,
-	HeaderBreadcrumb,
 	LabeledInput,
 	ReadOnlyNotice,
 	SignaturePad,
@@ -17,7 +16,7 @@ import {
 	defaultValuesParticipant,
 	yupParticipant,
 } from "@utils/yup-participants"
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
@@ -34,7 +33,6 @@ export default function () {
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data, loading } = useReadSingleParticipant(participantId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? "Sin número"
 	const {
 		createSingleParticipant,
 		updateSingleParticipant,
@@ -112,19 +110,6 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen
-					options={{
-						headerTitle: () => (
-							<HeaderBreadcrumb
-								parts={[
-									permitLabel,
-									"Participantes",
-									"Registro",
-								]}
-							/>
-						),
-					}}
-				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{ padding: 20 }}

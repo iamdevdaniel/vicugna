@@ -41,7 +41,7 @@ export default function () {
 	)
 	const { permitId, permitNumber } = useLocalSearchParams<{
 		permitId: string
-		permitNumber?: string
+		permitNumber: string
 	}>()
 	const { data: permit } = useReadSinglePermit(permitId)
 	const { data: participants } = useReadBulkParticipants(permitId)
@@ -60,7 +60,6 @@ export default function () {
 		shearingStatus === "done" &&
 		cleaningStatus === "done"
 	const isPermitSynced = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? permitNumber ?? "Sin número"
 	const communityName = permit
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
@@ -184,7 +183,7 @@ export default function () {
 						}}
 						numberOfLines={1}
 					>
-						{permitLabel}
+						{permitNumber}
 					</Text>
 					<Text
 						style={{

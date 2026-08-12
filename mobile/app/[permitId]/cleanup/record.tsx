@@ -2,7 +2,6 @@ import {
 	CustomDeleteButton,
 	DehearingFields,
 	GroomingFields,
-	HeaderBreadcrumb,
 	LabeledInput,
 	ReadOnlyNotice,
 	ToggleButtonGroup,
@@ -30,7 +29,7 @@ import {
 	yupDehearing,
 	yupGrooming,
 } from "@utils/yup-cleaning-record"
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
@@ -49,7 +48,6 @@ export default function () {
 	const [cleaningType, setCleaningType] = useState<CleaningType>("grooming")
 	const { data: permit } = useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
-	const permitLabel = permit?.permitNumber ?? "Sin número"
 
 	const { data: commonData, loading: loadingCommon } =
 		useReadSingleCleaningCommon(recordId)
@@ -291,15 +289,6 @@ export default function () {
 				behavior="height"
 				keyboardVerticalOffset={100}
 			>
-				<Stack.Screen
-					options={{
-						headerTitle: () => (
-							<HeaderBreadcrumb
-								parts={[permitLabel, "Limpieza", "Registro"]}
-							/>
-						),
-					}}
-				/>
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{

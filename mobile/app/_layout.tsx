@@ -5,6 +5,16 @@ import { useColorScheme } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper"
 
+function permitHeader(params: unknown, parts: string[]) {
+	const { permitNumber } = params as { permitNumber: string }
+
+	return {
+		headerTitle: () => (
+			<HeaderBreadcrumb parts={[permitNumber, ...parts]} />
+		),
+	}
+}
+
 export default function RootLayout() {
 	const lightTheme = {
 		...MD3LightTheme,
@@ -36,24 +46,65 @@ export default function RootLayout() {
 						options={{ headerShown: false }}
 					/>
 					<Stack.Screen
+						name="[permitId]/index"
+						options={{ title: "Permiso" }}
+					/>
+					<Stack.Screen
+						name="[permitId]/participants/index"
+						options={({ route }) =>
+							permitHeader(route.params, ["Participantes"])
+						}
+					/>
+					<Stack.Screen
+						name="[permitId]/participants/[participantId]"
+						options={({ route }) =>
+							permitHeader(route.params, [
+								"Participantes",
+								"Registro",
+							])
+						}
+					/>
+					<Stack.Screen
+						name="[permitId]/shearing/index"
+						options={({ route }) =>
+							permitHeader(route.params, ["Esquila"])
+						}
+					/>
+					<Stack.Screen
+						name="[permitId]/shearing/header"
+						options={({ route }) =>
+							permitHeader(route.params, [
+								"Esquila",
+								"Información general",
+							])
+						}
+					/>
+					<Stack.Screen
 						name="[permitId]/shearing/record"
-						options={({ route }) => {
-							const { permitNumber } = route.params as {
-								permitNumber: string
-							}
-
-							return {
-								headerTitle: () => (
-									<HeaderBreadcrumb
-										parts={[
-											permitNumber,
-											"Esquila",
-											"Registros",
-										]}
-									/>
-								),
-							}
-						}}
+						options={({ route }) =>
+							permitHeader(route.params, ["Esquila", "Registros"])
+						}
+					/>
+					<Stack.Screen
+						name="[permitId]/cleanup/index"
+						options={({ route }) =>
+							permitHeader(route.params, ["Limpieza"])
+						}
+					/>
+					<Stack.Screen
+						name="[permitId]/cleanup/header"
+						options={({ route }) =>
+							permitHeader(route.params, [
+								"Limpieza",
+								"Información general",
+							])
+						}
+					/>
+					<Stack.Screen
+						name="[permitId]/cleanup/record"
+						options={({ route }) =>
+							permitHeader(route.params, ["Limpieza", "Registro"])
+						}
 					/>
 				</Stack>
 			</PaperProvider>
