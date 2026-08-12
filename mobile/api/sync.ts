@@ -6,7 +6,7 @@ type SyncFieldResponse = {
 	error?: string
 }
 
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
+const apiBaseUrl = process.env.EXPO_PUBLIC_BACKEND_URL
 
 if (!apiBaseUrl) {
 	throw new Error("Falta configurar la dirección del servidor")

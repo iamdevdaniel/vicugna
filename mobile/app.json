@@ -3,6 +3,12 @@
     "name": "vicugna",
     "slug": "vicugna",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a0de7245-1ed6-44cd-9495-86ecd499a78f"
+    },
     "icon": "./assets/images/vicugna-logo-day.png",
     "orientation": "portrait",
     "scheme": "vicugna",
