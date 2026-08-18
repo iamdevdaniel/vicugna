@@ -4,6 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"audit": "dotenv -e .env.local -- sh -c 'lighthouse \"$DEV_URL\" --output=html --output-path=./lighthouse-report.html --chrome-flags=\"--headless\" --view'",
 		"dev": "astro dev",
 		"build": "astro build",
 		"start": "npm run build && astro preview",
@@ -15,6 +16,8 @@
 		"tailwindcss": "^4.3.3"
 	},
 	"devDependencies": {
+		"dotenv-cli": "^11.0.0",
+		"lighthouse": "^12.8.2",
 		"wrangler": "^4.47.0"
 	}
 }
