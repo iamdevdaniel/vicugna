@@ -28,6 +28,7 @@ export const commonContent = {
 
 export const homeContent = {
 	es: {
+		pageTitle: "Inicio",
 		eyebrow: "Fibra de origen boliviano",
 		title: "La fibra más fina de los Andes, manejada por sus comunidades.",
 		subtitle: "ANMVB reúne a comunidades que conservan la vicuña y comercializan su fibra de manera organizada.",
@@ -52,6 +53,7 @@ export const homeContent = {
 		closingAction: "Iniciar contacto",
 	},
 	en: {
+		pageTitle: "Home",
 		eyebrow: "Fiber of Bolivian origin",
 		title: "The finest fiber of the Andes, managed by its communities.",
 		subtitle: "ANMVB brings together communities that conserve vicuña and market its fiber through an organized process.",
@@ -80,6 +82,7 @@ export const homeContent = {
 export const pageContent = {
 	es: {
 		fiber: {
+			pageTitle: "Fibra de Vicuña",
 			eyebrow: "Fibra de vicuña",
 			title: "Una fibra excepcional desde su origen",
 			subtitle: "Información esencial sobre calidad, procedencia, disponibilidad y proceso comercial.",
@@ -94,6 +97,7 @@ export const pageContent = {
 			closingAction: "Contactar a ANMVB",
 		},
 		organization: {
+			pageTitle: "Asociación",
 			eyebrow: "La asociación",
 			title: "Comunidades organizadas alrededor de la vicuña",
 			subtitle: "Una representación nacional para fortalecer el manejo, la conservación y la comercialización de la fibra.",
@@ -108,6 +112,7 @@ export const pageContent = {
 			closingAction: "Hablar con la asociación",
 		},
 		contact: {
+			pageTitle: "Contacto Comercial",
 			eyebrow: "Contacto comercial",
 			title: "Conversemos sobre fibra de vicuña boliviana",
 			subtitle: "El proceso comienza con una consulta directa sobre necesidades, volúmenes y condiciones.",
@@ -124,6 +129,7 @@ export const pageContent = {
 	},
 	en: {
 		fiber: {
+			pageTitle: "Vicuña Fiber",
 			eyebrow: "Vicuña fiber",
 			title: "An exceptional fiber from its origin",
 			subtitle: "Essential information about quality, provenance, availability and the commercial process.",
@@ -138,6 +144,7 @@ export const pageContent = {
 			closingAction: "Contact ANMVB",
 		},
 		organization: {
+			pageTitle: "Association",
 			eyebrow: "The association",
 			title: "Communities organized around vicuña",
 			subtitle: "National representation to strengthen management, conservation and fiber commercialization.",
@@ -152,6 +159,7 @@ export const pageContent = {
 			closingAction: "Talk to the association",
 		},
 		contact: {
+			pageTitle: "Commercial Contact",
 			eyebrow: "Commercial contact",
 			title: "Let’s discuss Bolivian vicuña fiber",
 			subtitle: "The process begins with a direct inquiry about requirements, volumes and terms.",
