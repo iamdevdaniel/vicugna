@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+	--color-earth: #614731;
+	--color-clay: #d37e3b;
+	--color-sage: #758267;
+	--color-sand: #c5a275;
+	--color-canvas: #f7f2e8;
+}
+
+@layer base {
+	body {
+		margin: 0;
+		background: var(--color-canvas);
+		color: var(--color-earth);
+	}
+}

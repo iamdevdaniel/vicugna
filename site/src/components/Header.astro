@@ -1,0 +1,21 @@
+---
+import { routes, type Language, type RouteName } from "../lib/routes"
+
+type Props = {
+	language: Language
+	page: RouteName
+}
+
+const { language, page } = Astro.props
+const pageRoutes = routes[page]
+---
+
+<header class="flex items-center justify-between border-b border-earth/20 pb-5">
+	<span class="text-sm font-semibold tracking-[0.24em]">ANMVB</span>
+
+	<nav aria-label={language === "es" ? "Idioma" : "Language"} class="flex gap-3 text-xs font-semibold tracking-widest">
+		<a class:list={["hover:text-clay", { "text-clay": language === "es" }]} href={pageRoutes.es} lang="es">ES</a>
+		<span aria-hidden="true">/</span>
+		<a class:list={["hover:text-clay", { "text-clay": language === "en" }]} href={pageRoutes.en} lang="en">EN</a>
+	</nav>
+</header>
