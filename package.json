@@ -4,7 +4,8 @@
   "workspaces": [
     "backend",
     "mobile",
-    "shared"
+    "shared",
+    "site"
   ],
   "overrides": {
     "react-native-safe-area-context": "5.6.2"
