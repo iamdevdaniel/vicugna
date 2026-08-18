@@ -31,12 +31,9 @@ const common = commonContent[lang]
 	</section>
 
 	<section class="border-t border-earth/20">
-		{content.sections.map((section, index) => (
+		{content.sections.map((section) => (
 			<article class="grid gap-8 border-b border-earth/20 py-14 sm:py-20 lg:grid-cols-[0.35fr_0.65fr] lg:gap-16">
-				<div class="flex items-start gap-5">
-					<span class="text-xs font-bold text-clay">0{index + 1}</span>
-					<p class="eyebrow">{section.eyebrow}</p>
-				</div>
+				<p class="eyebrow">{section.eyebrow}</p>
 				<div class="max-w-3xl">
 					<h2 class="font-serif text-4xl leading-tight sm:text-5xl">{section.title}</h2>
 					<p class="section-subtitle">{section.subtitle}</p>

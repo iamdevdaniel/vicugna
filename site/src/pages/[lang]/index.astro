@@ -13,14 +13,20 @@ export function getStaticPaths() {
 const { lang } = Astro.props as { lang: Language }
 const content = homeContent[lang]
 const common = commonContent[lang]
-const heroImage = "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vicu%C3%B1a_en_Chile.jpg"
+const heroImage = "/images/01.webp"
 const featureImage = "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vicunacrop.jpg"
 ---
 
 <BaseLayout language={lang} page="home" title={content.pageTitle} description={content.subtitle}>
 	<section class="relative mt-6 min-h-[72vh] overflow-hidden bg-earth sm:mt-8">
-		<img src={heroImage} alt={common.imageAlt} class="absolute inset-0 h-full w-full object-cover opacity-65" />
-		<div class="absolute inset-0 bg-linear-to-r from-[#1d160f]/90 via-[#1d160f]/50 to-transparent"></div>
+		<img
+			src={heroImage}
+			alt={common.imageAlt}
+			class="absolute inset-0 h-full w-full translate-x-[25%] scale-[1.1] object-cover opacity-65"
+		/>
+		<div
+			class="absolute inset-0 bg-[linear-gradient(to_right,#2a1c11_20%,rgba(42,28,17,0.7)_40%,transparent_65%)]"
+		></div>
 		<div class="relative flex min-h-[72vh] max-w-4xl flex-col justify-end px-6 py-12 text-canvas sm:px-10 sm:py-16 lg:px-16">
 			<p class="eyebrow text-sand">{content.eyebrow}</p>
 			<h1 class="mt-5 font-serif text-5xl leading-[0.98] sm:text-7xl lg:text-8xl">{content.title}</h1>
@@ -46,8 +52,7 @@ const featureImage = "https://commons.wikimedia.org/wiki/Special:Redirect/file/V
 	<section class="grid border-y border-earth/20 md:grid-cols-3">
 		{content.values.map((value, index) => (
 			<article class:list={["py-10 md:px-8", { "border-t border-earth/20 md:border-l md:border-t-0": index > 0 }]}>
-				<span class="text-xs font-bold text-clay">0{index + 1}</span>
-				<h3 class="mt-6 font-serif text-3xl">{value.title}</h3>
+				<h3 class="font-serif text-3xl">{value.title}</h3>
 				<p class="mt-4 font-medium leading-6">{value.subtitle}</p>
 				<p class="body-copy mt-5">{value.body}</p>
 			</article>

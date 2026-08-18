@@ -1,7 +1,7 @@
 import type { Language, RouteName } from "./routes"
 
 const images = {
-	portrait: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vicunacrop.jpg",
+	portrait: "/images/01.webp",
 	landscape: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vicu%C3%B1a_en_Chile.jpg",
 	grass: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vicuna_standing_in_grass_-_DPLA_-_690a7a2a88b0ee8121a1f0bdebe8b3c3.jpg",
 } as const
@@ -15,6 +15,8 @@ export const commonContent = {
 		languageLabel: "Idioma",
 		footerTitle: "Fibra boliviana. Origen comunitario.",
 		footerText: "Asociación Nacional de Manejadores de Vicuña de Bolivia",
+		footerRights:
+			"© 2026 ANMVB. Todos los derechos reservados. Las fotografías no pueden reproducirse ni utilizarse sin autorización previa por escrito.",
 		imageAlt: "Vicuña en un paisaje altoandino",
 	},
 	en: {
@@ -22,6 +24,8 @@ export const commonContent = {
 		languageLabel: "Language",
 		footerTitle: "Bolivian fiber. Community origin.",
 		footerText: "National Association of Vicuña Management Communities of Bolivia",
+		footerRights:
+			"© 2026 ANMVB. All rights reserved. Photographs may not be reproduced or used without prior written permission.",
 		imageAlt: "Vicuña in a high-Andean landscape",
 	},
 } as const
@@ -118,9 +122,9 @@ export const pageContent = {
 			subtitle: "El proceso comienza con una consulta directa sobre necesidades, volúmenes y condiciones.",
 			image: images.grass,
 			sections: [
-				{ eyebrow: "Paso 01", title: "Comparta su requerimiento", subtitle: "Indique el tipo de comprador, uso previsto y volumen de interés.", body: lorem },
-				{ eyebrow: "Paso 02", title: "Revisamos la disponibilidad", subtitle: "ANMVB confirma la información correspondiente a la oferta disponible.", body: lorem },
-				{ eyebrow: "Paso 03", title: "Acordamos las condiciones", subtitle: "Precio, documentación, entrega y demás condiciones se definen entre las partes.", body: lorem },
+				{ eyebrow: "Consulta", title: "Comparta su requerimiento", subtitle: "Indique el tipo de comprador, uso previsto y volumen de interés.", body: lorem },
+				{ eyebrow: "Disponibilidad", title: "Revisamos la disponibilidad", subtitle: "ANMVB confirma la información correspondiente a la oferta disponible.", body: lorem },
+				{ eyebrow: "Acuerdo", title: "Acordamos las condiciones", subtitle: "Precio, documentación, entrega y demás condiciones se definen entre las partes.", body: lorem },
 			],
 			closingTitle: "Canal comercial de ANMVB",
 			closingSubtitle: "Los datos institucionales definitivos se incorporarán antes del lanzamiento.",
@@ -165,9 +169,9 @@ export const pageContent = {
 			subtitle: "The process begins with a direct inquiry about requirements, volumes and terms.",
 			image: images.grass,
 			sections: [
-				{ eyebrow: "Step 01", title: "Share your requirements", subtitle: "Indicate the buyer profile, intended use and volume of interest.", body: lorem },
-				{ eyebrow: "Step 02", title: "We review availability", subtitle: "ANMVB confirms the information corresponding to the available supply.", body: lorem },
-				{ eyebrow: "Step 03", title: "We agree on the terms", subtitle: "Price, documentation, delivery and other conditions are defined by both parties.", body: lorem },
+				{ eyebrow: "Inquiry", title: "Share your requirements", subtitle: "Indicate the buyer profile, intended use and volume of interest.", body: lorem },
+				{ eyebrow: "Availability", title: "We review availability", subtitle: "ANMVB confirms the information corresponding to the available supply.", body: lorem },
+				{ eyebrow: "Agreement", title: "We agree on the terms", subtitle: "Price, documentation, delivery and other conditions are defined by both parties.", body: lorem },
 			],
 			closingTitle: "ANMVB commercial channel",
 			closingSubtitle: "Final institutional contact details will be added before launch.",
