@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro"
+import { commonContent, pageContent, type ContentPage } from "../../lib/content"
+import { routes, type Language } from "../../lib/routes"
+
+export function getStaticPaths() {
+	const pages: ContentPage[] = ["fiber", "organization", "contact"]
+	const languages: Language[] = ["es", "en"]
+
+	return pages.flatMap((page) =>
+		languages.map((lang) => ({
+			params: { lang, slug: routes[page][lang].split("/").filter(Boolean)[1] },
+			props: { lang, page },
+		})),
+	)
+}
+
+const { lang, page } = Astro.props as { lang: Language; page: ContentPage }
+const content = pageContent[lang][page]
+const common = commonContent[lang]
+---
+
+<BaseLayout language={lang} page={page} title={content.title} description={content.subtitle}>
+	<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:py-24">
+		<div class="lg:pb-8">
+			<p class="eyebrow">{content.eyebrow}</p>
+			<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{content.title}</h1>
+			<p class="mt-7 max-w-xl text-lg leading-8 text-earth/70">{content.subtitle}</p>
+		</div>
+		<img src={content.image} alt={common.imageAlt} class="aspect-[4/3] h-full min-h-80 w-full object-cover" />
+	</section>
+
+	<section class="border-t border-earth/20">
+		{content.sections.map((section, index) => (
+			<article class="grid gap-8 border-b border-earth/20 py-14 sm:py-20 lg:grid-cols-[0.35fr_0.65fr] lg:gap-16">
+				<div class="flex items-start gap-5">
+					<span class="text-xs font-bold text-clay">0{index + 1}</span>
+					<p class="eyebrow">{section.eyebrow}</p>
+				</div>
+				<div class="max-w-3xl">
+					<h2 class="font-serif text-4xl leading-tight sm:text-5xl">{section.title}</h2>
+					<p class="section-subtitle">{section.subtitle}</p>
+					<p class="body-copy">{section.body}</p>
+				</div>
+			</article>
+		))}
+	</section>
+
+	<section class="my-20 grid gap-8 bg-earth px-6 py-14 text-canvas sm:px-12 sm:py-16 lg:grid-cols-[1fr_auto] lg:items-end">
+		<div>
+			<h2 class="max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">{content.closingTitle}</h2>
+			<p class="mt-5 max-w-2xl text-canvas/70">{content.closingSubtitle}</p>
+		</div>
+		<a class="button-light" href={routes.contact[lang]}>{content.closingAction}</a>
+	</section>
+</BaseLayout>
