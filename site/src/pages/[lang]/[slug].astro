@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro"
-import { commonContent, pageContent, type ContentPage } from "../../lib/content"
+import { images, translations, type ContentPage } from "../../lib/content"
 import { routes, type Language } from "../../lib/routes"
 
 export function getStaticPaths() {
@@ -16,38 +16,213 @@ export function getStaticPaths() {
 }
 
 const { lang, page } = Astro.props as { lang: Language; page: ContentPage }
-const content = pageContent[lang][page]
-const common = commonContent[lang]
+const text = translations[lang]
+const pageTitles = {
+	fiber: text["fiber.pageTitle"],
+	organization: text["organization.pageTitle"],
+	contact: text["contact.pageTitle"],
+}
+const pageDescriptions = {
+	fiber: text["fiber.hero.body"],
+	organization: text["organization.hero.body"],
+	contact: text["contact.hero.body"],
+}
+const requirements = [
+	text["contact.requirements.1"],
+	text["contact.requirements.2"],
+	text["contact.requirements.3"],
+	text["contact.requirements.4"],
+]
+const purchaseSteps = [
+	{ title: text["contact.process.1.title"], body: text["contact.process.1.body"] },
+	{ title: text["contact.process.2.title"], body: text["contact.process.2.body"] },
+	{ title: text["contact.process.3.title"], body: text["contact.process.3.body"] },
+]
 ---
 
-<BaseLayout language={lang} page={page} title={content.pageTitle} description={content.subtitle}>
-	<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:py-24">
-		<div class="lg:pb-8">
-			<p class="eyebrow">{content.eyebrow}</p>
-			<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{content.title}</h1>
-			<p class="mt-7 max-w-xl text-lg leading-8 text-earth/70">{content.subtitle}</p>
-		</div>
-		<img src={content.image} alt={common.imageAlt} class="aspect-4/3 h-full min-h-80 w-full object-cover" />
-	</section>
-
-	<section class="border-t border-earth/20">
-		{content.sections.map((section) => (
-			<article class="grid gap-8 border-b border-earth/20 py-14 sm:py-20 lg:grid-cols-[0.35fr_0.65fr] lg:gap-16">
-				<p class="eyebrow">{section.eyebrow}</p>
-				<div class="max-w-3xl">
-					<h2 class="font-serif text-4xl leading-tight sm:text-5xl">{section.title}</h2>
-					<p class="section-subtitle">{section.subtitle}</p>
-					<p class="body-copy">{section.body}</p>
+<BaseLayout language={lang} page={page} title={pageTitles[page]} description={pageDescriptions[page]}>
+	{page === "contact" ? (
+		<>
+			<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:py-24">
+				<div class="lg:pb-8">
+					<p class="eyebrow">{text["contact.hero.eyebrow"]}</p>
+					<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{text["contact.hero.title"]}</h1>
+					<p class="mt-7 max-w-xl text-lg leading-8 text-earth/75">{text["contact.hero.body"]}</p>
+					<a class="button-primary mt-8" href="#consulta">{text["contact.hero.action"]}</a>
 				</div>
-			</article>
-		))}
-	</section>
+				<img
+					src={images["contact.hero"]}
+					alt={text["contact.hero.imageAlt"]}
+					fetchpriority="high"
+					class="aspect-4/3 h-full min-h-80 w-full object-cover"
+				/>
+			</section>
 
-	<section class="my-20 grid gap-8 bg-earth px-6 py-14 text-canvas sm:px-12 sm:py-16 lg:grid-cols-[1fr_auto] lg:items-end">
-		<div>
-			<h2 class="max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">{content.closingTitle}</h2>
-			<p class="mt-5 max-w-2xl text-canvas/70">{content.closingSubtitle}</p>
-		</div>
-		<a class="button-light" href={routes.contact[lang]}>{content.closingAction}</a>
-	</section>
+			<section id="consulta" class="border-y border-earth/20 py-14 sm:py-20">
+				<div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+					<div>
+						<p class="eyebrow">{text["contact.requirements.eyebrow"]}</p>
+						<h2 class="section-title">{text["contact.requirements.title"]}</h2>
+					</div>
+					<div>
+						<p class="max-w-2xl text-lg leading-8">{text["contact.requirements.body"]}</p>
+						<ul class="mt-10 grid grid-cols-2 border-y border-earth/20 sm:grid-cols-4">
+							{requirements.map((item) => (
+								<li class="py-5 text-xs font-bold uppercase tracking-[0.16em] sm:text-center">{item}</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			</section>
+
+			<section class="grid gap-10 py-20 sm:py-28 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
+				<img
+					src={images["contact.availability"]}
+					alt={text["contact.availability.imageAlt"]}
+					loading="lazy"
+					class="aspect-4/3 h-full w-full object-cover"
+				/>
+				<div>
+					<p class="eyebrow">{text["contact.availability.eyebrow"]}</p>
+					<h2 class="section-title">{text["contact.availability.title"]}</h2>
+					<p class="body-copy">{text["contact.availability.body"]}</p>
+				</div>
+			</section>
+
+			<section class="border-y border-earth/20 py-14 sm:py-20">
+				<p class="eyebrow">{text["contact.process.eyebrow"]}</p>
+				<div class="mt-10 grid gap-8 md:grid-cols-3">
+					{purchaseSteps.map((step, index) => (
+						<article class="border-t border-earth/30 pt-6">
+							<p class="text-xs font-bold text-clay">0{index + 1}</p>
+							<h2 class="mt-5 font-serif text-3xl">{step.title}</h2>
+							<p class="mt-4 text-sm leading-7 text-earth/75">{step.body}</p>
+						</article>
+					))}
+				</div>
+			</section>
+
+			<section id="contacto" class="my-20 grid overflow-hidden bg-earth text-canvas lg:grid-cols-2">
+				<div class="flex flex-col items-start justify-center px-6 py-14 sm:px-12 sm:py-16">
+					<h2 class="max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">{text["contact.closing.title"]}</h2>
+					<p class="mt-5 max-w-2xl text-canvas/80">{text["contact.closing.body"]}</p>
+					<a class="button-light mt-8" href="#consulta">{text["contact.closing.action"]}</a>
+				</div>
+				<img
+					src={images["contact.closing"]}
+					alt={text["contact.closing.imageAlt"]}
+					loading="lazy"
+					class="aspect-4/3 h-full min-h-80 w-full object-cover"
+				/>
+			</section>
+		</>
+	) : page === "fiber" ? (
+		<>
+			<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:py-24">
+				<div class="lg:pb-8">
+					<p class="eyebrow">{text["fiber.hero.eyebrow"]}</p>
+					<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{text["fiber.hero.title"]}</h1>
+					<p class="mt-7 max-w-xl text-lg leading-8 text-earth/70">{text["fiber.hero.body"]}</p>
+				</div>
+				<img src={images["fiber.hero"]} alt={text["common.imageAlt"]} class="aspect-4/3 h-full min-h-80 w-full object-cover" />
+			</section>
+
+			<section class="grid overflow-hidden bg-earth text-canvas lg:grid-cols-2">
+				<img src={images["fiber.material"]} alt={text["common.imageAlt"]} loading="lazy" class="aspect-square h-full w-full object-cover" />
+				<div class="flex flex-col justify-center px-7 py-14 sm:px-12 lg:px-16">
+					<p class="eyebrow text-sand">{text["fiber.material.eyebrow"]}</p>
+					<h2 class="mt-5 font-serif text-4xl leading-tight sm:text-6xl">{text["fiber.material.title"]}</h2>
+					<p class="mt-7 max-w-xl leading-8 text-canvas/75">{text["fiber.material.body"]}</p>
+				</div>
+			</section>
+
+			<section class="my-20 grid overflow-hidden bg-sage text-canvas sm:my-28 lg:grid-cols-2">
+				<div class="flex flex-col justify-center px-7 py-14 sm:px-12 lg:px-16">
+					<p class="eyebrow text-canvas/70">{text["fiber.heritage.eyebrow"]}</p>
+					<h2 class="mt-5 font-serif text-4xl leading-tight sm:text-5xl">{text["fiber.heritage.title"]}</h2>
+					<p class="mt-7 max-w-xl leading-8 text-canvas/80">{text["fiber.heritage.body"]}</p>
+				</div>
+				<img
+					src={images["fiber.heritage"]}
+					alt={text["common.imageAlt"]}
+					loading="lazy"
+					class="aspect-square h-full w-full object-cover object-top"
+				/>
+			</section>
+
+			<section class="my-20 grid overflow-hidden border-y border-earth/20 sm:my-28 lg:grid-cols-2">
+				<div class="relative aspect-square min-h-96 overflow-hidden bg-earth/10">
+					<img
+						src={images["fiber.origin"]}
+						alt={text["common.imageAlt"]}
+						loading="lazy"
+						class="absolute left-1/2 top-3/4 h-full w-auto max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90"
+					/>
+				</div>
+				<div class="divide-y divide-earth/20 lg:grid lg:grid-rows-2 lg:border-l lg:border-earth/20">
+					<article class="flex flex-col justify-center px-7 py-12 sm:px-12 sm:py-16 lg:px-8 lg:py-6">
+						<p class="eyebrow">{text["fiber.origin.eyebrow"]}</p>
+						<h2 class="mt-4 font-serif text-4xl leading-tight sm:text-5xl lg:text-4xl">{text["fiber.origin.title"]}</h2>
+						<p class="mt-5 leading-8 text-earth/75 lg:mt-4 lg:leading-7">{text["fiber.origin.body"]}</p>
+					</article>
+					<article class="flex flex-col justify-center bg-sand/20 px-7 py-12 sm:px-12 sm:py-16 lg:px-8 lg:py-6">
+						<p class="eyebrow text-clay">{text["fiber.sales.eyebrow"]}</p>
+						<h2 class="mt-4 font-serif text-4xl leading-tight">{text["fiber.sales.title"]}</h2>
+						<p class="mt-5 leading-8 text-earth/75 lg:mt-4 lg:leading-7">{text["fiber.sales.body"]}</p>
+					</article>
+				</div>
+			</section>
+
+			<section class="my-20 grid gap-8 bg-earth px-6 py-14 text-canvas sm:px-12 sm:py-16 lg:grid-cols-[1fr_auto] lg:items-end">
+				<div>
+					<h2 class="max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">{text["fiber.closing.title"]}</h2>
+					<p class="mt-5 max-w-2xl text-canvas/70">{text["fiber.closing.body"]}</p>
+				</div>
+				<a class="button-light" href={routes.contact[lang]}>{text["fiber.closing.action"]}</a>
+			</section>
+		</>
+	) : (
+		<>
+			<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:items-end lg:py-24">
+				<div class="lg:pb-8">
+					<p class="eyebrow">{text["organization.hero.eyebrow"]}</p>
+					<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{text["organization.hero.title"]}</h1>
+					<p class="mt-7 max-w-xl text-lg leading-8 text-earth/70">{text["organization.hero.body"]}</p>
+				</div>
+				<img src={images["organization.hero"]} alt={text["common.imageAlt"]} class="aspect-16/10 h-full min-h-80 w-full object-cover" />
+			</section>
+
+			<section class="border-y border-earth/20 py-16 sm:py-24">
+				<div class="mx-auto max-w-4xl text-center">
+					<p class="eyebrow">{text["organization.identity.eyebrow"]}</p>
+					<h2 class="mt-5 font-serif text-4xl leading-tight sm:text-6xl">{text["organization.identity.title"]}</h2>
+					<p class="mx-auto mt-7 max-w-3xl text-lg leading-8 text-earth/75">{text["organization.identity.body"]}</p>
+				</div>
+			</section>
+
+			<section class="grid gap-8 py-20 sm:py-28 lg:grid-cols-[0.8fr_1.2fr] lg:items-stretch">
+				<article class="flex flex-col justify-center bg-sage px-7 py-12 text-canvas sm:px-12">
+					<p class="eyebrow text-canvas/70">{text["organization.purpose.eyebrow"]}</p>
+					<h2 class="mt-5 font-serif text-4xl leading-tight sm:text-5xl">{text["organization.purpose.title"]}</h2>
+					<p class="mt-6 leading-8 text-canvas/80">{text["organization.purpose.body"]}</p>
+				</article>
+				<article class="grid bg-sand/25 md:grid-cols-2">
+					<img src={images["organization.conservation"]} alt={text["common.imageAlt"]} loading="lazy" class="aspect-4/3 h-full min-h-72 w-full object-cover" />
+					<div class="flex flex-col justify-center px-7 py-10 sm:px-10">
+						<p class="eyebrow text-clay">{text["organization.conservation.eyebrow"]}</p>
+						<h2 class="mt-4 font-serif text-4xl leading-tight">{text["organization.conservation.title"]}</h2>
+						<p class="mt-5 leading-8 text-earth/75">{text["organization.conservation.body"]}</p>
+					</div>
+				</article>
+			</section>
+
+			<section class="my-20 grid gap-8 bg-earth px-6 py-14 text-canvas sm:px-12 sm:py-16 lg:grid-cols-[1fr_auto] lg:items-end">
+				<div>
+					<h2 class="max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">{text["organization.closing.title"]}</h2>
+					<p class="mt-5 max-w-2xl text-canvas/70">{text["organization.closing.body"]}</p>
+				</div>
+				<a class="button-light" href={routes.contact[lang]}>{text["organization.closing.action"]}</a>
+			</section>
+		</>
+	)}
 </BaseLayout>

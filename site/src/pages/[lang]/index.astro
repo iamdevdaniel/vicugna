@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro"
-import { commonContent, homeContent } from "../../lib/content"
+import { images, translations } from "../../lib/content"
 import { routes, type Language } from "../../lib/routes"
 
 export function getStaticPaths() {
@@ -11,70 +11,69 @@ export function getStaticPaths() {
 }
 
 const { lang } = Astro.props as { lang: Language }
-const content = homeContent[lang]
-const common = commonContent[lang]
-const heroImage = "/images/01.webp"
-const featureImage = "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vicunacrop.jpg"
+const text = translations[lang]
+const values = [
+	{ title: text["home.values.1.title"], body: text["home.values.1.body"] },
+	{ title: text["home.values.2.title"], body: text["home.values.2.body"] },
+	{ title: text["home.values.3.title"], body: text["home.values.3.body"] },
+]
 ---
 
-<BaseLayout language={lang} page="home" title={content.pageTitle} description={content.subtitle}>
+<BaseLayout language={lang} page="home" title={text["home.pageTitle"]} description={text["home.hero.body"]}>
 	<section class="relative mt-6 min-h-[72vh] overflow-hidden bg-earth sm:mt-8">
 		<img
-			src={heroImage}
-			alt={common.imageAlt}
+			src={images["home.hero"]}
+			alt={text["common.imageAlt"]}
 			class="absolute inset-0 h-full w-full translate-x-[25%] scale-[1.1] object-cover opacity-65"
 		/>
 		<div
 			class="absolute inset-0 bg-[linear-gradient(to_right,#2a1c11_20%,rgba(42,28,17,0.7)_40%,transparent_65%)]"
 		></div>
 		<div class="relative flex min-h-[72vh] max-w-4xl flex-col justify-end px-6 py-12 text-canvas sm:px-10 sm:py-16 lg:px-16">
-			<p class="eyebrow text-sand">{content.eyebrow}</p>
-			<h1 class="mt-5 font-serif text-5xl leading-[0.98] sm:text-7xl lg:text-8xl">{content.title}</h1>
-			<p class="mt-7 max-w-2xl text-base leading-7 text-canvas/80 sm:text-lg">{content.subtitle}</p>
+			<p class="eyebrow text-sand">{text["home.hero.eyebrow"]}</p>
+			<h1 class="mt-5 font-serif text-5xl leading-[0.98] sm:text-7xl lg:text-8xl">{text["home.hero.title"]}</h1>
+			<p class="mt-7 max-w-2xl text-base leading-7 text-canvas/80 sm:text-lg">{text["home.hero.body"]}</p>
 			<div class="mt-8 flex flex-wrap gap-4">
-				<a class="button-primary" href={routes.fiber[lang]}>{content.primaryAction}</a>
-				<a class="button-light" href={routes.contact[lang]}>{content.secondaryAction}</a>
+				<a class="button-primary" href={routes.fiber[lang]}>{text["home.hero.primaryAction"]}</a>
+				<a class="button-light" href={routes.contact[lang]}>{text["home.hero.secondaryAction"]}</a>
 			</div>
 		</div>
 	</section>
 
 	<section class="section-grid">
 		<div>
-			<p class="eyebrow">{content.introEyebrow}</p>
-			<h2 class="section-title">{content.introTitle}</h2>
+			<p class="eyebrow">{text["home.intro.eyebrow"]}</p>
+			<h2 class="section-title">{text["home.intro.title"]}</h2>
 		</div>
 		<div>
-			<p class="section-subtitle">{content.introSubtitle}</p>
-			<p class="body-copy">{content.introBody}</p>
+			<p class="section-subtitle">{text["home.intro.body"]}</p>
 		</div>
 	</section>
 
 	<section class="grid border-y border-earth/20 md:grid-cols-3">
-		{content.values.map((value, index) => (
+		{values.map((value, index) => (
 			<article class:list={["py-10 md:px-8", { "border-t border-earth/20 md:border-l md:border-t-0": index > 0 }]}>
 				<h3 class="font-serif text-3xl">{value.title}</h3>
-				<p class="mt-4 font-medium leading-6">{value.subtitle}</p>
-				<p class="body-copy mt-5">{value.body}</p>
+				<p class="mt-4 font-medium leading-6">{value.body}</p>
 			</article>
 		))}
 	</section>
 
 	<section class="grid gap-10 py-20 sm:py-28 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-		<img src={featureImage} alt={common.imageAlt} loading="lazy" class="aspect-4/3 h-full w-full object-cover" />
+		<img src={images["home.feature"]} alt={text["common.imageAlt"]} loading="lazy" class="aspect-4/3 h-full w-full object-cover" />
 		<div class="lg:px-10">
-			<p class="eyebrow">{content.featureEyebrow}</p>
-			<h2 class="section-title">{content.featureTitle}</h2>
-			<p class="section-subtitle">{content.featureSubtitle}</p>
-			<p class="body-copy">{content.featureBody}</p>
-			<a class="text-link" href={routes.fiber[lang]}>{content.featureAction}</a>
+			<p class="eyebrow">{text["home.feature.eyebrow"]}</p>
+			<h2 class="section-title">{text["home.feature.title"]}</h2>
+			<p class="section-subtitle">{text["home.feature.body"]}</p>
+			<a class="text-link" href={routes.fiber[lang]}>{text["home.feature.action"]}</a>
 		</div>
 	</section>
 
 	<section class="mb-20 bg-sage px-6 py-16 text-canvas sm:px-12 sm:py-20 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:gap-12">
 		<div>
-			<h2 class="max-w-4xl font-serif text-4xl leading-tight sm:text-6xl">{content.closingTitle}</h2>
-			<p class="mt-5 max-w-2xl text-canvas/75">{content.closingSubtitle}</p>
+			<h2 class="max-w-4xl font-serif text-4xl leading-tight sm:text-6xl">{text["home.closing.title"]}</h2>
+			<p class="mt-5 max-w-2xl text-canvas/75">{text["home.closing.body"]}</p>
 		</div>
-		<a class="button-light mt-8 lg:mt-0" href={routes.contact[lang]}>{content.closingAction}</a>
+		<a class="button-light mt-8 lg:mt-0" href={routes.contact[lang]}>{text["home.closing.action"]}</a>
 	</section>
 </BaseLayout>
