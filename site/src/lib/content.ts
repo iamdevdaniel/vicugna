@@ -211,5 +211,4 @@ const en = {
 
 export const translations = { es, en } as const
 
-export type TranslationKey = keyof typeof es
 export type ContentPage = Exclude<RouteName, "home">
