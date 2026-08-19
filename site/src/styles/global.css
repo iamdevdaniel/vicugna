@@ -44,12 +44,6 @@
 		text-transform: uppercase;
 	}
 
-	.section-grid {
-		display: grid;
-		gap: 2.5rem;
-		padding-block: 5rem;
-	}
-
 	.section-title {
 		margin-top: 1.25rem;
 		font-family: Georgia, "Times New Roman", serif;
@@ -62,14 +56,6 @@
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.6;
-	}
-
-	.body-copy {
-		margin-top: 1.25rem;
-		max-width: 42rem;
-		color: color-mix(in srgb, var(--color-earth) 68%, transparent);
-		font-size: 0.95rem;
-		line-height: 1.8;
 	}
 
 	.button-primary,
@@ -106,22 +92,4 @@
 		color: var(--color-earth);
 	}
 
-	.text-link {
-		display: inline-block;
-		margin-top: 2rem;
-		border-bottom: 2px solid var(--color-clay);
-		padding-bottom: 0.4rem;
-		font-size: 0.7rem;
-		font-weight: 700;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-	}
-
-	@media (min-width: 64rem) {
-		.section-grid {
-			grid-template-columns: 0.9fr 1.1fr;
-			gap: 6rem;
-			padding-block: 7rem;
-		}
-	}
 }

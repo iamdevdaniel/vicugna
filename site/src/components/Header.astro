@@ -10,12 +10,6 @@ type Props = {
 const { language, page } = Astro.props
 const pageRoutes = routes[page]
 const text = translations[language]
-const navigationLabels = {
-	home: text["navigation.home"],
-	fiber: text["navigation.fiber"],
-	organization: text["navigation.organization"],
-	contact: text["navigation.contact"],
-}
 ---
 
 <header class="sticky top-0 z-50 grid gap-5 border-b border-earth/20 bg-canvas py-5 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-8">
@@ -28,11 +22,10 @@ const navigationLabels = {
 	</a>
 
 	<nav class="order-3 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold uppercase tracking-[0.12em] sm:order-0 sm:justify-center">
-		{Object.entries(routes).map(([name, localizedRoute]) => (
-			<a class:list={["transition-colors hover:text-clay", { "text-clay": page === name }]} href={localizedRoute[language]}>
-				{navigationLabels[name as RouteName]}
-			</a>
-		))}
+		<a class:list={["transition-colors hover:text-clay", { "text-clay": page === "home" }]} href={routes.home[language]}>{text["navigation.home"]}</a>
+		<a class:list={["transition-colors hover:text-clay", { "text-clay": page === "fiber" }]} href={routes.fiber[language]}>{text["navigation.fiber"]}</a>
+		<a class:list={["transition-colors hover:text-clay", { "text-clay": page === "organization" }]} href={routes.organization[language]}>{text["navigation.organization"]}</a>
+		<a class:list={["transition-colors hover:text-clay", { "text-clay": page === "contact" }]} href={routes.contact[language]}>{text["navigation.contact"]}</a>
 	</nav>
 
 	<nav aria-label={text["common.languageLabel"]} class="flex gap-2 text-xs font-bold tracking-widest">

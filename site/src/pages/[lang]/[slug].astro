@@ -17,32 +17,11 @@ export function getStaticPaths() {
 
 const { lang, page } = Astro.props as { lang: Language; page: ContentPage }
 const text = translations[lang]
-const pageTitles = {
-	fiber: text["fiber.pageTitle"],
-	organization: text["organization.pageTitle"],
-	contact: text["contact.pageTitle"],
-}
-const pageDescriptions = {
-	fiber: text["fiber.hero.body"],
-	organization: text["organization.hero.body"],
-	contact: text["contact.hero.body"],
-}
-const requirements = [
-	text["contact.requirements.1"],
-	text["contact.requirements.2"],
-	text["contact.requirements.3"],
-	text["contact.requirements.4"],
-]
-const purchaseSteps = [
-	{ title: text["contact.process.1.title"], body: text["contact.process.1.body"] },
-	{ title: text["contact.process.2.title"], body: text["contact.process.2.body"] },
-	{ title: text["contact.process.3.title"], body: text["contact.process.3.body"] },
-]
 const pageHeroClass = "grid gap-10 pt-10 pb-14 sm:pt-14 sm:pb-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:pt-16 lg:pb-24"
 const pageHeroImageClass = "block aspect-4/3 w-full object-cover"
 ---
 
-<BaseLayout language={lang} page={page} title={pageTitles[page]} description={pageDescriptions[page]}>
+<BaseLayout language={lang} page={page} title={text[`${page}.pageTitle`]} description={text[`${page}.hero.body`]}>
 	{page === "contact" ? (
 		<>
 			<section class={pageHeroClass}>
@@ -69,9 +48,10 @@ const pageHeroImageClass = "block aspect-4/3 w-full object-cover"
 					<div>
 						<p class="max-w-2xl text-lg leading-8">{text["contact.requirements.body"]}</p>
 						<ul class="mt-10 grid grid-cols-2 border-y border-earth/20 sm:grid-cols-4">
-							{requirements.map((item) => (
-								<li class="py-5 text-xs font-bold uppercase tracking-[0.16em] sm:text-center">{item}</li>
-							))}
+							<li class="py-5 text-xs font-bold uppercase tracking-[0.16em] sm:text-center">{text["contact.requirements.1"]}</li>
+							<li class="py-5 text-xs font-bold uppercase tracking-[0.16em] sm:text-center">{text["contact.requirements.2"]}</li>
+							<li class="py-5 text-xs font-bold uppercase tracking-[0.16em] sm:text-center">{text["contact.requirements.3"]}</li>
+							<li class="py-5 text-xs font-bold uppercase tracking-[0.16em] sm:text-center">{text["contact.requirements.4"]}</li>
 						</ul>
 					</div>
 				</div>
@@ -87,20 +67,28 @@ const pageHeroImageClass = "block aspect-4/3 w-full object-cover"
 				<div>
 					<p class="eyebrow">{text["contact.availability.eyebrow"]}</p>
 					<h2 class="section-title">{text["contact.availability.title"]}</h2>
-					<p class="body-copy">{text["contact.availability.body"]}</p>
+					<p class="mt-5 max-w-2xl text-[0.95rem] leading-[1.8] text-earth/68">{text["contact.availability.body"]}</p>
 				</div>
 			</section>
 
 			<section class="border-y border-earth/20 py-14 sm:py-20">
 				<p class="eyebrow">{text["contact.process.eyebrow"]}</p>
 				<div class="mt-10 grid gap-8 md:grid-cols-3">
-					{purchaseSteps.map((step, index) => (
-						<article class="border-t border-earth/30 pt-6">
-							<p class="text-xs font-bold text-clay">0{index + 1}</p>
-							<h2 class="mt-5 font-serif text-3xl">{step.title}</h2>
-							<p class="mt-4 text-sm leading-7 text-earth/75">{step.body}</p>
-						</article>
-					))}
+					<article class="border-t border-earth/30 pt-6">
+						<p class="text-xs font-bold text-clay">01</p>
+						<h2 class="mt-5 font-serif text-3xl">{text["contact.process.1.title"]}</h2>
+						<p class="mt-4 text-sm leading-7 text-earth/75">{text["contact.process.1.body"]}</p>
+					</article>
+					<article class="border-t border-earth/30 pt-6">
+						<p class="text-xs font-bold text-clay">02</p>
+						<h2 class="mt-5 font-serif text-3xl">{text["contact.process.2.title"]}</h2>
+						<p class="mt-4 text-sm leading-7 text-earth/75">{text["contact.process.2.body"]}</p>
+					</article>
+					<article class="border-t border-earth/30 pt-6">
+						<p class="text-xs font-bold text-clay">03</p>
+						<h2 class="mt-5 font-serif text-3xl">{text["contact.process.3.title"]}</h2>
+						<p class="mt-4 text-sm leading-7 text-earth/75">{text["contact.process.3.body"]}</p>
+					</article>
 				</div>
 			</section>
 
