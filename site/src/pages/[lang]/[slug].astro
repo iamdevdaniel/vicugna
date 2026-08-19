@@ -38,13 +38,15 @@ const purchaseSteps = [
 	{ title: text["contact.process.2.title"], body: text["contact.process.2.body"] },
 	{ title: text["contact.process.3.title"], body: text["contact.process.3.body"] },
 ]
+const pageHeroClass = "grid gap-10 pt-10 pb-14 sm:pt-14 sm:pb-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:pt-16 lg:pb-24"
+const pageHeroImageClass = "block aspect-4/3 w-full object-cover"
 ---
 
 <BaseLayout language={lang} page={page} title={pageTitles[page]} description={pageDescriptions[page]}>
 	{page === "contact" ? (
 		<>
-			<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:py-24">
-				<div class="lg:pb-8">
+			<section class={pageHeroClass}>
+				<div>
 					<p class="eyebrow">{text["contact.hero.eyebrow"]}</p>
 					<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{text["contact.hero.title"]}</h1>
 					<p class="mt-7 max-w-xl text-lg leading-8 text-earth/75">{text["contact.hero.body"]}</p>
@@ -54,7 +56,7 @@ const purchaseSteps = [
 					src={images["contact.hero"]}
 					alt={text["contact.hero.imageAlt"]}
 					fetchpriority="high"
-					class="aspect-4/3 h-full min-h-80 w-full object-cover"
+					class={pageHeroImageClass}
 				/>
 			</section>
 
@@ -118,13 +120,13 @@ const purchaseSteps = [
 		</>
 	) : page === "fiber" ? (
 		<>
-			<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:py-24">
-				<div class="lg:pb-8">
+			<section class={pageHeroClass}>
+				<div>
 					<p class="eyebrow">{text["fiber.hero.eyebrow"]}</p>
 					<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{text["fiber.hero.title"]}</h1>
 					<p class="mt-7 max-w-xl text-lg leading-8 text-earth/70">{text["fiber.hero.body"]}</p>
 				</div>
-				<img src={images["fiber.hero"]} alt={text["common.imageAlt"]} class="aspect-4/3 h-full min-h-80 w-full object-cover" />
+				<img src={images["fiber.hero"]} alt={text["common.imageAlt"]} class={pageHeroImageClass} />
 			</section>
 
 			<section class="grid overflow-hidden bg-earth text-canvas lg:grid-cols-2">
@@ -183,13 +185,13 @@ const purchaseSteps = [
 		</>
 	) : (
 		<>
-			<section class="grid gap-10 py-14 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:items-end lg:py-24">
-				<div class="lg:pb-8">
+			<section class={pageHeroClass}>
+				<div>
 					<p class="eyebrow">{text["organization.hero.eyebrow"]}</p>
 					<h1 class="mt-5 font-serif text-5xl leading-[1.02] sm:text-7xl">{text["organization.hero.title"]}</h1>
 					<p class="mt-7 max-w-xl text-lg leading-8 text-earth/70">{text["organization.hero.body"]}</p>
 				</div>
-				<img src={images["organization.hero"]} alt={text["common.imageAlt"]} class="aspect-16/10 h-full min-h-80 w-full object-cover" />
+				<img src={images["organization.hero"]} alt={text["common.imageAlt"]} class={pageHeroImageClass} />
 			</section>
 
 			<section class="border-y border-earth/20 py-16 sm:py-24">
