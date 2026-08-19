@@ -1,7 +1,7 @@
 ---
 import Footer from "../components/Footer.astro"
 import Header from "../components/Header.astro"
-import { images } from "../lib/content"
+import { images, translations } from "../lib/content"
 import type { Language, RouteName } from "../lib/routes"
 import "../styles/global.css"
 
@@ -13,6 +13,10 @@ type Props = {
 }
 
 const { language, page, title, description } = Astro.props
+const fullTitle = `${title} | ANMVB`
+const publicSiteUrl = Astro.site ?? Astro.url
+const pageUrl = new URL(Astro.url.pathname, publicSiteUrl)
+const previewImageUrl = new URL(images["home.hero"], publicSiteUrl)
 ---
 
 <!doctype html>
@@ -21,8 +25,22 @@ const { language, page, title, description } = Astro.props
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="description" content={description} />
+		<link rel="canonical" href={pageUrl} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="ANMVB" />
+		<meta property="og:locale" content={language === "es" ? "es_BO" : "en_US"} />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={pageUrl} />
+		<meta property="og:image" content={previewImageUrl} />
+		<meta property="og:image:alt" content={translations[language]["common.imageAlt"]} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={fullTitle} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={previewImageUrl} />
+		<meta name="twitter:image:alt" content={translations[language]["common.imageAlt"]} />
 		<link rel="icon" type="image/png" href={images.favicon} />
-		<title>{title} | ANMVB</title>
+		<title>{fullTitle}</title>
 	</head>
 	<body>
 		<div class="mx-auto min-h-screen max-w-[1600px] px-5 sm:px-8 lg:px-12">
