@@ -7,6 +7,7 @@ import express, {
 	type Request,
 	type Response,
 } from "express"
+import { rateLimit } from "express-rate-limit"
 import session from "express-session"
 import backendPackage from "../package.json"
 
@@ -18,11 +19,41 @@ import { mobileAuthRoutes } from "./modules/mobile-auth/mobile_auth.routes"
 export const app = express()
 const srcDir = path.resolve(__dirname, "..", "src")
 const PgSessionStore = connectPgSimple(session)
+const rateLimitMessage =
+	"Demasiadas solicitudes. Intenta de nuevo en un momento."
+
+function sendRateLimitResponse(req: Request, res: Response) {
+	if (req.accepts(["json", "html"]) === "html") {
+		res.status(429).send(rateLimitMessage)
+		return
+	}
+
+	res.status(429).json({ message: rateLimitMessage })
+}
+
+const globalRateLimiter = rateLimit({
+	windowMs: 60 * 1000,
+	limit: 300,
+	standardHeaders: "draft-8",
+	legacyHeaders: false,
+	handler: sendRateLimitResponse,
+})
+
+const loginRateLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	limit: 5,
+	standardHeaders: "draft-8",
+	legacyHeaders: false,
+	skipSuccessfulRequests: true,
+	handler: sendRateLimitResponse,
+})
 
 app.locals.faviconPath =
 	env.nodeEnv === "development" ? "/favicon-dev.png" : "/favicon.png"
 app.locals.appVersion = backendPackage.version
 app.set("trust proxy", 1)
+app.use(globalRateLimiter)
+app.post(["/admin/login", "/mobile/auth/login"], loginRateLimiter)
 app.use(cors())
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: false, limit: "10mb" }))
