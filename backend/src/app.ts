@@ -23,12 +23,36 @@ const rateLimitMessage =
 	"Demasiadas solicitudes. Intenta de nuevo en un momento."
 
 function sendRateLimitResponse(req: Request, res: Response) {
-	if (req.accepts(["json", "html"]) === "html") {
+	if (requestPrefersHtml(req)) {
 		res.status(429).send(rateLimitMessage)
 		return
 	}
 
 	res.status(429).json({ message: rateLimitMessage })
+}
+
+function requestPrefersHtml(req: Request) {
+	return req.accepts(["json", "html"]) === "html"
+}
+
+function sendErrorResponse(
+	req: Request,
+	res: Response,
+	statusCode: 403 | 404 | 500,
+) {
+	if (requestPrefersHtml(req)) {
+		res.status(statusCode).render("error", { statusCode })
+		return
+	}
+
+	const message =
+		statusCode === 403
+			? "Acceso prohibido"
+			: statusCode === 404
+				? "Ruta no encontrada"
+				: "Error interno del servidor"
+
+	res.status(statusCode).json({ message })
 }
 
 const globalRateLimiter = rateLimit({
@@ -106,4 +130,13 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
 	res.status(503).json({
 		message: "Base de datos no disponible. Intenta de nuevo en un momento.",
 	})
+})
+
+app.use((req: Request, res: Response) => {
+	sendErrorResponse(req, res, 404)
+})
+
+app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
+	console.error("Unhandled request error", error)
+	sendErrorResponse(req, res, 500)
 })
