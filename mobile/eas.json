@@ -1,9 +1,16 @@
 {
+  "cli": {
+    "version": "21.8.0",
+    "appVersionSource": "local"
+  },
   "build": {
     "production": {
-		"environment": "production",
-      	"distribution": "internal",
-      	"channel": "production"
+      "environment": "production",
+      "distribution": "internal",
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      }
     }
   }
 }

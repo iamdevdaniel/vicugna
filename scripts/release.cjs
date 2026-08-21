@@ -16,9 +16,9 @@ if (!validTargets.has(target) || !validBumps.has(bump)) {
 	process.exit(1);
 }
 
-function run(command, args, { capture = false } = {}) {
+function run(command, args, { capture = false, cwd = rootDir } = {}) {
 	const result = spawnSync(command, args, {
-		cwd: rootDir,
+		cwd,
 		encoding: "utf8",
 		stdio: capture ? "pipe" : "inherit",
 	});
@@ -193,57 +193,98 @@ function updateMobileVersion() {
 	const packageJson = readJson("mobile/package.json");
 	const appJson = readJson("mobile/app.json");
 	const packageLock = readJson("package-lock.json");
-	const gradlePath = path.join(rootDir, "mobile/android/app/build.gradle");
-	const gradle = fs.readFileSync(gradlePath, "utf8");
 	const currentVersion = packageJson.version;
+	const currentMajor = Number(currentVersion.split(".")[0]);
 
 	if (
 		appJson.expo.version !== currentVersion ||
-		!gradle.includes(`versionName "${currentVersion}"`)
+		appJson.expo.runtimeVersion !== String(currentMajor)
 	) {
 		throw new Error("Mobile version files are out of sync");
 	}
 
-	const versionCodeMatch = /versionCode\s+(\d+)/.exec(gradle);
-
-	if (!versionCodeMatch) {
-		throw new Error("Android versionCode was not found");
-	}
-
-	const gradleVersionCode = Number(versionCodeMatch[1]);
-	const expoVersionCode = appJson.expo.android?.versionCode;
-
-	if (expoVersionCode !== undefined && expoVersionCode !== gradleVersionCode) {
-		throw new Error("Mobile Android versionCode files are out of sync");
+	if (!Number.isInteger(appJson.expo.android.versionCode)) {
+		throw new Error("Mobile Android versionCode must be an integer");
 	}
 
 	const version = bumpVersion(currentVersion);
-	const versionCode = gradleVersionCode + 1;
+	const major = Number(version.split(".")[0]);
 
 	packageJson.version = version;
 	appJson.expo.version = version;
-	appJson.expo.android.versionCode = versionCode;
 	packageLock.packages.mobile.version = version;
+
+	if (bump === "major") {
+		appJson.expo.runtimeVersion = String(major);
+		appJson.expo.android.versionCode += 1;
+	}
 
 	writeJson("mobile/package.json", packageJson);
 	writeJson("mobile/app.json", appJson);
 	writeJson("package-lock.json", packageLock);
-	fs.writeFileSync(
-		gradlePath,
-		gradle
-			.replace(/versionCode\s+\d+/, `versionCode ${versionCode}`)
-			.replace(/versionName\s+"[^"]+"/, `versionName "${version}"`),
-	);
 
 	return {
 		version,
-		files: [
-			"mobile/package.json",
-			"mobile/app.json",
-			"mobile/android/app/build.gradle",
-			"package-lock.json",
-		],
+		files: ["mobile/package.json", "mobile/app.json", "package-lock.json"],
 	};
+}
+
+function getMobileReleaseBump() {
+	const previousPackage = JSON.parse(
+		gitOutput("show", "HEAD^:mobile/package.json"),
+	);
+	const currentVersion = getCurrentVersion().split(".").map(Number);
+	const previousVersion = previousPackage.version.split(".").map(Number);
+
+	if (currentVersion[0] !== previousVersion[0]) {
+		return "major";
+	}
+
+	if (currentVersion[1] !== previousVersion[1]) {
+		return "minor";
+	}
+
+	return "patch";
+}
+
+function publishMobileArtifact(version, releaseBump) {
+	const mobileDir = path.join(rootDir, "mobile");
+	const easArgs = ["--yes", "eas-cli@21.8.0"];
+
+	if (releaseBump === "major") {
+		run(
+			"npx",
+			[
+				...easArgs,
+				"build",
+				"--platform",
+				"android",
+				"--profile",
+				"production",
+				"--non-interactive",
+			],
+			{ cwd: mobileDir },
+		);
+		return;
+	}
+
+	run(
+		"npx",
+		[
+			...easArgs,
+			"update",
+			"--channel",
+			"production",
+			"--environment",
+			"production",
+			"--platform",
+			"android",
+			"--message",
+			`Mobile v${version}`,
+			"--non-interactive",
+		],
+		{ cwd: mobileDir },
+	);
 }
 
 function runChecks() {
@@ -272,6 +313,10 @@ function publishRelease(tag) {
 }
 
 try {
+	if (target === "mobile" && Number(process.versions.node.split(".")[0]) < 20) {
+		throw new Error("Mobile releases require Node 20 or newer; run: nvm use 22");
+	}
+
 	if (gitOutput("branch", "--show-current") !== "dev") {
 		throw new Error("Releases must be run from the dev branch");
 	}
@@ -290,6 +335,12 @@ try {
 
 	if (pendingRelease) {
 		runChecks();
+		if (target === "mobile" && !tagExists(pendingRelease.tag)) {
+			publishMobileArtifact(
+				pendingRelease.version,
+				getMobileReleaseBump(),
+			);
+		}
 		ensureReleaseTag(pendingRelease.tag, pendingRelease.version);
 		publishRelease(pendingRelease.tag);
 		console.log(`Released ${target} v${pendingRelease.version}`);
@@ -318,6 +369,9 @@ try {
 
 	run("git", ["add", ...release.files]);
 	run("git", ["commit", "-m", `chore(${target}): release v${release.version}`]);
+	if (target === "mobile") {
+		publishMobileArtifact(release.version, bump);
+	}
 	ensureReleaseTag(tag, release.version);
 	publishRelease(tag);
 
