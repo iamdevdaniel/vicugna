@@ -31,6 +31,15 @@
     "plugins": [
       "expo-router",
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/vicugna-splash-title.png",
+          "imageWidth": 192,
+          "resizeMode": "contain",
+          "backgroundColor": "#e9d8be"
+        }
+      ],
+      [
         "@morrowdigital/watermelondb-expo-plugin",
         {
           "disableJsi": true
