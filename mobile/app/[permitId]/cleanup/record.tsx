@@ -21,6 +21,7 @@ import {
 	useSingleDehearingActions,
 	useSingleGroomingActions,
 } from "@hooks"
+import { calculateTotalWeight } from "@utils/grooming-record-rules"
 import {
 	defaultValuesCleaningCommon,
 	defaultValuesDehearing,
@@ -38,7 +39,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 
 type CleaningType = "grooming" | "dehearing"
 
-export default function () {
+export default function CleaningRecordScreen() {
 	const router = useRouter()
 	const { permitId, recordId } = useLocalSearchParams<{
 		permitId: string
@@ -92,6 +93,8 @@ export default function () {
 		control: groomingControl,
 		getValues: getGroomingValues,
 		reset: resetGrooming,
+		setValue: setGroomingValue,
+		watch: watchGrooming,
 		formState: { errors: groomingErrors, isValid: isGroomingValid },
 		trigger: triggerGrooming,
 	} = useForm<GroomingFormData>({
@@ -99,6 +102,9 @@ export default function () {
 		defaultValues: defaultValuesGrooming,
 		resolver: yupResolver(yupGrooming),
 	})
+	const cleanWeight = watchGrooming("cleanWeight")
+	const dirtyWeight = watchGrooming("dirtyWeight")
+	const totalWeight = calculateTotalWeight(cleanWeight, dirtyWeight)
 
 	const {
 		control: dehearingControl,
@@ -135,6 +141,12 @@ export default function () {
 			totalWeight: groomingData.totalWeight.toString(),
 		})
 	}, [groomingData, resetGrooming])
+
+	useEffect(() => {
+		setGroomingValue("totalWeight", totalWeight, {
+			shouldValidate: totalWeight !== "",
+		})
+	}, [setGroomingValue, totalWeight])
 
 	useEffect(() => {
 		if (!dehearingData) {

@@ -305,7 +305,7 @@ export default function ShearingRecordScreen() {
 						<LabeledInput
 							label="Gestacion"
 							labelPrefix="7"
-							labelSuffix={
+							labelIcon={
 								gestationAllowed ? null : (
 									<Icon source="lock-outline" size={18} />
 								)
@@ -461,9 +461,7 @@ export default function ShearingRecordScreen() {
 						<LabeledInput
 							label="Esquilado"
 							labelPrefix="12"
-							labelSuffix={
-								<Icon source="lock-outline" size={18} />
-							}
+							labelIcon={<Icon source="lock-outline" size={18} />}
 							disabled={isPermitReadOnly}
 						>
 							<View pointerEvents="none">

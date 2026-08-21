@@ -4,7 +4,8 @@ import { Text, View } from "react-native"
 type LabeledInputProps = {
 	label: string
 	labelPrefix?: string
-	labelSuffix?: React.ReactNode
+	labelIcon?: React.ReactNode
+	labelSuffix?: string
 	error?: string
 	disabled?: boolean
 	children: React.ReactNode
@@ -13,6 +14,7 @@ type LabeledInputProps = {
 export function LabeledInput({
 	label,
 	labelPrefix,
+	labelIcon,
 	labelSuffix,
 	error,
 	disabled = false,
@@ -76,6 +78,7 @@ export function LabeledInput({
 					>
 						{label}
 					</Text>
+					{labelIcon}
 				</View>
 				{labelSuffix && (
 					<Text

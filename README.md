@@ -11,6 +11,9 @@
 
 ## Mobile
 
+- TODO: Send each permit and its field data to every assigned user, not only the
+  active/lead assignee. Keep permission to upload the completed permit limited
+  to the active/lead assignee.
 - TODO: Make related DAL data and status writes atomic. Currently, a data write
   can succeed before its status recalculation fails, leaving stale persisted
   statuses.

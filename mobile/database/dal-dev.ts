@@ -1,4 +1,5 @@
 import { type Model, Q } from "@nozbe/watermelondb"
+import { calculateTotalWeight } from "@utils/grooming-record-rules"
 import {
 	deriveIsSheared,
 	normalizeGestationStatus,
@@ -635,17 +636,17 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 
 		const cleaningSeeds = [
 			{
-				fleeceNumber: "V-001",
+				fleeceNumber: "1",
 				grossWeight: 3.4,
 				kind: "grooming" as const,
 			},
 			{
-				fleeceNumber: "V-002",
+				fleeceNumber: "2",
 				grossWeight: 3.1,
 				kind: "dehearing" as const,
 			},
 			{
-				fleeceNumber: "V-003",
+				fleeceNumber: "3",
 				grossWeight: 3.7,
 				kind: "grooming" as const,
 			},
@@ -668,14 +669,22 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 			cleaningCommonId,
 		] of seededCleaningCommonIds.entries()) {
 			if (cleaningSeeds[index].kind === "grooming") {
+				const cleanWeight = (24 + index * 2) / 10
+				const dirtyWeight = 0.5
+				const totalWeight = Number(
+					calculateTotalWeight(
+						cleanWeight.toString(),
+						dirtyWeight.toString(),
+					),
+				)
 				batchOps.push(
 					database
 						.get<GroomingModel>("grooming")
 						.prepareCreate((model) => {
 							model.cleaningCommonId = cleaningCommonId
-							model.cleanWeight = 2.4 + index * 0.2
-							model.dirtyWeight = 0.5
-							model.totalWeight = 2.9 + index * 0.2
+							model.cleanWeight = cleanWeight
+							model.dirtyWeight = dirtyWeight
+							model.totalWeight = totalWeight
 							model.isCompleted = true
 						}),
 				)

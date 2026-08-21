@@ -1,6 +1,6 @@
 import type { GroomingFormData } from "@definitions/types"
 import { type Control, Controller, type FieldErrors } from "react-hook-form"
-import { TextInput } from "react-native-paper"
+import { Icon, TextInput } from "react-native-paper"
 import { LabeledInput } from "../basics/LabeledInput"
 
 type GroomingFieldsProps = {
@@ -69,21 +69,18 @@ export function GroomingFields({
 			<LabeledInput
 				label="Peso total fibra"
 				labelPrefix={String(startIndex + 2)}
+				labelIcon={<Icon source="lock-outline" size={18} />}
 				labelSuffix="gramos"
-				error={errors.totalWeight?.message}
 				disabled={disabled}
 			>
 				<Controller
 					control={control}
 					name="totalWeight"
-					render={({ field: { onChange, onBlur, value } }) => (
+					render={({ field: { value } }) => (
 						<TextInput
 							mode="outlined"
 							value={value}
-							onChangeText={onChange}
-							onBlur={onBlur}
-							keyboardType="numeric"
-							error={!!errors.totalWeight}
+							editable={false}
 							disabled={disabled}
 						/>
 					)}

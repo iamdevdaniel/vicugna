@@ -15,6 +15,7 @@ import type {
 	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
+import { calculateTotalWeight } from "@utils/grooming-record-rules"
 import {
 	deriveIsSheared,
 	normalizeGestationStatus,
@@ -270,10 +271,13 @@ export function applyGroomingToModel(
 	data: GroomingFormData,
 	cleaningCommonId?: string,
 ): void {
+	const totalWeight = calculateTotalWeight(data.cleanWeight, data.dirtyWeight)
+	if (!totalWeight) throw new Error("Invalid grooming weights")
+
 	if (cleaningCommonId) model.cleaningCommonId = cleaningCommonId
 	model.cleanWeight = Number(data.cleanWeight)
 	model.dirtyWeight = Number(data.dirtyWeight)
-	model.totalWeight = Number(data.totalWeight)
+	model.totalWeight = Number(totalWeight)
 	model.isCompleted = true
 }
 

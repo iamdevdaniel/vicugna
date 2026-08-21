@@ -37,7 +37,7 @@ export const yupCleaningCommon: yup.ObjectSchema<CleaningCommonFormData> =
 export const yupGrooming: yup.ObjectSchema<GroomingFormData> = yup.object({
 	cleanWeight: yupRequiredPositiveNumericText(),
 	dirtyWeight: yupRequiredPositiveNumericText(),
-	totalWeight: yupRequiredPositiveNumericText(),
+	totalWeight: yup.string().defined(),
 })
 
 export const yupDehearing: yup.ObjectSchema<DehearingFormData> = yup.object({
