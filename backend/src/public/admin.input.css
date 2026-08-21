@@ -1,5 +1,57 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+	themes: false;
+}
+
+@plugin "daisyui/theme" {
+	name: "light";
+	default: true;
+	prefersdark: false;
+	color-scheme: light;
+	--color-base-100: #fffdf8;
+	--color-base-200: #f7f2e8;
+	--color-base-300: #e5dac9;
+	--color-base-content: #614731;
+	--color-primary: #86a679;
+	--color-primary-content: #f7f2e8;
+	--color-secondary: #d37e3b;
+	--color-secondary-content: #2a1c11;
+	--color-accent: #c5a275;
+	--color-accent-content: #2a1c11;
+	--color-neutral: #614731;
+	--color-neutral-content: #f7f2e8;
+	--color-info: #708791;
+	--color-info-content: #17120d;
+	--color-success: #758267;
+	--color-success-content: #17120d;
+	--color-warning: #c5a275;
+	--color-warning-content: #2a1c11;
+	--color-error: #a64f3d;
+	--color-error-content: #fff8f0;
+	--radius-selector: 0.5rem;
+	--radius-field: 0.5rem;
+	--radius-box: 0.75rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 0;
+}
+
+@theme {
+	--color-slate-300: #dbcdbb;
+	--color-slate-400: #b8a48c;
+	--color-slate-500: #806a55;
+	--color-slate-600: #765539;
+	--color-slate-700: #614731;
+	--color-slate-900: #2a1c11;
+	--color-sky-50: #f5ece1;
+	--color-sky-600: #a85f2d;
+	--color-sky-700: #884b23;
+	--color-emerald-100: #e3e7df;
+	--color-emerald-600: #59664f;
+	--color-emerald-700: #47523f;
+}
 
 @source "../views/**/*.ejs";
 @source "../modules/**/*.ts";
