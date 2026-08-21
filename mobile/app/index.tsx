@@ -37,32 +37,18 @@ export default function HomeScreen() {
 		})),
 	)
 	const { data: permits, loading } = useReadPermits()
-	const {
-		loadPermits,
-		loadingPermits,
-		error: permitError,
-		clearError: clearPermitError,
-	} = useLoadPermits()
+	const { loadPermits, loadingPermits } = useLoadPermits()
 
 	const hasPermits = permits.length > 0
 	const isPermitListLoading = loading || loadingPermits
 	const shouldShowPermitLoadCard =
 		isAuthenticated && !hasPermits && !loadingPermits
-	const permitLoadButtonLabel = permitError
-		? "Reintentar carga de permisos"
-		: "Cargar permisos"
-
 	const onManualRefresh = async () => {
 		if (loadingPermits || isRefreshCoolingDown) return
-
-		if (permitError) {
-			clearPermitError()
-		}
 
 		const result = await loadPermits()
 
 		if (!result.ok) {
-			clearPermitError()
 			setFeedback({ message: result.error, type: "error" })
 			return
 		}
@@ -79,9 +65,17 @@ export default function HomeScreen() {
 	}
 
 	useEffect(() => {
-		if (isAuthenticated) {
-			void loadPermits()
+		if (!isAuthenticated) return
+
+		const loadInitialPermits = async () => {
+			const result = await loadPermits()
+
+			if (!result.ok) {
+				setFeedback({ message: result.error, type: "error" })
+			}
 		}
+
+		void loadInitialPermits()
 	}, [isAuthenticated, loadPermits])
 
 	useEffect(() => {
@@ -129,26 +123,12 @@ export default function HomeScreen() {
 									: "Actualizar permisos"}
 							</Button>
 						) : null}
-						{permitError && hasPermits ? (
-							<Text style={{ color: theme.colors.error }}>
-								{permitError}
-							</Text>
-						) : null}
 						{shouldShowPermitLoadCard && (
 							<Card>
 								<Card.Content style={{ gap: 12 }}>
 									<Text variant="titleMedium">
 										Cargar permisos
 									</Text>
-									{permitError && (
-										<Text
-											style={{
-												color: theme.colors.error,
-											}}
-										>
-											{permitError}
-										</Text>
-									)}
 									<Button
 										mode="contained"
 										onPress={onManualRefresh}
@@ -158,7 +138,7 @@ export default function HomeScreen() {
 											isRefreshCoolingDown
 										}
 									>
-										{permitLoadButtonLabel}
+										Cargar permisos
 									</Button>
 								</Card.Content>
 							</Card>

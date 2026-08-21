@@ -7,7 +7,6 @@ type PermitLoadResult = { ok: true } | { ok: false; error: string }
 
 export function useLoadPermits() {
 	const [loadingPermits, setLoadingPermits] = useState(false)
-	const [error, setError] = useState<string | null>(null)
 	const isLoadRunning = useRef(false)
 	const token = useMobileAuthStore((state) => state.token)
 
@@ -21,13 +20,11 @@ export function useLoadPermits() {
 
 		if (!token) {
 			const message = "Sesión no disponible"
-			setError(message)
 			return { ok: false, error: message }
 		}
 
 		isLoadRunning.current = true
 		setLoadingPermits(true)
-		setError(null)
 
 		try {
 			const permits = await fetchPermits(token)
@@ -38,7 +35,6 @@ export function useLoadPermits() {
 				error instanceof Error
 					? error.message
 					: "No se pudieron cargar los permisos"
-			setError(message)
 			return { ok: false, error: message }
 		} finally {
 			isLoadRunning.current = false
@@ -46,12 +42,8 @@ export function useLoadPermits() {
 		}
 	}, [token])
 
-	const clearError = useCallback(() => setError(null), [])
-
 	return {
 		loadPermits,
 		loadingPermits,
-		error,
-		clearError,
 	}
 }
