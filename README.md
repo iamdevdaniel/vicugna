@@ -14,6 +14,13 @@
 - TODO: Make related DAL data and status writes atomic. Currently, a data write
   can succeed before its status recalculation fails, leaving stale persisted
   statuses.
+- TODO: Add bounded local diagnostic logs for mobile-only operational failures:
+  offline, request timeout, unreachable backend, invalid response, and unknown
+  client errors. Store structured entries with timestamp, operation, category,
+  safe technical details, and app version using `expo-file-system`; rotate or
+  delete old files at a fixed size/count limit. Never log tokens, passwords,
+  signatures, identity numbers, or request payloads. Decide later when and how
+  these logs are sent to the backend.
 
 ## Backend
 

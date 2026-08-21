@@ -1,30 +1,15 @@
 import type { MobilePermitData } from "@definitions/types"
-
-type MobilePermitsResponse = {
-	ok: boolean
-	data?: MobilePermitData[]
-	error?: string
-}
-
-const apiBaseUrl = process.env.EXPO_PUBLIC_BACKEND_URL
-
-if (!apiBaseUrl) {
-	throw new Error("Falta configurar la dirección del servidor")
-}
+import { requestBackend } from "./backend-request"
 
 export async function fetchPermits(token: string) {
-	const response = await fetch(`${apiBaseUrl}/mobile/permits`, {
-		method: "GET",
-		headers: {
-			Authorization: `Bearer ${token}`,
+	return requestBackend<MobilePermitData[]>(
+		"/mobile/permits",
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
 		},
-	})
-
-	const payload = (await response.json()) as MobilePermitsResponse
-
-	if (!response.ok || !payload.ok || !payload.data) {
-		throw new Error(payload.error ?? "No se pudieron cargar los permisos")
-	}
-
-	return payload.data
+		"No se pudieron cargar los permisos",
+	)
 }
