@@ -9,10 +9,19 @@
 					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
 						Administración Vicugna
 					</p>
-					<h1 class="text-3xl font-semibold text-slate-900">Asignaciones</h1>
-					<p class="mt-2 text-sm text-slate-500">
-						<%= adminUser.fullName %>
-					</p>
+					<div class="flex items-center gap-3">
+						<h1 class="text-3xl font-semibold text-slate-900">Asignaciones</h1>
+						<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-content">
+							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<rect width="8" height="4" x="8" y="2" rx="1" />
+								<path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-.5" />
+								<path d="M16 4h2a2 2 0 0 1 1.73 1" />
+								<path d="M8 18h1" />
+								<path d="M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" />
+							</svg>
+						</div>
+					</div>
+					<p class="mt-2 text-sm text-slate-500"><%= adminUser.fullName %></p>
 				</div>
 
 				<div class="flex items-center gap-3">
@@ -37,7 +46,7 @@
 						</label>
 
 						<div class="flex flex-wrap items-center gap-3 md:justify-end">
-							<div class="inline-flex items-center gap-2 rounded-full bg-base-200 px-3 py-2 text-sm font-medium text-slate-700">
+							<div class="inline-flex items-center gap-2 rounded-full bg-accent/25 px-3 py-2 text-sm font-medium text-neutral">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									width="18" height="18"
@@ -54,7 +63,7 @@
 								<span><%= communitiesWithPermitsCount %> comunidades</span>
 							</div>
 
-							<div class="inline-flex items-center gap-2 rounded-full bg-base-200 px-3 py-2 text-sm font-medium text-slate-700">
+							<div class="inline-flex items-center gap-2 rounded-full bg-accent/25 px-3 py-2 text-sm font-medium text-neutral">
 								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 									<path d="M14 2v5a1 1 0 0 0 1 1h5" />
 									<path d="M4 12v6" />
