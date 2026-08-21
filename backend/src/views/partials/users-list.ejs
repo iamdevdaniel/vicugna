@@ -5,7 +5,16 @@
 
 <section id="users-page" <% if (typeof useOobSwap !== "undefined" && useOobSwap) { %>hx-swap-oob="outerHTML"<% } %> class="card flex max-h-full min-h-0 w-full flex-col overflow-hidden bg-base-100 shadow">
 	<div class="shrink-0 border-b border-base-300 px-5 pt-5">
-		<h2 class="text-lg font-semibold text-slate-900">Usuarios registrados</h2>
+		<div class="flex min-h-12 items-center justify-between gap-4">
+			<h2 class="text-lg font-semibold text-slate-900">Usuarios registrados</h2>
+			<button type="button"
+				class="btn btn-primary"
+				x-show="activeUsersTab === 'users'"
+				x-cloak
+				@click="$refs.createUserForm.reset(); $refs.createUserForm.elements.password.value = ''; document.getElementById('create-user-modal-message').innerHTML = ''; isCreateModalOpen = true">
+				Nuevo encargado
+			</button>
+		</div>
 
 		<nav class="tabs tabs-border mt-5" aria-label="Tipos de usuario">
 			<a href="#users"
