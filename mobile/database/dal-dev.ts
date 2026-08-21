@@ -1,4 +1,8 @@
 import { type Model, Q } from "@nozbe/watermelondb"
+import {
+	deriveIsSheared,
+	normalizeGestationStatus,
+} from "@utils/shearing-record-rules"
 import { updatePermitSyncStatus } from "./dal-permit"
 import type {
 	CleaningCommonModel,
@@ -555,16 +559,27 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 
 		const shearingSeeds = Array.from({ length: 400 }, (_, index) => {
 			const recordNumber = index + 1
+			const sex = recordNumber % 2 === 0 ? ("M" as const) : ("F" as const)
+			const ageCategory =
+				recordNumber % 3 === 0
+					? ("Cria" as const)
+					: recordNumber % 3 === 1
+						? ("Juvenil" as const)
+						: ("Adulto" as const)
+			const gestationStatus = normalizeGestationStatus(
+				sex,
+				ageCategory,
+				recordNumber % 5 === 0
+					? "Si"
+					: recordNumber % 5 === 1
+						? "No"
+						: "Si ultimo tercio",
+			)
 
 			return {
 				tagNumber: 100 + recordNumber,
-				sex: recordNumber % 2 === 0 ? ("M" as const) : ("F" as const),
-				ageCategory:
-					recordNumber % 3 === 0
-						? ("Cria" as const)
-						: recordNumber % 3 === 1
-							? ("Juvenil" as const)
-							: ("Adulto" as const),
+				sex,
+				ageCategory,
 				liveWeight: 35 + (recordNumber % 18) + (recordNumber % 10) / 10,
 				fiberLength: 7 + (recordNumber % 5) + (recordNumber % 10) / 10,
 				bodyCondition:
@@ -573,12 +588,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 						: recordNumber % 3 === 1
 							? ("Regular" as const)
 							: ("Bueno" as const),
-				gestationStatus:
-					recordNumber % 4 === 0
-						? ("Si" as const)
-						: recordNumber % 4 === 1
-							? ("No" as const)
-							: ("Si ultimo tercio" as const),
+				gestationStatus,
 				externalParasites:
 					recordNumber % 3 === 0
 						? ("Garrapata" as const)
@@ -594,7 +604,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 								? ("Severo" as const)
 								: ("Ninguna" as const),
 				hasDandruff: recordNumber % 5 === 0,
-				isSheared: recordNumber % 6 !== 0,
+				isSheared: deriveIsSheared(ageCategory, gestationStatus),
 				isDead: recordNumber % 25 === 0,
 				observations: recordNumber % 10 === 0 ? "Con observacion" : "",
 			}

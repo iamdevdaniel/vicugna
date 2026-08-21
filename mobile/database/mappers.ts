@@ -15,6 +15,10 @@ import type {
 	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
+import {
+	deriveIsSheared,
+	normalizeGestationStatus,
+} from "@utils/shearing-record-rules"
 import type { PermitData as SyncPermitData } from "@vicugna/shared"
 import type {
 	CleaningCommonModel,
@@ -181,6 +185,12 @@ export function applyShearingRecordToModel(
 	data: ShearingRecordFormData,
 	permitId?: string,
 ): void {
+	const gestationStatus = normalizeGestationStatus(
+		data.sex,
+		data.ageCategory,
+		data.gestationStatus,
+	)
+
 	if (permitId) model.permitId = permitId
 	model.tagNumber = Number(data.tagNumber)
 	model.sex = data.sex
@@ -188,11 +198,11 @@ export function applyShearingRecordToModel(
 	model.liveWeight = Number(data.liveWeight)
 	model.fiberLength = Number(data.fiberLength)
 	model.bodyCondition = data.bodyCondition
-	model.gestationStatus = data.gestationStatus
+	model.gestationStatus = gestationStatus
 	model.externalParasites = data.externalParasites
 	model.mangeSeverity = data.mangeSeverity
 	model.hasDandruff = data.hasDandruff
-	model.isSheared = data.isSheared
+	model.isSheared = deriveIsSheared(data.ageCategory, gestationStatus)
 	model.isDead = data.isDead
 	model.observations = data.observations
 }

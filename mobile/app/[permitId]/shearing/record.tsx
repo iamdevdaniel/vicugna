@@ -13,6 +13,11 @@ import {
 	useSingleShearingRecordActions,
 } from "@hooks"
 import {
+	canHaveGestation,
+	deriveIsSheared,
+	normalizeGestationStatus,
+} from "@utils/shearing-record-rules"
+import {
 	defaultValuesShearingRecord,
 	yupShearingRecord,
 } from "@utils/yup-shearing-record"
@@ -20,11 +25,11 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button, TextInput } from "react-native-paper"
+import { Button, Icon, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // SHEARING.RECORD /[permitId]/shearing/record
-export default function () {
+export default function ShearingRecordScreen() {
 	const router = useRouter()
 	const { permitId, recordId } = useLocalSearchParams<{
 		permitId: string
@@ -47,6 +52,8 @@ export default function () {
 	const {
 		control,
 		reset,
+		setValue,
+		watch,
 		formState: { errors, isValid },
 		handleSubmit,
 	} = useForm<ShearingRecordFormData>({
@@ -54,11 +61,33 @@ export default function () {
 		defaultValues: defaultValuesShearingRecord,
 		resolver: yupResolver(yupShearingRecord),
 	})
+	const sex = watch("sex")
+	const ageCategory = watch("ageCategory")
+	const gestationStatus = watch("gestationStatus")
+	const gestationAllowed = canHaveGestation(sex, ageCategory)
+	const normalizedGestationStatus = normalizeGestationStatus(
+		sex,
+		ageCategory,
+		gestationStatus,
+	)
+	const shouldBeSheared = deriveIsSheared(
+		ageCategory,
+		normalizedGestationStatus,
+	)
 
 	useEffect(() => {
 		if (!data) return
 		reset(data)
 	}, [data, reset])
+
+	useEffect(() => {
+		if (gestationStatus !== normalizedGestationStatus) {
+			setValue("gestationStatus", normalizedGestationStatus, {
+				shouldValidate: true,
+			})
+		}
+		setValue("isSheared", shouldBeSheared, { shouldValidate: true })
+	}, [gestationStatus, normalizedGestationStatus, setValue, shouldBeSheared])
 
 	const onSubmit = async (formData: ShearingRecordFormData) => {
 		const ok = recordId
@@ -276,28 +305,41 @@ export default function () {
 						<LabeledInput
 							label="Gestacion"
 							labelPrefix="7"
+							labelSuffix={
+								gestationAllowed ? null : (
+									<Icon source="lock-outline" size={18} />
+								)
+							}
 							error={errors.gestationStatus?.message}
 							disabled={isPermitReadOnly}
 						>
-							<Controller
-								control={control}
-								name="gestationStatus"
-								render={({ field: { onChange, value } }) => (
-									<ToggleButtonGroup
-										value={value}
-										onChange={onChange}
-										options={[
-											{ label: "No", value: "No" },
-											{ label: "Si", value: "Si" },
-											{
-												label: "Si ultimo tercio",
-												value: "Si ultimo tercio",
-											},
-										]}
-										disabled={isPermitReadOnly}
-									/>
-								)}
-							/>
+							<View
+								pointerEvents={
+									gestationAllowed ? "auto" : "none"
+								}
+							>
+								<Controller
+									control={control}
+									name="gestationStatus"
+									render={({
+										field: { onChange, value },
+									}) => (
+										<ToggleButtonGroup
+											value={value}
+											onChange={onChange}
+											options={[
+												{ label: "No", value: "No" },
+												{ label: "Si", value: "Si" },
+												{
+													label: "Si ultimo tercio",
+													value: "Si ultimo tercio",
+												},
+											]}
+											disabled={isPermitReadOnly}
+										/>
+									)}
+								/>
+							</View>
 						</LabeledInput>
 
 						<LabeledInput
@@ -393,32 +435,8 @@ export default function () {
 						</LabeledInput>
 
 						<LabeledInput
-							label="Esquilado"
-							labelPrefix="11"
-							disabled={isPermitReadOnly}
-						>
-							<Controller
-								control={control}
-								name="isSheared"
-								render={({ field: { onChange, value } }) => (
-									<ToggleButtonGroup
-										value={value ? "Si" : "No"}
-										onChange={(val) =>
-											onChange(val === "Si")
-										}
-										options={[
-											{ label: "No", value: "No" },
-											{ label: "Si", value: "Si" },
-										]}
-										disabled={isPermitReadOnly}
-									/>
-								)}
-							/>
-						</LabeledInput>
-
-						<LabeledInput
 							label="Muerto"
-							labelPrefix="12"
+							labelPrefix="11"
 							disabled={isPermitReadOnly}
 						>
 							<Controller
@@ -438,6 +456,33 @@ export default function () {
 									/>
 								)}
 							/>
+						</LabeledInput>
+
+						<LabeledInput
+							label="Esquilado"
+							labelPrefix="12"
+							labelSuffix={
+								<Icon source="lock-outline" size={18} />
+							}
+							disabled={isPermitReadOnly}
+						>
+							<View pointerEvents="none">
+								<Controller
+									control={control}
+									name="isSheared"
+									render={({ field: { value } }) => (
+										<ToggleButtonGroup
+											value={value ? "Si" : "No"}
+											onChange={() => {}}
+											options={[
+												{ label: "No", value: "No" },
+												{ label: "Si", value: "Si" },
+											]}
+											disabled={isPermitReadOnly}
+										/>
+									)}
+								/>
+							</View>
 						</LabeledInput>
 
 						<LabeledInput

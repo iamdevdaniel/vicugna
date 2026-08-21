@@ -16,7 +16,7 @@ export const defaultValuesShearingRecord: ShearingRecordFormData = {
 	externalParasites: "Ninguno",
 	mangeSeverity: "Ninguna",
 	hasDandruff: false,
-	isSheared: false,
+	isSheared: true,
 	isDead: false,
 	observations: "",
 }

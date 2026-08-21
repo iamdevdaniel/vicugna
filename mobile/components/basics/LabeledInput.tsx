@@ -4,7 +4,7 @@ import { Text, View } from "react-native"
 type LabeledInputProps = {
 	label: string
 	labelPrefix?: string
-	labelSuffix?: string
+	labelSuffix?: React.ReactNode
 	error?: string
 	disabled?: boolean
 	children: React.ReactNode
@@ -57,18 +57,26 @@ export function LabeledInput({
 						</Text>
 					</View>
 				)}
-				<Text
+				<View
 					style={{
 						flex: 1,
-						textAlign: "left",
-						fontWeight: disabled ? "500" : "bold",
-						color: disabled
-							? theme.colors.onSurfaceVariant
-							: theme.colors.onSurface,
+						flexDirection: "row",
+						alignItems: "center",
+						gap: 6,
 					}}
 				>
-					{label}
-				</Text>
+					<Text
+						style={{
+							textAlign: "left",
+							fontWeight: disabled ? "500" : "bold",
+							color: disabled
+								? theme.colors.onSurfaceVariant
+								: theme.colors.onSurface,
+						}}
+					>
+						{label}
+					</Text>
+				</View>
 				{labelSuffix && (
 					<Text
 						style={{
