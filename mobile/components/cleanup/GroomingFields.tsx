@@ -67,9 +67,13 @@ export function GroomingFields({
 			</LabeledInput>
 
 			<LabeledInput
-				label="Peso total fibra"
+				label={
+					<>
+						Peso total fibra{" "}
+						<Icon source="lock-outline" size={18} />
+					</>
+				}
 				labelPrefix={String(startIndex + 2)}
-				labelIcon={<Icon source="lock-outline" size={18} />}
 				labelSuffix="gramos"
 				disabled={disabled}
 			>

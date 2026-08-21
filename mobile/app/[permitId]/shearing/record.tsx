@@ -303,13 +303,21 @@ export default function ShearingRecordScreen() {
 						</LabeledInput>
 
 						<LabeledInput
-							label="Gestacion"
-							labelPrefix="7"
-							labelIcon={
-								gestationAllowed ? null : (
-									<Icon source="lock-outline" size={18} />
-								)
+							label={
+								<>
+									Gestacion
+									{!gestationAllowed && (
+										<>
+											{" "}
+											<Icon
+												source="lock-outline"
+												size={18}
+											/>
+										</>
+									)}
+								</>
 							}
+							labelPrefix="7"
 							error={errors.gestationStatus?.message}
 							disabled={isPermitReadOnly}
 						>
@@ -459,9 +467,13 @@ export default function ShearingRecordScreen() {
 						</LabeledInput>
 
 						<LabeledInput
-							label="Esquilado"
+							label={
+								<>
+									Esquilado{" "}
+									<Icon source="lock-outline" size={18} />
+								</>
+							}
 							labelPrefix="12"
-							labelIcon={<Icon source="lock-outline" size={18} />}
 							disabled={isPermitReadOnly}
 						>
 							<View pointerEvents="none">
