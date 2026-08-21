@@ -3,87 +3,69 @@
 <%- include("../partials/admin-head", { pageTitle }) %>
 
 	<body class="min-h-screen bg-base-200 text-base-content">
-		<main class="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-5 py-12">
-			<section
-				class="card w-full max-w-md bg-base-100 shadow"
-				x-data="{ showHelp: false }">
-				<div class="card-body">
-					<p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">
-						Administración Vicugna
-					</p>
-					<h1 class="text-2xl font-semibold text-slate-900">Inicio de sesión</h1>
-					<p class="mt-2 text-sm text-slate-500">
-						Acceso de administración para asignación y seguimiento de permisos.
+		<main class="grid min-h-screen lg:grid-cols-[minmax(0,1.15fr)_minmax(28rem,.85fr)]" x-data="{ showHelp: false }">
+			<section class="relative min-h-72 overflow-hidden lg:min-h-screen">
+				<img src="/hero.webp" alt="Vicuñas en su entorno natural" class="absolute inset-0 h-full w-full object-cover" />
+				<div class="absolute inset-0 bg-linear-to-t from-neutral/80 via-neutral/20 to-transparent"></div>
+				<div class="absolute inset-x-0 bottom-0 p-8 text-neutral-content sm:p-12 lg:p-16">
+					<p class="text-xs font-bold uppercase tracking-[.3em] text-accent">ANMVB</p>
+					<h1 class="mt-3 text-4xl font-semibold sm:text-5xl">vicugna app</h1>
+				</div>
+			</section>
+
+			<section class="flex items-center justify-center bg-base-100 px-6 py-12 sm:px-12">
+				<div class="w-full max-w-sm">
+					<p class="text-xs font-bold uppercase tracking-wide text-slate-500">Acceso administrativo</p>
+					<h2 class="mt-2 text-3xl font-semibold text-slate-900">Inicio de sesión</h2>
+					<p class="mt-3 text-sm leading-6 text-slate-500">
+						Gestión de asignaciones y seguimiento de permisos.
 					</p>
 
-				<form method="post" action="/admin/login" class="flex flex-col gap-4" x-data="{showPassword: false}">
-					<% if (errorMessage) { %>
-						<div class="alert alert-error alert-soft">
-							<%= errorMessage %>
-						</div>
+					<form method="post" action="/admin/login" class="mt-8 flex flex-col gap-5" x-data="{ showPassword: false }">
+						<% if (errorMessage) { %>
+							<div class="alert alert-error alert-soft"><%= errorMessage %></div>
 						<% } %>
 
-							<label class="form-control">
-								<span class="label-text mb-2 font-semibold">Correo</span>
-								<input
-									class="input input-bordered w-full"
-									type="email" placeholder="correo@ejemplo.com" name="email" value="<%= email %>"
-									autocomplete="username" />
-							</label>
+						<label class="form-control">
+							<span class="label-text mb-2 font-semibold">Correo</span>
+							<input class="input input-bordered w-full" type="email" placeholder="correo@ejemplo.com"
+								name="email" value="<%= email %>" autocomplete="username" />
+						</label>
 
-							<label class="form-control">
-								<span class="label-text mb-2 font-semibold">Contraseña</span>
-								<div class="relative">
-									<input
-										class="input input-bordered w-full pr-12"
-										:type="showPassword ? 'text': 'password'" placeholder="********" name="password"
-										autocomplete="current-password" />
-									<button type="button" @click="showPassword = !showPassword"
-										class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
-										:aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
-										<span x-show="!showPassword">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-												viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-												stroke-linecap="round" stroke-linejoin="round"
-												class="lucide lucide-eye-icon lucide-eye">
-												<path
-													d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
-												<circle cx="12" cy="12" r="3" />
-											</svg>
-										</span>
-										<span x-show="showPassword">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-												viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-												stroke-linecap="round" stroke-linejoin="round"
-												class="lucide lucide-eye-off-icon lucide-eye-off">
-												<path
-													d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
-												<path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-												<path
-													d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
-												<path d="m2 2 20 20" />
-											</svg>
-										</span>
-									</button>
-								</div>
-							</label>
-
-							<div class="flex flex-col gap-3 pt-2 sm:flex-row">
-								<button type="submit"
-									class="btn btn-primary">
-									Entrar
-								</button>
-								<button type="button"
-									class="btn btn-outline btn-primary"
-									@click="showHelp = !showHelp">
-									Ayuda
+						<label class="form-control">
+							<span class="label-text mb-2 font-semibold">Contraseña</span>
+							<div class="relative">
+								<input class="input input-bordered w-full pr-12" :type="showPassword ? 'text' : 'password'"
+									placeholder="********" name="password" autocomplete="current-password" />
+								<button type="button" @click="showPassword = !showPassword"
+									class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-700"
+									:aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+									<span x-show="!showPassword">
+										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+											<circle cx="12" cy="12" r="3" />
+										</svg>
+									</span>
+									<span x-show="showPassword" x-cloak>
+										<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
+											<path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+											<path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />
+											<path d="m2 2 20 20" />
+										</svg>
+									</span>
 								</button>
 							</div>
-				</form>
+						</label>
 
-				<p class="mt-4 text-sm text-slate-500" x-show="showHelp" x-cloak>
-					La ayuda del acceso todavia es provisional.
-				</p>
+						<button type="submit" class="btn btn-primary mt-1 w-full">Entrar</button>
+					</form>
+
+					<button type="button" class="mt-5 text-sm font-medium text-primary hover:underline"
+						@click="showHelp = !showHelp">¿Necesita ayuda?</button>
+					<p class="mt-3 text-sm text-slate-500" x-show="showHelp" x-cloak>
+						La ayuda del acceso todavía es provisional.
+					</p>
 				</div>
 			</section>
 		</main>
