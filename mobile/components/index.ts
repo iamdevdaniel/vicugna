@@ -4,6 +4,11 @@ export { DateInput } from "./basics/DateInput"
 export { HeaderBreadcrumb } from "./basics/HeaderBreadcrumb"
 export { LabeledInput } from "./basics/LabeledInput"
 export { LoadingOverlay } from "./basics/LoadingOverlay"
+export {
+	MultiSelectButtonGroup,
+	MultiSelectButtonGroupProps,
+	MultiSelectOption,
+} from "./basics/MultiSelectButtonGroup"
 export { OverviewStep } from "./basics/OverviewStep"
 export { RadioGroup, RadioGroupProps, RadioOption } from "./basics/RadioGroup"
 export { ReadOnlyNotice } from "./basics/ReadOnlyNotice"
