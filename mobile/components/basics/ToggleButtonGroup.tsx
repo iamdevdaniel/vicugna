@@ -8,7 +8,7 @@ import {
 	View,
 	type ViewStyle,
 } from "react-native"
-import { SegmentedButtons } from "react-native-paper"
+import { Icon, SegmentedButtons } from "react-native-paper"
 
 export type ToggleOption = {
 	label: string
@@ -64,6 +64,8 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 							key={opt.value}
 							disabled={disabled}
 							onPress={() => onChange(opt.value)}
+							accessibilityRole="radio"
+							accessibilityState={{ checked: selected, disabled }}
 							style={[
 								styles.gridButton,
 								{
@@ -77,18 +79,35 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 								},
 							]}
 						>
-							<Text
-								style={[
-									styles.gridButtonLabel,
-									{
-										color: selected
-											? selectedTextColor
-											: theme.colors.onSurface,
-									},
-								]}
-							>
-								{opt.label}
-							</Text>
+							<View style={styles.gridButtonContent}>
+								<View style={styles.gridButtonIcon}>
+									<Icon
+										source={
+											selected
+												? "radiobox-marked"
+												: "radiobox-blank"
+										}
+										size={20}
+										color={
+											selected
+												? selectedTextColor
+												: theme.colors.onSurfaceVariant
+										}
+									/>
+								</View>
+								<Text
+									style={[
+										styles.gridButtonLabel,
+										{
+											color: selected
+												? selectedTextColor
+												: theme.colors.onSurface,
+										},
+									]}
+								>
+									{opt.label}
+								</Text>
+							</View>
 						</Pressable>
 					)
 				})}
@@ -104,7 +123,13 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 				buttons={options.map((opt) => ({
 					value: opt.value,
 					label: opt.label,
+					icon:
+						value === opt.value
+							? "radiobox-marked"
+							: "radiobox-blank",
 					disabled,
+					checkedColor: selectedTextColor,
+					uncheckedColor: theme.colors.onSurface,
 					showSelectedCheck: false,
 					style: {
 						backgroundColor:
@@ -155,9 +180,24 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingVertical: 6,
 	},
+	gridButtonContent: {
+		width: "100%",
+		position: "relative",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	gridButtonIcon: {
+		position: "absolute",
+		left: 4,
+		top: "50%",
+		transform: [{ translateY: -10 }],
+	},
 	gridButtonLabel: {
+		width: "100%",
 		fontSize: 14,
 		fontWeight: "600",
 		textAlign: "center",
+		paddingHorizontal: 28,
 	},
 })
