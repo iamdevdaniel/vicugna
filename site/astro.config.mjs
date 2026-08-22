@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config"
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
-	site: "https://vicugna-site.maydanachi.workers.dev",
+	site: "https://vicunabolivia.com",
 	devToolbar: {
 		enabled: false,
 	},
