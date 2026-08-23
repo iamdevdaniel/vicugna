@@ -21,6 +21,7 @@ const srcDir = path.resolve(__dirname, "..", "src")
 const PgSessionStore = connectPgSimple(session)
 const rateLimitMessage =
 	"Demasiadas solicitudes. Intenta de nuevo en un momento."
+const temporaryAndroidDownloadUrl = "meh.apk"
 
 function sendRateLimitResponse(req: Request, res: Response) {
 	if (requestPrefersHtml(req)) {
@@ -106,7 +107,10 @@ app.use("/mobile", mobileOutRoutes)
 app.use("/permits", mobileInRoutes)
 
 app.get("/", (_req: Request, res: Response) => {
-	res.redirect(302, "/admin/login")
+	res.render("app-home", {
+		pageTitle: "Vicugna App",
+		androidDownloadUrl: temporaryAndroidDownloadUrl,
+	})
 })
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {

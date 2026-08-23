@@ -1,5 +1,5 @@
 ---
-import { translations } from "../lib/content"
+import { links, translations } from "../lib/content"
 import { routes, type Language } from "../lib/routes"
 
 type Props = { language: Language }
@@ -15,8 +15,13 @@ const text = translations[language]
 			<p class="mt-3 max-w-xl text-sm text-earth/65">{text["footer.text"]}</p>
 			<p class="mt-5 max-w-2xl text-xs leading-5 text-earth/50">{text["footer.rights"]}</p>
 		</div>
-		<a href={routes.contact[language]} class="text-xs font-bold uppercase tracking-[0.18em] underline decoration-clay underline-offset-8">
-			{text["navigation.contact"]}
-		</a>
+		<div class="flex flex-col items-start gap-5 md:items-end">
+			<a href={routes.contact[language]} class="text-xs font-bold uppercase tracking-[0.18em] underline decoration-clay underline-offset-8">
+				{text["navigation.contact"]}
+			</a>
+			<a href={links.app} class="border border-earth/25 px-4 py-3 text-xs font-bold uppercase tracking-[0.16em] transition-colors hover:border-clay hover:text-clay">
+				{text["footer.appAccess"]}
+			</a>
+		</div>
 	</div>
 </footer>

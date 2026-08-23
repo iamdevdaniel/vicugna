@@ -15,6 +15,10 @@ export const images = {
 	"contact.closing": "/images/10.webp",
 } as const
 
+export const links = {
+	app: "https://app.vicunabolivia.com",
+} as const
+
 const es = {
 	"navigation.home": "Inicio",
 	"navigation.fiber": "Fibra de vicuña",
@@ -25,6 +29,7 @@ const es = {
 	"footer.title": "Fibra boliviana. Origen comunitario.",
 	"footer.text": "Asociación Nacional de Manejadores de Vicuña de Bolivia",
 	"footer.rights": "© 2026 ANMVB. Todos los derechos reservados. Las fotografías no pueden reproducirse ni utilizarse sin autorización escrita previa.",
+	"footer.appAccess": "Acceso a Vicugna App",
 	"home.pageTitle": "Inicio",
 	"home.hero.eyebrow": "Fibra de origen boliviano",
 	"home.hero.title": "La fibra más fina de los Andes, manejada por sus comunidades.",
@@ -122,6 +127,7 @@ const en = {
 	"footer.title": "Bolivian fiber, rooted in community.",
 	"footer.text": "National Association of Vicuña Management Communities of Bolivia",
 	"footer.rights": "© 2026 ANMVB. All rights reserved. Photographs may not be reproduced or used without prior written permission.",
+	"footer.appAccess": "Access Vicugna App",
 	"home.pageTitle": "Home",
 	"home.hero.eyebrow": "Fiber of Bolivian origin",
 	"home.hero.title": "The finest fiber in the Andes, managed by its communities.",
