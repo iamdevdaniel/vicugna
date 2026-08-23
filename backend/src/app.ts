@@ -106,7 +106,7 @@ app.use("/mobile", mobileOutRoutes)
 app.use("/permits", mobileInRoutes)
 
 app.get("/", (_req: Request, res: Response) => {
-	res.json({ message: "Vicugna backend is running" })
+	res.redirect(302, "/admin/login")
 })
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
