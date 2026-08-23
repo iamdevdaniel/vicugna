@@ -2,6 +2,7 @@ import {
 	CustomDeleteButton,
 	LabeledInput,
 	LoadingOverlay,
+	ReadOnlyField,
 	ReadOnlyNotice,
 	ToggleButtonGroup,
 } from "@components"
@@ -35,7 +36,8 @@ export default function ShearingRecordScreen() {
 		permitId: string
 		recordId?: string
 	}>()
-	const { data: permit } = useReadSinglePermit(permitId)
+	const { data: permit, loading: loadingPermit } =
+		useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const isEditForm = !!recordId
 	const { data, loading: loadingData } =
@@ -47,7 +49,8 @@ export default function ShearingRecordScreen() {
 		saving,
 		deleting,
 	} = useSingleShearingRecordActions()
-	const isWaitingForEditData = isEditForm && (loadingData || !data)
+	const isLoadingScreenData =
+		loadingPermit || (isEditForm && (loadingData || !data))
 
 	const {
 		control,
@@ -128,8 +131,95 @@ export default function ShearingRecordScreen() {
 
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-			{isWaitingForEditData ? (
+			{isLoadingScreenData ? (
 				<LoadingOverlay message="Cargando registro..." />
+			) : isPermitReadOnly && data ? (
+				<ScrollView
+					style={{ flex: 1 }}
+					contentContainerStyle={{
+						padding: 20,
+						paddingBottom: 20,
+					}}
+				>
+					<ReadOnlyNotice />
+					<ReadOnlyField
+						label="Número de arete"
+						labelPrefix="1"
+						value={data.tagNumber}
+					/>
+					<ReadOnlyField
+						label="Sexo"
+						labelPrefix="2"
+						value={data.sex === "F" ? "Hembra" : "Macho"}
+					/>
+					<ReadOnlyField
+						label="Edad"
+						labelPrefix="3"
+						value={
+							data.ageCategory === "Cria"
+								? "Cría"
+								: data.ageCategory
+						}
+					/>
+					<ReadOnlyField
+						label="Peso vivo"
+						labelPrefix="4"
+						labelSuffix="kg"
+						value={data.liveWeight}
+					/>
+					<ReadOnlyField
+						label="Longitud de fibra"
+						labelPrefix="5"
+						labelSuffix="cm"
+						value={data.fiberLength}
+					/>
+					<ReadOnlyField
+						label="Condición corporal"
+						labelPrefix="6"
+						value={data.bodyCondition}
+					/>
+					<ReadOnlyField
+						label="Gestación"
+						labelPrefix="7"
+						value={
+							data.gestationStatus === "Si ultimo tercio"
+								? "Sí, último tercio"
+								: data.gestationStatus === "Si"
+									? "Sí"
+									: data.gestationStatus
+						}
+					/>
+					<ReadOnlyField
+						label="Parásitos externos"
+						labelPrefix="8"
+						value={data.externalParasites}
+					/>
+					<ReadOnlyField
+						label="Sarna"
+						labelPrefix="9"
+						value={data.mangeSeverity}
+					/>
+					<ReadOnlyField
+						label="Caspa"
+						labelPrefix="10"
+						value={data.hasDandruff ? "Sí" : "No"}
+					/>
+					<ReadOnlyField
+						label="Muerto"
+						labelPrefix="11"
+						value={data.isDead ? "Sí" : "No"}
+					/>
+					<ReadOnlyField
+						label="Esquilado"
+						labelPrefix="12"
+						value={data.isSheared ? "Sí" : "No"}
+					/>
+					<ReadOnlyField
+						label="Observaciones"
+						labelPrefix="13"
+						value={data.observations}
+					/>
+				</ScrollView>
 			) : (
 				<KeyboardAvoidingView
 					style={{ flex: 1 }}
@@ -144,7 +234,6 @@ export default function ShearingRecordScreen() {
 						}}
 						keyboardShouldPersistTaps="handled"
 					>
-						{isPermitReadOnly && <ReadOnlyNotice />}
 						<LabeledInput
 							label="Número de arete"
 							labelPrefix="1"
@@ -539,7 +628,7 @@ export default function ShearingRecordScreen() {
 								disabled={
 									isPermitReadOnly ||
 									!isValid ||
-									isWaitingForEditData ||
+									isLoadingScreenData ||
 									saving ||
 									deleting
 								}

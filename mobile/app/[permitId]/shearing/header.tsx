@@ -1,4 +1,11 @@
-import { DateInput, LabeledInput, ReadOnlyNotice, TimeInput } from "@components"
+import {
+	DateInput,
+	LabeledInput,
+	LoadingOverlay,
+	ReadOnlyField,
+	ReadOnlyNotice,
+	TimeInput,
+} from "@components"
 import type { ShearingHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -23,7 +30,8 @@ export default function () {
 		permitId: string
 		headerId: string
 	}>()
-	const { data: permit } = useReadSinglePermit(permitId)
+	const { data: permit, loading: loadingPermit } =
+		useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const { data, loading } = useReadSingleShearingHeader(permitId)
 	const { updateShearingHeader, saving } = useSingleShearingHeaderActions()
@@ -89,6 +97,62 @@ export default function () {
 		}
 	}
 
+	if (loadingPermit || loading) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<LoadingOverlay message="Cargando información..." />
+			</SafeAreaView>
+		)
+	}
+
+	if (isPermitReadOnly && data) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<ScrollView
+					style={{ flex: 1 }}
+					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
+				>
+					<ReadOnlyNotice />
+					<ReadOnlyField
+						label="Sitio"
+						labelPrefix="1"
+						value={data.site}
+					/>
+					<ReadOnlyField
+						label="Latitud"
+						labelPrefix="2"
+						value={data.latitude.toString()}
+					/>
+					<ReadOnlyField
+						label="Longitud"
+						labelPrefix="3"
+						value={data.longitude.toString()}
+					/>
+					<ReadOnlyField
+						label="Cantidad de arreos"
+						labelPrefix="4"
+						value={data.roundupCount.toString()}
+					/>
+					<ReadOnlyField
+						label="Fecha"
+						labelPrefix="5"
+						value={data.eventDate}
+					/>
+					<ReadOnlyField
+						label="Hora inicial"
+						labelPrefix="6"
+						value={data.startTime}
+					/>
+					<ReadOnlyField
+						label="Hora conclusión"
+						labelPrefix="7"
+						value={data.endTime}
+					/>
+				</ScrollView>
+			</SafeAreaView>
+		)
+	}
+
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
 			<KeyboardAvoidingView
@@ -98,10 +162,12 @@ export default function () {
 			>
 				<ScrollView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
+					contentContainerStyle={{
+						padding: 20,
+						paddingBottom: 20,
+					}}
 					keyboardShouldPersistTaps="handled"
 				>
-					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Sitio"
 						labelPrefix="1"
@@ -271,7 +337,11 @@ export default function () {
 					</LabeledInput>
 
 					<View
-						style={{ flexDirection: "row", gap: 12, marginTop: 16 }}
+						style={{
+							flexDirection: "row",
+							gap: 12,
+							marginTop: 16,
+						}}
 					>
 						<Button
 							mode="contained"

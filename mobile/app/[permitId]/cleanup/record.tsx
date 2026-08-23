@@ -3,6 +3,8 @@ import {
 	DehearingFields,
 	GroomingFields,
 	LabeledInput,
+	LoadingOverlay,
+	ReadOnlyField,
 	ReadOnlyNotice,
 	ToggleButtonGroup,
 } from "@components"
@@ -47,13 +49,16 @@ export default function CleaningRecordScreen() {
 	}>()
 	const isEditForm = !!recordId
 	const [cleaningType, setCleaningType] = useState<CleaningType>("grooming")
-	const { data: permit } = useReadSinglePermit(permitId)
+	const { data: permit, loading: loadingPermit } =
+		useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 
 	const { data: commonData, loading: loadingCommon } =
 		useReadSingleCleaningCommon(recordId)
-	const { data: groomingData } = useReadSingleGrooming(recordId)
-	const { data: dehearingData } = useReadSingleDehearing(recordId)
+	const { data: groomingData, loading: loadingGrooming } =
+		useReadSingleGrooming(recordId)
+	const { data: dehearingData, loading: loadingDehearing } =
+		useReadSingleDehearing(recordId)
 
 	const {
 		createSingleCleaningCommon,
@@ -163,14 +168,20 @@ export default function CleaningRecordScreen() {
 		})
 	}, [dehearingData, resetDehearing])
 
-	const isWaitingForData = isEditForm && (loadingCommon || !commonData)
+	const isLoadingScreenData =
+		loadingPermit ||
+		(isEditForm &&
+			(loadingCommon ||
+				loadingGrooming ||
+				loadingDehearing ||
+				!commonData))
 	const saving = savingCommon || savingGrooming || savingDehearing
 	const deleting = deletingCommon || deletingGrooming || deletingDehearing
 	const saveDisabled =
 		isPermitReadOnly ||
 		saving ||
 		deleting ||
-		isWaitingForData ||
+		isLoadingScreenData ||
 		!isCommonValid ||
 		(cleaningType === "grooming" ? !isGroomingValid : !isDehearingValid)
 	const saveLabel =
@@ -294,6 +305,105 @@ export default function CleaningRecordScreen() {
 		)
 	}
 
+	if (isLoadingScreenData) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<LoadingOverlay message="Cargando registro..." />
+			</SafeAreaView>
+		)
+	}
+
+	if (isPermitReadOnly && commonData) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<ScrollView
+					style={{ flex: 1 }}
+					contentContainerStyle={{
+						padding: 20,
+						paddingBottom: 20,
+					}}
+				>
+					<ReadOnlyNotice />
+					<ReadOnlyField
+						label="Tipo"
+						labelPrefix="1"
+						value={
+							groomingData
+								? "Limpiado"
+								: dehearingData
+									? "Predescerdado"
+									: ""
+						}
+					/>
+					<ReadOnlyField
+						label="Nro. de vellón"
+						labelPrefix="2"
+						value={commonData.fleeceNumber}
+					/>
+					<ReadOnlyField
+						label="Peso bruto"
+						labelPrefix="3"
+						labelSuffix="gramos"
+						value={commonData.grossWeight.toString()}
+					/>
+					{groomingData ? (
+						<>
+							<ReadOnlyField
+								label="Peso vellón limpio"
+								labelPrefix="4"
+								labelSuffix="gramos"
+								value={groomingData.cleanWeight.toString()}
+							/>
+							<ReadOnlyField
+								label="Peso braga"
+								labelPrefix="5"
+								labelSuffix="gramos"
+								value={groomingData.dirtyWeight.toString()}
+							/>
+							<ReadOnlyField
+								label="Peso total fibra"
+								labelPrefix="6"
+								labelSuffix="gramos"
+								value={groomingData.totalWeight.toString()}
+							/>
+						</>
+					) : dehearingData ? (
+						<>
+							<ReadOnlyField
+								label="Peso fibra predescerdada"
+								labelPrefix="4"
+								labelSuffix="gramos"
+								value={dehearingData.dehairedWeight.toString()}
+							/>
+							<ReadOnlyField
+								label="Peso cerda"
+								labelPrefix="5"
+								labelSuffix="gramos"
+								value={dehearingData.bristleWeight.toString()}
+							/>
+							<ReadOnlyField
+								label="Caspa"
+								labelPrefix="6"
+								value={dehearingData.hasDandruff ? "Sí" : "No"}
+							/>
+							<ReadOnlyField
+								label="Nombre del predescerdador (a)"
+								labelPrefix="7"
+								value={dehearingData.dehairerName}
+							/>
+							<ReadOnlyField
+								label="Firma"
+								labelPrefix="8"
+								value={dehearingData.signature}
+								valueType="signature"
+							/>
+						</>
+					) : null}
+				</ScrollView>
+			</SafeAreaView>
+		)
+	}
+
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
 			<KeyboardAvoidingView
@@ -310,7 +420,6 @@ export default function CleaningRecordScreen() {
 					}}
 					keyboardShouldPersistTaps="handled"
 				>
-					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Tipo"
 						labelPrefix="1"

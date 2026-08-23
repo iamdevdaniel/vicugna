@@ -17,6 +17,11 @@ import type {
 } from "./models"
 import { database } from "./setup"
 
+const DEV_SIGNATURE = JSON.stringify([
+	"M 30 64 C 43 22 58 23 67 65 C 74 89 87 38 101 47 C 114 56 119 75 133 67 C 148 58 154 35 166 46 C 178 57 184 73 198 64 C 213 54 220 38 232 49 C 244 60 253 68 276 53",
+	"M 35 82 C 102 76 184 84 284 75",
+])
+
 export async function clearPermitFieldData(permitId: string): Promise<void> {
 	await database.write(async () => {
 		const participants = await database
@@ -552,7 +557,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 						model.lastNames = seed.lastNames
 						model.gender = seed.gender
 						model.identityNumber = seed.identityNumber
-						model.signature = `${seed.name} ${seed.lastNames}`
+						model.signature = DEV_SIGNATURE
 						model.notes = ""
 					}),
 			)
@@ -698,7 +703,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 							model.bristleWeight = 0.6
 							model.hasDandruff = false
 							model.dehairerName = "Equipo local"
-							model.signature = "Equipo local"
+							model.signature = DEV_SIGNATURE
 							model.isCompleted = true
 						}),
 				)

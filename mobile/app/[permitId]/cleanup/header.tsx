@@ -1,4 +1,10 @@
-import { DateInput, LabeledInput, ReadOnlyNotice } from "@components"
+import {
+	DateInput,
+	LabeledInput,
+	LoadingOverlay,
+	ReadOnlyField,
+	ReadOnlyNotice,
+} from "@components"
 import type { CleaningHeaderFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -20,7 +26,8 @@ import { SafeAreaView } from "react-native-safe-area-context"
 export default function () {
 	const router = useRouter()
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
-	const { data: permit } = useReadSinglePermit(permitId)
+	const { data: permit, loading: loadingPermit } =
+		useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const { data, loading } = useReadSingleCleaningHeader(permitId)
 	const { updateSingleCleaningHeader, saving } =
@@ -57,6 +64,47 @@ export default function () {
 		}
 	}
 
+	if (loadingPermit || loading) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<LoadingOverlay message="Cargando información..." />
+			</SafeAreaView>
+		)
+	}
+
+	if (isPermitReadOnly && data) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<ScrollView
+					style={{ flex: 1 }}
+					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
+				>
+					<ReadOnlyNotice />
+					<ReadOnlyField
+						label="Fecha inicio"
+						labelPrefix="1"
+						value={data.startDate}
+					/>
+					<ReadOnlyField
+						label="Fecha conclusión"
+						labelPrefix="2"
+						value={data.endDate}
+					/>
+					<ReadOnlyField
+						label="Lugar"
+						labelPrefix="3"
+						value={data.site}
+					/>
+					<ReadOnlyField
+						label="Responsables"
+						labelPrefix="4"
+						value={data.supervisors}
+					/>
+				</ScrollView>
+			</SafeAreaView>
+		)
+	}
+
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
 			<KeyboardAvoidingView
@@ -66,10 +114,12 @@ export default function () {
 			>
 				<ScrollView
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 20, paddingBottom: 20 }}
+					contentContainerStyle={{
+						padding: 20,
+						paddingBottom: 20,
+					}}
 					keyboardShouldPersistTaps="handled"
 				>
-					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Fecha inicio"
 						labelPrefix="1"
@@ -161,7 +211,11 @@ export default function () {
 					</LabeledInput>
 
 					<View
-						style={{ flexDirection: "row", gap: 12, marginTop: 16 }}
+						style={{
+							flexDirection: "row",
+							gap: 12,
+							marginTop: 16,
+						}}
 					>
 						<Button
 							mode="contained"

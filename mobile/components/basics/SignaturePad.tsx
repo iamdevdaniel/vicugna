@@ -1,6 +1,6 @@
 import type { SkPath } from "@shopify/react-native-skia"
-import { Canvas, Path, Skia } from "@shopify/react-native-skia"
-import { useEffect, useRef, useState } from "react"
+import { Canvas, Group, Path, Skia } from "@shopify/react-native-skia"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { IconButton, useTheme } from "react-native-paper"
@@ -12,6 +12,61 @@ type SignaturePadProps = {
 }
 
 type PathEntry = { id: string; path: SkPath }
+
+function parseSignature(value: string): PathEntry[] {
+	if (!value) return []
+
+	try {
+		const svgStrings: string[] = JSON.parse(value)
+		return svgStrings
+			.map((svg) => Skia.Path.MakeFromSVGString(svg))
+			.filter((path): path is SkPath => path !== null)
+			.map((path, index) => ({ id: `signature-path-${index}`, path }))
+	} catch {
+		return []
+	}
+}
+
+export function SignaturePreview({ value }: { value: string }) {
+	const theme = useTheme()
+	const paths = useMemo(() => parseSignature(value), [value])
+	const [width, setWidth] = useState(0)
+	const scale = width / 320
+
+	return (
+		<View
+			onLayout={({ nativeEvent }) => setWidth(nativeEvent.layout.width)}
+			style={{
+				borderWidth: 1,
+				borderColor: theme.colors.outlineVariant,
+				borderRadius: 4,
+				overflow: "hidden",
+			}}
+		>
+			<Canvas
+				style={{
+					width: "100%",
+					aspectRatio: 3.2,
+					backgroundColor: "white",
+				}}
+			>
+				<Group transform={[{ scale }]}>
+					{paths.map(({ id, path }) => (
+						<Path
+							key={id}
+							path={path}
+							strokeWidth={2}
+							color="black"
+							style="stroke"
+							strokeJoin="round"
+							strokeCap="round"
+						/>
+					))}
+				</Group>
+			</Canvas>
+		</View>
+	)
+}
 
 export function SignaturePad({
 	value,
@@ -32,19 +87,7 @@ export function SignaturePad({
 			setCompletedPaths([])
 			return
 		}
-		try {
-			const svgStrings: string[] = JSON.parse(value)
-			const loaded = svgStrings
-				.map((s) => Skia.Path.MakeFromSVGString(s))
-				.filter((p): p is SkPath => p !== null)
-				.map((path) => ({
-					id: Math.random().toString(36).substring(7),
-					path,
-				}))
-			setCompletedPaths(loaded)
-		} catch {
-			// not valid JSON, ignore
-		}
+		setCompletedPaths(parseSignature(value))
 	}, [value])
 
 	const gesture = Gesture.Pan()

@@ -1,6 +1,8 @@
 import {
 	CustomDeleteButton,
 	LabeledInput,
+	LoadingOverlay,
+	ReadOnlyField,
 	ReadOnlyNotice,
 	SignaturePad,
 	ToggleButtonGroup,
@@ -30,7 +32,8 @@ export default function () {
 		permitId: string
 		participantId: string
 	}>()
-	const { data: permit } = useReadSinglePermit(permitId)
+	const { data: permit, loading: loadingPermit } =
+		useReadSinglePermit(permitId)
 	const { data, loading } = useReadSingleParticipant(participantId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const {
@@ -43,6 +46,8 @@ export default function () {
 
 	const isEditForm = participantId !== "new"
 	const isDeleteDisabled = isPermitReadOnly || saving || deleting
+	const isLoadingScreenData =
+		loadingPermit || (isEditForm && (loading || !data))
 
 	const {
 		control,
@@ -103,6 +108,58 @@ export default function () {
 		)
 	}
 
+	if (isLoadingScreenData) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<LoadingOverlay message="Cargando participante..." />
+			</SafeAreaView>
+		)
+	}
+
+	if (isPermitReadOnly && data) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<ScrollView
+					style={{ flex: 1 }}
+					contentContainerStyle={{ padding: 20 }}
+				>
+					<ReadOnlyNotice />
+					<ReadOnlyField
+						label="Nombre"
+						labelPrefix="1"
+						value={data.name}
+					/>
+					<ReadOnlyField
+						label="Apellidos"
+						labelPrefix="2"
+						value={data.lastNames}
+					/>
+					<ReadOnlyField
+						label="Género"
+						labelPrefix="3"
+						value={data.gender === "F" ? "Femenino" : "Masculino"}
+					/>
+					<ReadOnlyField
+						label="Cédula de identidad"
+						labelPrefix="4"
+						value={data.identityNumber}
+					/>
+					<ReadOnlyField
+						label="Firma"
+						labelPrefix="5"
+						value={data.signature}
+						valueType="signature"
+					/>
+					<ReadOnlyField
+						label="Notas"
+						labelPrefix="6"
+						value={data.notes}
+					/>
+				</ScrollView>
+			</SafeAreaView>
+		)
+	}
+
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
 			<KeyboardAvoidingView
@@ -115,7 +172,6 @@ export default function () {
 					contentContainerStyle={{ padding: 20 }}
 					keyboardShouldPersistTaps="handled"
 				>
-					{isPermitReadOnly && <ReadOnlyNotice />}
 					<LabeledInput
 						label="Nombre"
 						labelPrefix="1"
