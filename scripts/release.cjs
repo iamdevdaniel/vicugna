@@ -111,11 +111,8 @@ function tagExists(tag) {
 	return result.status === 0;
 }
 
-function tagPointsToHead(tag) {
-	return (
-		tagExists(tag) &&
-		gitOutput("rev-list", "-n", "1", tag) === gitOutput("rev-parse", "HEAD")
-	);
+function tagPointsToCommit(tag, commit) {
+	return tagExists(tag) && gitOutput("rev-list", "-n", "1", tag) === commit;
 }
 
 function gitIsAncestor(ancestor, descendant) {
@@ -139,18 +136,46 @@ function getReleaseAtHead() {
 	const version = getCurrentVersion();
 	const tag = `${target}-v${version}`;
 	const expectedMessage = `chore(${target}): release v${version}`;
+	const commit = gitOutput("rev-parse", "HEAD");
 
 	if (gitOutput("log", "-1", "--format=%s") === expectedMessage) {
-		return { version, tag };
+		return { version, tag, commit };
 	}
 
 	return null;
 }
 
+function getLatestReleaseForCurrentVersion() {
+	const version = getCurrentVersion();
+	const tag = `${target}-v${version}`;
+	const expectedMessage = `chore(${target}): release v${version}`;
+	const commit = gitOutput(
+		"log",
+		"-1",
+		"--format=%H",
+		"--fixed-strings",
+		`--grep=${expectedMessage}`,
+		"HEAD",
+	);
+
+	if (
+		!commit ||
+		gitOutput("log", "-1", "--format=%s", commit) !== expectedMessage
+	) {
+		return null;
+	}
+
+	const packageJson = JSON.parse(
+		gitOutput("show", `${commit}:${target}/package.json`),
+	);
+
+	return packageJson.version === version ? { version, tag, commit } : null;
+}
+
 function getCompletedRelease() {
 	const release = getReleaseAtHead();
 
-	if (!release || !tagPointsToHead(release.tag)) {
+	if (!release || !tagPointsToCommit(release.tag, release.commit)) {
 		return null;
 	}
 
@@ -169,25 +194,31 @@ function getCompletedRelease() {
 }
 
 function getPendingRelease() {
-	const release = getReleaseAtHead();
+	const release =
+		getReleaseAtHead() ??
+		(target === "mobile" ? getLatestReleaseForCurrentVersion() : null);
 
-	if (release && gitIsAncestor("origin/dev", "HEAD")) {
-		return release;
+	if (!release || !gitIsAncestor("origin/dev", "HEAD")) {
+		return null;
 	}
 
-	return null;
+	const head = gitOutput("rev-parse", "HEAD");
+	const completedEarlierRelease =
+		release.commit !== head && tagPointsToCommit(release.tag, release.commit);
+
+	return completedEarlierRelease ? null : release;
 }
 
-function ensureReleaseTag(tag, version) {
+function ensureReleaseTag(tag, version, commit) {
 	if (tagExists(tag)) {
-		if (!tagPointsToHead(tag)) {
+		if (!tagPointsToCommit(tag, commit)) {
 			throw new Error(`Tag points to another commit: ${tag}`);
 		}
 
 		return;
 	}
 
-	run("git", ["tag", "-a", tag, "-m", `${target} v${version}`]);
+	run("git", ["tag", "-a", tag, commit, "-m", `${target} v${version}`]);
 }
 
 function updateBackendVersion() {
@@ -248,11 +279,14 @@ function updateMobileVersion() {
 	};
 }
 
-function getMobileReleaseBump() {
+function getMobileReleaseBump(commit = gitOutput("rev-parse", "HEAD")) {
 	const previousPackage = JSON.parse(
-		gitOutput("show", "HEAD^:mobile/package.json"),
+		gitOutput("show", `${commit}^:mobile/package.json`),
 	);
-	const currentVersion = getCurrentVersion().split(".").map(Number);
+	const currentPackage = JSON.parse(
+		gitOutput("show", `${commit}:mobile/package.json`),
+	);
+	const currentVersion = currentPackage.version.split(".").map(Number);
 	const previousVersion = previousPackage.version.split(".").map(Number);
 
 	if (currentVersion[0] !== previousVersion[0]) {
@@ -301,7 +335,7 @@ function getGitHubRelease(tag) {
 	return JSON.parse(result.stdout);
 }
 
-function listMobileBuilds() {
+function listMobileBuilds(commit = gitOutput("rev-parse", "HEAD")) {
 	const mobileDir = path.join(rootDir, "mobile");
 	const output = run(
 		"npx",
@@ -314,7 +348,7 @@ function listMobileBuilds() {
 			"--build-profile",
 			"production",
 			"--git-commit-hash",
-			gitOutput("rev-parse", "HEAD"),
+			commit,
 			"--limit",
 			"10",
 			"--json",
@@ -325,7 +359,7 @@ function listMobileBuilds() {
 	return JSON.parse(output);
 }
 
-function findCompletedMobileBuild(builds = listMobileBuilds()) {
+function findCompletedMobileBuild(builds) {
 	return builds.find((build) => build.status === "FINISHED") ?? null;
 }
 
@@ -335,9 +369,9 @@ function findActiveMobileBuild(builds) {
 	);
 }
 
-function downloadMobileArtifact() {
+function downloadMobileArtifact(commit) {
 	const mobileDir = path.join(rootDir, "mobile");
-	const build = findCompletedMobileBuild();
+	const build = findCompletedMobileBuild(listMobileBuilds(commit));
 
 	if (!build) {
 		throw new Error(
@@ -365,7 +399,7 @@ function downloadMobileArtifact() {
 	return artifact.path;
 }
 
-function publishMobileGitHubRelease(version, tag) {
+function publishMobileGitHubRelease(version, tag, commit) {
 	assertGitHubReleaseAccess();
 	const existingRelease = getGitHubRelease(tag);
 
@@ -375,7 +409,7 @@ function publishMobileGitHubRelease(version, tag) {
 		return;
 	}
 
-	const artifactPath = downloadMobileArtifact();
+	const artifactPath = downloadMobileArtifact(commit);
 	const artifactDir = fs.mkdtempSync(
 		path.join(os.tmpdir(), "vicugna-release-"),
 	);
@@ -406,12 +440,12 @@ function publishMobileGitHubRelease(version, tag) {
 	}
 }
 
-function publishMobileArtifact(version, releaseBump) {
+function publishMobileArtifact(version, releaseBump, commit) {
 	const mobileDir = path.join(rootDir, "mobile");
 	const easArgs = ["--yes", "eas-cli@21.8.0"];
 
 	if (mobileApkBumps.has(releaseBump)) {
-		const builds = listMobileBuilds();
+		const builds = listMobileBuilds(commit);
 
 		if (findCompletedMobileBuild(builds)) {
 			return;
@@ -498,14 +532,20 @@ try {
 
 	assertCleanWorktree();
 	run("git", ["fetch", "--tags", "origin", "main", "dev"]);
+	run("git", ["merge", "--ff-only", "origin/dev"]);
+	assertCleanWorktree();
 
 	const completedRelease = getCompletedRelease();
 
 	if (completedRelease) {
-		if (target === "mobile" && mobileApkBumps.has(getMobileReleaseBump())) {
+		if (
+			target === "mobile" &&
+			mobileApkBumps.has(getMobileReleaseBump(completedRelease.commit))
+		) {
 			publishMobileGitHubRelease(
 				completedRelease.version,
 				completedRelease.tag,
+				completedRelease.commit,
 			);
 		}
 		console.log(`Already released ${target} v${completedRelease.version}`);
@@ -516,24 +556,34 @@ try {
 
 	if (pendingRelease) {
 		runChecks();
-		const releaseBump = target === "mobile" ? getMobileReleaseBump() : null;
+		const releaseBump =
+			target === "mobile" ? getMobileReleaseBump(pendingRelease.commit) : null;
 		if (target === "mobile" && mobileApkBumps.has(releaseBump)) {
 			assertGitHubReleaseAccess();
 		}
 		if (target === "mobile" && !tagExists(pendingRelease.tag)) {
-			publishMobileArtifact(pendingRelease.version, releaseBump);
+			publishMobileArtifact(
+				pendingRelease.version,
+				releaseBump,
+				pendingRelease.commit,
+			);
 		}
-		ensureReleaseTag(pendingRelease.tag, pendingRelease.version);
+		ensureReleaseTag(
+			pendingRelease.tag,
+			pendingRelease.version,
+			pendingRelease.commit,
+		);
 		publishRelease(pendingRelease.tag);
 		if (target === "mobile" && mobileApkBumps.has(releaseBump)) {
-			publishMobileGitHubRelease(pendingRelease.version, pendingRelease.tag);
+			publishMobileGitHubRelease(
+				pendingRelease.version,
+				pendingRelease.tag,
+				pendingRelease.commit,
+			);
 		}
 		console.log(`Released ${target} v${pendingRelease.version}`);
 		process.exit(0);
 	}
-
-	run("git", ["merge", "--ff-only", "origin/dev"]);
-	assertCleanWorktree();
 
 	if (target === "backend") {
 		run("git", ["merge-base", "--is-ancestor", "origin/main", "HEAD"]);
@@ -557,13 +607,14 @@ try {
 
 	run("git", ["add", ...release.files]);
 	run("git", ["commit", "-m", `chore(${target}): release v${release.version}`]);
+	const releaseCommit = gitOutput("rev-parse", "HEAD");
 	if (target === "mobile") {
-		publishMobileArtifact(release.version, bump);
+		publishMobileArtifact(release.version, bump, releaseCommit);
 	}
-	ensureReleaseTag(tag, release.version);
+	ensureReleaseTag(tag, release.version, releaseCommit);
 	publishRelease(tag);
 	if (target === "mobile" && mobileApkBumps.has(bump)) {
-		publishMobileGitHubRelease(release.version, tag);
+		publishMobileGitHubRelease(release.version, tag, releaseCommit);
 	}
 
 	console.log(`Released ${target} v${release.version}`);
