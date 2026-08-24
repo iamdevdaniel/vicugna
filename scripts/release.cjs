@@ -8,6 +8,7 @@ const target = process.argv[2];
 const bump = process.argv[3] ?? "patch";
 const validTargets = new Set(["backend", "mobile"]);
 const validBumps = new Set(["patch", "minor", "major"]);
+const mobileApkBumps = new Set(["minor", "major"]);
 const mobileArtifactName = "vicugna.apk";
 const activeMobileBuildStatuses = new Set([
 	"NEW",
@@ -211,11 +212,12 @@ function updateMobileVersion() {
 	const appJson = readJson("mobile/app.json");
 	const packageLock = readJson("package-lock.json");
 	const currentVersion = packageJson.version;
-	const currentMajor = Number(currentVersion.split(".")[0]);
+	const [currentMajor, currentMinor] = currentVersion.split(".").map(Number);
+	const currentRuntimeVersion = `${currentMajor}.${currentMinor}`;
 
 	if (
 		appJson.expo.version !== currentVersion ||
-		appJson.expo.runtimeVersion !== String(currentMajor)
+		appJson.expo.runtimeVersion !== currentRuntimeVersion
 	) {
 		throw new Error("Mobile version files are out of sync");
 	}
@@ -225,14 +227,14 @@ function updateMobileVersion() {
 	}
 
 	const version = bumpVersion(currentVersion);
-	const major = Number(version.split(".")[0]);
+	const [major, minor] = version.split(".").map(Number);
 
 	packageJson.version = version;
 	appJson.expo.version = version;
 	packageLock.packages.mobile.version = version;
 
-	if (bump === "major") {
-		appJson.expo.runtimeVersion = String(major);
+	if (mobileApkBumps.has(bump)) {
+		appJson.expo.runtimeVersion = `${major}.${minor}`;
 		appJson.expo.android.versionCode += 1;
 	}
 
@@ -267,7 +269,7 @@ function getMobileReleaseBump() {
 function assertGitHubReleaseAccess() {
 	if (!commandSucceeds("gh", ["--version"])) {
 		throw new Error(
-			"GitHub CLI is required for major mobile releases; install gh and run: gh auth login",
+			"GitHub CLI is required for mobile APK releases; install gh and run: gh auth login",
 		);
 	}
 
@@ -407,7 +409,7 @@ function publishMobileArtifact(version, releaseBump) {
 	const mobileDir = path.join(rootDir, "mobile");
 	const easArgs = ["--yes", "eas-cli@21.8.0"];
 
-	if (releaseBump === "major") {
+	if (mobileApkBumps.has(releaseBump)) {
 		const builds = listMobileBuilds();
 
 		if (findCompletedMobileBuild(builds)) {
@@ -499,7 +501,7 @@ try {
 	const completedRelease = getCompletedRelease();
 
 	if (completedRelease) {
-		if (target === "mobile" && getMobileReleaseBump() === "major") {
+		if (target === "mobile" && mobileApkBumps.has(getMobileReleaseBump())) {
 			publishMobileGitHubRelease(
 				completedRelease.version,
 				completedRelease.tag,
@@ -514,7 +516,7 @@ try {
 	if (pendingRelease) {
 		runChecks();
 		const releaseBump = target === "mobile" ? getMobileReleaseBump() : null;
-		if (target === "mobile" && releaseBump === "major") {
+		if (target === "mobile" && mobileApkBumps.has(releaseBump)) {
 			assertGitHubReleaseAccess();
 		}
 		if (target === "mobile" && !tagExists(pendingRelease.tag)) {
@@ -522,7 +524,7 @@ try {
 		}
 		ensureReleaseTag(pendingRelease.tag, pendingRelease.version);
 		publishRelease(pendingRelease.tag);
-		if (target === "mobile" && releaseBump === "major") {
+		if (target === "mobile" && mobileApkBumps.has(releaseBump)) {
 			publishMobileGitHubRelease(pendingRelease.version, pendingRelease.tag);
 		}
 		console.log(`Released ${target} v${pendingRelease.version}`);
@@ -545,7 +547,7 @@ try {
 	if (tagExists(tag)) {
 		throw new Error(`Tag already exists: ${tag}`);
 	}
-	if (target === "mobile" && bump === "major") {
+	if (target === "mobile" && mobileApkBumps.has(bump)) {
 		assertGitHubReleaseAccess();
 	}
 
@@ -559,7 +561,7 @@ try {
 	}
 	ensureReleaseTag(tag, release.version);
 	publishRelease(tag);
-	if (target === "mobile" && bump === "major") {
+	if (target === "mobile" && mobileApkBumps.has(bump)) {
 		publishMobileGitHubRelease(release.version, tag);
 	}
 

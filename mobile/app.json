@@ -2,8 +2,8 @@
   "expo": {
     "name": "vicugna",
     "slug": "vicugna",
-    "version": "3.0.0",
-    "runtimeVersion": "3",
+    "version": "0.1.0",
+    "runtimeVersion": "0.1",
     "updates": {
       "url": "https://u.expo.dev/a0de7245-1ed6-44cd-9495-86ecd499a78f"
     },

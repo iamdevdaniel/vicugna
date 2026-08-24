@@ -4,7 +4,10 @@
 
 - Daily work is pushed to `dev`; Render watches `main` for backend releases.
 - `npm run release:backend` publishes a patch release to `dev` and `main`.
-- `npm run release:mobile` publishes a patch release to `dev` only.
+- `npm run release:mobile` publishes a patch OTA release to `dev` only.
+- Mobile minor and major releases build and publish a new APK. Their
+  `runtimeVersion` follows `major.minor`, while Android `versionCode` increases
+  for every APK.
 - Pass `-- minor` or `-- major` to choose a larger version bump.
 - Releases update the version files, create a release commit, and create a Git
   tag such as `backend-v1.0.1` or `mobile-v1.0.1`.
