@@ -1,15 +1,24 @@
 import type { MobileAuthUser } from "@definitions/types"
+import { toSvg } from "jdenticon/browser"
+import { useState } from "react"
 import { View } from "react-native"
-import { Button, Card, Text } from "react-native-paper"
+import { Button, Card, IconButton, Text } from "react-native-paper"
 import { SvgXml } from "react-native-svg"
-import jdenticon from "../../vendor/jdenticon.min.js"
+import { HomeAccountMenu } from "./HomeAccountMenu"
 
 type HomeUserHeaderProps = {
 	user: MobileAuthUser | null
 	onLogin: () => void
+	onLogout: () => void
 }
 
-export function HomeUserHeader({ user, onLogin }: HomeUserHeaderProps) {
+export function HomeUserHeader({
+	user,
+	onLogin,
+	onLogout,
+}: HomeUserHeaderProps) {
+	const [isAccountMenuVisible, setIsAccountMenuVisible] = useState(false)
+
 	if (!user) {
 		return (
 			<Card
@@ -36,33 +45,47 @@ export function HomeUserHeader({ user, onLogin }: HomeUserHeaderProps) {
 		)
 	}
 
-	const svg = jdenticon.toSvg(user.avatarSeed, 44)
+	const avatar = toSvg(user.avatarSeed, 44)
 
 	return (
-		<View
-			style={{
-				flexDirection: "row",
-				alignItems: "center",
-				gap: 12,
-				marginBottom: 16,
-			}}
-		>
+		<>
 			<View
 				style={{
-					width: 48,
-					height: 48,
-					borderRadius: 999,
-					backgroundColor: "#f8f885",
+					flexDirection: "row",
 					alignItems: "center",
-					justifyContent: "center",
+					gap: 12,
+					marginBottom: 16,
+					padding: 4,
 				}}
 			>
-				<SvgXml xml={svg} width={40} height={40} />
+				<View
+					style={{
+						width: 48,
+						height: 48,
+						borderRadius: 999,
+						backgroundColor: "#f8f885",
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					<SvgXml xml={avatar} width={40} height={40} />
+				</View>
+				<View style={{ flex: 1 }}>
+					<Text variant="titleMedium">{user.fullName}</Text>
+				</View>
+				<IconButton
+					icon="menu"
+					onPress={() => setIsAccountMenuVisible(true)}
+					accessibilityLabel="Abrir menú de cuenta"
+				/>
 			</View>
-			<View style={{ flex: 1 }}>
-				<Text variant="titleLarge">{user.fullName}</Text>
-				<Text variant="bodySmall">{user.email}</Text>
-			</View>
-		</View>
+
+			<HomeAccountMenu
+				user={user}
+				visible={isAccountMenuVisible}
+				onDismiss={() => setIsAccountMenuVisible(false)}
+				onLogout={onLogout}
+			/>
+		</>
 	)
 }

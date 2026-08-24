@@ -30,10 +30,11 @@ export default function HomeScreen() {
 		message: string
 		type: "success" | "error"
 	} | null>(null)
-	const { user, isAuthenticated } = useMobileAuthStore(
+	const { user, isAuthenticated, logout } = useMobileAuthStore(
 		useShallow((state) => ({
 			user: state.user,
 			isAuthenticated: state.isAuthenticated,
+			logout: state.logout,
 		})),
 	)
 	const { data: permits, loading } = useReadPermits()
@@ -106,6 +107,7 @@ export default function HomeScreen() {
 						<HomeUserHeader
 							user={isAuthenticated ? user : null}
 							onLogin={onGoToLogin}
+							onLogout={logout}
 						/>
 						{isAuthenticated && hasPermits ? (
 							<Button
