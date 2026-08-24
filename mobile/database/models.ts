@@ -1,6 +1,20 @@
-import type { PermitStepStatus, PermitSyncStatus } from "@definitions/types"
+import type {
+	ExternalParasiteData,
+	PermitStepStatus,
+	PermitSyncStatus,
+} from "@definitions/types"
 import { Model } from "@nozbe/watermelondb"
-import { field, text } from "@nozbe/watermelondb/decorators"
+import { field, json, text } from "@nozbe/watermelondb/decorators"
+
+function isExternalParasite(value: unknown): value is ExternalParasiteData {
+	return value === "Garrapata" || value === "Piojos"
+}
+
+function sanitizeExternalParasites(value: unknown): ExternalParasiteData[] {
+	if (!Array.isArray(value)) return []
+
+	return [...new Set(value)].filter(isExternalParasite)
+}
 
 export class PermitModel extends Model {
 	static table = "permits"
@@ -55,10 +69,8 @@ export class ShearingRecordModel extends Model {
 	@field("fiberLength") fiberLength!: number
 	@text("bodyCondition") bodyCondition!: "Malo" | "Regular" | "Bueno"
 	@text("gestationStatus") gestationStatus!: "No" | "Si" | "Si ultimo tercio"
-	@text("externalParasites") externalParasites!:
-		| "Ninguno"
-		| "Garrapata"
-		| "Piojos"
+	@json("externalParasites", sanitizeExternalParasites)
+	externalParasites!: ExternalParasiteData[]
 	@text("mangeSeverity") mangeSeverity!:
 		| "Ninguna"
 		| "Leve"

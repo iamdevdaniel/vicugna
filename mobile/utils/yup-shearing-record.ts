@@ -1,4 +1,7 @@
-import type { ShearingRecordFormData } from "@definitions/types"
+import type {
+	ExternalParasiteData,
+	ShearingRecordFormData,
+} from "@definitions/types"
 import * as yup from "yup"
 import {
 	yupRequiredPositiveIntegerText,
@@ -13,7 +16,7 @@ export const defaultValuesShearingRecord: ShearingRecordFormData = {
 	fiberLength: "",
 	bodyCondition: "Bueno",
 	gestationStatus: "No",
-	externalParasites: "Ninguno",
+	externalParasites: [],
 	mangeSeverity: "Ninguna",
 	hasDandruff: false,
 	isSheared: true,
@@ -47,8 +50,14 @@ export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
 			.defined()
 			.required("Campo requerido"),
 		externalParasites: yup
-			.mixed<"Ninguno" | "Garrapata" | "Piojos">()
-			.oneOf(["Ninguno", "Garrapata", "Piojos"], "Selecciona una opcion")
+			.array()
+			.of(
+				yup
+					.mixed<ExternalParasiteData>()
+					.oneOf(["Garrapata", "Piojos"], "Selecciona una opción")
+					.defined(),
+			)
+			.max(2)
 			.defined(),
 		mangeSeverity: yup
 			.mixed<"Ninguna" | "Leve" | "Moderado" | "Severo">()

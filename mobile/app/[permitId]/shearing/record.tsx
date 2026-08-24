@@ -2,6 +2,7 @@ import {
 	CustomDeleteButton,
 	LabeledInput,
 	LoadingOverlay,
+	MultiSelectButtonGroup,
 	ReadOnlyField,
 	ReadOnlyNotice,
 	ToggleButtonGroup,
@@ -192,7 +193,11 @@ export default function ShearingRecordScreen() {
 					<ReadOnlyField
 						label="Parásitos externos"
 						labelPrefix="8"
-						value={data.externalParasites}
+						value={
+							data.externalParasites.length > 0
+								? data.externalParasites.join(", ")
+								: "Ninguno"
+						}
 					/>
 					<ReadOnlyField
 						label="Sarna"
@@ -440,7 +445,7 @@ export default function ShearingRecordScreen() {
 						</LabeledInput>
 
 						<LabeledInput
-							label="Parasitos externos"
+							label="Parásitos externos"
 							labelPrefix="8"
 							error={errors.externalParasites?.message}
 							disabled={isPermitReadOnly}
@@ -449,14 +454,10 @@ export default function ShearingRecordScreen() {
 								control={control}
 								name="externalParasites"
 								render={({ field: { onChange, value } }) => (
-									<ToggleButtonGroup
+									<MultiSelectButtonGroup
 										value={value}
 										onChange={onChange}
 										options={[
-											{
-												label: "Ninguno",
-												value: "Ninguno",
-											},
 											{
 												label: "Garrapata",
 												value: "Garrapata",

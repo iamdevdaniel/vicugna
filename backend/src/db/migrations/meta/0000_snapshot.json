@@ -1,5 +1,5 @@
 {
-  "id": "c04469b7-6e0c-46de-b58c-286ad354e314",
+  "id": "59ea6aac-30d2-4cd7-aa4d-971c4606d728",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1146,7 +1146,7 @@
         },
         "external_parasites": {
           "name": "external_parasites",
-          "type": "text",
+          "type": "text[]",
           "primaryKey": false,
           "notNull": true
         },

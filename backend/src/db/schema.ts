@@ -208,7 +208,7 @@ export const shearingRecords = pgTable("shearing_records", {
 	fiberLength: doublePrecision("fiber_length").notNull(),
 	bodyCondition: text("body_condition").notNull(),
 	gestationStatus: text("gestation_status").notNull(),
-	externalParasites: text("external_parasites").notNull(),
+	externalParasites: text("external_parasites").array().notNull(),
 	mangeSeverity: text("mange_severity").notNull(),
 	hasDandruff: boolean("has_dandruff").notNull(),
 	isSheared: boolean("is_sheared").notNull(),

@@ -52,6 +52,8 @@ export type PermitData = {
 
 export type GenderData = "M" | "F"
 
+export type ExternalParasiteData = "Garrapata" | "Piojos"
+
 export type ParticipantData = {
 	id: string
 	permitId: string
@@ -86,7 +88,7 @@ export type ShearingRecordData = {
 	fiberLength: number
 	bodyCondition: "Malo" | "Regular" | "Bueno"
 	gestationStatus: "No" | "Si" | "Si ultimo tercio"
-	externalParasites: "Ninguno" | "Garrapata" | "Piojos"
+	externalParasites: ExternalParasiteData[]
 	mangeSeverity: "Ninguna" | "Leve" | "Moderado" | "Severo"
 	hasDandruff: boolean
 	isSheared: boolean

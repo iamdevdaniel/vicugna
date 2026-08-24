@@ -1,3 +1,4 @@
+import type { ExternalParasiteData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import { calculateTotalWeight } from "@utils/grooming-record-rules"
 import {
@@ -581,6 +582,14 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 						? "No"
 						: "Si ultimo tercio",
 			)
+			const externalParasites: ExternalParasiteData[] =
+				recordNumber % 4 === 0
+					? ["Garrapata", "Piojos"]
+					: recordNumber % 4 === 1
+						? ["Garrapata"]
+						: recordNumber % 4 === 2
+							? ["Piojos"]
+							: []
 
 			return {
 				tagNumber: 100 + recordNumber,
@@ -595,12 +604,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 							? ("Regular" as const)
 							: ("Bueno" as const),
 				gestationStatus,
-				externalParasites:
-					recordNumber % 3 === 0
-						? ("Garrapata" as const)
-						: recordNumber % 3 === 1
-							? ("Piojos" as const)
-							: ("Ninguno" as const),
+				externalParasites,
 				mangeSeverity:
 					recordNumber % 4 === 0
 						? ("Leve" as const)

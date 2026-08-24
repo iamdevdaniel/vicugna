@@ -13,6 +13,7 @@ export type {
 	CleaningCommonData,
 	CleaningHeaderData,
 	DehearingData,
+	ExternalParasiteData,
 	GenderData,
 	GroomingData,
 	MobilePermitData,

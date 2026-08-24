@@ -367,9 +367,9 @@ async function generateShearingRegisterExportFromPermit(
 		worksheet.getCell(`O${rowNumber}`).value =
 			record.gestationStatus === "Si ultimo tercio" ? "X" : ""
 		worksheet.getCell(`P${rowNumber}`).value =
-			record.externalParasites === "Garrapata" ? "X" : ""
+			record.externalParasites.includes("Garrapata") ? "X" : ""
 		worksheet.getCell(`Q${rowNumber}`).value =
-			record.externalParasites === "Piojos" ? "X" : ""
+			record.externalParasites.includes("Piojos") ? "X" : ""
 		worksheet.getCell(`R${rowNumber}`).value =
 			record.mangeSeverity === "Leve" ? "X" : ""
 		worksheet.getCell(`S${rowNumber}`).value =
