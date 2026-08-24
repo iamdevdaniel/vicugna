@@ -402,6 +402,7 @@ function publishMobileGitHubRelease(version, tag) {
 		]);
 	} finally {
 		fs.rmSync(artifactDir, { recursive: true, force: true });
+		fs.rmSync(artifactPath, { force: true });
 	}
 }
 
