@@ -1,10 +1,13 @@
 const { spawnSync } = require("node:child_process")
+const { readFileSync } = require("node:fs")
 const path = require("node:path")
+const { parse: parseEnv } = require("dotenv")
 
 /*
 Supported commands:
 
 npm run db -- start
+npm run db -- respawn
 npm run db -- wait
 npm run db -- stop
 npm run db -- nuke
@@ -32,23 +35,28 @@ const seedTargets = {
 	asg: "dist/db/seeders/seed-assignments.js",
 	"asg-reset": "dist/db/seeders/reset-assignments-sync.js",
 }
+const respawnSeedTargets = ["seasons", "regionals", "users", "asg"]
 
 const action = process.argv[2]
 const seedTarget = process.argv[3]
 
 switch (action) {
 	case "start":
-		runCommand("docker", ["compose", "up", "-d"])
-		waitForPostgres()
+		startDatabase()
+		break
+	case "respawn":
+		respawnDatabase()
 		break
 	case "wait":
 		waitForPostgres()
 		break
 	case "stop":
-		runCommand("docker", ["compose", "down"])
+		runCommandQuiet("docker", ["compose", "down"])
+		console.log("Postgres stopped")
 		break
 	case "nuke":
-		runCommand("docker", ["compose", "down", "-v"])
+		runCommandQuiet("docker", ["compose", "down", "-v"])
+		console.log("Local database deleted")
 		break
 	case "status":
 		runCommand("docker", ["ps", "--filter", "name=vicugna-postgres"])
@@ -57,7 +65,7 @@ switch (action) {
 		runCommand(nodeCommand, [drizzleScript, "generate"])
 		break
 	case "migrate":
-		runCommand(nodeCommand, [drizzleScript, "migrate"])
+		migrateDatabase()
 		break
 	case "studio":
 		runCommand(nodeCommand, [drizzleScript, "studio"])
@@ -67,9 +75,50 @@ switch (action) {
 		break
 	default:
 		console.error(
-			"Unknown db action. Use: start, stop, status, generate, migrate, studio, seed",
+			"Unknown db action. Use: start, respawn, wait, stop, nuke, status, generate, migrate, studio or seed",
 		)
 		process.exit(1)
+}
+
+function startDatabase() {
+	runCommandQuiet("docker", ["compose", "up", "-d"])
+	waitForPostgres()
+}
+
+function respawnDatabase() {
+	const developmentDatabaseEnvironment = getDevelopmentDatabaseEnvironment()
+	startDatabase()
+	migrateDatabase(developmentDatabaseEnvironment)
+	buildBackend()
+
+	for (const target of respawnSeedTargets) {
+		runSeedTarget(target, developmentDatabaseEnvironment)
+	}
+
+	console.log("Database respawn complete")
+}
+
+function getDevelopmentDatabaseEnvironment() {
+	const envPath = path.join(backendDir, ".env")
+	const databaseUrl = parseEnv(
+		readFileSync(envPath),
+	).VICUGNA_DEV_DATABASE_URL?.trim()
+
+	if (!databaseUrl) {
+		console.error("VICUGNA_DEV_DATABASE_URL is required for database respawn")
+		process.exit(1)
+	}
+
+	return { ...process.env, VICUGNA_DATABASE_URL: databaseUrl }
+}
+
+function migrateDatabase(environment = process.env) {
+	runCommandQuiet(nodeCommand, [drizzleScript, "migrate"], environment)
+	console.log("Migrations applied")
+}
+
+function buildBackend() {
+	runCommandQuiet(npmCommand, ["run", "build:ts"])
 }
 
 function runSeed(target) {
@@ -80,8 +129,12 @@ function runSeed(target) {
 		process.exit(1)
 	}
 
-	runCommand(npmCommand, ["run", "build:ts"])
-	runCommand(nodeCommand, [seedTargets[target]])
+	buildBackend()
+	runSeedTarget(target)
+}
+
+function runSeedTarget(target, environment = process.env) {
+	runCommand(nodeCommand, [seedTargets[target]], environment)
 }
 
 function waitForPostgres() {
@@ -122,13 +175,30 @@ function sleep(ms) {
 	Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms)
 }
 
-function runCommand(command, args) {
+function runCommand(command, args, environment = process.env) {
 	const result = spawnSync(command, args, {
 		cwd: backendDir,
+		env: environment,
 		stdio: "inherit",
 	})
 
 	if (result.status !== 0) {
+		process.exit(result.status ?? 1)
+	}
+}
+
+function runCommandQuiet(command, args, environment = process.env) {
+	const result = spawnSync(command, args, {
+		cwd: backendDir,
+		encoding: "utf8",
+		env: environment,
+		maxBuffer: 10 * 1024 * 1024,
+	})
+
+	if (result.status !== 0) {
+		if (result.stdout) process.stderr.write(result.stdout)
+		if (result.stderr) process.stderr.write(result.stderr)
+		if (result.error) console.error(result.error)
 		process.exit(result.status ?? 1)
 	}
 }

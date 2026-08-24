@@ -1,5 +1,22 @@
 # Backend Notes
 
+## Database Commands
+
+- `npm run db -- start`: Starts the local Postgres container and waits until it is ready.
+- `npm run db -- respawn`: Initializes the database in `VICUGNA_DEV_DATABASE_URL` with migrations and all development seeds.
+- `npm run db -- wait`: Waits until the local Postgres container is ready.
+- `npm run db -- stop`: Stops the local Postgres container without deleting its data.
+- `npm run db -- nuke`: Stops the local Postgres container and permanently deletes its database volume.
+- `npm run db -- status`: Shows whether the local Postgres container is running.
+- `npm run db -- generate`: Generates migration SQL and metadata from the current Drizzle schema.
+- `npm run db -- migrate`: Applies pending migrations to the database configured in `VICUGNA_DATABASE_URL`.
+- `npm run db -- studio`: Opens Drizzle Studio for the database configured in `VICUGNA_DATABASE_URL`.
+- `npm run db -- seed seasons`: Creates or updates the development seasons.
+- `npm run db -- seed regionals`: Creates or updates the department, regional, and community catalog.
+- `npm run db -- seed users`: Creates or updates the development mobile users.
+- `npm run db -- seed asg`: Creates or updates the development permits and their assignments.
+- `npm run db -- seed asg-reset`: Deletes synced field data for seeded permits and returns them to `assigned`.
+
 ## Type Sections
 
 - **Domain**: app/business meaning. Example: `UserListItem`.
