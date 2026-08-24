@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"audit": "dotenv -e .env.local -- sh -c 'lighthouse \"$DEV_URL\" --output=html --output-path=./lighthouse-report.html --chrome-flags=\"--headless\" --view'",
+		"audit": "dotenv -e .env -- sh -c 'lighthouse \"$DEV_URL\" --output=html --output-path=./lighthouse-report.html --chrome-flags=\"--headless\" --view'",
 		"dev": "astro dev",
 		"build": "astro build",
 		"start": "npm run build && astro preview",

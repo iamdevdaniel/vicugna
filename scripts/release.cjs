@@ -1,5 +1,6 @@
 const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 
 const rootDir = path.resolve(__dirname, "..");
@@ -7,6 +8,13 @@ const target = process.argv[2];
 const bump = process.argv[3] ?? "patch";
 const validTargets = new Set(["backend", "mobile"]);
 const validBumps = new Set(["patch", "minor", "major"]);
+const mobileArtifactName = "vicugna.apk";
+const activeMobileBuildStatuses = new Set([
+	"NEW",
+	"IN_QUEUE",
+	"IN_PROGRESS",
+	"PENDING_CANCEL",
+]);
 
 if (!validTargets.has(target) || !validBumps.has(bump)) {
 	console.error(
@@ -36,6 +44,15 @@ function run(command, args, { capture = false, cwd = rootDir } = {}) {
 
 function gitOutput(...args) {
 	return run("git", args, { capture: true });
+}
+
+function commandSucceeds(command, args, { cwd = rootDir } = {}) {
+	const result = spawnSync(command, args, {
+		cwd,
+		stdio: "ignore",
+	});
+
+	return result.status === 0;
 }
 
 function assertCleanWorktree() {
@@ -247,11 +264,164 @@ function getMobileReleaseBump() {
 	return "patch";
 }
 
+function assertGitHubReleaseAccess() {
+	if (!commandSucceeds("gh", ["--version"])) {
+		throw new Error(
+			"GitHub CLI is required for major mobile releases; install gh and run: gh auth login",
+		);
+	}
+
+	if (!commandSucceeds("gh", ["auth", "status"])) {
+		throw new Error("GitHub CLI is not authenticated; run: gh auth login");
+	}
+}
+
+function getGitHubRelease(tag) {
+	const result = spawnSync("gh", ["release", "view", tag, "--json", "assets"], {
+		cwd: rootDir,
+		encoding: "utf8",
+		stdio: "pipe",
+	});
+
+	if (result.status !== 0) {
+		const errorMessage =
+			(result.stderr ?? "").trim() || (result.stdout ?? "").trim();
+
+		if (errorMessage === "release not found") {
+			return null;
+		}
+
+		throw new Error(
+			`Failed to check GitHub release ${tag}: ${errorMessage || "unknown error"}`,
+		);
+	}
+
+	return JSON.parse(result.stdout);
+}
+
+function listMobileBuilds() {
+	const mobileDir = path.join(rootDir, "mobile");
+	const output = run(
+		"npx",
+		[
+			"--yes",
+			"eas-cli@21.8.0",
+			"build:list",
+			"--platform",
+			"android",
+			"--build-profile",
+			"production",
+			"--git-commit-hash",
+			gitOutput("rev-parse", "HEAD"),
+			"--limit",
+			"10",
+			"--json",
+			"--non-interactive",
+		],
+		{ capture: true, cwd: mobileDir },
+	);
+	return JSON.parse(output);
+}
+
+function findCompletedMobileBuild(builds = listMobileBuilds()) {
+	return builds.find((build) => build.status === "FINISHED") ?? null;
+}
+
+function findActiveMobileBuild(builds) {
+	return (
+		builds.find((build) => activeMobileBuildStatuses.has(build.status)) ?? null
+	);
+}
+
+function downloadMobileArtifact() {
+	const mobileDir = path.join(rootDir, "mobile");
+	const build = findCompletedMobileBuild();
+
+	if (!build) {
+		throw new Error(
+			"No completed production APK exists for this release commit",
+		);
+	}
+	const output = run(
+		"npx",
+		[
+			"--yes",
+			"eas-cli@21.8.0",
+			"build:download",
+			"--build-id",
+			build.id,
+			"--json",
+		],
+		{ capture: true, cwd: mobileDir },
+	);
+	const artifact = JSON.parse(output);
+
+	if (!artifact.path) {
+		throw new Error("EAS did not return the downloaded APK path");
+	}
+
+	return artifact.path;
+}
+
+function publishMobileGitHubRelease(version, tag) {
+	assertGitHubReleaseAccess();
+	const existingRelease = getGitHubRelease(tag);
+
+	if (
+		existingRelease?.assets.some((asset) => asset.name === mobileArtifactName)
+	) {
+		return;
+	}
+
+	const artifactPath = downloadMobileArtifact();
+	const artifactDir = fs.mkdtempSync(
+		path.join(os.tmpdir(), "vicugna-release-"),
+	);
+	const releaseArtifactPath = path.join(artifactDir, mobileArtifactName);
+	fs.copyFileSync(artifactPath, releaseArtifactPath);
+
+	try {
+		if (existingRelease) {
+			run("gh", ["release", "upload", tag, releaseArtifactPath, "--clobber"]);
+			return;
+		}
+
+		run("gh", [
+			"release",
+			"create",
+			tag,
+			releaseArtifactPath,
+			"--verify-tag",
+			"--latest",
+			"--title",
+			`Vicugna App v${version}`,
+			"--notes",
+			`Aplicación Android Vicugna v${version}`,
+		]);
+	} finally {
+		fs.rmSync(artifactDir, { recursive: true, force: true });
+	}
+}
+
 function publishMobileArtifact(version, releaseBump) {
 	const mobileDir = path.join(rootDir, "mobile");
 	const easArgs = ["--yes", "eas-cli@21.8.0"];
 
 	if (releaseBump === "major") {
+		const builds = listMobileBuilds();
+
+		if (findCompletedMobileBuild(builds)) {
+			return;
+		}
+
+		const activeBuild = findActiveMobileBuild(builds);
+
+		if (activeBuild) {
+			throw new Error(
+				`EAS build ${activeBuild.id} is still ${activeBuild.status}; wait for it to finish and rerun the release command`,
+			);
+		}
+
 		run(
 			"npx",
 			[
@@ -314,7 +484,9 @@ function publishRelease(tag) {
 
 try {
 	if (target === "mobile" && Number(process.versions.node.split(".")[0]) < 20) {
-		throw new Error("Mobile releases require Node 20 or newer; run: nvm use 22");
+		throw new Error(
+			"Mobile releases require Node 20 or newer; run: nvm use 22",
+		);
 	}
 
 	if (gitOutput("branch", "--show-current") !== "dev") {
@@ -327,6 +499,12 @@ try {
 	const completedRelease = getCompletedRelease();
 
 	if (completedRelease) {
+		if (target === "mobile" && getMobileReleaseBump() === "major") {
+			publishMobileGitHubRelease(
+				completedRelease.version,
+				completedRelease.tag,
+			);
+		}
 		console.log(`Already released ${target} v${completedRelease.version}`);
 		process.exit(0);
 	}
@@ -335,14 +513,18 @@ try {
 
 	if (pendingRelease) {
 		runChecks();
+		const releaseBump = target === "mobile" ? getMobileReleaseBump() : null;
+		if (target === "mobile" && releaseBump === "major") {
+			assertGitHubReleaseAccess();
+		}
 		if (target === "mobile" && !tagExists(pendingRelease.tag)) {
-			publishMobileArtifact(
-				pendingRelease.version,
-				getMobileReleaseBump(),
-			);
+			publishMobileArtifact(pendingRelease.version, releaseBump);
 		}
 		ensureReleaseTag(pendingRelease.tag, pendingRelease.version);
 		publishRelease(pendingRelease.tag);
+		if (target === "mobile" && releaseBump === "major") {
+			publishMobileGitHubRelease(pendingRelease.version, pendingRelease.tag);
+		}
 		console.log(`Released ${target} v${pendingRelease.version}`);
 		process.exit(0);
 	}
@@ -363,6 +545,9 @@ try {
 	if (tagExists(tag)) {
 		throw new Error(`Tag already exists: ${tag}`);
 	}
+	if (target === "mobile" && bump === "major") {
+		assertGitHubReleaseAccess();
+	}
 
 	const release =
 		target === "backend" ? updateBackendVersion() : updateMobileVersion();
@@ -374,6 +559,9 @@ try {
 	}
 	ensureReleaseTag(tag, release.version);
 	publishRelease(tag);
+	if (target === "mobile" && bump === "major") {
+		publishMobileGitHubRelease(release.version, tag);
+	}
 
 	console.log(`Released ${target} v${release.version}`);
 } catch (error) {

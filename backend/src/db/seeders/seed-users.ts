@@ -11,7 +11,6 @@ const TEST_USERS = [
 		maternalLastName: "Flores",
 		phoneNumber: "70000001",
 		email: "maria.quispe@gmail.com",
-		password: "maria_pswd",
 		avatarSeed: "vicugna-seed-user-01",
 	},
 	{
@@ -21,7 +20,6 @@ const TEST_USERS = [
 		maternalLastName: "Choque",
 		phoneNumber: "70000002",
 		email: "juan.mamani@gmail.com",
-		password: "juan_pswd",
 		avatarSeed: "vicugna-seed-user-02",
 	},
 	{
@@ -31,7 +29,6 @@ const TEST_USERS = [
 		maternalLastName: "Condori",
 		phoneNumber: "70000003",
 		email: "lucia.choque@gmail.com",
-		password: "lucia_pswd",
 		avatarSeed: "vicugna-seed-user-03",
 	},
 	{
@@ -41,7 +38,6 @@ const TEST_USERS = [
 		maternalLastName: "Quispe",
 		phoneNumber: "70000004",
 		email: "carlos.huanca@gmail.com",
-		password: "carlos_pswd",
 		avatarSeed: "vicugna-seed-user-04",
 	},
 	{
@@ -51,13 +47,31 @@ const TEST_USERS = [
 		maternalLastName: "Mamani",
 		phoneNumber: "70000005",
 		email: "rosa.condori@gmail.com",
-		password: "rosa_pswd",
 		avatarSeed: "vicugna-seed-user-05",
 	},
 ] as const
 
 async function seedUsers() {
+	const passwordFormat = process.env.VICUGNA_SEED_USER_PASSWORD_FORMAT?.trim()
+
+	if (!passwordFormat) {
+		throw new Error(
+			"Missing required environment variable: VICUGNA_SEED_USER_PASSWORD_FORMAT",
+		)
+	}
+
+	if (!passwordFormat.includes("{name}")) {
+		throw new Error("VICUGNA_SEED_USER_PASSWORD_FORMAT must include {name}")
+	}
+
 	for (const user of TEST_USERS) {
+		const name = user.firstName
+			.normalize("NFD")
+			.replace(/[\u0300-\u036f]/g, "")
+			.toLowerCase()
+		const password = passwordFormat.replaceAll("{name}", name)
+		const passwordHash = await bcrypt.hash(password, 12)
+
 		await db
 			.insert(users)
 			.values({
@@ -67,7 +81,7 @@ async function seedUsers() {
 				maternalLastName: user.maternalLastName,
 				phoneNumber: user.phoneNumber,
 				email: user.email,
-				passwordHash: await bcrypt.hash(user.password, 12),
+				passwordHash,
 				role: "user",
 				isActive: true,
 				avatarSeed: user.avatarSeed,
@@ -79,7 +93,7 @@ async function seedUsers() {
 					paternalLastName: user.paternalLastName,
 					maternalLastName: user.maternalLastName,
 					email: user.email,
-					passwordHash: await bcrypt.hash(user.password, 12),
+					passwordHash,
 					role: "user",
 					isActive: true,
 					avatarSeed: user.avatarSeed,

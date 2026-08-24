@@ -13,5 +13,6 @@ export const env = {
 	databaseUrl: getRequiredEnv("VICUGNA_DATABASE_URL"),
 	adminAuthSecret: getRequiredEnv("VICUGNA_ADMIN_AUTH_SECRET"),
 	mobileAuthSecret: getRequiredEnv("VICUGNA_MOBILE_AUTH_SECRET"),
+	androidDownloadUrl: getRequiredEnv("VICUGNA_ANDROID_DOWNLOAD_URL"),
 	nodeEnv: process.env.NODE_ENV ?? "development",
 }
