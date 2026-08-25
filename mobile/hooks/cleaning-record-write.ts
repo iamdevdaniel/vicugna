@@ -1,9 +1,12 @@
 import {
-	createSingleCleaningRecord as createSingleCleaningRecordData,
+	createSingleCleaningRecord as createCleaningRecordData,
 	deleteSingleCleaningRecord as deleteSingleCleaningRecordData,
-	updateSingleCleaningRecord as updateSingleCleaningRecordData,
+	updateSingleCleaningRecord as updateCleaningRecordData,
 } from "@database"
-import type { CleaningRecordSaveData } from "@definitions/types"
+import type {
+	CleaningCommonFormData,
+	CleaningRecordSaveData,
+} from "@definitions/types"
 import { useCallback, useState } from "react"
 
 export function useSingleCleaningRecordActions() {
@@ -12,11 +15,11 @@ export function useSingleCleaningRecordActions() {
 	const [error, setError] = useState<Error | null>(null)
 
 	const createSingleCleaningRecord = useCallback(
-		async (permitId: string, data: CleaningRecordSaveData) => {
+		async (permitId: string, data: CleaningCommonFormData) => {
 			setSaving(true)
 			setError(null)
 			try {
-				await createSingleCleaningRecordData(permitId, data)
+				await createCleaningRecordData(permitId, data)
 				return true
 			} catch (e) {
 				setError(e as Error)
@@ -33,7 +36,7 @@ export function useSingleCleaningRecordActions() {
 			setSaving(true)
 			setError(null)
 			try {
-				await updateSingleCleaningRecordData(cleaningCommonId, data)
+				await updateCleaningRecordData(cleaningCommonId, data)
 				return true
 			} catch (e) {
 				setError(e as Error)

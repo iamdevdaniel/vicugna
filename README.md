@@ -20,6 +20,17 @@
 - TODO: Make related DAL data and status writes atomic. Currently, a data write
   can succeed before its status recalculation fails, leaving stale persisted
   statuses.
+- TODO: Audit important mobile mutation hooks for synchronous re-entry. React
+  loading state is scheduled and cannot reliably stop two rapid presses before
+  the component rerenders, so create, update, delete, sync, and other
+  non-idempotent operations can overlap even when their buttons use a loading
+  flag. Centralize a consistent pattern in those hooks: use a ref as the
+  immediate in-flight lock for the complete operation, including validation
+  and navigation, and keep state only for rendering disabled/loading feedback.
+  Release the lock after validation or a failed operation; after successful
+  navigation, leave it locked until the screen unmounts. Do not add this to
+  read-only requests or harmless idempotent actions. Add repeated-press tests
+  for creation, deletion, synchronization, and save/delete overlap.
 - TODO: Add bounded local diagnostic logs for mobile-only operational failures:
   offline, request timeout, unreachable backend, invalid response, and unknown
   client errors. Store structured entries with timestamp, operation, category,
@@ -45,6 +56,7 @@
 - TODO: Add password reset flow.
 - TODO: Delete users safely: hard delete only when they have no assigned data; otherwise deactivate.
 - TODO: Enforce completed Registro de fibra headers at the backend sync boundary. The mobile app now allows users to save step 3.1 after entering the start date, while leaving the finishing date empty until the process ends. That partial state is valid locally, but it must not be accepted by `POST /permits/sync`. The backend currently verifies that the cleaning header exists and belongs to the permit, but does not verify `isCompleted` or require non-empty `startDate`, `endDate`, `site`, and `supervisors`. A crafted or outdated client request could therefore sync an incomplete header; PostgreSQL `NOT NULL` does not prevent this because an empty string is still non-null. Add explicit validation, return a Spanish client error, and test that the transaction does not replace existing field data when the header is incomplete.
+- TODO: Investigate the admin frontend version and redirect mismatch. Both localhost and the Render free hosted backend report version `1.1.2`, but localhost allows browsing `domainname/` while the hosted deployment still applies the older forced redirect to `domainname/admin/login`. Determine whether Render is serving stale code, using different environment/configuration, or applying a proxy/cache rule, and make the deployed behavior match the reported version.
 
 ### TODO: Assignment UX And Integrity
 

@@ -32,10 +32,10 @@ import {
 	yupGrooming,
 } from "@utils/yup-cleaning-record"
 import { useLocalSearchParams, useRouter } from "expo-router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button, TextInput } from "react-native-paper"
+import { Button, Divider, Text, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 type CleaningType = "grooming" | "dehearing"
@@ -47,6 +47,7 @@ export default function CleaningRecordScreen() {
 		recordId?: string
 	}>()
 	const isEditForm = !!recordId
+	const operationInFlightRef = useRef(false)
 	const [cleaningType, setCleaningType] = useState<CleaningType>("grooming")
 	const { data: permit, loading: loadingPermit } =
 		useReadSinglePermit(permitId)
@@ -139,26 +140,21 @@ export default function CleaningRecordScreen() {
 		setGroomingValue("totalWeight", totalWeight, {
 			shouldValidate: totalWeight !== "",
 		})
-
-		if (cleanWeight && dirtyWeight) {
-			triggerGrooming("dirtyWeight")
-		}
-	}, [
-		cleanWeight,
-		dirtyWeight,
-		setGroomingValue,
-		totalWeight,
-		triggerGrooming,
-	])
+	}, [setGroomingValue, totalWeight])
 
 	useEffect(() => {
-		const { cleanWeight, dirtyWeight } = getGroomingValues()
-		const hasWeightValue = grossWeight || cleanWeight || dirtyWeight
-
-		if (hasWeightValue) {
-			triggerGrooming(["cleanWeight", "dirtyWeight"])
+		if (!isEditForm || !grossWeight) {
+			return
 		}
-	}, [getGroomingValues, grossWeight, triggerGrooming])
+
+		const fieldsToValidate: ("cleanWeight" | "dirtyWeight")[] = []
+		if (cleanWeight) fieldsToValidate.push("cleanWeight")
+		if (dirtyWeight) fieldsToValidate.push("dirtyWeight")
+
+		if (fieldsToValidate.length > 0) {
+			triggerGrooming(fieldsToValidate)
+		}
+	}, [cleanWeight, dirtyWeight, grossWeight, isEditForm, triggerGrooming])
 
 	useEffect(() => {
 		if (!dehearingData) {
@@ -182,54 +178,84 @@ export default function CleaningRecordScreen() {
 				loadingGrooming ||
 				loadingDehearing ||
 				!commonData))
+	const detailFieldsDisabled = !isEditForm
 	const saveDisabled =
 		isPermitReadOnly ||
 		saving ||
 		deleting ||
 		isLoadingScreenData ||
 		!isCommonValid ||
-		(cleaningType === "grooming" ? !isGroomingValid : !isDehearingValid)
-	const saveLabel =
-		cleaningType === "grooming"
-			? "Guardar limpiado"
-			: "Guardar predescerdado"
+		(isEditForm &&
+			(cleaningType === "grooming"
+				? !isGroomingValid
+				: !isDehearingValid))
 
 	const onSave = async () => {
-		const isCommonFormValid = await triggerCommon()
-		const isDetailFormValid =
-			cleaningType === "grooming"
-				? await triggerGrooming()
-				: await triggerDehearing()
-
-		if (!isCommonFormValid || !isDetailFormValid) {
+		if (operationInFlightRef.current) {
 			return
 		}
+		operationInFlightRef.current = true
 
-		const saveData: CleaningRecordSaveData =
-			cleaningType === "grooming"
-				? {
-						cleaningType,
-						common: getCommonValues(),
-						detail: getGroomingValues(),
-					}
-				: {
-						cleaningType,
-						common: getCommonValues(),
-						detail: getDehearingValues(),
-					}
-		const ok = recordId
-			? await updateSingleCleaningRecord(recordId, saveData)
-			: await createSingleCleaningRecord(permitId, saveData)
+		try {
+			const isCommonFormValid = await triggerCommon()
+			if (!isCommonFormValid) {
+				return
+			}
 
-		if (ok) {
-			router.back()
-			return
+			if (!recordId) {
+				const ok = await createSingleCleaningRecord(
+					permitId,
+					getCommonValues(),
+				)
+
+				if (ok) {
+					router.back()
+					return
+				}
+
+				Alert.alert("Error", "No se pudo guardar el registro de fibra")
+				return
+			}
+
+			const isDetailFormValid =
+				cleaningType === "grooming"
+					? await triggerGrooming()
+					: await triggerDehearing()
+
+			if (!isDetailFormValid) {
+				return
+			}
+
+			const saveData: CleaningRecordSaveData =
+				cleaningType === "grooming"
+					? {
+							cleaningType,
+							common: getCommonValues(),
+							detail: getGroomingValues(),
+						}
+					: {
+							cleaningType,
+							common: getCommonValues(),
+							detail: getDehearingValues(),
+						}
+			const ok = await updateSingleCleaningRecord(recordId, saveData)
+
+			if (ok) {
+				router.back()
+				return
+			}
+
+			Alert.alert("Error", "No se pudo guardar el registro de fibra")
+		} finally {
+			operationInFlightRef.current = false
 		}
-
-		Alert.alert("Error", "No se pudo guardar el registro de fibra")
 	}
 
 	const onDelete = () => {
+		if (operationInFlightRef.current) {
+			return
+		}
+
 		if (!recordId) {
 			router.back()
 			return
@@ -244,17 +270,27 @@ export default function CleaningRecordScreen() {
 					text: "Eliminar",
 					style: "destructive",
 					onPress: async () => {
-						const ok = await deleteSingleCleaningRecord(recordId)
-
-						if (ok) {
-							router.back()
+						if (operationInFlightRef.current) {
 							return
 						}
+						operationInFlightRef.current = true
 
-						Alert.alert(
-							"Error",
-							"No se pudo eliminar el registro de fibra",
-						)
+						try {
+							const ok =
+								await deleteSingleCleaningRecord(recordId)
+
+							if (ok) {
+								router.back()
+								return
+							}
+
+							Alert.alert(
+								"Error",
+								"No se pudo eliminar el registro de fibra",
+							)
+						} finally {
+							operationInFlightRef.current = false
+						}
 					},
 				},
 			],
@@ -281,8 +317,19 @@ export default function CleaningRecordScreen() {
 				>
 					<ReadOnlyNotice />
 					<ReadOnlyField
-						label="Tipo"
+						label="Nro. de vellón"
 						labelPrefix="1"
+						value={commonData.fleeceNumber}
+					/>
+					<ReadOnlyField
+						label="Peso bruto"
+						labelPrefix="2"
+						labelSuffix="gramos"
+						value={commonData.grossWeight.toString()}
+					/>
+					<ReadOnlyField
+						label="Tipo"
+						labelPrefix="3"
 						value={
 							groomingData
 								? "Limpiado"
@@ -290,17 +337,6 @@ export default function CleaningRecordScreen() {
 									? "Predescerdado"
 									: ""
 						}
-					/>
-					<ReadOnlyField
-						label="Nro. de vellón"
-						labelPrefix="2"
-						value={commonData.fleeceNumber}
-					/>
-					<ReadOnlyField
-						label="Peso bruto"
-						labelPrefix="3"
-						labelSuffix="gramos"
-						value={commonData.grossWeight.toString()}
 					/>
 					{groomingData ? (
 						<>
@@ -376,25 +412,9 @@ export default function CleaningRecordScreen() {
 					}}
 					keyboardShouldPersistTaps="handled"
 				>
-					<LabeledInput label="Tipo" labelPrefix="1">
-						<ToggleButtonGroup
-							value={cleaningType}
-							onChange={(value) =>
-								setCleaningType(value as CleaningType)
-							}
-							options={[
-								{ label: "Limpiado", value: "grooming" },
-								{
-									label: "Predescerdado",
-									value: "dehearing",
-								},
-							]}
-						/>
-					</LabeledInput>
-
 					<LabeledInput
 						label="Nro de vellon"
-						labelPrefix="2"
+						labelPrefix="1"
 						error={commonErrors.fleeceNumber?.message}
 					>
 						<Controller
@@ -417,7 +437,7 @@ export default function CleaningRecordScreen() {
 
 					<LabeledInput
 						label="Peso bruto"
-						labelPrefix="3"
+						labelPrefix="2"
 						labelSuffix="gramos"
 						error={commonErrors.grossWeight?.message}
 					>
@@ -439,17 +459,63 @@ export default function CleaningRecordScreen() {
 						/>
 					</LabeledInput>
 
+					<View
+						style={{
+							marginBottom: detailFieldsDisabled ? 12 : 16,
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "center",
+						}}
+					>
+						{detailFieldsDisabled && (
+							<Text
+								variant="labelMedium"
+								style={{
+									marginTop: 12,
+									opacity: 0.6,
+									paddingBottom: 8,
+								}}
+							>
+								Guarda primero estos datos para continuar
+							</Text>
+						)}
+						<Divider style={{ width: "100%" }} />
+					</View>
+
+					<LabeledInput
+						label="Tipo"
+						labelPrefix="3"
+						disabled={detailFieldsDisabled}
+					>
+						<ToggleButtonGroup
+							value={cleaningType}
+							onChange={(value) =>
+								setCleaningType(value as CleaningType)
+							}
+							options={[
+								{ label: "Limpiado", value: "grooming" },
+								{
+									label: "Predescerdado",
+									value: "dehearing",
+								},
+							]}
+							disabled={detailFieldsDisabled}
+						/>
+					</LabeledInput>
+
 					{cleaningType === "grooming" ? (
 						<GroomingFields
 							control={groomingControl}
 							errors={groomingErrors}
 							startIndex={4}
+							disabled={detailFieldsDisabled}
 						/>
 					) : (
 						<DehearingFields
 							control={dehearingControl}
 							errors={dehearingErrors}
 							startIndex={4}
+							disabled={detailFieldsDisabled}
 						/>
 					)}
 
@@ -460,7 +526,7 @@ export default function CleaningRecordScreen() {
 							disabled={saveDisabled}
 							loading={saving}
 						>
-							{saveLabel}
+							Guardar
 						</Button>
 						<CustomDeleteButton
 							onPress={onDelete}

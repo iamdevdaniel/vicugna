@@ -7,12 +7,14 @@ type GroomingFieldsProps = {
 	control: Control<GroomingFormData>
 	errors: FieldErrors<GroomingFormData>
 	startIndex: number
+	disabled: boolean
 }
 
 export function GroomingFields({
 	control,
 	errors,
 	startIndex,
+	disabled,
 }: GroomingFieldsProps) {
 	return (
 		<>
@@ -21,6 +23,7 @@ export function GroomingFields({
 				labelPrefix={String(startIndex)}
 				labelSuffix="gramos"
 				error={errors.cleanWeight?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -33,6 +36,7 @@ export function GroomingFields({
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.cleanWeight}
+							editable={!disabled}
 						/>
 					)}
 				/>
@@ -43,6 +47,7 @@ export function GroomingFields({
 				labelPrefix={String(startIndex + 1)}
 				labelSuffix="gramos"
 				error={errors.dirtyWeight?.message}
+				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -55,6 +60,7 @@ export function GroomingFields({
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.dirtyWeight}
+							editable={!disabled}
 						/>
 					)}
 				/>
@@ -69,6 +75,7 @@ export function GroomingFields({
 				}
 				labelPrefix={String(startIndex + 2)}
 				labelSuffix="gramos"
+				disabled={disabled}
 			>
 				<Controller
 					control={control}

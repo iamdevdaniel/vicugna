@@ -14,18 +14,18 @@ export const OverviewStep = ({
 	title,
 	action,
 	state = "ready",
-	details,
+	content,
 }: {
 	number: number
 	title: string
 	action?: OverviewStepAction
 	state: "ready" | "done" | "disabled"
-	details?: ReactNode
+	content?: ReactNode
 }) => {
 	const theme = useAppTheme()
 	const disabled = state === "disabled"
 	const done = state === "done"
-	const hasDetails = !!details
+	const hasContent = !!content
 	const showActionButton = !done && !!action
 	const cardOnPress = done && action ? action.onPress : undefined
 	return (
@@ -47,7 +47,7 @@ export const OverviewStep = ({
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
-								marginBottom: done && hasDetails ? 8 : 0,
+								marginBottom: hasContent ? 8 : 0,
 							}}
 						>
 							<View
@@ -89,7 +89,7 @@ export const OverviewStep = ({
 								{title}
 							</Text>
 						</View>
-						{done && hasDetails && <View>{details}</View>}
+						{hasContent && <View>{content}</View>}
 					</View>
 					{done && action && (
 						<View

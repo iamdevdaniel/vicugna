@@ -1,5 +1,6 @@
 import type {
 	CleaningCommonData,
+	CleaningCommonFormData,
 	CleaningHeaderData,
 	CleaningHeaderFormData,
 	CleaningRecordSaveData,
@@ -211,36 +212,16 @@ export async function updateSingleCleaningHeader(
 
 export async function createSingleCleaningRecord(
 	permitId: string,
-	data: CleaningRecordSaveData,
+	data: CleaningCommonFormData,
 ): Promise<void> {
 	await database.write(async () => {
 		const commonRecord = database
 			.get<CleaningCommonModel>("cleaningCommon")
 			.prepareCreate((model) => {
-				applyCleaningCommonToModel(model, data.common, permitId)
+				applyCleaningCommonToModel(model, data, permitId)
 			})
-		const detailRecord =
-			data.cleaningType === "grooming"
-				? database
-						.get<GroomingModel>("grooming")
-						.prepareCreate((model) => {
-							applyGroomingToModel(
-								model,
-								data.detail,
-								commonRecord.id,
-							)
-						})
-				: database
-						.get<DehearingModel>("dehearing")
-						.prepareCreate((model) => {
-							applyDehearingToModel(
-								model,
-								data.detail,
-								commonRecord.id,
-							)
-						})
 
-		await database.batch(commonRecord, detailRecord)
+		await database.batch(commonRecord)
 		await recalculatePermitStatuses(permitId)
 	})
 }

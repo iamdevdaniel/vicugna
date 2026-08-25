@@ -211,7 +211,9 @@ export default function () {
 										}),
 									),
 							},
-							details: <TotalChip total={participants.length} />,
+							content: participantsStatus === "done" && (
+								<TotalChip total={participants.length} />
+							),
 						},
 						{
 							title: "Esquila",
@@ -226,7 +228,9 @@ export default function () {
 										}),
 									),
 							},
-							details: <TotalChip total={records.length} />,
+							content: shearingStatus === "done" && (
+								<TotalChip total={records.length} />
+							),
 						},
 						{
 							title: "Registro de fibra",
@@ -241,7 +245,7 @@ export default function () {
 										}),
 									),
 							},
-							details: (
+							content: cleaningStatus === "done" && (
 								<TotalChip total={cleaningRecords.length} />
 							),
 						},

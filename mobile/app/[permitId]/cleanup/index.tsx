@@ -201,7 +201,7 @@ export default function () {
 										),
 									),
 							},
-							details: cleaningHeader?.isCompleted ? (
+							content: cleaningHeader?.isCompleted && (
 								<View style={{ gap: 4 }}>
 									<View
 										style={{
@@ -274,12 +274,12 @@ export default function () {
 										</Text>
 									</View>
 								</View>
-							) : null,
+							),
 						},
 						{
 							title: "Registros de fibra",
 							state: recordsState,
-							details: (
+							content: cleaningCommon.length > 0 && (
 								<View style={{ gap: 8 }}>
 									<TotalChip total={cleaningCommon.length} />
 									{cleaningCommon.map((record, index) => (

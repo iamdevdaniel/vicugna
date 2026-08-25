@@ -7,7 +7,7 @@ export interface StepConfig {
 	title: string
 	state: StepState
 	action?: OverviewStepAction
-	details?: ReactNode
+	content?: ReactNode
 }
 
 export const StepList = ({ steps }: { steps: StepConfig[] }) => {
@@ -20,7 +20,7 @@ export const StepList = ({ steps }: { steps: StepConfig[] }) => {
 					title={step.title}
 					state={step.state}
 					action={step.action}
-					details={step.details}
+					content={step.content}
 				/>
 			))}
 		</>

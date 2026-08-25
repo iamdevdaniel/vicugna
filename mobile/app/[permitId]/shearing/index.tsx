@@ -65,7 +65,7 @@ export default function () {
 										),
 									),
 							},
-							details: shearingForm?.isCompleted ? (
+							content: shearingForm?.isCompleted && (
 								<View style={{ gap: 4 }}>
 									<View
 										style={{
@@ -138,12 +138,12 @@ export default function () {
 										</Text>
 									</View>
 								</View>
-							) : null,
+							),
 						},
 						{
 							title: "Registros de esquila",
 							state: shearingRecordsStepState,
-							details: (
+							content: shearingRecords.length > 0 && (
 								<View style={{ gap: 8 }}>
 									<TotalChip total={shearingRecords.length} />
 									{shearingRecords.map((record, index) => (
