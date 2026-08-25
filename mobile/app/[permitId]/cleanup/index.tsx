@@ -251,7 +251,7 @@ export default function () {
 							) : null,
 						},
 						{
-							title: "Registros de limpieza",
+							title: "Registros de fibra",
 							state: recordsState,
 							details: (
 								<View style={{ gap: 8 }}>
@@ -293,7 +293,7 @@ export default function () {
 						)
 					}
 				>
-					Añadir registro
+					Añadir registro de fibra
 				</Button>
 			</View>
 		</SafeAreaView>

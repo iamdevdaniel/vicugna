@@ -258,12 +258,10 @@ export default function () {
 						)
 					}
 				>
-					Añadir registro
+					Añadir registro de esquila
 				</Button>
 			</View>
-			{isLoadingScreen && (
-				<LoadingOverlay message="Cargando registros..." />
-			)}
+			{isLoadingScreen && <LoadingOverlay message="Cargando..." />}
 		</SafeAreaView>
 	)
 }

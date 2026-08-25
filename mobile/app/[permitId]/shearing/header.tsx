@@ -100,7 +100,7 @@ export default function () {
 	if (loadingPermit || loading) {
 		return (
 			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-				<LoadingOverlay message="Cargando información..." />
+				<LoadingOverlay message="Cargando..." />
 			</SafeAreaView>
 		)
 	}

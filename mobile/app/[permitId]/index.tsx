@@ -229,7 +229,7 @@ export default function () {
 							details: <TotalChip total={records.length} />,
 						},
 						{
-							title: "Limpieza",
+							title: "Registro de fibra",
 							state: cleaningStatus,
 							action: {
 								icon: "chevron-right",

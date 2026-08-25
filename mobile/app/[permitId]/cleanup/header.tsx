@@ -60,14 +60,14 @@ export default function () {
 		if (ok) {
 			router.back()
 		} else {
-			Alert.alert("Error", "No se pudo actualizar la limpieza")
+			Alert.alert("Error", "No se pudo actualizar el registro de fibra")
 		}
 	}
 
 	if (loadingPermit || loading) {
 		return (
 			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-				<LoadingOverlay message="Cargando información..." />
+				<LoadingOverlay message="Cargando..." />
 			</SafeAreaView>
 		)
 	}

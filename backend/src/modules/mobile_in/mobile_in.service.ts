@@ -83,18 +83,18 @@ function validateShearing(data: SyncFieldData): void {
 function validateCleaning(data: SyncFieldData): void {
 	if (!data.cleaningHeader) {
 		throw new PermitValidationError(
-			"La cabecera de limpieza es obligatoria",
+			"La información general del registro de fibra es obligatoria",
 		)
 	}
 
 	if (data.cleaningHeader.permitId !== data.permit.id) {
 		throw new PermitValidationError(
-			"La cabecera de limpieza no pertenece al permiso",
+			"La información general del registro de fibra no pertenece al permiso",
 		)
 	}
 
 	if (!data.cleaningCommonRecords.length) {
-		throw new PermitValidationError("No hay registros de limpieza")
+		throw new PermitValidationError("No hay registros de fibra")
 	}
 
 	if (
@@ -102,35 +102,35 @@ function validateCleaning(data: SyncFieldData): void {
 		data.cleaningCommonRecords.length
 	) {
 		throw new PermitValidationError(
-			"Cada registro de limpieza debe tener un detalle",
+			"Cada registro de fibra debe tener un detalle",
 		)
 	}
 
 	ensureUniqueIds(
 		data.cleaningCommonRecords.map((record) => record.id),
-		"El registro de limpieza",
+		"El registro de fibra",
 	)
 	ensureUniqueIds(
 		data.groomingDetails.map((detail) => detail.cleaningCommonId),
-		"La relación de descerdado",
+		"La relación de limpiado",
 	)
 	ensureUniqueIds(
 		data.groomingDetails.map((detail) => detail.id),
-		"El detalle de descerdado",
+		"El detalle de limpiado",
 	)
 	ensureUniqueIds(
 		data.dehearingDetails.map((detail) => detail.cleaningCommonId),
-		"La relación de depilado",
+		"La relación de predescerdado",
 	)
 	ensureUniqueIds(
 		data.dehearingDetails.map((detail) => detail.id),
-		"El detalle de depilado",
+		"El detalle de predescerdado",
 	)
 
 	for (const record of data.cleaningCommonRecords) {
 		if (record.permitId !== data.permit.id) {
 			throw new PermitValidationError(
-				"El registro de limpieza no pertenece al permiso",
+				"El registro de fibra no pertenece al permiso",
 			)
 		}
 	}
@@ -143,7 +143,7 @@ function validateCleaning(data: SyncFieldData): void {
 	for (const detail of data.groomingDetails) {
 		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
-				"El detalle de descerdado no pertenece al registro de limpieza",
+				"El detalle de limpiado no pertenece al registro de fibra",
 			)
 		}
 
@@ -153,13 +153,13 @@ function validateCleaning(data: SyncFieldData): void {
 	for (const detail of data.dehearingDetails) {
 		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
-				"El detalle de depilado no pertenece al registro de limpieza",
+				"El detalle de predescerdado no pertenece al registro de fibra",
 			)
 		}
 
 		if (usedDetailIds.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
-				"Un registro de limpieza no puede tener descerdado y depilado a la vez",
+				"Un registro de fibra no puede tener limpiado y predescerdado a la vez",
 			)
 		}
 	}

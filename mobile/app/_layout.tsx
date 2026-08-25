@@ -58,10 +58,7 @@ export default function RootLayout() {
 					<Stack.Screen
 						name="[permitId]/participants/[participantId]"
 						options={({ route }) =>
-							permitHeader(route.params, [
-								"Participantes",
-								"Registro",
-							])
+							permitHeader(route.params, ["Participantes"])
 						}
 					/>
 					<Stack.Screen
@@ -82,20 +79,23 @@ export default function RootLayout() {
 					<Stack.Screen
 						name="[permitId]/shearing/record"
 						options={({ route }) =>
-							permitHeader(route.params, ["Esquila", "Registros"])
+							permitHeader(route.params, [
+								"Esquila",
+								"Registro de esquila",
+							])
 						}
 					/>
 					<Stack.Screen
 						name="[permitId]/cleanup/index"
 						options={({ route }) =>
-							permitHeader(route.params, ["Limpieza"])
+							permitHeader(route.params, ["Registro de fibra"])
 						}
 					/>
 					<Stack.Screen
 						name="[permitId]/cleanup/header"
 						options={({ route }) =>
 							permitHeader(route.params, [
-								"Limpieza",
+								"Registro de fibra",
 								"Información general",
 							])
 						}
@@ -103,7 +103,7 @@ export default function RootLayout() {
 					<Stack.Screen
 						name="[permitId]/cleanup/record"
 						options={({ route }) =>
-							permitHeader(route.params, ["Limpieza", "Registro"])
+							permitHeader(route.params, ["Registro de fibra"])
 						}
 					/>
 				</Stack>

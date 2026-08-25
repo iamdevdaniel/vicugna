@@ -111,7 +111,7 @@ export default function () {
 	if (isLoadingScreenData) {
 		return (
 			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-				<LoadingOverlay message="Cargando participante..." />
+				<LoadingOverlay message="Cargando..." />
 			</SafeAreaView>
 		)
 	}

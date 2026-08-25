@@ -100,15 +100,15 @@ export default function ShearingRecordScreen() {
 		if (ok) {
 			router.back()
 		} else {
-			Alert.alert("Error", "No se pudo guardar el registro")
+			Alert.alert("Error", "No se pudo guardar el registro de esquila")
 		}
 	}
 
 	const onDelete = () => {
 		if (!recordId) return
 		Alert.alert(
-			"Eliminar registro",
-			"Seguro que quieres eliminar este registro?",
+			"Eliminar registro de esquila",
+			"Seguro que quieres eliminar este registro de esquila?",
 			[
 				{ text: "Cancelar", style: "cancel" },
 				{
@@ -121,7 +121,7 @@ export default function ShearingRecordScreen() {
 						} else {
 							Alert.alert(
 								"Error",
-								"No se pudo eliminar el registro",
+								"No se pudo eliminar el registro de esquila",
 							)
 						}
 					},
@@ -133,7 +133,7 @@ export default function ShearingRecordScreen() {
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
 			{isLoadingScreenData ? (
-				<LoadingOverlay message="Cargando registro..." />
+				<LoadingOverlay message="Cargando..." />
 			) : isPermitReadOnly && data ? (
 				<ScrollView
 					style={{ flex: 1 }}

@@ -238,7 +238,7 @@ export default function CleaningRecordScreen() {
 			: await createSingleCleaningCommon(permitId, commonFormData)
 
 		if (!commonRecord) {
-			Alert.alert("Error", "No se pudo guardar el registro")
+			Alert.alert("Error", "No se pudo guardar el registro de fibra")
 			return
 		}
 
@@ -283,8 +283,8 @@ export default function CleaningRecordScreen() {
 		}
 
 		Alert.alert(
-			"Eliminar registro",
-			"Seguro que quieres eliminar este registro?",
+			"Eliminar registro de fibra",
+			"Seguro que quieres eliminar este registro de fibra?",
 			[
 				{ text: "Cancelar", style: "cancel" },
 				{
@@ -298,7 +298,10 @@ export default function CleaningRecordScreen() {
 							return
 						}
 
-						Alert.alert("Error", "No se pudo eliminar el registro")
+						Alert.alert(
+							"Error",
+							"No se pudo eliminar el registro de fibra",
+						)
 					},
 				},
 			],
@@ -308,7 +311,7 @@ export default function CleaningRecordScreen() {
 	if (isLoadingScreenData) {
 		return (
 			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-				<LoadingOverlay message="Cargando registro..." />
+				<LoadingOverlay message="Cargando..." />
 			</SafeAreaView>
 		)
 	}

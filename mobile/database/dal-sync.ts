@@ -77,7 +77,7 @@ export async function getFieldSyncData(
 	}
 
 	if (!cleaningHeader) {
-		throw new Error("Falta la cabecera de limpieza")
+		throw new Error("Falta la información general del registro de fibra")
 	}
 
 	return {
