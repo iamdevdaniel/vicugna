@@ -27,6 +27,18 @@
   delete old files at a fixed size/count limit. Never log tokens, passwords,
   signatures, identity numbers, or request payloads. Decide later when and how
   these logs are sent to the backend.
+- TODO: From an existing Registro de fibra record, allow the user to continue
+  directly to the next detail form after saving, instead of always returning to
+  the Registro de fibra overview or permit home screen. Preserve the current
+  edit/create distinction and only offer this navigation when the next form is
+  valid for the current record state.
+- TODO: Design a direct next-form flow for shearing create and edit screens.
+  Decide whether the next destination depends on creating versus editing, the
+  current record/header state, and whether another record already exists. Keep
+  back navigation, cancellation, validation errors, and partially completed
+  records safe. After the partial-save flow is corrected, enforce locked-field
+  behavior in create/edit forms with disabled inputs where appropriate; do not
+  rely only on read-only permit summaries.
 
 ## Backend
 
