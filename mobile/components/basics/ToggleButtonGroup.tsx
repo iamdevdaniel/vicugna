@@ -35,10 +35,10 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 	const theme = useAppTheme()
 	const columnCount = columns && columns > 0 ? columns : 1
 	const selectedBackgroundColor = disabled
-		? theme.colors.surfaceVariant
+		? theme.colors.outlineVariant
 		: theme.colors.secondary
 	const selectedTextColor = disabled
-		? theme.colors.onSurfaceVariant
+		? theme.colors.onSurface
 		: theme.colors.onSecondary
 
 	if (columns) {
@@ -51,7 +51,6 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 						backgroundColor: theme.colors.surface,
 					},
 					style,
-					disabled ? styles.disabled : undefined,
 				]}
 			>
 				{options.map((opt, index) => {
@@ -146,6 +145,8 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 						onSecondaryContainer: selectedTextColor,
 						outline: theme.colors.outlineVariant,
 						onSurface: theme.colors.onSurface,
+						onSurfaceDisabled: theme.colors.onSurfaceVariant,
+						surfaceDisabled: theme.colors.surfaceVariant,
 					},
 				}}
 			/>
@@ -161,9 +162,6 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: "600",
 		paddingVertical: 6,
-	},
-	disabled: {
-		opacity: 0.6,
 	},
 	grid: {
 		width: "100%",

@@ -48,7 +48,9 @@ export function LabeledInput({
 					>
 						<Text
 							style={{
-								color: theme.colors.onPrimary,
+								color: disabled
+									? theme.colors.onSurface
+									: theme.colors.onPrimary,
 								fontSize: 12,
 								fontWeight: "bold",
 							}}

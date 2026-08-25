@@ -1,4 +1,5 @@
 import type { GroomingFormData } from "@definitions/types"
+import { useAppTheme } from "@utils/useAppTheme"
 import { type Control, Controller, type FieldErrors } from "react-hook-form"
 import { Icon, TextInput } from "react-native-paper"
 import { LabeledInput } from "../basics/LabeledInput"
@@ -16,6 +17,8 @@ export function GroomingFields({
 	startIndex,
 	disabled,
 }: GroomingFieldsProps) {
+	const theme = useAppTheme()
+
 	return (
 		<>
 			<LabeledInput
@@ -75,7 +78,7 @@ export function GroomingFields({
 				}
 				labelPrefix={String(startIndex + 2)}
 				labelSuffix="gramos"
-				disabled={disabled}
+				disabled
 			>
 				<Controller
 					control={control}
@@ -85,6 +88,10 @@ export function GroomingFields({
 							mode="outlined"
 							value={value}
 							editable={false}
+							textColor={theme.colors.onSurface}
+							style={{
+								backgroundColor: theme.colors.outlineVariant,
+							}}
 						/>
 					)}
 				/>

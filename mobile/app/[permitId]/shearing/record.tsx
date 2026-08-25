@@ -401,33 +401,27 @@ export default function ShearingRecordScreen() {
 							}
 							labelPrefix="7"
 							error={errors.gestationStatus?.message}
+							disabled={!gestationAllowed}
 						>
-							<View
-								pointerEvents={
-									gestationAllowed ? "auto" : "none"
-								}
-							>
-								<Controller
-									control={control}
-									name="gestationStatus"
-									render={({
-										field: { onChange, value },
-									}) => (
-										<ToggleButtonGroup
-											value={value}
-											onChange={onChange}
-											options={[
-												{ label: "No", value: "No" },
-												{ label: "Si", value: "Si" },
-												{
-													label: "Si ultimo tercio",
-													value: "Si ultimo tercio",
-												},
-											]}
-										/>
-									)}
-								/>
-							</View>
+							<Controller
+								control={control}
+								name="gestationStatus"
+								render={({ field: { onChange, value } }) => (
+									<ToggleButtonGroup
+										value={value}
+										onChange={onChange}
+										disabled={!gestationAllowed}
+										options={[
+											{ label: "No", value: "No" },
+											{ label: "Si", value: "Si" },
+											{
+												label: "Si ultimo tercio",
+												value: "Si ultimo tercio",
+											},
+										]}
+									/>
+								)}
+							/>
 						</LabeledInput>
 
 						<LabeledInput
@@ -536,23 +530,23 @@ export default function ShearingRecordScreen() {
 								</>
 							}
 							labelPrefix="12"
+							disabled
 						>
-							<View pointerEvents="none">
-								<Controller
-									control={control}
-									name="isSheared"
-									render={({ field: { value } }) => (
-										<ToggleButtonGroup
-											value={value ? "Si" : "No"}
-											onChange={() => {}}
-											options={[
-												{ label: "No", value: "No" },
-												{ label: "Si", value: "Si" },
-											]}
-										/>
-									)}
-								/>
-							</View>
+							<Controller
+								control={control}
+								name="isSheared"
+								render={({ field: { value } }) => (
+									<ToggleButtonGroup
+										value={value ? "Si" : "No"}
+										onChange={() => {}}
+										disabled
+										options={[
+											{ label: "No", value: "No" },
+											{ label: "Si", value: "Si" },
+										]}
+									/>
+								)}
+							/>
 						</LabeledInput>
 
 						<LabeledInput
