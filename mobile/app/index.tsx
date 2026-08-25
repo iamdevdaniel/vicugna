@@ -4,6 +4,7 @@ import {
 	HomeUserHeader,
 	PermitStatusIndicator,
 } from "@components"
+import type { PermitData } from "@definitions/types"
 import { useLoadPermits, useReadPermits } from "@hooks"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
@@ -11,7 +12,7 @@ import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router } from "expo-router"
 import { useEffect, useState } from "react"
-import { FlatList, View } from "react-native"
+import { Alert, FlatList, View } from "react-native"
 import {
 	ActivityIndicator,
 	Button,
@@ -22,6 +23,79 @@ import {
 } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useShallow } from "zustand/react/shallow"
+
+const mockPermits: PermitData[] = [
+	{
+		id: "mock-short-permit-short-community",
+		permitNumber: "1",
+		seasonId: "mock-season",
+		seasonName: "Temporada de prueba",
+		communityId: "Ayllu",
+		regionalId: "mock-regional",
+		departmentId: "mock-department",
+		userId: "mock-user",
+		userFullName: "Usuario de prueba",
+		isActiveAssignmentUser: true,
+		syncStatus: "assigned",
+		syncedAt: null,
+		participantsStatus: "done",
+		shearingStatus: "done",
+		cleaningStatus: "ready",
+	},
+	{
+		id: "mock-long-permit-short-community",
+		permitNumber: "PERMISO-DE-MANEJO-DE-VICUÑA-2026-0000000001",
+		seasonId: "mock-season",
+		seasonName: "Temporada de prueba",
+		communityId: "Ayllu",
+		regionalId: "mock-regional",
+		departmentId: "mock-department",
+		userId: "mock-user",
+		userFullName: "Usuario de prueba",
+		isActiveAssignmentUser: true,
+		syncStatus: "assigned",
+		syncedAt: null,
+		participantsStatus: "done",
+		shearingStatus: "done",
+		cleaningStatus: "ready",
+	},
+	{
+		id: "mock-short-permit-long-community",
+		permitNumber: "2",
+		seasonId: "mock-season",
+		seasonName: "Temporada de prueba",
+		communityId:
+			"Asociación Comunitaria de Manejadores de Vicuña de San Antonio de Lípez",
+		regionalId: "mock-regional",
+		departmentId: "mock-department",
+		userId: "mock-user",
+		userFullName: "Usuario de prueba",
+		isActiveAssignmentUser: true,
+		syncStatus: "assigned",
+		syncedAt: null,
+		participantsStatus: "done",
+		shearingStatus: "done",
+		cleaningStatus: "ready",
+	},
+	{
+		id: "mock-long-permit-long-community",
+		permitNumber: "PERMISO-DE-MANEJO-DE-VICUÑA-2026-0000000002",
+		seasonId: "mock-season",
+		seasonName: "Temporada de prueba",
+		communityId:
+			"Asociación Comunitaria de Manejadores de Vicuña de San Antonio de Lípez",
+		regionalId: "mock-regional",
+		departmentId: "mock-department",
+		userId: "mock-user",
+		userFullName: "Usuario de prueba",
+		isActiveAssignmentUser: true,
+		syncStatus: "assigned",
+		syncedAt: null,
+		participantsStatus: "done",
+		shearingStatus: "done",
+		cleaningStatus: "ready",
+	},
+]
 
 export default function HomeScreen() {
 	const theme = useAppTheme()
@@ -41,6 +115,8 @@ export default function HomeScreen() {
 	const { loadPermits, loadingPermits } = useLoadPermits()
 
 	const hasPermits = permits.length > 0
+	const displayedPermits =
+		__DEV__ && hasPermits ? [...permits, ...mockPermits] : permits
 	const isPermitListLoading = loading || loadingPermits
 	const shouldShowPermitLoadCard =
 		isAuthenticated && !hasPermits && !loadingPermits
@@ -94,7 +170,7 @@ export default function HomeScreen() {
 			style={{ flex: 1, backgroundColor: theme.colors.background }}
 		>
 			<FlatList
-				data={permits}
+				data={displayedPermits}
 				keyExtractor={(item) => item.id}
 				contentContainerStyle={{
 					padding: 16,
@@ -192,29 +268,53 @@ export default function HomeScreen() {
 							/>
 						}
 						style={{ marginBottom: 10 }}
-						onPress={() =>
-							router.push(
-								ROUTES.OVERVIEW({
-									permitId: permit.id,
-									permitNumber: permit.permitNumber,
-								}),
+						onLongPress={() =>
+							Alert.alert(
+								"Información del permiso",
+								`${permit.permitNumber}\n\n${getCommunityName(permit.communityId)}`,
 							)
+						}
+						onPress={
+							mockPermits.some(
+								(mockPermit) => mockPermit.id === permit.id,
+							)
+								? undefined
+								: () =>
+										router.push(
+											ROUTES.OVERVIEW({
+												permitId: permit.id,
+												permitNumber:
+													permit.permitNumber,
+											}),
+										)
 						}
 					>
 						<View
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
-								gap: 12,
 								paddingVertical: 10,
-								paddingRight: 12,
+								paddingHorizontal: 12,
 							}}
 						>
-							<View style={{ gap: 2 }}>
-								<Text variant="titleMedium">
+							<View
+								style={{
+									width: "40%",
+									gap: 2,
+								}}
+							>
+								<Text
+									variant="titleMedium"
+									numberOfLines={1}
+									ellipsizeMode="tail"
+								>
 									{permit.permitNumber}
 								</Text>
-								<Text variant="bodyMedium">
+								<Text
+									variant="bodyMedium"
+									numberOfLines={1}
+									ellipsizeMode="tail"
+								>
 									{getCommunityName(permit.communityId)}
 								</Text>
 							</View>
@@ -225,9 +325,9 @@ export default function HomeScreen() {
 							/>
 							<View
 								style={{
-									width: 26,
+									width: "15%",
 									height: 26,
-									alignItems: "center",
+									alignItems: "flex-end",
 									justifyContent: "center",
 								}}
 							>

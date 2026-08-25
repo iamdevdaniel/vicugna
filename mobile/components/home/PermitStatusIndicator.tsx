@@ -39,8 +39,8 @@ export function PermitStatusIndicator({
 				flexDirection: "row",
 				alignItems: "center",
 				justifyContent: "center",
-				flex: 1,
-				paddingHorizontal: 14,
+				width: "45%",
+				paddingHorizontal: 4,
 			}}
 		>
 			{statuses.map((item, index) => (
