@@ -1,13 +1,6 @@
+import Decimal from "decimal.js"
+
 const decimalTextPattern = /^(?:\d+|\d*\.\d+)$/
-
-function getDecimalPlaces(value: string): number {
-	return value.split(".")[1]?.length ?? 0
-}
-
-function toScaledInteger(value: string, decimalPlaces: number): bigint {
-	const [whole = "0", fraction = ""] = value.split(".")
-	return BigInt(`${whole || "0"}${fraction.padEnd(decimalPlaces, "0")}`)
-}
 
 export function calculateTotalWeight(
 	cleanWeight: string,
@@ -20,22 +13,16 @@ export function calculateTotalWeight(
 		return ""
 	}
 
-	const decimalPlaces = Math.max(
-		getDecimalPlaces(cleanWeight),
-		getDecimalPlaces(dirtyWeight),
-	)
-	const total = (
-		toScaledInteger(cleanWeight, decimalPlaces) +
-		toScaledInteger(dirtyWeight, decimalPlaces)
-	)
-		.toString()
-		.padStart(decimalPlaces + 1, "0")
+	return new Decimal(cleanWeight).plus(dirtyWeight).toString()
+}
 
-	if (decimalPlaces === 0) {
-		return total
+export function isWeightLessThanOrEqual(
+	weight: string,
+	limit: string,
+): boolean | null {
+	if (!decimalTextPattern.test(weight) || !decimalTextPattern.test(limit)) {
+		return null
 	}
 
-	const whole = total.slice(0, -decimalPlaces)
-	const fraction = total.slice(-decimalPlaces).replace(/0+$/, "")
-	return fraction ? `${whole}.${fraction}` : whole
+	return new Decimal(weight).lessThanOrEqualTo(limit)
 }

@@ -10,6 +10,7 @@ import {
 } from "@components"
 import type {
 	CleaningCommonFormData,
+	CleaningRecordSaveData,
 	DehearingFormData,
 	GroomingFormData,
 } from "@definitions/types"
@@ -19,9 +20,7 @@ import {
 	useReadSingleDehearing,
 	useReadSingleGrooming,
 	useReadSinglePermit,
-	useSingleCleaningCommonActions,
-	useSingleDehearingActions,
-	useSingleGroomingActions,
+	useSingleCleaningRecordActions,
 } from "@hooks"
 import { calculateTotalWeight } from "@utils/grooming-record-rules"
 import {
@@ -61,31 +60,18 @@ export default function CleaningRecordScreen() {
 		useReadSingleDehearing(recordId)
 
 	const {
-		createSingleCleaningCommon,
-		updateSingleCleaningCommon,
-		deleteSingleCleaningCommon,
-		saving: savingCommon,
-		deleting: deletingCommon,
-	} = useSingleCleaningCommonActions()
-	const {
-		createSingleGrooming,
-		updateSingleGrooming,
-		deleteSingleGrooming,
-		saving: savingGrooming,
-		deleting: deletingGrooming,
-	} = useSingleGroomingActions()
-	const {
-		createSingleDehearing,
-		updateSingleDehearing,
-		deleteSingleDehearing,
-		saving: savingDehearing,
-		deleting: deletingDehearing,
-	} = useSingleDehearingActions()
+		createSingleCleaningRecord,
+		updateSingleCleaningRecord,
+		deleteSingleCleaningRecord,
+		saving,
+		deleting,
+	} = useSingleCleaningRecordActions()
 
 	const {
 		control: commonControl,
 		getValues: getCommonValues,
 		reset: resetCommon,
+		watch: watchCommon,
 		formState: { errors: commonErrors, isValid: isCommonValid },
 		trigger: triggerCommon,
 	} = useForm<CleaningCommonFormData>({
@@ -93,6 +79,7 @@ export default function CleaningRecordScreen() {
 		defaultValues: defaultValuesCleaningCommon,
 		resolver: yupResolver(yupCleaningCommon),
 	})
+	const grossWeight = watchCommon("grossWeight")
 
 	const {
 		control: groomingControl,
@@ -105,6 +92,7 @@ export default function CleaningRecordScreen() {
 	} = useForm<GroomingFormData>({
 		mode: "onChange",
 		defaultValues: defaultValuesGrooming,
+		context: { grossWeight },
 		resolver: yupResolver(yupGrooming),
 	})
 	const cleanWeight = watchGrooming("cleanWeight")
@@ -151,7 +139,26 @@ export default function CleaningRecordScreen() {
 		setGroomingValue("totalWeight", totalWeight, {
 			shouldValidate: totalWeight !== "",
 		})
-	}, [setGroomingValue, totalWeight])
+
+		if (cleanWeight && dirtyWeight) {
+			triggerGrooming("dirtyWeight")
+		}
+	}, [
+		cleanWeight,
+		dirtyWeight,
+		setGroomingValue,
+		totalWeight,
+		triggerGrooming,
+	])
+
+	useEffect(() => {
+		const { cleanWeight, dirtyWeight } = getGroomingValues()
+		const hasWeightValue = grossWeight || cleanWeight || dirtyWeight
+
+		if (hasWeightValue) {
+			triggerGrooming(["cleanWeight", "dirtyWeight"])
+		}
+	}, [getGroomingValues, grossWeight, triggerGrooming])
 
 	useEffect(() => {
 		if (!dehearingData) {
@@ -175,8 +182,6 @@ export default function CleaningRecordScreen() {
 				loadingGrooming ||
 				loadingDehearing ||
 				!commonData))
-	const saving = savingCommon || savingGrooming || savingDehearing
-	const deleting = deletingCommon || deletingGrooming || deletingDehearing
 	const saveDisabled =
 		isPermitReadOnly ||
 		saving ||
@@ -189,91 +194,39 @@ export default function CleaningRecordScreen() {
 			? "Guardar limpiado"
 			: "Guardar predescerdado"
 
-	const saveGrooming = async (
-		cleaningCommonId: string,
-		data: GroomingFormData,
-	) => {
-		if (dehearingData) {
-			const deleted = await deleteSingleDehearing(dehearingData.id)
-
-			if (!deleted) {
-				Alert.alert("Error", "No se pudo cambiar el tipo")
-				return false
-			}
-		}
-
-		return groomingData
-			? await updateSingleGrooming(groomingData.id, data)
-			: await createSingleGrooming(cleaningCommonId, data)
-	}
-
-	const saveDehearing = async (
-		cleaningCommonId: string,
-		data: DehearingFormData,
-	) => {
-		if (groomingData) {
-			const deleted = await deleteSingleGrooming(groomingData.id)
-
-			if (!deleted) {
-				Alert.alert("Error", "No se pudo cambiar el tipo")
-				return false
-			}
-		}
-
-		return dehearingData
-			? await updateSingleDehearing(dehearingData.id, data)
-			: await createSingleDehearing(cleaningCommonId, data)
-	}
-
 	const onSave = async () => {
 		const isCommonFormValid = await triggerCommon()
+		const isDetailFormValid =
+			cleaningType === "grooming"
+				? await triggerGrooming()
+				: await triggerDehearing()
 
-		if (!isCommonFormValid) {
+		if (!isCommonFormValid || !isDetailFormValid) {
 			return
 		}
 
-		const commonFormData = getCommonValues()
-		const commonRecord = recordId
-			? await updateSingleCleaningCommon(recordId, commonFormData)
-			: await createSingleCleaningCommon(permitId, commonFormData)
-
-		if (!commonRecord) {
-			Alert.alert("Error", "No se pudo guardar el registro de fibra")
-			return
-		}
-
-		if (cleaningType === "grooming") {
-			const isGroomingFormValid = await triggerGrooming()
-
-			if (!isGroomingFormValid) {
-				return
-			}
-
-			const ok = await saveGrooming(commonRecord.id, getGroomingValues())
-
-			if (ok) {
-				router.back()
-				return
-			}
-
-			Alert.alert("Error", "No se pudo guardar el limpiado")
-			return
-		}
-
-		const isDehearingFormValid = await triggerDehearing()
-
-		if (!isDehearingFormValid) {
-			return
-		}
-
-		const ok = await saveDehearing(commonRecord.id, getDehearingValues())
+		const saveData: CleaningRecordSaveData =
+			cleaningType === "grooming"
+				? {
+						cleaningType,
+						common: getCommonValues(),
+						detail: getGroomingValues(),
+					}
+				: {
+						cleaningType,
+						common: getCommonValues(),
+						detail: getDehearingValues(),
+					}
+		const ok = recordId
+			? await updateSingleCleaningRecord(recordId, saveData)
+			: await createSingleCleaningRecord(permitId, saveData)
 
 		if (ok) {
 			router.back()
 			return
 		}
 
-		Alert.alert("Error", "No se pudo guardar el predescerdado")
+		Alert.alert("Error", "No se pudo guardar el registro de fibra")
 	}
 
 	const onDelete = () => {
@@ -291,7 +244,7 @@ export default function CleaningRecordScreen() {
 					text: "Eliminar",
 					style: "destructive",
 					onPress: async () => {
-						const ok = await deleteSingleCleaningCommon(recordId)
+						const ok = await deleteSingleCleaningRecord(recordId)
 
 						if (ok) {
 							router.back()
@@ -527,7 +480,7 @@ export default function CleaningRecordScreen() {
 						<CustomDeleteButton
 							onPress={onDelete}
 							disabled={isPermitReadOnly || saving || deleting}
-							loading={deletingCommon}
+							loading={deleting}
 							style={{ flex: 1 }}
 						>
 							Borrar

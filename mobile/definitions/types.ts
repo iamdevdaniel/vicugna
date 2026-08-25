@@ -123,3 +123,15 @@ export type DehearingFormData = Omit<
 	dehairedWeight: string
 	bristleWeight: string
 }
+
+export type CleaningRecordSaveData =
+	| {
+			cleaningType: "grooming"
+			common: CleaningCommonFormData
+			detail: GroomingFormData
+	  }
+	| {
+			cleaningType: "dehearing"
+			common: CleaningCommonFormData
+			detail: DehearingFormData
+	  }

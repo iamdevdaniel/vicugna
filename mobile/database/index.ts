@@ -1,10 +1,6 @@
 export {
-	createSingleCleaningCommon,
-	createSingleDehearing,
-	createSingleGrooming,
-	deleteSingleCleaningCommon,
-	deleteSingleDehearing,
-	deleteSingleGrooming,
+	createSingleCleaningRecord,
+	deleteSingleCleaningRecord,
 	subscribeBulkCleaningCommon,
 	subscribeBulkDehearing,
 	subscribeBulkGrooming,
@@ -12,10 +8,8 @@ export {
 	subscribeSingleCleaningHeader,
 	subscribeSingleDehearing,
 	subscribeSingleGrooming,
-	updateSingleCleaningCommon,
 	updateSingleCleaningHeader,
-	updateSingleDehearing,
-	updateSingleGrooming,
+	updateSingleCleaningRecord,
 } from "./dal-cleaning"
 export { clearPermitFieldData, seedPermitFieldData } from "./dal-dev"
 export {

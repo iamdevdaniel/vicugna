@@ -1,12 +1,10 @@
 import type {
 	CleaningCommonData,
-	CleaningCommonFormData,
 	CleaningHeaderData,
 	CleaningHeaderFormData,
+	CleaningRecordSaveData,
 	DehearingData,
-	DehearingFormData,
 	GroomingData,
-	GroomingFormData,
 } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import { recalculatePermitStatuses } from "./dal-permit"
@@ -213,43 +211,118 @@ export async function updateSingleCleaningHeader(
 	})
 }
 
-export async function createSingleCleaningCommon(
+export async function createSingleCleaningRecord(
 	permitId: string,
-	data: CleaningCommonFormData,
-): Promise<CleaningCommonData> {
-	let record: CleaningCommonModel | undefined
+	data: CleaningRecordSaveData,
+): Promise<void> {
 	await database.write(async () => {
-		record = await database
+		const commonRecord = database
 			.get<CleaningCommonModel>("cleaningCommon")
-			.create((model) => {
-				applyCleaningCommonToModel(model, data, permitId)
+			.prepareCreate((model) => {
+				applyCleaningCommonToModel(model, data.common, permitId)
 			})
+		const detailRecord =
+			data.cleaningType === "grooming"
+				? database
+						.get<GroomingModel>("grooming")
+						.prepareCreate((model) => {
+							applyGroomingToModel(
+								model,
+								data.detail,
+								commonRecord.id,
+							)
+						})
+				: database
+						.get<DehearingModel>("dehearing")
+						.prepareCreate((model) => {
+							applyDehearingToModel(
+								model,
+								data.detail,
+								commonRecord.id,
+							)
+						})
+
+		await database.batch(commonRecord, detailRecord)
 		await recalculatePermitStatuses(permitId)
 	})
-	if (!record) throw new Error("Failed to create cleaning common")
-	return mapToCleaningCommon(record)
 }
 
-export async function updateSingleCleaningCommon(
+export async function updateSingleCleaningRecord(
 	cleaningCommonId: string,
-	data: CleaningCommonFormData,
-): Promise<CleaningCommonData> {
-	let record: CleaningCommonModel | undefined
+	data: CleaningRecordSaveData,
+): Promise<void> {
 	await database.write(async () => {
-		record = await database
+		const commonRecord = await database
 			.get<CleaningCommonModel>("cleaningCommon")
 			.find(cleaningCommonId)
-		await record.update((model) => {
-			applyCleaningCommonToModel(model, data)
-		})
+		const [groomingRecords, dehearingRecords] = await Promise.all([
+			database
+				.get<GroomingModel>("grooming")
+				.query(Q.where("cleaningCommonId", cleaningCommonId))
+				.fetch(),
+			database
+				.get<DehearingModel>("dehearing")
+				.query(Q.where("cleaningCommonId", cleaningCommonId))
+				.fetch(),
+		])
+		const batchOps: Model[] = [
+			commonRecord.prepareUpdate((model) => {
+				applyCleaningCommonToModel(model, data.common)
+			}),
+		]
+
+		if (data.cleaningType === "grooming") {
+			batchOps.push(
+				...dehearingRecords.map((record) =>
+					record.prepareDestroyPermanently(),
+				),
+				...groomingRecords
+					.slice(1)
+					.map((record) => record.prepareDestroyPermanently()),
+				groomingRecords[0]
+					? groomingRecords[0].prepareUpdate((model) => {
+							applyGroomingToModel(model, data.detail)
+						})
+					: database
+							.get<GroomingModel>("grooming")
+							.prepareCreate((model) => {
+								applyGroomingToModel(
+									model,
+									data.detail,
+									cleaningCommonId,
+								)
+							}),
+			)
+		} else {
+			batchOps.push(
+				...groomingRecords.map((record) =>
+					record.prepareDestroyPermanently(),
+				),
+				...dehearingRecords
+					.slice(1)
+					.map((record) => record.prepareDestroyPermanently()),
+				dehearingRecords[0]
+					? dehearingRecords[0].prepareUpdate((model) => {
+							applyDehearingToModel(model, data.detail)
+						})
+					: database
+							.get<DehearingModel>("dehearing")
+							.prepareCreate((model) => {
+								applyDehearingToModel(
+									model,
+									data.detail,
+									cleaningCommonId,
+								)
+							}),
+			)
+		}
+
+		await database.batch(batchOps)
+		await recalculatePermitStatuses(commonRecord.permitId)
 	})
-
-	if (!record) throw new Error("Failed to update cleaning common")
-
-	return mapToCleaningCommon(record)
 }
 
-export async function deleteSingleCleaningCommon(
+export async function deleteSingleCleaningRecord(
 	cleaningCommonId: string,
 ): Promise<void> {
 	await database.write(async () => {
@@ -272,109 +345,5 @@ export async function deleteSingleCleaningCommon(
 		]
 		await database.batch(batchOps)
 		await recalculatePermitStatuses(permitId)
-	})
-}
-
-export async function createSingleGrooming(
-	cleaningCommonId: string,
-	data: GroomingFormData,
-): Promise<GroomingData> {
-	let record: GroomingModel | undefined
-	await database.write(async () => {
-		const commonRecord = await database
-			.get<CleaningCommonModel>("cleaningCommon")
-			.find(cleaningCommonId)
-		record = await database
-			.get<GroomingModel>("grooming")
-			.create((model) => {
-				applyGroomingToModel(model, data, cleaningCommonId)
-			})
-		await recalculatePermitStatuses(commonRecord.permitId)
-	})
-	if (!record) throw new Error("Failed to create grooming")
-	return mapToGrooming(record)
-}
-
-export async function updateSingleGrooming(
-	groomingId: string,
-	data: GroomingFormData,
-): Promise<void> {
-	await database.write(async () => {
-		const record = await database
-			.get<GroomingModel>("grooming")
-			.find(groomingId)
-		const commonRecord = await database
-			.get<CleaningCommonModel>("cleaningCommon")
-			.find(record.cleaningCommonId)
-		await record.update((model) => {
-			applyGroomingToModel(model, data)
-		})
-		await recalculatePermitStatuses(commonRecord.permitId)
-	})
-}
-
-export async function deleteSingleGrooming(groomingId: string): Promise<void> {
-	await database.write(async () => {
-		const record = await database
-			.get<GroomingModel>("grooming")
-			.find(groomingId)
-		const commonRecord = await database
-			.get<CleaningCommonModel>("cleaningCommon")
-			.find(record.cleaningCommonId)
-		await record.destroyPermanently()
-		await recalculatePermitStatuses(commonRecord.permitId)
-	})
-}
-
-export async function createSingleDehearing(
-	cleaningCommonId: string,
-	data: DehearingFormData,
-): Promise<DehearingData> {
-	let record: DehearingModel | undefined
-	await database.write(async () => {
-		const commonRecord = await database
-			.get<CleaningCommonModel>("cleaningCommon")
-			.find(cleaningCommonId)
-		record = await database
-			.get<DehearingModel>("dehearing")
-			.create((model) => {
-				applyDehearingToModel(model, data, cleaningCommonId)
-			})
-		await recalculatePermitStatuses(commonRecord.permitId)
-	})
-	if (!record) throw new Error("Failed to create dehearing")
-	return mapToDehearing(record)
-}
-
-export async function updateSingleDehearing(
-	dehearingId: string,
-	data: DehearingFormData,
-): Promise<void> {
-	await database.write(async () => {
-		const record = await database
-			.get<DehearingModel>("dehearing")
-			.find(dehearingId)
-		const commonRecord = await database
-			.get<CleaningCommonModel>("cleaningCommon")
-			.find(record.cleaningCommonId)
-		await record.update((model) => {
-			applyDehearingToModel(model, data)
-		})
-		await recalculatePermitStatuses(commonRecord.permitId)
-	})
-}
-
-export async function deleteSingleDehearing(
-	dehearingId: string,
-): Promise<void> {
-	await database.write(async () => {
-		const record = await database
-			.get<DehearingModel>("dehearing")
-			.find(dehearingId)
-		const commonRecord = await database
-			.get<CleaningCommonModel>("cleaningCommon")
-			.find(record.cleaningCommonId)
-		await record.destroyPermanently()
-		await recalculatePermitStatuses(commonRecord.permitId)
 	})
 }

@@ -1,7 +1,12 @@
+import Decimal from "decimal.js"
 import { getMobileUserFromAuthorization } from "../mobile-auth/mobile_auth.service"
 import { PermitValidationError } from "./mobile_in.errors"
 import { saveSyncFieldData } from "./mobile_in.repository"
-import type { SyncFieldData } from "./mobile_in.types"
+import type {
+	CleaningCommonData,
+	GroomingData,
+	SyncFieldData,
+} from "./mobile_in.types"
 
 export async function submitSyncFieldData(
 	data: SyncFieldData,
@@ -133,25 +138,31 @@ function validateCleaning(data: SyncFieldData): void {
 				"El registro de fibra no pertenece al permiso",
 			)
 		}
+		if (!isPositiveFiniteNumber(record.grossWeight)) {
+			throw new PermitValidationError("El peso bruto no es válido")
+		}
 	}
 
-	const cleaningCommonIds = new Set(
-		data.cleaningCommonRecords.map((record) => record.id),
+	const cleaningRecordsById = new Map(
+		data.cleaningCommonRecords.map((record) => [record.id, record]),
 	)
 	const usedDetailIds = new Set<string>()
 
 	for (const detail of data.groomingDetails) {
-		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
+		const commonRecord = cleaningRecordsById.get(detail.cleaningCommonId)
+
+		if (!commonRecord) {
 			throw new PermitValidationError(
 				"El detalle de limpiado no pertenece al registro de fibra",
 			)
 		}
 
+		validateGroomingWeights(commonRecord, detail)
 		usedDetailIds.add(detail.cleaningCommonId)
 	}
 
 	for (const detail of data.dehearingDetails) {
-		if (!cleaningCommonIds.has(detail.cleaningCommonId)) {
+		if (!cleaningRecordsById.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
 				"El detalle de predescerdado no pertenece al registro de fibra",
 			)
@@ -163,6 +174,50 @@ function validateCleaning(data: SyncFieldData): void {
 			)
 		}
 	}
+}
+
+function validateGroomingWeights(
+	commonRecord: CleaningCommonData,
+	detail: GroomingData,
+): void {
+	const { grossWeight } = commonRecord
+	const { cleanWeight, dirtyWeight, totalWeight } = detail
+
+	if (
+		![cleanWeight, dirtyWeight, totalWeight].every(isPositiveFiniteNumber)
+	) {
+		throw new PermitValidationError("Los pesos del limpiado no son válidos")
+	}
+
+	const grossWeightDecimal = new Decimal(grossWeight)
+	const cleanWeightDecimal = new Decimal(cleanWeight)
+	const dirtyWeightDecimal = new Decimal(dirtyWeight)
+	const calculatedTotal = cleanWeightDecimal.plus(dirtyWeightDecimal)
+
+	if (cleanWeightDecimal.greaterThan(grossWeightDecimal)) {
+		throw new PermitValidationError(
+			"El peso del vellón limpio no puede superar el peso bruto",
+		)
+	}
+	if (dirtyWeightDecimal.greaterThan(grossWeightDecimal)) {
+		throw new PermitValidationError(
+			"El peso braga no puede superar el peso bruto",
+		)
+	}
+	if (calculatedTotal.greaterThan(grossWeightDecimal)) {
+		throw new PermitValidationError(
+			"La suma de los pesos del limpiado no puede superar el peso bruto",
+		)
+	}
+	if (!calculatedTotal.equals(totalWeight)) {
+		throw new PermitValidationError(
+			"El peso total de la fibra no coincide con los pesos del limpiado",
+		)
+	}
+}
+
+function isPositiveFiniteNumber(value: number): boolean {
+	return Number.isFinite(value) && value > 0
 }
 
 function ensureUniqueIds(ids: string[], label: string): void {
