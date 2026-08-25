@@ -9,7 +9,7 @@ import {
 	useWindowDimensions,
 	View,
 } from "react-native"
-import { Button, Divider, IconButton, Text } from "react-native-paper"
+import { Button, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { SvgXml } from "react-native-svg"
 import mobilePackage from "../../package.json"
@@ -111,26 +111,6 @@ export function HomeAccountMenu({
 				}}
 			>
 				<SafeAreaView style={{ flex: 1 }}>
-					<View
-						style={{
-							flexDirection: "row",
-							alignItems: "center",
-							paddingHorizontal: 20,
-							paddingVertical: 8,
-						}}
-					>
-						<Text variant="titleLarge" style={{ flex: 1 }}>
-							Mi cuenta
-						</Text>
-						<IconButton
-							icon="close"
-							onPress={dismiss}
-							accessibilityLabel="Cerrar menú"
-						/>
-					</View>
-
-					<Divider />
-
 					<View
 						style={{
 							alignItems: "center",

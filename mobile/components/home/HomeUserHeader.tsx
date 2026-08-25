@@ -1,7 +1,7 @@
 import type { MobileAuthUser } from "@definitions/types"
 import { toSvg } from "jdenticon/browser"
 import { useState } from "react"
-import { View } from "react-native"
+import { Image, View } from "react-native"
 import { Button, Card, IconButton, Text } from "react-native-paper"
 import { SvgXml } from "react-native-svg"
 import { HomeAccountMenu } from "./HomeAccountMenu"
@@ -53,31 +53,36 @@ export function HomeUserHeader({
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
-					gap: 12,
 					marginBottom: 16,
-					padding: 4,
+					paddingHorizontal: 4,
 				}}
 			>
-				<View
-					style={{
-						width: 48,
-						height: 48,
-						borderRadius: 999,
-						backgroundColor: "#f8f885",
-						alignItems: "center",
-						justifyContent: "center",
-					}}
-				>
-					<SvgXml xml={avatar} width={40} height={40} />
-				</View>
-				<View style={{ flex: 1 }}>
-					<Text variant="titleMedium">{user.fullName}</Text>
-				</View>
 				<IconButton
 					icon="menu"
 					onPress={() => setIsAccountMenuVisible(true)}
 					accessibilityLabel="Abrir menú de cuenta"
 				/>
+				<View style={{ flex: 1, alignItems: "center" }}>
+					<Image
+						source={require("../../assets/images/vicugna-splash-title.png")}
+						resizeMode="contain"
+						style={{ width: 150, height: 34 }}
+					/>
+				</View>
+				<View style={{ width: 48, alignItems: "flex-end" }}>
+					<View
+						style={{
+							width: 40,
+							height: 40,
+							borderRadius: 999,
+							backgroundColor: "#f8f885",
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<SvgXml xml={avatar} width={34} height={34} />
+					</View>
+				</View>
 			</View>
 
 			<HomeAccountMenu

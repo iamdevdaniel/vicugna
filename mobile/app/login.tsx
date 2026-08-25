@@ -3,8 +3,8 @@ import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
 import { Redirect } from "expo-router"
 import { useState } from "react"
-import { View } from "react-native"
-import { Button, Card, Text, TextInput } from "react-native-paper"
+import { Image, KeyboardAvoidingView, View } from "react-native"
+import { Button, Text, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useShallow } from "zustand/react/shallow"
 
@@ -45,49 +45,89 @@ export default function LoginScreen() {
 
 	return (
 		<SafeAreaView
-			style={{ flex: 1, backgroundColor: theme.colors.background }}
+			style={{
+				flex: 1,
+				backgroundColor: theme.colors.custom.pastelYellow,
+			}}
 		>
-			<View
+			<KeyboardAvoidingView
+				behavior="height"
 				style={{
 					flex: 1,
-					justifyContent: "center",
-					padding: 16,
 				}}
 			>
-				<Card>
-					<Card.Content style={{ gap: 12 }}>
-						<Text variant="titleMedium">
-							Inicio de sesión móvil
-						</Text>
+				<Image
+					source={require("../assets/images/vicugna-logo-hero.png")}
+					resizeMode="cover"
+					style={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						right: 0,
+						width: "100%",
+						height: "48%",
+					}}
+				/>
+
+				<View
+					style={{
+						position: "absolute",
+						left: 0,
+						right: 0,
+						bottom: 0,
+						height: "60%",
+						paddingHorizontal: 28,
+						paddingTop: 28,
+						paddingBottom: 24,
+						justifyContent: "space-between",
+						backgroundColor: theme.colors.surface,
+						borderTopLeftRadius: 36,
+						borderTopRightRadius: 36,
+						shadowColor: "#000",
+						shadowOffset: { width: 0, height: -4 },
+						shadowOpacity: 0.08,
+						shadowRadius: 12,
+						elevation: 8,
+					}}
+				>
+					<Text
+						variant="titleLarge"
+						style={{
+							color: theme.colors.onSurface,
+							fontWeight: "700",
+							marginBottom: 4,
+						}}
+					>
+						Inicio de sesión
+					</Text>
+					<View style={{ gap: 12 }}>
 						<TextInput
 							mode="outlined"
+							dense
 							label="Correo"
 							value={email}
 							onChangeText={(value) => {
-								if (error) {
-									clearError()
-								}
-
+								if (error) clearError()
 								setEmail(value)
 							}}
 							autoCapitalize="none"
 							autoCorrect={false}
 							keyboardType="email-address"
+							left={<TextInput.Icon icon="email-outline" />}
 						/>
 						<TextInput
 							mode="outlined"
+							dense
 							label="Contraseña"
 							value={password}
 							onChangeText={(value) => {
-								if (error) {
-									clearError()
-								}
-
+								if (error) clearError()
 								setPassword(value)
 							}}
 							autoCapitalize="none"
 							autoCorrect={false}
 							secureTextEntry={!isPasswordVisible}
+							left={<TextInput.Icon icon="lock-outline" />}
 							right={
 								<TextInput.Icon
 									icon={
@@ -101,22 +141,27 @@ export default function LoginScreen() {
 								/>
 							}
 						/>
-						{error ? (
-							<Text style={{ color: theme.colors.error }}>
-								{error}
-							</Text>
-						) : null}
-						<Button
-							mode="contained"
-							onPress={onLogin}
-							loading={isLoggingIn}
-							disabled={isLoggingIn || !email.trim() || !password}
+					</View>
+					{error ? (
+						<Text
+							style={{ color: theme.colors.error }}
+							variant="bodySmall"
 						>
-							Iniciar sesión
-						</Button>
-					</Card.Content>
-				</Card>
-			</View>
+							{error}
+						</Text>
+					) : null}
+					<Button
+						mode="contained"
+						onPress={onLogin}
+						loading={isLoggingIn}
+						disabled={isLoggingIn || !email.trim() || !password}
+						contentStyle={{ height: 50 }}
+						style={{ borderRadius: 12, marginTop: 2 }}
+					>
+						Iniciar sesión
+					</Button>
+				</View>
+			</KeyboardAvoidingView>
 		</SafeAreaView>
 	)
 }
