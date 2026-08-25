@@ -62,7 +62,7 @@ export default function HomeScreen() {
 	}
 
 	const onGoToLogin = () => {
-		router.push(ROUTES.LOGIN)
+		router.replace(ROUTES.LOGIN)
 	}
 
 	useEffect(() => {
