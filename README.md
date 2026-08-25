@@ -12,6 +12,23 @@
 - Releases update the version files, create a release commit, and create a Git
   tag such as `backend-v1.0.1` or `mobile-v1.0.1`.
 
+### Branch divergence checks
+
+```bash
+git merge-base origin/main origin/dev
+```
+Shows the last commit shared by `main` and `dev`.
+
+```bash
+git rev-list --left-right --count origin/main...origin/dev
+```
+Counts commits unique to `main` and unique to `dev`, in that order.
+
+```bash
+git show -s --format='%h %ad %s' --date=iso "$(git merge-base origin/main origin/dev)"
+```
+Shows the shared divergence commit's ID, date, and message.
+
 ## Mobile
 
 - TODO: Send each permit and its field data to every assigned user, not only the
@@ -56,7 +73,6 @@
 - TODO: Add password reset flow.
 - TODO: Delete users safely: hard delete only when they have no assigned data; otherwise deactivate.
 - TODO: Enforce completed Registro de fibra headers at the backend sync boundary. The mobile app now allows users to save step 3.1 after entering the start date, while leaving the finishing date empty until the process ends. That partial state is valid locally, but it must not be accepted by `POST /permits/sync`. The backend currently verifies that the cleaning header exists and belongs to the permit, but does not verify `isCompleted` or require non-empty `startDate`, `endDate`, `site`, and `supervisors`. A crafted or outdated client request could therefore sync an incomplete header; PostgreSQL `NOT NULL` does not prevent this because an empty string is still non-null. Add explicit validation, return a Spanish client error, and test that the transaction does not replace existing field data when the header is incomplete.
-- TODO: Investigate the admin frontend version and redirect mismatch. Both localhost and the Render free hosted backend report version `1.1.2`, but localhost allows browsing `domainname/` while the hosted deployment still applies the older forced redirect to `domainname/admin/login`. Determine whether Render is serving stale code, using different environment/configuration, or applying a proxy/cache rule, and make the deployed behavior match the reported version.
 
 ### TODO: Assignment UX And Integrity
 
