@@ -1,6 +1,6 @@
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useState } from "react"
-import { Pressable } from "react-native"
+import { Pressable, type StyleProp, type ViewStyle } from "react-native"
 import { TextInput } from "react-native-paper"
 
 type DateInputProps = {
@@ -9,6 +9,11 @@ type DateInputProps = {
 	error?: boolean
 	placeholder?: string
 	disabled?: boolean
+	style?: StyleProp<ViewStyle>
+}
+
+export function getTodayDateString() {
+	return new Date().toLocaleDateString("es-ES")
 }
 
 function getDateValue(value: string | undefined) {
@@ -21,12 +26,14 @@ export function DateInput({
 	error = false,
 	placeholder = "DD/MM/YYYY",
 	disabled = false,
+	style,
 }: DateInputProps) {
 	const [show, setShow] = useState(false)
 
 	return (
 		<>
 			<Pressable
+				style={style}
 				disabled={disabled}
 				onPress={() => {
 					if (!disabled) {

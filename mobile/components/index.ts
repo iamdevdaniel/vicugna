@@ -1,6 +1,6 @@
 export { AccentCard } from "./basics/AccentCard"
 export { CustomDeleteButton } from "./basics/CustomDeleteButton"
-export { DateInput } from "./basics/DateInput"
+export { DateInput, getTodayDateString } from "./basics/DateInput"
 export { HeaderBreadcrumb } from "./basics/HeaderBreadcrumb"
 export { LabeledInput } from "./basics/LabeledInput"
 export { LoadingOverlay } from "./basics/LoadingOverlay"

@@ -2,12 +2,15 @@ import { AccentCard, ReadOnlyNotice, StepList, TotalChip } from "@components"
 import type { CleaningCommonData } from "@definitions/types"
 import {
 	useReadBulkCleaningCommon,
+	useReadBulkDehearing,
+	useReadBulkGrooming,
 	useReadSingleCleaningHeader,
 	useReadSingleDehearing,
 	useReadSingleGrooming,
 	useReadSinglePermit,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
+import { areCleaningRecordsComplete } from "@utils/misc"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
@@ -141,9 +144,26 @@ export default function () {
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const { data: cleaningHeader } = useReadSingleCleaningHeader(permitId)
 	const { data: cleaningCommon } = useReadBulkCleaningCommon(permitId)
+	const cleaningCommonIds = cleaningCommon.map((record) => record.id)
+	const { data: groomingRecords } = useReadBulkGrooming(cleaningCommonIds)
+	const { data: dehearingRecords } = useReadBulkDehearing(cleaningCommonIds)
 
 	const headerState = cleaningHeader?.isCompleted ? "done" : "ready"
-	const recordsState = cleaningCommon.length ? "done" : "ready"
+	const recordsState = areCleaningRecordsComplete(
+		cleaningCommonIds,
+		new Set(
+			groomingRecords
+				.filter((record) => record.isCompleted)
+				.map((record) => record.cleaningCommonId),
+		),
+		new Set(
+			dehearingRecords
+				.filter((record) => record.isCompleted)
+				.map((record) => record.cleaningCommonId),
+		),
+	)
+		? "done"
+		: "ready"
 
 	return (
 		<SafeAreaView

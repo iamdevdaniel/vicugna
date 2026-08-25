@@ -9,8 +9,8 @@ export const defaultValuesCleaningHeader: CleaningHeaderFormData = {
 }
 
 export const yupCleaningHeader = yup.object().shape({
-	startDate: yup.string().required("Campo requerido"),
-	endDate: yup.string().required("Campo requerido"),
-	site: yup.string().required("Campo requerido"),
-	supervisors: yup.string().required("Campo requerido"),
+	startDate: yup.string().trim().required("Campo requerido"),
+	endDate: yup.string().defined(),
+	site: yup.string().trim().required("Campo requerido"),
+	supervisors: yup.string().trim().required("Campo requerido"),
 })

@@ -30,8 +30,9 @@
 
 ## Backend
 
-- Add password reset flow.
-- Delete users safely: hard delete only when they have no assigned data; otherwise deactivate.
+- TODO: Add password reset flow.
+- TODO: Delete users safely: hard delete only when they have no assigned data; otherwise deactivate.
+- TODO: Enforce completed Registro de fibra headers at the backend sync boundary. The mobile app now allows users to save step 3.1 after entering the start date, while leaving the finishing date empty until the process ends. That partial state is valid locally, but it must not be accepted by `POST /permits/sync`. The backend currently verifies that the cleaning header exists and belongs to the permit, but does not verify `isCompleted` or require non-empty `startDate`, `endDate`, `site`, and `supervisors`. A crafted or outdated client request could therefore sync an incomplete header; PostgreSQL `NOT NULL` does not prevent this because an empty string is still non-null. Add explicit validation, return a Spanish client error, and test that the transaction does not replace existing field data when the header is incomplete.
 
 ### TODO: Assignment UX And Integrity
 

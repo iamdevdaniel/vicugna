@@ -204,9 +204,7 @@ export async function updateSingleCleaningHeader(
 		const record = await database
 			.get<CleaningHeaderModel>("cleaningHeader")
 			.find(headerId)
-		await record.update((model) =>
-			applyCleaningHeaderToModel(model, data, true),
-		)
+		await record.update((model) => applyCleaningHeaderToModel(model, data))
 		await recalculatePermitStatuses(record.permitId)
 	})
 }

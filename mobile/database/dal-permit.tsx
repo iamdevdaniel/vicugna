@@ -1,6 +1,6 @@
 import type { PermitData, PermitSyncResult } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { getDependentStepStatus } from "@utils/misc"
+import { areCleaningRecordsComplete, getDependentStepStatus } from "@utils/misc"
 import { mapToPermit } from "./mappers"
 import type {
 	CleaningCommonModel,
@@ -171,10 +171,10 @@ async function readCleaningStatus(
 
 	return getDependentStepStatus(
 		true,
-		cleaningRecordIds.every(
-			(recordId) =>
-				completedGroomingIds.has(recordId) ||
-				completedDehearingIds.has(recordId),
+		areCleaningRecordsComplete(
+			cleaningRecordIds,
+			completedGroomingIds,
+			completedDehearingIds,
 		),
 	)
 }

@@ -1,5 +1,6 @@
 import {
 	DateInput,
+	getTodayDateString,
 	LabeledInput,
 	LoadingOverlay,
 	ReadOnlyField,
@@ -36,6 +37,7 @@ export default function () {
 	const {
 		control,
 		reset,
+		setValue,
 		formState: { errors, isValid },
 		handleSubmit,
 	} = useForm<CleaningHeaderFormData>({
@@ -130,12 +132,48 @@ export default function () {
 							control={control}
 							name="startDate"
 							render={({ field: { onChange, value } }) => (
-								<DateInput
-									value={value}
-									onChange={onChange}
-									error={!!errors.startDate}
-									disabled={isPermitReadOnly}
-								/>
+								<View style={{ flexDirection: "row", gap: 8 }}>
+									<DateInput
+										value={value}
+										onChange={onChange}
+										error={!!errors.startDate}
+										disabled={isPermitReadOnly}
+										style={{ flex: 1 }}
+									/>
+									<Button
+										mode="outlined"
+										compact
+										style={{
+											borderRadius: 4,
+											minWidth: 82,
+										}}
+										contentStyle={{
+											height: 56,
+											alignItems: "center",
+											justifyContent: "center",
+										}}
+										labelStyle={{
+											fontSize: 15,
+											lineHeight: 20,
+											marginHorizontal: 8,
+											marginVertical: 0,
+											textAlignVertical: "center",
+										}}
+										disabled={isPermitReadOnly}
+										onPress={() =>
+											setValue(
+												"startDate",
+												getTodayDateString(),
+												{
+													shouldDirty: true,
+													shouldValidate: true,
+												},
+											)
+										}
+									>
+										Hoy
+									</Button>
+								</View>
 							)}
 						/>
 					</LabeledInput>
@@ -150,12 +188,48 @@ export default function () {
 							control={control}
 							name="endDate"
 							render={({ field: { onChange, value } }) => (
-								<DateInput
-									value={value}
-									onChange={onChange}
-									error={!!errors.endDate}
-									disabled={isPermitReadOnly}
-								/>
+								<View style={{ flexDirection: "row", gap: 8 }}>
+									<DateInput
+										value={value}
+										onChange={onChange}
+										error={!!errors.endDate}
+										disabled={isPermitReadOnly}
+										style={{ flex: 1 }}
+									/>
+									<Button
+										mode="outlined"
+										compact
+										style={{
+											borderRadius: 4,
+											minWidth: 82,
+										}}
+										contentStyle={{
+											height: 56,
+											alignItems: "center",
+											justifyContent: "center",
+										}}
+										labelStyle={{
+											fontSize: 15,
+											lineHeight: 20,
+											marginHorizontal: 8,
+											marginVertical: 0,
+											textAlignVertical: "center",
+										}}
+										disabled={isPermitReadOnly}
+										onPress={() =>
+											setValue(
+												"endDate",
+												getTodayDateString(),
+												{
+													shouldDirty: true,
+													shouldValidate: true,
+												},
+											)
+										}
+									>
+										Hoy
+									</Button>
+								</View>
 							)}
 						/>
 					</LabeledInput>
