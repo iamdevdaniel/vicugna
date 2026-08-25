@@ -243,7 +243,6 @@ export default function ShearingRecordScreen() {
 							label="Número de arete"
 							labelPrefix="1"
 							error={errors.tagNumber?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -258,7 +257,6 @@ export default function ShearingRecordScreen() {
 										onBlur={onBlur}
 										keyboardType="numeric"
 										error={!!errors.tagNumber}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -268,7 +266,6 @@ export default function ShearingRecordScreen() {
 							label="Sexo"
 							labelPrefix="2"
 							error={errors.sex?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -281,7 +278,6 @@ export default function ShearingRecordScreen() {
 											{ label: "Macho", value: "M" },
 											{ label: "Hembra", value: "F" },
 										]}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -291,7 +287,6 @@ export default function ShearingRecordScreen() {
 							label="Edad"
 							labelPrefix="3"
 							error={errors.ageCategory?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -311,7 +306,6 @@ export default function ShearingRecordScreen() {
 												value: "Adulto",
 											},
 										]}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -322,7 +316,6 @@ export default function ShearingRecordScreen() {
 							labelPrefix="4"
 							labelSuffix="kg"
 							error={errors.liveWeight?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -337,7 +330,6 @@ export default function ShearingRecordScreen() {
 										onBlur={onBlur}
 										keyboardType="decimal-pad"
 										error={!!errors.liveWeight}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -348,7 +340,6 @@ export default function ShearingRecordScreen() {
 							labelPrefix="5"
 							labelSuffix="cm"
 							error={errors.fiberLength?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -363,7 +354,6 @@ export default function ShearingRecordScreen() {
 										onBlur={onBlur}
 										keyboardType="decimal-pad"
 										error={!!errors.fiberLength}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -373,7 +363,6 @@ export default function ShearingRecordScreen() {
 							label="Condicion corporal"
 							labelPrefix="6"
 							error={errors.bodyCondition?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -390,7 +379,6 @@ export default function ShearingRecordScreen() {
 											},
 											{ label: "Bueno", value: "Bueno" },
 										]}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -413,7 +401,6 @@ export default function ShearingRecordScreen() {
 							}
 							labelPrefix="7"
 							error={errors.gestationStatus?.message}
-							disabled={isPermitReadOnly}
 						>
 							<View
 								pointerEvents={
@@ -437,7 +424,6 @@ export default function ShearingRecordScreen() {
 													value: "Si ultimo tercio",
 												},
 											]}
-											disabled={isPermitReadOnly}
 										/>
 									)}
 								/>
@@ -448,7 +434,6 @@ export default function ShearingRecordScreen() {
 							label="Parásitos externos"
 							labelPrefix="8"
 							error={errors.externalParasites?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -467,7 +452,6 @@ export default function ShearingRecordScreen() {
 												value: "Piojos",
 											},
 										]}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -477,7 +461,6 @@ export default function ShearingRecordScreen() {
 							label="Sarna"
 							labelPrefix="9"
 							error={errors.mangeSeverity?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -502,17 +485,12 @@ export default function ShearingRecordScreen() {
 											},
 										]}
 										columns={2}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
 						</LabeledInput>
 
-						<LabeledInput
-							label="Caspa"
-							labelPrefix="10"
-							disabled={isPermitReadOnly}
-						>
+						<LabeledInput label="Caspa" labelPrefix="10">
 							<Controller
 								control={control}
 								name="hasDandruff"
@@ -526,17 +504,12 @@ export default function ShearingRecordScreen() {
 											{ label: "No", value: "No" },
 											{ label: "Si", value: "Si" },
 										]}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
 						</LabeledInput>
 
-						<LabeledInput
-							label="Muerto"
-							labelPrefix="11"
-							disabled={isPermitReadOnly}
-						>
+						<LabeledInput label="Muerto" labelPrefix="11">
 							<Controller
 								control={control}
 								name="isDead"
@@ -550,7 +523,6 @@ export default function ShearingRecordScreen() {
 											{ label: "No", value: "No" },
 											{ label: "Si", value: "Si" },
 										]}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>
@@ -564,7 +536,6 @@ export default function ShearingRecordScreen() {
 								</>
 							}
 							labelPrefix="12"
-							disabled={isPermitReadOnly}
 						>
 							<View pointerEvents="none">
 								<Controller
@@ -578,7 +549,6 @@ export default function ShearingRecordScreen() {
 												{ label: "No", value: "No" },
 												{ label: "Si", value: "Si" },
 											]}
-											disabled={isPermitReadOnly}
 										/>
 									)}
 								/>
@@ -589,7 +559,6 @@ export default function ShearingRecordScreen() {
 							label="Observaciones"
 							labelPrefix="13"
 							error={errors.observations?.message}
-							disabled={isPermitReadOnly}
 						>
 							<Controller
 								control={control}
@@ -610,7 +579,6 @@ export default function ShearingRecordScreen() {
 											textAlignVertical: "top",
 										}}
 										error={!!errors.observations}
-										disabled={isPermitReadOnly}
 									/>
 								)}
 							/>

@@ -174,7 +174,6 @@ export default function () {
 						label="Sitio"
 						labelPrefix="1"
 						error={errors.site?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -189,7 +188,6 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.site}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -201,7 +199,6 @@ export default function () {
 								label="Latitud"
 								labelPrefix="2"
 								error={errors.latitude?.message}
-								disabled={isPermitReadOnly}
 							>
 								<Controller
 									control={control}
@@ -216,7 +213,6 @@ export default function () {
 											onBlur={onBlur}
 											keyboardType="numeric"
 											error={!!errors.latitude}
-											disabled={isPermitReadOnly}
 										/>
 									)}
 								/>
@@ -228,7 +224,6 @@ export default function () {
 								label="Longitud"
 								labelPrefix="3"
 								error={errors.longitude?.message}
-								disabled={isPermitReadOnly}
 							>
 								<Controller
 									control={control}
@@ -243,7 +238,6 @@ export default function () {
 											onBlur={onBlur}
 											keyboardType="numeric"
 											error={!!errors.longitude}
-											disabled={isPermitReadOnly}
 										/>
 									)}
 								/>
@@ -255,7 +249,6 @@ export default function () {
 						label="Cantidad de arreos"
 						labelPrefix="4"
 						error={errors.roundupCount?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -270,7 +263,6 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.roundupCount}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -280,7 +272,6 @@ export default function () {
 						label="Fecha"
 						labelPrefix="5"
 						error={errors.eventDate?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -291,7 +282,6 @@ export default function () {
 										value={value}
 										onChange={onChange}
 										error={!!errors.eventDate}
-										disabled={isPermitReadOnly}
 										style={{ flex: 1 }}
 									/>
 									<Button
@@ -336,7 +326,6 @@ export default function () {
 						label="Hora inicial"
 						labelPrefix="6"
 						error={errors.startTime?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -346,7 +335,6 @@ export default function () {
 									value={value}
 									onChange={onChange}
 									error={!!errors.startTime}
-									disabled={isPermitReadOnly}
 									minuteInterval={5}
 								/>
 							)}
@@ -357,7 +345,6 @@ export default function () {
 						label="Hora conclusión"
 						labelPrefix="7"
 						error={errors.endTime?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -367,7 +354,6 @@ export default function () {
 									value={value}
 									onChange={onChange}
 									error={!!errors.endTime}
-									disabled={isPermitReadOnly}
 									minuteInterval={5}
 								/>
 							)}

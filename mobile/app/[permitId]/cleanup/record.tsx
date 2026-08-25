@@ -376,20 +376,12 @@ export default function CleaningRecordScreen() {
 					}}
 					keyboardShouldPersistTaps="handled"
 				>
-					<LabeledInput
-						label="Tipo"
-						labelPrefix="1"
-						disabled={isPermitReadOnly}
-					>
+					<LabeledInput label="Tipo" labelPrefix="1">
 						<ToggleButtonGroup
 							value={cleaningType}
-							onChange={(value) => {
-								if (isPermitReadOnly) {
-									return
-								}
-
+							onChange={(value) =>
 								setCleaningType(value as CleaningType)
-							}}
+							}
 							options={[
 								{ label: "Limpiado", value: "grooming" },
 								{
@@ -397,7 +389,6 @@ export default function CleaningRecordScreen() {
 									value: "dehearing",
 								},
 							]}
-							disabled={isPermitReadOnly}
 						/>
 					</LabeledInput>
 
@@ -405,7 +396,6 @@ export default function CleaningRecordScreen() {
 						label="Nro de vellon"
 						labelPrefix="2"
 						error={commonErrors.fleeceNumber?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={commonControl}
@@ -420,7 +410,6 @@ export default function CleaningRecordScreen() {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!commonErrors.fleeceNumber}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -431,7 +420,6 @@ export default function CleaningRecordScreen() {
 						labelPrefix="3"
 						labelSuffix="gramos"
 						error={commonErrors.grossWeight?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={commonControl}
@@ -446,7 +434,6 @@ export default function CleaningRecordScreen() {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!commonErrors.grossWeight}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -456,14 +443,12 @@ export default function CleaningRecordScreen() {
 						<GroomingFields
 							control={groomingControl}
 							errors={groomingErrors}
-							disabled={isPermitReadOnly}
 							startIndex={4}
 						/>
 					) : (
 						<DehearingFields
 							control={dehearingControl}
 							errors={dehearingErrors}
-							disabled={isPermitReadOnly}
 							startIndex={4}
 						/>
 					)}

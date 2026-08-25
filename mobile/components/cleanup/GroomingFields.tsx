@@ -6,14 +6,12 @@ import { LabeledInput } from "../basics/LabeledInput"
 type GroomingFieldsProps = {
 	control: Control<GroomingFormData>
 	errors: FieldErrors<GroomingFormData>
-	disabled: boolean
 	startIndex: number
 }
 
 export function GroomingFields({
 	control,
 	errors,
-	disabled,
 	startIndex,
 }: GroomingFieldsProps) {
 	return (
@@ -23,7 +21,6 @@ export function GroomingFields({
 				labelPrefix={String(startIndex)}
 				labelSuffix="gramos"
 				error={errors.cleanWeight?.message}
-				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -36,7 +33,6 @@ export function GroomingFields({
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.cleanWeight}
-							disabled={disabled}
 						/>
 					)}
 				/>
@@ -47,7 +43,6 @@ export function GroomingFields({
 				labelPrefix={String(startIndex + 1)}
 				labelSuffix="gramos"
 				error={errors.dirtyWeight?.message}
-				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -60,7 +55,6 @@ export function GroomingFields({
 							onBlur={onBlur}
 							keyboardType="numeric"
 							error={!!errors.dirtyWeight}
-							disabled={disabled}
 						/>
 					)}
 				/>
@@ -75,7 +69,6 @@ export function GroomingFields({
 				}
 				labelPrefix={String(startIndex + 2)}
 				labelSuffix="gramos"
-				disabled={disabled}
 			>
 				<Controller
 					control={control}
@@ -85,7 +78,6 @@ export function GroomingFields({
 							mode="outlined"
 							value={value}
 							editable={false}
-							disabled={disabled}
 						/>
 					)}
 				/>

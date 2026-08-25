@@ -22,11 +22,13 @@ function CleaningRecordCard({
 	permitId,
 	permitNumber,
 	record,
+	isPermitReadOnly,
 }: {
 	index: number
 	permitId: string
 	permitNumber: string
 	record: CleaningCommonData
+	isPermitReadOnly: boolean
 }) {
 	const theme = useAppTheme()
 	const { data: grooming } = useReadSingleGrooming(record.id)
@@ -125,7 +127,11 @@ function CleaningRecordCard({
 							)
 						}
 					>
-						{isCompleted ? "Editar" : "Continuar"}
+						{isPermitReadOnly
+							? "Ver"
+							: isCompleted
+								? "Editar"
+								: "Continuar"}
 					</Button>
 				</View>
 			</View>
@@ -283,6 +289,7 @@ export default function () {
 											permitId={permitId}
 											permitNumber={permitNumber}
 											record={record}
+											isPermitReadOnly={isPermitReadOnly}
 										/>
 									))}
 								</View>

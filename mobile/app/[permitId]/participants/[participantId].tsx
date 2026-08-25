@@ -176,7 +176,6 @@ export default function () {
 						label="Nombre"
 						labelPrefix="1"
 						error={errors.name?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -191,7 +190,6 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.name}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -201,7 +199,6 @@ export default function () {
 						label="Apellidos"
 						labelPrefix="2"
 						error={errors.lastNames?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -216,7 +213,6 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.lastNames}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -226,7 +222,6 @@ export default function () {
 						label="Género"
 						labelPrefix="3"
 						error={errors.gender?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -239,7 +234,6 @@ export default function () {
 										{ label: "Masculino", value: "M" },
 										{ label: "Femenino", value: "F" },
 									]}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -249,7 +243,6 @@ export default function () {
 						label="Cédula de Identidad"
 						labelPrefix="4"
 						error={errors.identityNumber?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -264,7 +257,6 @@ export default function () {
 									onBlur={onBlur}
 									keyboardType="numeric"
 									error={!!errors.identityNumber}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -274,7 +266,6 @@ export default function () {
 						label="Firma"
 						labelPrefix="5"
 						error={errors.signature?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -283,7 +274,6 @@ export default function () {
 								<SignaturePad
 									value={value}
 									onChange={onChange}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -293,7 +283,6 @@ export default function () {
 						label="Notas"
 						labelPrefix="6"
 						error={errors.notes?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -314,7 +303,6 @@ export default function () {
 										textAlignVertical: "top",
 									}}
 									error={!!errors.notes}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>

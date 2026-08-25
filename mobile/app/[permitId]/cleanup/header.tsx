@@ -126,7 +126,6 @@ export default function () {
 						label="Fecha inicio"
 						labelPrefix="1"
 						error={errors.startDate?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -137,7 +136,6 @@ export default function () {
 										value={value}
 										onChange={onChange}
 										error={!!errors.startDate}
-										disabled={isPermitReadOnly}
 										style={{ flex: 1 }}
 									/>
 									<Button
@@ -182,7 +180,6 @@ export default function () {
 						label="Fecha conclusión"
 						labelPrefix="2"
 						error={errors.endDate?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -193,7 +190,6 @@ export default function () {
 										value={value}
 										onChange={onChange}
 										error={!!errors.endDate}
-										disabled={isPermitReadOnly}
 										style={{ flex: 1 }}
 									/>
 									<Button
@@ -238,7 +234,6 @@ export default function () {
 						label="Lugar"
 						labelPrefix="3"
 						error={errors.site?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -253,7 +248,6 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.site}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
@@ -263,7 +257,6 @@ export default function () {
 						label="Responsables"
 						labelPrefix="4"
 						error={errors.supervisors?.message}
-						disabled={isPermitReadOnly}
 					>
 						<Controller
 							control={control}
@@ -278,7 +271,6 @@ export default function () {
 									onBlur={onBlur}
 									autoCapitalize="words"
 									error={!!errors.supervisors}
-									disabled={isPermitReadOnly}
 								/>
 							)}
 						/>
