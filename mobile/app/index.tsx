@@ -15,7 +15,6 @@ import { Alert, FlatList, View } from "react-native"
 import {
 	ActivityIndicator,
 	Button,
-	Card,
 	Icon,
 	Snackbar,
 	Text,
@@ -40,10 +39,7 @@ export default function HomeScreen() {
 	const { data: permits, loading } = useReadPermits()
 	const { loadPermits, loadingPermits } = useLoadPermits()
 
-	const hasPermits = permits.length > 0
 	const isPermitListLoading = loading || loadingPermits
-	const shouldShowPermitLoadCard =
-		isAuthenticated && !hasPermits && !loadingPermits
 	const onManualRefresh = async () => {
 		if (loadingPermits || isRefreshCoolingDown) return
 
@@ -109,7 +105,7 @@ export default function HomeScreen() {
 							onLogin={onGoToLogin}
 							onLogout={logout}
 						/>
-						{isAuthenticated && hasPermits ? (
+						{isAuthenticated ? (
 							<Button
 								mode="outlined"
 								icon="refresh"
@@ -124,26 +120,29 @@ export default function HomeScreen() {
 									? "Permisos actualizados"
 									: "Actualizar permisos"}
 							</Button>
-						) : null}
-						{shouldShowPermitLoadCard && (
-							<Card>
-								<Card.Content style={{ gap: 12 }}>
-									<Text variant="titleMedium">
-										Cargar permisos
-									</Text>
-									<Button
-										mode="contained"
-										onPress={onManualRefresh}
-										loading={loadingPermits}
-										disabled={
-											loadingPermits ||
-											isRefreshCoolingDown
-										}
-									>
-										Cargar permisos
-									</Button>
-								</Card.Content>
-							</Card>
+						) : (
+							<View
+								style={{
+									height: 50,
+									flexDirection: "row",
+									alignItems: "center",
+									gap: 8,
+									paddingHorizontal: 12,
+								}}
+							>
+								<Text
+									variant="bodySmall"
+									style={{
+										flex: 1,
+										textAlign: "center",
+										color: theme.colors.onSurfaceVariant,
+									}}
+								>
+									Los datos que registre quedarán guardados en
+									el dispositivo. Para sincronizarlos, inicie
+									sesión.
+								</Text>
+							</View>
 						)}
 					</View>
 				}

@@ -55,6 +55,17 @@ Shows the shared divergence commit's ID, date, and message.
   delete old files at a fixed size/count limit. Never log tokens, passwords,
   signatures, identity numbers, or request payloads. Decide later when and how
   these logs are sent to the backend.
+- TODO: Add an OTA update status flow for Android. Use `expo-updates` from the
+  root app lifecycle to check for compatible production updates, expose states
+  for checking, available, downloading, ready, and failed, and later connect
+  those states to a user notification. Downloading an update is safe while the
+  user works, but applying it with `Updates.reloadAsync()` can discard unsaved
+  in-memory form state, so reload only at a safe point chosen by the future UX.
+  Keep runtime-version compatibility enforced: native dependency or native
+  configuration changes require a new APK, while patch OTA releases must remain
+  JavaScript/assets-only. Test the flow on a production APK, not Expo Go, and
+  verify failure handling, rollback behavior, offline use, and WatermelonDB
+  data safety.
 - TODO: From an existing Registro de fibra record, allow the user to continue
   directly to the next detail form after saving, instead of always returning to
   the Registro de fibra overview or permit home screen. Preserve the current

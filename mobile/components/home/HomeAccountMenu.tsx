@@ -9,15 +9,16 @@ import {
 	useWindowDimensions,
 	View,
 } from "react-native"
-import { Button, Text } from "react-native-paper"
+import { Button, Icon, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { SvgXml } from "react-native-svg"
 import mobilePackage from "../../package.json"
 
 type HomeAccountMenuProps = {
-	user: MobileAuthUser
+	user: MobileAuthUser | null
 	visible: boolean
 	onDismiss: () => void
+	onLogin: () => void
 	onLogout: () => void
 }
 
@@ -25,13 +26,14 @@ export function HomeAccountMenu({
 	user,
 	visible,
 	onDismiss,
+	onLogin,
 	onLogout,
 }: HomeAccountMenuProps) {
 	const theme = useAppTheme()
 	const { width } = useWindowDimensions()
 	const menuAnimation = useRef(new Animated.Value(-1)).current
 	const menuWidth = Math.min(width * 0.84, 360)
-	const avatar = toSvg(user.avatarSeed, 72)
+	const avatar = user ? toSvg(user.avatarSeed, 72) : null
 
 	useEffect(() => {
 		if (!visible) return
@@ -59,20 +61,12 @@ export function HomeAccountMenu({
 		})
 	}
 
-	const dismiss = () => {
-		close(() => undefined)
-	}
-
-	const logout = () => {
-		close(onLogout)
-	}
-
 	return (
 		<Modal
 			visible={visible}
 			transparent
 			statusBarTranslucent
-			onRequestClose={dismiss}
+			onRequestClose={() => close(() => undefined)}
 		>
 			<Animated.View
 				style={{
@@ -90,7 +84,7 @@ export function HomeAccountMenu({
 			>
 				<Pressable
 					accessibilityLabel="Cerrar menú de cuenta"
-					onPress={dismiss}
+					onPress={() => close(() => undefined)}
 					style={{ flex: 1 }}
 				/>
 			</Animated.View>
@@ -113,10 +107,11 @@ export function HomeAccountMenu({
 				<SafeAreaView style={{ flex: 1 }}>
 					<View
 						style={{
+							height: 200,
 							alignItems: "center",
+							justifyContent: "center",
 							gap: 8,
 							paddingHorizontal: 24,
-							paddingVertical: 28,
 						}}
 					>
 						<View
@@ -124,28 +119,42 @@ export function HomeAccountMenu({
 								width: 80,
 								height: 80,
 								borderRadius: 999,
-								backgroundColor: "#f8f885",
+								backgroundColor: user
+									? theme.colors.custom.yellow
+									: theme.colors.surfaceVariant,
 								alignItems: "center",
 								justifyContent: "center",
 							}}
 						>
-							<SvgXml xml={avatar} width={72} height={72} />
+							{user && avatar ? (
+								<SvgXml xml={avatar} width={72} height={72} />
+							) : (
+								<Icon
+									source="account-off-outline"
+									size={44}
+									color={theme.colors.onSurfaceVariant}
+								/>
+							)}
 						</View>
-						<Text
-							variant="titleLarge"
-							style={{ textAlign: "center" }}
-						>
-							{user.fullName}
-						</Text>
-						<Text
-							variant="bodyMedium"
-							style={{
-								textAlign: "center",
-								color: theme.colors.onSurfaceVariant,
-							}}
-						>
-							{user.email}
-						</Text>
+						{user ? (
+							<>
+								<Text
+									variant="titleLarge"
+									style={{ textAlign: "center" }}
+								>
+									{user.fullName}
+								</Text>
+								<Text
+									variant="bodyMedium"
+									style={{
+										textAlign: "center",
+										color: theme.colors.onSurfaceVariant,
+									}}
+								>
+									{user.email}
+								</Text>
+							</>
+						) : null}
 					</View>
 
 					<View
@@ -165,15 +174,25 @@ export function HomeAccountMenu({
 						>
 							Versión {mobilePackage.version}
 						</Text>
-						<Button
-							mode="outlined"
-							icon="logout"
-							onPress={logout}
-							textColor={theme.colors.error}
-							style={{ borderColor: theme.colors.error }}
-						>
-							Cerrar sesión
-						</Button>
+						{user ? (
+							<Button
+								mode="outlined"
+								icon="logout"
+								onPress={() => close(onLogout)}
+								textColor={theme.colors.error}
+								style={{ borderColor: theme.colors.error }}
+							>
+								Cerrar sesión
+							</Button>
+						) : (
+							<Button
+								mode="contained"
+								icon="login"
+								onPress={() => close(onLogin)}
+							>
+								Iniciar sesión
+							</Button>
+						)}
 					</View>
 				</SafeAreaView>
 			</Animated.View>

@@ -43,7 +43,7 @@ export const warm = {
 		custom: {
 			green: "#4CAF50",
 			crimson: "#DC143C",
-			yellow: "#edeb87",
+			yellow: "#ffe957",
 			blue: "#257bb8",
 			pink: "#df497b",
 			lightGray: "#E0E0E0",
@@ -98,7 +98,7 @@ export const warm = {
 		custom: {
 			green: "#4CAF50",
 			crimson: "#DC143C",
-			yellow: "#edeb87",
+			yellow: "#ffe957",
 			blue: "#257bb8",
 			lightGray: "#E0E0E0",
 			darkGray: "#757575",

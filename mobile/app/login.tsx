@@ -1,10 +1,10 @@
 import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
 import { useAppTheme } from "@utils/useAppTheme"
-import { Redirect } from "expo-router"
+import { Redirect, router } from "expo-router"
 import { useState } from "react"
 import { Image, KeyboardAvoidingView, View } from "react-native"
-import { Button, Text, TextInput } from "react-native-paper"
+import { Button, IconButton, Text, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useShallow } from "zustand/react/shallow"
 
@@ -90,16 +90,30 @@ export default function LoginScreen() {
 						elevation: 8,
 					}}
 				>
-					<Text
-						variant="titleLarge"
+					<View
 						style={{
-							color: theme.colors.onSurface,
-							fontWeight: "700",
+							flexDirection: "row",
+							alignItems: "center",
+							gap: 4,
 							marginBottom: 4,
 						}}
 					>
-						Inicio de sesión
-					</Text>
+						<IconButton
+							icon="arrow-left"
+							accessibilityLabel="Volver al inicio"
+							onPress={() => router.replace(ROUTES.HOME)}
+							style={{ margin: 0 }}
+						/>
+						<Text
+							variant="titleLarge"
+							style={{
+								color: theme.colors.onSurface,
+								fontWeight: "700",
+							}}
+						>
+							Inicio de sesión
+						</Text>
+					</View>
 					<View style={{ gap: 12 }}>
 						<TextInput
 							mode="outlined"
