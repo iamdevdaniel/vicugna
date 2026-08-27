@@ -83,6 +83,25 @@ Shows the shared divergence commit's ID, date, and message.
   active/lead assignee. Keep permission to upload the completed permit limited
   to the active/lead assignee.
 
+### [P1]
+
+- TODO: Create a deployed staging environment for release verification. Use a
+  separate Render backend service, separate non-production database, separate
+  environment variables/secrets, and seeded test data. The backend already
+  serves the API, admin frontend, and public home page, so a second backend
+  service is sufficient; do not create an unnecessary separate admin service.
+  Configure a separate Android APK that points to the test backend and uses
+  a separate EAS channel named `test`. Give the APK a unique Android
+  package name if production and staging must coexist on one device.
+
+  Test the exact release commit before promoting it to production: verify the
+  backend deployment, database migrations, admin flow, mobile APK, runtime
+  version, EAS channel, seeded data, authentication, sync, and rollback/error
+  behavior. Ensure staging can never use production credentials or the
+  production database, and ensure release automation stops when staging
+  verification fails. Keep the environment small and disposable enough to
+  avoid wasting free Render/Neon resources.
+
 ### [P2]
 
 - TODO: Add an OTA update status flow for Android. Use `expo-updates` from the
@@ -109,6 +128,17 @@ Shows the shared divergence commit's ID, date, and message.
 
 ### [P3]
 
+- TODO: Replace mobile APK publication through GitHub Releases with upload to
+  Cloudflare R2. Update `scripts/release.cjs` so minor and major mobile
+  releases upload the completed EAS APK artifact to the configured R2 bucket,
+  publish it under the expected versioned filename, and keep the public
+  download URL used by `VICUGNA_ANDROID_DOWNLOAD_URL` correct. Remove the
+  GitHub CLI/release-asset dependency only after verifying authentication,
+  overwrite/idempotency behavior, failed-upload cleanup, private credentials,
+  public object access, and that the release command stops if the R2 upload
+  fails. Preserve the existing EAS build, tag, and release ordering.
+
+- TODO: From an existing Registro de fibra record, allow the user to continue
 - TODO: From an existing Registro de fibra record, allow the user to continue
   directly to the next detail form after saving, instead of always returning to
   the Registro de fibra overview or permit home screen. Preserve the current
@@ -124,6 +154,28 @@ Shows the shared divergence commit's ID, date, and message.
   records safe. After the partial-save flow is corrected, enforce locked-field
   behavior in create/edit forms with disabled inputs where appropriate; do not
   rely only on read-only permit summaries.
+
+### [P4]
+
+- TODO: Move release execution from the local computer to GitHub Actions. Keep
+  `scripts/release.cjs` as the source of release logic, ordering, validation,
+  version changes, tags, EAS builds/OTA updates, branch pushes, and artifact
+  publication; use a workflow YAML only to provide the controlled runner.
+  Create separate backend and mobile release workflows or clearly separated
+  manual inputs, and require an explicit manual dispatch rather than releasing
+  every push.
+
+  The workflow must check out the intended `dev` commit with full Git history,
+  install the required Node/npm dependencies, run the appropriate checks, and
+  invoke the existing release command. Store EAS, GitHub, and future Cloudflare
+  R2 credentials only as protected GitHub secrets or environment secrets. Use
+  least-privilege token permissions, protect `main`, require approval before a
+  production release, and prevent concurrent releases for the same target.
+  Preserve the script's clean-worktree, branch, tag, idempotency, runtime
+  version, APK/OTA, and atomic push safeguards. The workflow must stop on any
+  failed test, build, upload, tag, or push and document recovery for a release
+  that partially completed. Test the workflow with a harmless dry-run or test
+  target before allowing it to publish production releases.
 
 ## Backend
 
