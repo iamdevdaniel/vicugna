@@ -36,7 +36,7 @@ export function LabeledInput({
 							backgroundColor: error
 								? theme.colors.custom.crimson
 								: disabled
-									? theme.colors.outlineVariant
+									? theme.colors.custom.darkGray
 									: theme.colors.custom.blue,
 							width: 24,
 							height: 24,
@@ -49,7 +49,7 @@ export function LabeledInput({
 						<Text
 							style={{
 								color: disabled
-									? theme.colors.onSurface
+									? theme.colors.custom.white
 									: theme.colors.onPrimary,
 								fontSize: 12,
 								fontWeight: "bold",

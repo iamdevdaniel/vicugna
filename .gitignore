@@ -48,6 +48,7 @@ app-example
 
 # AI
 AGENT_NOTES.local.md
+.local/
 .env
 
 # Tailwind

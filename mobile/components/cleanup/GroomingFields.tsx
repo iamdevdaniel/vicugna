@@ -88,9 +88,9 @@ export function GroomingFields({
 							mode="outlined"
 							value={value}
 							editable={false}
-							textColor={theme.colors.onSurface}
+							textColor={theme.colors.custom.white}
 							style={{
-								backgroundColor: theme.colors.outlineVariant,
+								backgroundColor: theme.colors.custom.darkGray,
 							}}
 						/>
 					)}

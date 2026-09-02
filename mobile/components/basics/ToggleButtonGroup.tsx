@@ -35,11 +35,12 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 	const theme = useAppTheme()
 	const columnCount = columns && columns > 0 ? columns : 1
 	const selectedBackgroundColor = disabled
-		? theme.colors.outlineVariant
+		? theme.colors.custom.darkGray
 		: theme.colors.secondary
 	const selectedTextColor = disabled
-		? theme.colors.onSurface
+		? theme.colors.custom.white
 		: theme.colors.onSecondary
+	const unselectedTextColor = theme.colors.onSurface
 
 	if (columns) {
 		return (
@@ -122,10 +123,25 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 				buttons={options.map((opt) => ({
 					value: opt.value,
 					label: opt.label,
-					icon:
-						value === opt.value
-							? "radiobox-marked"
-							: "radiobox-blank",
+					icon: ({ size }) => {
+						const selected = value === opt.value
+
+						return (
+							<Icon
+								source={
+									selected
+										? "radiobox-marked"
+										: "radiobox-blank"
+								}
+								size={size}
+								color={
+									selected
+										? selectedTextColor
+										: unselectedTextColor
+								}
+							/>
+						)
+					},
 					disabled,
 					checkedColor: selectedTextColor,
 					uncheckedColor: theme.colors.onSurface,
@@ -136,7 +152,15 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 								? selectedBackgroundColor
 								: theme.colors.surface,
 					},
-					labelStyle: styles.buttonLabel,
+					labelStyle: [
+						styles.buttonLabel,
+						{
+							color:
+								value === opt.value
+									? selectedTextColor
+									: unselectedTextColor,
+						},
+					],
 				}))}
 				theme={{
 					roundness: 2,
@@ -145,7 +169,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 						onSecondaryContainer: selectedTextColor,
 						outline: theme.colors.outlineVariant,
 						onSurface: theme.colors.onSurface,
-						onSurfaceDisabled: theme.colors.onSurfaceVariant,
+						onSurfaceDisabled: unselectedTextColor,
 						surfaceDisabled: theme.colors.surfaceVariant,
 					},
 				}}
