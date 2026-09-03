@@ -5,7 +5,7 @@ type AgeCategory = ShearingRecordFormData["ageCategory"]
 type GestationStatus = ShearingRecordFormData["gestationStatus"]
 
 export function canHaveGestation(sex: Sex, ageCategory: AgeCategory): boolean {
-	return sex === "F" && ageCategory !== "Cria"
+	return sex === "F" && ageCategory === "Adulto"
 }
 
 export function normalizeGestationStatus(

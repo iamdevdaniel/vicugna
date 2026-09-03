@@ -3,6 +3,7 @@ import type {
 	ShearingRecordFormData,
 } from "@definitions/types"
 import * as yup from "yup"
+import { canHaveGestation } from "./shearing-record-rules"
 import {
 	yupRequiredPositiveIntegerText,
 	yupRequiredPositiveNumericText,
@@ -24,8 +25,8 @@ export const defaultValuesShearingRecord: ShearingRecordFormData = {
 	observations: "",
 }
 
-export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
-	yup.object({
+export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> = yup
+	.object({
 		tagNumber: yupRequiredPositiveIntegerText(),
 		sex: yup
 			.mixed<"F" | "M">()
@@ -71,3 +72,17 @@ export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> =
 		isDead: yup.boolean().defined().required("Campo requerido"),
 		observations: yup.string().defined(),
 	})
+	.test(
+		"gestation-requires-adult-female",
+		"Solo una hembra adulta puede estar en gestación",
+		(data, context) => {
+			if (
+				data.gestationStatus === "No" ||
+				canHaveGestation(data.sex, data.ageCategory)
+			) {
+				return true
+			}
+
+			return context.createError({ path: "gestationStatus" })
+		},
+	)

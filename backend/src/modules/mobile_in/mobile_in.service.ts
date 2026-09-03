@@ -5,6 +5,7 @@ import { saveSyncFieldData } from "./mobile_in.repository"
 import type {
 	CleaningCommonData,
 	GroomingData,
+	ShearingRecordData,
 	SyncFieldData,
 } from "./mobile_in.types"
 
@@ -82,6 +83,26 @@ function validateShearing(data: SyncFieldData): void {
 				"El registro de esquila no pertenece al permiso",
 			)
 		}
+
+		validateShearingRecordRules(record)
+	}
+}
+
+function validateShearingRecordRules(record: ShearingRecordData): void {
+	const gestationAllowed =
+		record.sex === "F" && record.ageCategory === "Adulto"
+	if (!gestationAllowed && record.gestationStatus !== "No") {
+		throw new PermitValidationError(
+			"Solo una hembra adulta puede estar en gestación",
+		)
+	}
+
+	const shouldBeSheared =
+		record.ageCategory !== "Cria" && record.gestationStatus !== "Si"
+	if (record.isSheared !== shouldBeSheared) {
+		throw new PermitValidationError(
+			"El estado de esquila no coincide con la edad y la gestación",
+		)
 	}
 }
 
