@@ -97,6 +97,6 @@ export const yupDehearing: yup.ObjectSchema<DehearingFormData> = yup.object({
 	dehairedWeight: yupRequiredPositiveNumericText(),
 	bristleWeight: yupRequiredPositiveNumericText(),
 	hasDandruff: yup.boolean().defined().required("Campo requerido"),
-	dehairerName: yup.string().required("Campo requerido"),
-	signature: yup.string().required("Campo requerido"),
+	dehairerName: yup.string().trim().required("Campo requerido"),
+	signature: yup.string().trim().required("Campo requerido"),
 })

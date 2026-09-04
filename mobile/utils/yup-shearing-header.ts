@@ -35,7 +35,7 @@ function parseTimeToMinutes(value: string) {
 }
 
 export const yupShearingHeader = yup.object().shape({
-	site: yup.string().required("Campo requerido"),
+	site: yup.string().trim().required("Campo requerido"),
 	latitude: yupRequiredNumericTextInRange(-90, 90),
 	longitude: yupRequiredNumericTextInRange(-180, 180),
 	roundupCount: yupRequiredPositiveIntegerText(),
