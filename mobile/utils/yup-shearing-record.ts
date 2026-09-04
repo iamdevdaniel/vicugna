@@ -27,7 +27,7 @@ export const defaultValuesShearingRecord: ShearingRecordFormData = {
 
 export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> = yup
 	.object({
-		tagNumber: yupRequiredPositiveIntegerText(),
+		tagNumber: yupRequiredPositiveIntegerText(2_147_483_647),
 		sex: yup
 			.mixed<"F" | "M">()
 			.oneOf(["F", "M"], "Selecciona una opcion")
@@ -38,8 +38,8 @@ export const yupShearingRecord: yup.ObjectSchema<ShearingRecordFormData> = yup
 			.oneOf(["Cria", "Juvenil", "Adulto"], "Selecciona una opcion")
 			.defined()
 			.required("Campo requerido"),
-		liveWeight: yupRequiredPositiveNumericText(),
-		fiberLength: yupRequiredPositiveNumericText(),
+		liveWeight: yupRequiredPositiveNumericText(100, "kg"),
+		fiberLength: yupRequiredPositiveNumericText(15, "cm"),
 		bodyCondition: yup
 			.mixed<"Malo" | "Regular" | "Bueno">()
 			.oneOf(["Malo", "Regular", "Bueno"], "Selecciona una opcion")

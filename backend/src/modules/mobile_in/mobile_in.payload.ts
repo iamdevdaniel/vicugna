@@ -82,7 +82,7 @@ const shearingHeaderSchema = z
 		site: nonBlankText,
 		latitude: z.number().finite().min(-90).max(90),
 		longitude: z.number().finite().min(-180).max(180),
-		roundupCount: positiveInteger,
+		roundupCount: positiveInteger.max(100),
 		eventDate: calendarDate,
 		startTime: time,
 		endTime: time,
@@ -94,11 +94,11 @@ const shearingRecordSchema = z
 	.object({
 		id: identifier,
 		permitId: identifier,
-		tagNumber: positiveInteger,
+		tagNumber: positiveInteger.max(2_147_483_647),
 		sex: z.enum(["F", "M"]),
 		ageCategory: z.enum(["Cria", "Juvenil", "Adulto"]),
-		liveWeight: positiveNumber,
-		fiberLength: positiveNumber,
+		liveWeight: positiveNumber.max(100),
+		fiberLength: positiveNumber.max(15),
 		bodyCondition: z.enum(["Malo", "Regular", "Bueno"]),
 		gestationStatus: z.enum(["No", "Si", "Si ultimo tercio"]),
 		externalParasites: z
@@ -130,7 +130,7 @@ const cleaningCommonSchema = z
 		id: identifier,
 		permitId: identifier,
 		fleeceNumber: positiveIntegerText,
-		grossWeight: positiveNumber,
+		grossWeight: positiveNumber.max(4_000),
 	})
 	.strict()
 
@@ -138,8 +138,8 @@ const groomingSchema = z
 	.object({
 		id: identifier,
 		cleaningCommonId: identifier,
-		cleanWeight: positiveNumber,
-		dirtyWeight: positiveNumber,
+		cleanWeight: positiveNumber.max(4_000),
+		dirtyWeight: positiveNumber.max(4_000),
 		totalWeight: positiveNumber,
 		isCompleted: z.boolean(),
 	})
@@ -149,8 +149,8 @@ const dehearingSchema = z
 	.object({
 		id: identifier,
 		cleaningCommonId: identifier,
-		dehairedWeight: positiveNumber,
-		bristleWeight: positiveNumber,
+		dehairedWeight: positiveNumber.max(4_000),
+		bristleWeight: positiveNumber.max(4_000),
 		hasDandruff: z.boolean(),
 		dehairerName: nonBlankText,
 		signature: nonBlankText,

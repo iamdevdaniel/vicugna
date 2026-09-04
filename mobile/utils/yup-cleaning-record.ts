@@ -35,18 +35,18 @@ export const defaultValuesDehearing: DehearingFormData = {
 export const yupCleaningCommon: yup.ObjectSchema<CleaningCommonFormData> =
 	yup.object({
 		fleeceNumber: yupRequiredPositiveIntegerText(),
-		grossWeight: yupRequiredPositiveNumericText(),
+		grossWeight: yupRequiredPositiveNumericText(4_000, "g"),
 	})
 
 export const yupGrooming: yup.ObjectSchema<GroomingFormData> = yup.object({
-	cleanWeight: yupRequiredPositiveNumericText().test(
+	cleanWeight: yupRequiredPositiveNumericText(4_000, "g").test(
 		"clean-weight-within-gross",
 		"No puede superar el peso bruto",
 		function (value) {
 			return isWeightWithinGross(value, this)
 		},
 	),
-	dirtyWeight: yupRequiredPositiveNumericText()
+	dirtyWeight: yupRequiredPositiveNumericText(4_000, "g")
 		.test(
 			"dirty-weight-within-gross",
 			"No puede superar el peso bruto",
@@ -94,8 +94,8 @@ function getGrossWeight(context: yup.TestContext): string {
 }
 
 export const yupDehearing: yup.ObjectSchema<DehearingFormData> = yup.object({
-	dehairedWeight: yupRequiredPositiveNumericText(),
-	bristleWeight: yupRequiredPositiveNumericText(),
+	dehairedWeight: yupRequiredPositiveNumericText(4_000, "g"),
+	bristleWeight: yupRequiredPositiveNumericText(4_000, "g"),
 	hasDandruff: yup.boolean().defined().required("Campo requerido"),
 	dehairerName: yup.string().trim().required("Campo requerido"),
 	signature: yup.string().trim().required("Campo requerido"),
