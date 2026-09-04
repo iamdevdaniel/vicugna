@@ -47,7 +47,7 @@ app-example
 /ios/
 
 # AI
-AGENT_NOTES.local.md
+AGENTS.md
 .local/
 .env
 

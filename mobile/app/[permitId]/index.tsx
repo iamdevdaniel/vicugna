@@ -36,8 +36,6 @@ export default function () {
 	const snackbarTranslateY = useRef(new Animated.Value(80)).current
 	const [snackbarVisible, setSnackbarVisible] = useState(false)
 	const [snackbarMessage, setSnackbarMessage] = useState("")
-	const [syncErrorFields, setSyncErrorFields] = useState<string[]>([])
-	const [errorModalVisible, setErrorModalVisible] = useState(false)
 	const [snackbarType, setSnackbarType] = useState<"success" | "error">(
 		"success",
 	)
@@ -106,7 +104,6 @@ export default function () {
 	) => {
 		setSnackbarMessage(message)
 		setSnackbarType(type)
-		if (type !== "error") setSyncErrorFields([])
 		setSnackbarVisible(true)
 	}
 
@@ -142,7 +139,6 @@ export default function () {
 							result.error ?? "No se pudo enviar el permiso",
 							"error",
 						)
-						setSyncErrorFields(result.fields)
 					},
 				},
 			],
@@ -318,21 +314,12 @@ export default function () {
 								: theme.colors.inverseSurface,
 					}}
 					action={{
-						label: syncErrorFields.length
-							? "Ver errores"
-							: "Cerrar",
+						label: "Cerrar",
 						textColor:
 							snackbarType === "error"
 								? theme.colors.onError
 								: theme.colors.inverseOnSurface,
-						onPress: () => {
-							if (syncErrorFields.length) {
-								hideSnackbar()
-								setErrorModalVisible(true)
-								return
-							}
-							hideSnackbar()
-						},
+						onPress: hideSnackbar,
 					}}
 				>
 					<Text
@@ -348,46 +335,6 @@ export default function () {
 				</Snackbar>
 			</Animated.View>
 			<Portal>
-				<Modal
-					visible={errorModalVisible}
-					onDismiss={() => setErrorModalVisible(false)}
-					contentContainerStyle={{
-						marginHorizontal: 24,
-						borderRadius: 20,
-						padding: 20,
-						backgroundColor: theme.colors.surface,
-						gap: 16,
-					}}
-				>
-					<Text
-						style={{
-							fontSize: 18,
-							fontWeight: "700",
-							color: theme.colors.onSurface,
-						}}
-					>
-						Errores del permiso (PRSG)
-					</Text>
-					<ScrollView style={{ maxHeight: 280 }}>
-						{syncErrorFields.map((field) => (
-							<Text
-								key={field}
-								style={{
-									color: theme.colors.onSurface,
-									paddingVertical: 6,
-								}}
-							>
-								{field}
-							</Text>
-						))}
-					</ScrollView>
-					<Button
-						mode="contained"
-						onPress={() => setErrorModalVisible(false)}
-					>
-						Cerrar
-					</Button>
-				</Modal>
 				<Modal
 					visible={syncingPermit}
 					dismissable={false}

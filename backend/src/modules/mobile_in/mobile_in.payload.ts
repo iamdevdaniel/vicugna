@@ -182,60 +182,10 @@ export function parseSyncPayload(payload: unknown): SyncFieldData {
 			message: issue.message,
 		}))
 
-		throw new PermitValidationError(
-			permitValidationErrors.parse,
-			issues,
-			getPayloadFieldReferences(payload, result.error.issues),
-		)
+		throw new PermitValidationError(permitValidationErrors.parse, issues)
 	}
 
 	return result.data
-}
-
-function getPayloadFieldReferences(
-	payload: unknown,
-	issues: { path: (string | number)[] }[],
-): string[] {
-	return [
-		...new Set(
-			issues.map((issue) =>
-				getPayloadFieldReference(payload, issue.path),
-			),
-		),
-	].slice(0, MAX_LOGGED_ISSUES)
-}
-
-function getPayloadFieldReference(
-	payload: unknown,
-	path: (string | number)[],
-): string {
-	if (!path.length) return "payload"
-
-	const [table, index, field] = path
-	if (typeof table !== "string") return "payload"
-	if (typeof index !== "number" || typeof field !== "string") {
-		return path
-			.filter((part): part is string => typeof part === "string")
-			.join(".")
-	}
-
-	const records =
-		payload && typeof payload === "object"
-			? (payload as Record<string, unknown>)[table]
-			: null
-	const record = Array.isArray(records) ? records[index] : null
-	const referenceField =
-		table === "groomingDetails" || table === "dehearingDetails"
-			? "cleaningCommonId"
-			: "id"
-	const reference =
-		record && typeof record === "object"
-			? (record as Record<string, unknown>)[referenceField]
-			: null
-
-	return typeof reference === "string" && UUID_PATTERN.test(reference)
-		? `${table}.[${reference}].${field}`
-		: `${table}.${field}`
 }
 
 export function getPayloadPermitIdForLog(payload: unknown): string | null {

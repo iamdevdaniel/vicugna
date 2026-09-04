@@ -149,7 +149,6 @@ export class PermitValidationError extends Error {
 	constructor(
 		readonly definition: PermitValidationDefinition,
 		readonly issues: PermitValidationIssue[] = [],
-		readonly fields: string[] = [],
 	) {
 		super(definition.message)
 		this.name = "PermitValidationError"

@@ -33,7 +33,6 @@ export async function syncPermit(
 				ok: false,
 				error: error.message,
 				code: error.code,
-				fields: error.code === "PRSG" ? error.fields : undefined,
 			})
 			return
 		}

@@ -7,7 +7,6 @@ type ServerResponse<T> = {
 	data?: T
 	error?: string
 	code?: string
-	fields?: string[]
 }
 
 export type BackendRequestFailure =
@@ -23,7 +22,6 @@ export class BackendRequestError extends Error {
 		readonly failure: BackendRequestFailure,
 		message: string,
 		readonly code?: string,
-		readonly fields?: string[],
 	) {
 		super(message)
 		this.name = "BackendRequestError"
@@ -105,7 +103,6 @@ export async function requestBackend<T>(
 			"rejected",
 			message ?? fallbackError,
 			payload.code,
-			payload.fields,
 		)
 	}
 
