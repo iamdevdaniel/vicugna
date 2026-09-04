@@ -6,6 +6,8 @@ type ServerResponse<T> = {
 	ok: boolean
 	data?: T
 	error?: string
+	code?: string
+	fields?: string[]
 }
 
 export type BackendRequestFailure =
@@ -13,12 +15,15 @@ export type BackendRequestFailure =
 	| "timeout"
 	| "unreachable"
 	| "invalid_response"
+	| "rejected"
 	| "unexpected"
 
 export class BackendRequestError extends Error {
 	constructor(
 		readonly failure: BackendRequestFailure,
 		message: string,
+		readonly code?: string,
+		readonly fields?: string[],
 	) {
 		super(message)
 		this.name = "BackendRequestError"
@@ -96,7 +101,12 @@ export async function requestBackend<T>(
 
 	if (!response.ok || !payload.ok) {
 		const message = response.status >= 500 ? fallbackError : payload.error
-		throw new Error(message ?? fallbackError)
+		throw new BackendRequestError(
+			"rejected",
+			message ?? fallbackError,
+			payload.code,
+			payload.fields,
+		)
 	}
 
 	if (payload.data === undefined) {

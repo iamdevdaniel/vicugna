@@ -7,10 +7,8 @@ import {
 	PermitValidationError,
 } from "./mobile_in.errors"
 import { submitSyncFieldData } from "./mobile_in.service"
-import type { SyncFieldData } from "./mobile_in.types"
-
 export async function syncPermit(
-	req: Request<Record<string, never>, Record<string, never>, SyncFieldData>,
+	req: Request<Record<string, never>, Record<string, never>, unknown>,
 	res: Response,
 ) {
 	try {
@@ -34,6 +32,8 @@ export async function syncPermit(
 			res.status(400).json({
 				ok: false,
 				error: error.message,
+				code: error.code,
+				fields: error.code === "PRSG" ? error.fields : undefined,
 			})
 			return
 		}

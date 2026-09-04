@@ -13,6 +13,17 @@ export function yupRequiredNumericText() {
 		.matches(numericTextPattern, "Debe ser un número")
 }
 
+export function yupRequiredNumericTextInRange(min: number, max: number) {
+	return yupRequiredNumericText().test(
+		"is-in-range",
+		`Debe estar entre ${min} y ${max}`,
+		(value) => {
+			const number = Number(value)
+			return number >= min && number <= max
+		},
+	)
+}
+
 export function yupRequiredPositiveNumericText() {
 	return yupRequiredNumericText().test(
 		"is-positive",

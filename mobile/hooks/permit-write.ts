@@ -1,7 +1,12 @@
 import { submitSyncFieldData } from "@api"
+import { BackendRequestError } from "../api/backend-request"
 import { getFieldSyncData, updatePermitSyncStatus } from "@database"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { useCallback, useState } from "react"
+
+type SyncPermitResult =
+	| { ok: true }
+	| { ok: false; error: string; fields: string[] }
 
 export function useSyncPermit() {
 	const [syncingPermit, setSyncingPermit] = useState(false)
@@ -9,11 +14,11 @@ export function useSyncPermit() {
 	const token = useMobileAuthStore((state) => state.token)
 
 	const syncPermit = useCallback(
-		async (permitId: string) => {
+		async (permitId: string): Promise<SyncPermitResult> => {
 			if (!token) {
 				const message = "Debes iniciar sesión para enviar este permiso"
 				setError(message)
-				return { ok: false, error: message }
+				return { ok: false, error: message, fields: [] }
 			}
 
 			setSyncingPermit(true)
@@ -29,8 +34,15 @@ export function useSyncPermit() {
 					error instanceof Error
 						? error.message
 						: "No se pudo enviar el permiso"
-				setError(message)
-				return { ok: false, error: message }
+				const syncError =
+					error instanceof BackendRequestError && error.code
+						? {
+							error: `${message} (${error.code})`,
+							fields: error.fields ?? [],
+						}
+						: { error: message, fields: [] }
+				setError(syncError.error)
+				return { ok: false, ...syncError }
 			} finally {
 				setSyncingPermit(false)
 			}

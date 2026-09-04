@@ -117,6 +117,13 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
 		next(error)
 		return
 	}
+	if (error instanceof SyntaxError && "body" in error) {
+		res.status(400).json({
+			ok: false,
+			error: "El cuerpo de la solicitud no es válido",
+		})
+		return
+	}
 
 	if (!isDatabaseConnectionError(error)) {
 		next(error)

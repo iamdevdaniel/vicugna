@@ -1,6 +1,14 @@
 import Decimal from "decimal.js"
 import { getMobileUserFromAuthorization } from "../mobile-auth/mobile_auth.service"
-import { PermitValidationError } from "./mobile_in.errors"
+import {
+	PermitValidationError,
+	permitValidationErrors,
+} from "./mobile_in.errors"
+import {
+	getLoggedValidationIssues,
+	getPayloadPermitIdForLog,
+	parseSyncPayload,
+} from "./mobile_in.payload"
 import { saveSyncFieldData } from "./mobile_in.repository"
 import type {
 	CleaningCommonData,
@@ -10,23 +18,38 @@ import type {
 } from "./mobile_in.types"
 
 export async function submitSyncFieldData(
-	data: SyncFieldData,
+	payload: unknown,
 	authorizationHeader: string,
 ) {
 	const user = await getMobileUserFromAuthorization(authorizationHeader)
-	validatePermit(data)
-	validateParticipants(data)
-	validateShearing(data)
-	validateCleaning(data)
 
-	return saveSyncFieldData(data, user.id)
+	try {
+		const data = parseSyncPayload(payload)
+		validatePermit(data)
+		validateParticipants(data)
+		validateShearing(data)
+		validateCleaning(data)
+
+		return saveSyncFieldData(data, user.id)
+	} catch (error) {
+		if (error instanceof PermitValidationError) {
+			console.error("Mobile sync payload validation failed", {
+				at: new Date().toISOString(),
+				userId: user.id,
+				permitId: getPayloadPermitIdForLog(payload),
+				code: error.code,
+				message: error.message,
+				issues: getLoggedValidationIssues(error.issues),
+			})
+		}
+
+		throw error
+	}
 }
 
 function validatePermit(data: SyncFieldData): void {
 	if (!data.permit.id) {
-		throw new PermitValidationError(
-			"El identificador del permiso es obligatorio",
-		)
+		throw new PermitValidationError(permitValidationErrors.permitId)
 	}
 
 	if (
@@ -34,24 +57,26 @@ function validatePermit(data: SyncFieldData): void {
 		(!Number.isInteger(data.expectedSyncVersion) ||
 			data.expectedSyncVersion < 1)
 	) {
-		throw new PermitValidationError("La versión del permiso no es válida")
+		throw new PermitValidationError(permitValidationErrors.permitVersion)
 	}
 }
 
 function validateParticipants(data: SyncFieldData): void {
 	if (!data.participants.length) {
-		throw new PermitValidationError("No hay participantes")
+		throw new PermitValidationError(
+			permitValidationErrors.participantsMissing,
+		)
 	}
 
 	ensureUniqueIds(
 		data.participants.map((participant) => participant.id),
-		"El participante",
+		permitValidationErrors.participantDuplicate,
 	)
 
 	for (const participant of data.participants) {
 		if (participant.permitId !== data.permit.id) {
 			throw new PermitValidationError(
-				"El participante no pertenece al permiso",
+				permitValidationErrors.participantPermit,
 			)
 		}
 	}
@@ -59,28 +84,32 @@ function validateParticipants(data: SyncFieldData): void {
 
 function validateShearing(data: SyncFieldData): void {
 	if (!data.shearingHeader) {
-		throw new PermitValidationError("La cabecera de esquila es obligatoria")
+		throw new PermitValidationError(
+			permitValidationErrors.shearingHeaderMissing,
+		)
 	}
 
 	if (data.shearingHeader.permitId !== data.permit.id) {
 		throw new PermitValidationError(
-			"La cabecera de esquila no pertenece al permiso",
+			permitValidationErrors.shearingHeaderPermit,
 		)
 	}
 
 	if (!data.shearingRecords.length) {
-		throw new PermitValidationError("No hay registros de esquila")
+		throw new PermitValidationError(
+			permitValidationErrors.shearingRecordsMissing,
+		)
 	}
 
 	ensureUniqueIds(
 		data.shearingRecords.map((record) => record.id),
-		"El registro de esquila",
+		permitValidationErrors.shearingRecordDuplicate,
 	)
 
 	for (const record of data.shearingRecords) {
 		if (record.permitId !== data.permit.id) {
 			throw new PermitValidationError(
-				"El registro de esquila no pertenece al permiso",
+				permitValidationErrors.shearingRecordPermit,
 			)
 		}
 
@@ -92,35 +121,33 @@ function validateShearingRecordRules(record: ShearingRecordData): void {
 	const gestationAllowed =
 		record.sex === "F" && record.ageCategory === "Adulto"
 	if (!gestationAllowed && record.gestationStatus !== "No") {
-		throw new PermitValidationError(
-			"Solo una hembra adulta puede estar en gestación",
-		)
+		throw new PermitValidationError(permitValidationErrors.gestation)
 	}
 
 	const shouldBeSheared =
 		record.ageCategory !== "Cria" && record.gestationStatus !== "Si"
 	if (record.isSheared !== shouldBeSheared) {
-		throw new PermitValidationError(
-			"El estado de esquila no coincide con la edad y la gestación",
-		)
+		throw new PermitValidationError(permitValidationErrors.sheared)
 	}
 }
 
 function validateCleaning(data: SyncFieldData): void {
 	if (!data.cleaningHeader) {
 		throw new PermitValidationError(
-			"La información general del registro de fibra es obligatoria",
+			permitValidationErrors.cleaningHeaderMissing,
 		)
 	}
 
 	if (data.cleaningHeader.permitId !== data.permit.id) {
 		throw new PermitValidationError(
-			"La información general del registro de fibra no pertenece al permiso",
+			permitValidationErrors.cleaningHeaderPermit,
 		)
 	}
 
 	if (!data.cleaningCommonRecords.length) {
-		throw new PermitValidationError("No hay registros de fibra")
+		throw new PermitValidationError(
+			permitValidationErrors.cleaningRecordsMissing,
+		)
 	}
 
 	if (
@@ -128,39 +155,39 @@ function validateCleaning(data: SyncFieldData): void {
 		data.cleaningCommonRecords.length
 	) {
 		throw new PermitValidationError(
-			"Cada registro de fibra debe tener un detalle",
+			permitValidationErrors.cleaningDetailCount,
 		)
 	}
 
 	ensureUniqueIds(
 		data.cleaningCommonRecords.map((record) => record.id),
-		"El registro de fibra",
+		permitValidationErrors.cleaningRecordDuplicate,
 	)
 	ensureUniqueIds(
 		data.groomingDetails.map((detail) => detail.cleaningCommonId),
-		"La relación de limpiado",
+		permitValidationErrors.groomingRelationDuplicate,
 	)
 	ensureUniqueIds(
 		data.groomingDetails.map((detail) => detail.id),
-		"El detalle de limpiado",
+		permitValidationErrors.groomingDetailDuplicate,
 	)
 	ensureUniqueIds(
 		data.dehearingDetails.map((detail) => detail.cleaningCommonId),
-		"La relación de predescerdado",
+		permitValidationErrors.dehearingRelationDuplicate,
 	)
 	ensureUniqueIds(
 		data.dehearingDetails.map((detail) => detail.id),
-		"El detalle de predescerdado",
+		permitValidationErrors.dehearingDetailDuplicate,
 	)
 
 	for (const record of data.cleaningCommonRecords) {
 		if (record.permitId !== data.permit.id) {
 			throw new PermitValidationError(
-				"El registro de fibra no pertenece al permiso",
+				permitValidationErrors.cleaningRecordPermit,
 			)
 		}
 		if (!isPositiveFiniteNumber(record.grossWeight)) {
-			throw new PermitValidationError("El peso bruto no es válido")
+			throw new PermitValidationError(permitValidationErrors.grossWeight)
 		}
 	}
 
@@ -174,7 +201,7 @@ function validateCleaning(data: SyncFieldData): void {
 
 		if (!commonRecord) {
 			throw new PermitValidationError(
-				"El detalle de limpiado no pertenece al registro de fibra",
+				permitValidationErrors.groomingPermit,
 			)
 		}
 
@@ -185,14 +212,12 @@ function validateCleaning(data: SyncFieldData): void {
 	for (const detail of data.dehearingDetails) {
 		if (!cleaningRecordsById.has(detail.cleaningCommonId)) {
 			throw new PermitValidationError(
-				"El detalle de predescerdado no pertenece al registro de fibra",
+				permitValidationErrors.dehearingPermit,
 			)
 		}
 
 		if (usedDetailIds.has(detail.cleaningCommonId)) {
-			throw new PermitValidationError(
-				"Un registro de fibra no puede tener limpiado y predescerdado a la vez",
-			)
+			throw new PermitValidationError(permitValidationErrors.bothDetails)
 		}
 	}
 }
@@ -207,7 +232,7 @@ function validateGroomingWeights(
 	if (
 		![cleanWeight, dirtyWeight, totalWeight].every(isPositiveFiniteNumber)
 	) {
-		throw new PermitValidationError("Los pesos del limpiado no son válidos")
+		throw new PermitValidationError(permitValidationErrors.groomingWeights)
 	}
 
 	const grossWeightDecimal = new Decimal(grossWeight)
@@ -216,24 +241,16 @@ function validateGroomingWeights(
 	const calculatedTotal = cleanWeightDecimal.plus(dirtyWeightDecimal)
 
 	if (cleanWeightDecimal.greaterThan(grossWeightDecimal)) {
-		throw new PermitValidationError(
-			"El peso del vellón limpio no puede superar el peso bruto",
-		)
+		throw new PermitValidationError(permitValidationErrors.cleanWeight)
 	}
 	if (dirtyWeightDecimal.greaterThan(grossWeightDecimal)) {
-		throw new PermitValidationError(
-			"El peso braga no puede superar el peso bruto",
-		)
+		throw new PermitValidationError(permitValidationErrors.dirtyWeight)
 	}
 	if (calculatedTotal.greaterThan(grossWeightDecimal)) {
-		throw new PermitValidationError(
-			"La suma de los pesos del limpiado no puede superar el peso bruto",
-		)
+		throw new PermitValidationError(permitValidationErrors.totalWeight)
 	}
 	if (!calculatedTotal.equals(totalWeight)) {
-		throw new PermitValidationError(
-			"El peso total de la fibra no coincide con los pesos del limpiado",
-		)
+		throw new PermitValidationError(permitValidationErrors.calculatedWeight)
 	}
 }
 
@@ -241,12 +258,13 @@ function isPositiveFiniteNumber(value: number): boolean {
 	return Number.isFinite(value) && value > 0
 }
 
-function ensureUniqueIds(ids: string[], label: string): void {
+function ensureUniqueIds(
+	ids: string[],
+	error: (typeof permitValidationErrors)[keyof typeof permitValidationErrors],
+): void {
 	const uniqueIds = new Set(ids)
 
 	if (uniqueIds.size !== ids.length) {
-		throw new PermitValidationError(
-			`${label} está duplicado en los datos enviados`,
-		)
+		throw new PermitValidationError(error)
 	}
 }

@@ -1,7 +1,7 @@
 import type { ShearingHeaderFormData } from "@definitions/types"
 import * as yup from "yup"
 import {
-	yupRequiredNumericText,
+	yupRequiredNumericTextInRange,
 	yupRequiredPositiveIntegerText,
 } from "./yup-utils"
 
@@ -36,8 +36,8 @@ function parseTimeToMinutes(value: string) {
 
 export const yupShearingHeader = yup.object().shape({
 	site: yup.string().required("Campo requerido"),
-	latitude: yupRequiredNumericText(),
-	longitude: yupRequiredNumericText(),
+	latitude: yupRequiredNumericTextInRange(-90, 90),
+	longitude: yupRequiredNumericTextInRange(-180, 180),
 	roundupCount: yupRequiredPositiveIntegerText(),
 	eventDate: yup.string().required("Campo requerido"),
 	startTime: yup.string().required("Campo requerido"),
