@@ -174,8 +174,8 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 		if (cleaningHeader) {
 			batchOps.push(
 				cleaningHeader.prepareUpdate((model) => {
-					model.startDate = "2026-07-22"
-					model.endDate = "2026-07-22"
+					model.startDate = "22/07/2026"
+					model.endDate = "22/07/2026"
 					model.site = "Galpon comunal"
 					model.supervisors = "Equipo local"
 					model.isCompleted = true
@@ -646,17 +646,17 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 		const cleaningSeeds = [
 			{
 				fleeceNumber: "1",
-				grossWeight: 3.4,
+				grossWeight: 3_400,
 				kind: "grooming" as const,
 			},
 			{
 				fleeceNumber: "2",
-				grossWeight: 3.1,
+				grossWeight: 3_100,
 				kind: "dehearing" as const,
 			},
 			{
 				fleeceNumber: "3",
-				grossWeight: 3.7,
+				grossWeight: 3_700,
 				kind: "grooming" as const,
 			},
 		]
@@ -678,8 +678,8 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 			cleaningCommonId,
 		] of seededCleaningCommonIds.entries()) {
 			if (cleaningSeeds[index].kind === "grooming") {
-				const cleanWeight = (24 + index * 2) / 10
-				const dirtyWeight = 0.5
+				const cleanWeight = 2_400 + index * 200
+				const dirtyWeight = 500
 				const totalWeight = Number(
 					calculateTotalWeight(
 						cleanWeight.toString(),
@@ -703,8 +703,8 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 						.get<DehearingModel>("dehearing")
 						.prepareCreate((model) => {
 							model.cleaningCommonId = cleaningCommonId
-							model.dehairedWeight = 1.9
-							model.bristleWeight = 0.6
+							model.dehairedWeight = 1_900
+							model.bristleWeight = 600
 							model.hasDandruff = false
 							model.dehairerName = "Equipo local"
 							model.signature = DEV_SIGNATURE

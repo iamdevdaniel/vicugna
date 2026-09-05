@@ -1,11 +1,32 @@
-export type PermitValidationIssue = {
+import type { ZodIssue } from "zod"
+
+export type ServiceValidationRule =
+	| "after"
+	| "date_format"
+	| "finite_number"
+	| "maximum"
+	| "maximum_items"
+	| "non_blank"
+	| "positive"
+	| "positive_integer"
+	| "range"
+	| "time_format"
+	| "unique_items"
+	| "valid_date"
+	| "valid_time"
+
+export type ServiceValidationIssue = {
 	path: string
-	code: string
-	message: string
+	rule: ServiceValidationRule
+	expected?: number | string | { min: number; max: number }
 }
 
+export type PermitValidationLogDetails =
+	| { source: "zod"; issues: ZodIssue[] }
+	| { source: "service"; issue: ServiceValidationIssue }
+
 export type PermitValidationCode =
-	| "PRSG"
+	| "PYLD"
 	| `VPRM_${number}`
 	| `VPRT_${number}`
 	| `VSHE_${number}`
@@ -17,10 +38,9 @@ type PermitValidationDefinition = {
 }
 
 export const permitValidationErrors = {
-	parse: { code: "PRSG", message: "El contenido del permiso no es válido" },
-	permitId: {
-		code: "VPRM_1",
-		message: "El identificador del permiso es obligatorio",
+	invalidPayload: {
+		code: "PYLD",
+		message: "El contenido del permiso no es válido",
 	},
 	permitVersion: {
 		code: "VPRM_2",
@@ -34,10 +54,6 @@ export const permitValidationErrors = {
 	participantDuplicate: {
 		code: "VPRT_3",
 		message: "Hay un participante duplicado en los datos enviados",
-	},
-	shearingHeaderMissing: {
-		code: "VSHE_1",
-		message: "La cabecera de esquila es obligatoria",
 	},
 	shearingHeaderPermit: {
 		code: "VSHE_2",
@@ -63,10 +79,6 @@ export const permitValidationErrors = {
 		code: "VSHE_6",
 		message: "El estado de esquila no coincide con la edad y la gestación",
 	},
-	cleaningHeaderMissing: {
-		code: "VCLG_1",
-		message: "La información general del registro de fibra es obligatoria",
-	},
 	cleaningHeaderPermit: {
 		code: "VCLG_2",
 		message:
@@ -84,7 +96,6 @@ export const permitValidationErrors = {
 		code: "VCLG_5",
 		message: "El registro de fibra no pertenece al permiso",
 	},
-	grossWeight: { code: "VCLG_6", message: "El peso bruto no es válido" },
 	groomingPermit: {
 		code: "VCLG_7",
 		message: "El detalle de limpiado no pertenece al registro de fibra",
@@ -98,10 +109,6 @@ export const permitValidationErrors = {
 		code: "VCLG_9",
 		message:
 			"Un registro de fibra no puede tener limpiado y predescerdado a la vez",
-	},
-	groomingWeights: {
-		code: "VCLG_10",
-		message: "Los pesos del limpiado no son válidos",
 	},
 	cleanWeight: {
 		code: "VCLG_11",
@@ -148,7 +155,7 @@ export const permitValidationErrors = {
 export class PermitValidationError extends Error {
 	constructor(
 		readonly definition: PermitValidationDefinition,
-		readonly issues: PermitValidationIssue[] = [],
+		readonly logDetails?: PermitValidationLogDetails,
 	) {
 		super(definition.message)
 		this.name = "PermitValidationError"

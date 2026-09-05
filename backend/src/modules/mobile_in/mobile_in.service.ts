@@ -4,11 +4,7 @@ import {
 	PermitValidationError,
 	permitValidationErrors,
 } from "./mobile_in.errors"
-import {
-	getLoggedValidationIssues,
-	getPayloadPermitIdForLog,
-	parseSyncPayload,
-} from "./mobile_in.payload"
+import { getPayloadPermitIdForLog, parseSyncPayload } from "./mobile_in.payload"
 import { saveSyncFieldData } from "./mobile_in.repository"
 import type {
 	CleaningCommonData,
@@ -16,6 +12,24 @@ import type {
 	ShearingRecordData,
 	SyncFieldData,
 } from "./mobile_in.types"
+import {
+	getTimeInMinutes,
+	throwInvalidField,
+	validateCalendarDate,
+	validateDateTimeWithOffset,
+	validateNonBlankText,
+	validateNumberInRange,
+	validatePositiveInteger,
+	validatePositiveIntegerText,
+	validatePositiveNumber,
+	validateTime,
+} from "./mobile_in.validation"
+
+const MAX_TAG_NUMBER = 2_147_483_647
+const MAX_ROUNDUP_COUNT = 100
+const MAX_LIVE_WEIGHT = 100
+const MAX_FIBER_LENGTH = 15
+const MAX_FIBER_WEIGHT = 4_000
 
 export async function submitSyncFieldData(
 	payload: unknown,
@@ -39,7 +53,7 @@ export async function submitSyncFieldData(
 				permitId: getPayloadPermitIdForLog(payload),
 				code: error.code,
 				message: error.message,
-				issues: getLoggedValidationIssues(error.issues),
+				details: error.logDetails,
 			})
 		}
 
@@ -48,16 +62,26 @@ export async function submitSyncFieldData(
 }
 
 function validatePermit(data: SyncFieldData): void {
-	if (!data.permit.id) {
-		throw new PermitValidationError(permitValidationErrors.permitId)
-	}
+	validateNonBlankText(data.permit.id, "permit.id")
+	validateNonBlankText(data.permit.permitNumber, "permit.permitNumber")
+	validateNonBlankText(data.permit.seasonId, "permit.seasonId")
+	validateNonBlankText(data.permit.seasonName, "permit.seasonName")
+	validateNonBlankText(data.permit.communityId, "permit.communityId")
+	validateNonBlankText(data.permit.regionalId, "permit.regionalId")
+	validateNonBlankText(data.permit.departmentId, "permit.departmentId")
+	validateNonBlankText(data.permit.userId, "permit.userId")
+	validateNonBlankText(data.permit.userFullName, "permit.userFullName")
 
 	if (
 		data.expectedSyncVersion !== null &&
-		(!Number.isInteger(data.expectedSyncVersion) ||
+		(!Number.isSafeInteger(data.expectedSyncVersion) ||
 			data.expectedSyncVersion < 1)
 	) {
 		throw new PermitValidationError(permitValidationErrors.permitVersion)
+	}
+
+	if (data.permit.syncedAt !== null) {
+		validateDateTimeWithOffset(data.permit.syncedAt, "permit.syncedAt")
 	}
 }
 
@@ -68,24 +92,69 @@ function validateParticipants(data: SyncFieldData): void {
 		)
 	}
 
-	ensureUniqueIds(
-		data.participants.map((participant) => participant.id),
-		permitValidationErrors.participantDuplicate,
-	)
+	for (const [index, participant] of data.participants.entries()) {
+		const path = `participants.${index}`
+		validateNonBlankText(participant.id, `${path}.id`)
+		validateNonBlankText(participant.permitId, `${path}.permitId`)
+		validateNonBlankText(participant.name, `${path}.name`)
+		validateNonBlankText(participant.lastNames, `${path}.lastNames`)
+		validatePositiveIntegerText(
+			participant.identityNumber,
+			`${path}.identityNumber`,
+		)
+		validateNonBlankText(participant.signature, `${path}.signature`)
 
-	for (const participant of data.participants) {
 		if (participant.permitId !== data.permit.id) {
 			throw new PermitValidationError(
 				permitValidationErrors.participantPermit,
 			)
 		}
 	}
+
+	ensureUniqueIds(
+		data.participants.map((participant) => participant.id),
+		permitValidationErrors.participantDuplicate,
+	)
 }
 
 function validateShearing(data: SyncFieldData): void {
-	if (!data.shearingHeader) {
-		throw new PermitValidationError(
-			permitValidationErrors.shearingHeaderMissing,
+	validateNonBlankText(data.shearingHeader.id, "shearingHeader.id")
+	validateNonBlankText(
+		data.shearingHeader.permitId,
+		"shearingHeader.permitId",
+	)
+	validateNonBlankText(data.shearingHeader.site, "shearingHeader.site")
+	validateNumberInRange(
+		data.shearingHeader.latitude,
+		-90,
+		90,
+		"shearingHeader.latitude",
+	)
+	validateNumberInRange(
+		data.shearingHeader.longitude,
+		-180,
+		180,
+		"shearingHeader.longitude",
+	)
+	validatePositiveInteger(
+		data.shearingHeader.roundupCount,
+		MAX_ROUNDUP_COUNT,
+		"shearingHeader.roundupCount",
+	)
+	validateCalendarDate(
+		data.shearingHeader.eventDate,
+		"shearingHeader.eventDate",
+	)
+	validateTime(data.shearingHeader.startTime, "shearingHeader.startTime")
+	validateTime(data.shearingHeader.endTime, "shearingHeader.endTime")
+	if (
+		getTimeInMinutes(data.shearingHeader.endTime) <=
+		getTimeInMinutes(data.shearingHeader.startTime)
+	) {
+		throwInvalidField(
+			"shearingHeader.endTime",
+			"after",
+			"shearingHeader.startTime",
 		)
 	}
 
@@ -101,12 +170,36 @@ function validateShearing(data: SyncFieldData): void {
 		)
 	}
 
-	ensureUniqueIds(
-		data.shearingRecords.map((record) => record.id),
-		permitValidationErrors.shearingRecordDuplicate,
-	)
+	for (const [index, record] of data.shearingRecords.entries()) {
+		const path = `shearingRecords.${index}`
+		validateNonBlankText(record.id, `${path}.id`)
+		validateNonBlankText(record.permitId, `${path}.permitId`)
+		validatePositiveInteger(
+			record.tagNumber,
+			MAX_TAG_NUMBER,
+			`${path}.tagNumber`,
+		)
+		validatePositiveNumber(
+			record.liveWeight,
+			MAX_LIVE_WEIGHT,
+			`${path}.liveWeight`,
+		)
+		validatePositiveNumber(
+			record.fiberLength,
+			MAX_FIBER_LENGTH,
+			`${path}.fiberLength`,
+		)
 
-	for (const record of data.shearingRecords) {
+		if (record.externalParasites.length > 2) {
+			throwInvalidField(`${path}.externalParasites`, "maximum_items", 2)
+		}
+		if (
+			new Set(record.externalParasites).size !==
+			record.externalParasites.length
+		) {
+			throwInvalidField(`${path}.externalParasites`, "unique_items")
+		}
+
 		if (record.permitId !== data.permit.id) {
 			throw new PermitValidationError(
 				permitValidationErrors.shearingRecordPermit,
@@ -115,6 +208,11 @@ function validateShearing(data: SyncFieldData): void {
 
 		validateShearingRecordRules(record)
 	}
+
+	ensureUniqueIds(
+		data.shearingRecords.map((record) => record.id),
+		permitValidationErrors.shearingRecordDuplicate,
+	)
 }
 
 function validateShearingRecordRules(record: ShearingRecordData): void {
@@ -132,11 +230,21 @@ function validateShearingRecordRules(record: ShearingRecordData): void {
 }
 
 function validateCleaning(data: SyncFieldData): void {
-	if (!data.cleaningHeader) {
-		throw new PermitValidationError(
-			permitValidationErrors.cleaningHeaderMissing,
-		)
-	}
+	validateNonBlankText(data.cleaningHeader.id, "cleaningHeader.id")
+	validateNonBlankText(
+		data.cleaningHeader.permitId,
+		"cleaningHeader.permitId",
+	)
+	validateCalendarDate(
+		data.cleaningHeader.startDate,
+		"cleaningHeader.startDate",
+	)
+	validateCalendarDate(data.cleaningHeader.endDate, "cleaningHeader.endDate")
+	validateNonBlankText(data.cleaningHeader.site, "cleaningHeader.site")
+	validateNonBlankText(
+		data.cleaningHeader.supervisors,
+		"cleaningHeader.supervisors",
+	)
 
 	if (data.cleaningHeader.permitId !== data.permit.id) {
 		throw new PermitValidationError(
@@ -159,6 +267,69 @@ function validateCleaning(data: SyncFieldData): void {
 		)
 	}
 
+	for (const [index, record] of data.cleaningCommonRecords.entries()) {
+		const path = `cleaningCommonRecords.${index}`
+		validateNonBlankText(record.id, `${path}.id`)
+		validateNonBlankText(record.permitId, `${path}.permitId`)
+		validatePositiveIntegerText(record.fleeceNumber, `${path}.fleeceNumber`)
+		validatePositiveNumber(
+			record.grossWeight,
+			MAX_FIBER_WEIGHT,
+			`${path}.grossWeight`,
+		)
+
+		if (record.permitId !== data.permit.id) {
+			throw new PermitValidationError(
+				permitValidationErrors.cleaningRecordPermit,
+			)
+		}
+	}
+
+	for (const [index, detail] of data.groomingDetails.entries()) {
+		const path = `groomingDetails.${index}`
+		validateNonBlankText(detail.id, `${path}.id`)
+		validateNonBlankText(
+			detail.cleaningCommonId,
+			`${path}.cleaningCommonId`,
+		)
+		validatePositiveNumber(
+			detail.cleanWeight,
+			MAX_FIBER_WEIGHT,
+			`${path}.cleanWeight`,
+		)
+		validatePositiveNumber(
+			detail.dirtyWeight,
+			MAX_FIBER_WEIGHT,
+			`${path}.dirtyWeight`,
+		)
+		validatePositiveNumber(
+			detail.totalWeight,
+			undefined,
+			`${path}.totalWeight`,
+		)
+	}
+
+	for (const [index, detail] of data.dehearingDetails.entries()) {
+		const path = `dehearingDetails.${index}`
+		validateNonBlankText(detail.id, `${path}.id`)
+		validateNonBlankText(
+			detail.cleaningCommonId,
+			`${path}.cleaningCommonId`,
+		)
+		validatePositiveNumber(
+			detail.dehairedWeight,
+			MAX_FIBER_WEIGHT,
+			`${path}.dehairedWeight`,
+		)
+		validatePositiveNumber(
+			detail.bristleWeight,
+			MAX_FIBER_WEIGHT,
+			`${path}.bristleWeight`,
+		)
+		validateNonBlankText(detail.dehairerName, `${path}.dehairerName`)
+		validateNonBlankText(detail.signature, `${path}.signature`)
+	}
+
 	ensureUniqueIds(
 		data.cleaningCommonRecords.map((record) => record.id),
 		permitValidationErrors.cleaningRecordDuplicate,
@@ -179,17 +350,6 @@ function validateCleaning(data: SyncFieldData): void {
 		data.dehearingDetails.map((detail) => detail.id),
 		permitValidationErrors.dehearingDetailDuplicate,
 	)
-
-	for (const record of data.cleaningCommonRecords) {
-		if (record.permitId !== data.permit.id) {
-			throw new PermitValidationError(
-				permitValidationErrors.cleaningRecordPermit,
-			)
-		}
-		if (!isPositiveFiniteNumber(record.grossWeight)) {
-			throw new PermitValidationError(permitValidationErrors.grossWeight)
-		}
-	}
 
 	const cleaningRecordsById = new Map(
 		data.cleaningCommonRecords.map((record) => [record.id, record]),
@@ -229,12 +389,6 @@ function validateGroomingWeights(
 	const { grossWeight } = commonRecord
 	const { cleanWeight, dirtyWeight, totalWeight } = detail
 
-	if (
-		![cleanWeight, dirtyWeight, totalWeight].every(isPositiveFiniteNumber)
-	) {
-		throw new PermitValidationError(permitValidationErrors.groomingWeights)
-	}
-
 	const grossWeightDecimal = new Decimal(grossWeight)
 	const cleanWeightDecimal = new Decimal(cleanWeight)
 	const dirtyWeightDecimal = new Decimal(dirtyWeight)
@@ -252,10 +406,6 @@ function validateGroomingWeights(
 	if (!calculatedTotal.equals(totalWeight)) {
 		throw new PermitValidationError(permitValidationErrors.calculatedWeight)
 	}
-}
-
-function isPositiveFiniteNumber(value: number): boolean {
-	return Number.isFinite(value) && value > 0
 }
 
 function ensureUniqueIds(
