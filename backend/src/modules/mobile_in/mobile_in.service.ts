@@ -163,6 +163,11 @@ function validateShearing(data: SyncFieldData): void {
 			permitValidationErrors.shearingHeaderPermit,
 		)
 	}
+	if (!data.shearingHeader.isCompleted) {
+		throw new PermitValidationError(
+			permitValidationErrors.shearingIncomplete,
+		)
+	}
 
 	if (!data.shearingRecords.length) {
 		throw new PermitValidationError(
@@ -251,6 +256,11 @@ function validateCleaning(data: SyncFieldData): void {
 			permitValidationErrors.cleaningHeaderPermit,
 		)
 	}
+	if (!data.cleaningHeader.isCompleted) {
+		throw new PermitValidationError(
+			permitValidationErrors.cleaningHeaderIncomplete,
+		)
+	}
 
 	if (!data.cleaningCommonRecords.length) {
 		throw new PermitValidationError(
@@ -264,6 +274,14 @@ function validateCleaning(data: SyncFieldData): void {
 	) {
 		throw new PermitValidationError(
 			permitValidationErrors.cleaningDetailCount,
+		)
+	}
+	if (
+		data.groomingDetails.some((detail) => !detail.isCompleted) ||
+		data.dehearingDetails.some((detail) => !detail.isCompleted)
+	) {
+		throw new PermitValidationError(
+			permitValidationErrors.cleaningDetailIncomplete,
 		)
 	}
 

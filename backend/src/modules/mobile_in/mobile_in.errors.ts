@@ -55,6 +55,11 @@ export const permitValidationErrors = {
 		code: "VPRT_3",
 		message: "Hay un participante duplicado en los datos enviados",
 	},
+	shearingIncomplete: {
+		code: "VSHE_1",
+		message:
+			"El registro de esquila debe estar completo antes de sincronizar",
+	},
 	shearingHeaderPermit: {
 		code: "VSHE_2",
 		message: "La cabecera de esquila no pertenece al permiso",
@@ -79,6 +84,11 @@ export const permitValidationErrors = {
 		code: "VSHE_6",
 		message: "El estado de esquila no coincide con la edad y la gestación",
 	},
+	cleaningHeaderIncomplete: {
+		code: "VCLG_1",
+		message:
+			"La información general del registro de fibra debe estar completa antes de sincronizar",
+	},
 	cleaningHeaderPermit: {
 		code: "VCLG_2",
 		message:
@@ -95,6 +105,11 @@ export const permitValidationErrors = {
 	cleaningRecordPermit: {
 		code: "VCLG_5",
 		message: "El registro de fibra no pertenece al permiso",
+	},
+	cleaningDetailIncomplete: {
+		code: "VCLG_6",
+		message:
+			"Todos los registros de fibra deben estar completos antes de sincronizar",
 	},
 	groomingPermit: {
 		code: "VCLG_7",
