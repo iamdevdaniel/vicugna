@@ -111,6 +111,7 @@ export async function updateShearingHeader(
 		await record.update((model) =>
 			applyShearingHeaderToModel(model, data, true),
 		)
+		await recalculatePermitStatuses(record.permitId)
 	})
 }
 

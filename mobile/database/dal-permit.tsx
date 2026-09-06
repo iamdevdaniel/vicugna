@@ -9,6 +9,7 @@ import type {
 	GroomingModel,
 	ParticipantModel,
 	PermitModel,
+	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
 import { database } from "./setup"
@@ -89,21 +90,27 @@ export async function updatePermitSyncStatus(
 export async function recalculatePermitStatuses(
 	permitId: string,
 ): Promise<void> {
-	const [permit, participantCount, shearingRecordCount] = await Promise.all([
-		database.get<PermitModel>("permits").find(permitId),
-		database
-			.get<ParticipantModel>("participants")
-			.query(Q.where("permitId", permitId))
-			.fetchCount(),
-		database
-			.get<ShearingRecordModel>("shearingRecord")
-			.query(Q.where("permitId", permitId))
-			.fetchCount(),
-	])
+	const [permit, participantCount, shearingHeaders, shearingRecordCount] =
+		await Promise.all([
+			database.get<PermitModel>("permits").find(permitId),
+			database
+				.get<ParticipantModel>("participants")
+				.query(Q.where("permitId", permitId))
+				.fetchCount(),
+			database
+				.get<ShearingHeaderModel>("shearingHeader")
+				.query(Q.where("permitId", permitId))
+				.fetch(),
+			database
+				.get<ShearingRecordModel>("shearingRecord")
+				.query(Q.where("permitId", permitId))
+				.fetchCount(),
+		])
 	const participantsStatus = participantCount > 0 ? "done" : "ready"
+	const shearingHeader = shearingHeaders[0]
 	const shearingStatus = getDependentStepStatus(
 		participantsStatus === "done",
-		shearingRecordCount > 0,
+		Boolean(shearingHeader?.isCompleted && shearingRecordCount > 0),
 	)
 	const cleaningStatus = await readCleaningStatus(permitId, shearingStatus)
 

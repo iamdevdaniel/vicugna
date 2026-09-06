@@ -52,6 +52,8 @@
 - **Esquilado (`isSheared`)**: es un valor derivado de Edad (`ageCategory`) y Gestación (`gestationStatus`). Es No para una Cría o cuando Gestación es Sí; es Sí para las demás combinaciones válidas, incluido Sí, último tercio.
 - **Observaciones (`observations`)**: opcionales.
 
+El paso Registro de esquila se considera completo cuando existen participantes, su Información básica está completa y existe al menos un Registro individual.
+
 ### Paso 3: Registro de fibra
 
 #### Información básica

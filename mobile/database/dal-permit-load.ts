@@ -279,7 +279,7 @@ function getSnapshotStatuses(data: PermitFieldData) {
 		: "ready"
 	const shearingStatus = getDependentStepStatus(
 		participantsStatus === "done",
-		data.shearingRecords.length > 0,
+		data.shearingHeader.isCompleted && data.shearingRecords.length > 0,
 	)
 	if (shearingStatus !== "done") {
 		return {
