@@ -182,6 +182,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Esquila general: sitio"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -207,6 +208,7 @@ export default function () {
 										field: { onChange, onBlur, value },
 									}) => (
 										<TextInput
+											accessibilityLabel="Esquila general: latitud"
 											mode="outlined"
 											value={value}
 											onChangeText={onChange}
@@ -232,6 +234,7 @@ export default function () {
 										field: { onChange, onBlur, value },
 									}) => (
 										<TextInput
+											accessibilityLabel="Esquila general: longitud"
 											mode="outlined"
 											value={value}
 											onChangeText={onChange}
@@ -257,6 +260,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Esquila general: cantidad de arreos"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -279,12 +283,14 @@ export default function () {
 							render={({ field: { onChange, value } }) => (
 								<View style={{ flexDirection: "row", gap: 8 }}>
 									<DateInput
+										accessibilityLabel="Esquila general: fecha"
 										value={value}
 										onChange={onChange}
 										error={!!errors.eventDate}
 										style={{ flex: 1 }}
 									/>
 									<Button
+										accessibilityLabel="Usar hoy para fecha de esquila"
 										mode="outlined"
 										compact
 										style={{
@@ -332,6 +338,7 @@ export default function () {
 							name="startTime"
 							render={({ field: { onChange, value } }) => (
 								<TimeInput
+									accessibilityLabel="Esquila general: hora inicial"
 									value={value}
 									onChange={onChange}
 									error={!!errors.startTime}
@@ -351,6 +358,7 @@ export default function () {
 							name="endTime"
 							render={({ field: { onChange, value } }) => (
 								<TimeInput
+									accessibilityLabel="Esquila general: hora conclusión"
 									value={value}
 									onChange={onChange}
 									error={!!errors.endTime}
@@ -368,6 +376,7 @@ export default function () {
 						}}
 					>
 						<Button
+							accessibilityLabel="Guardar información general de esquila"
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
 							disabled={isPermitReadOnly || !isValid || saving}

@@ -424,6 +424,7 @@ export default function CleaningRecordScreen() {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Fibra: número de vellón"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -448,6 +449,7 @@ export default function CleaningRecordScreen() {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Fibra: peso bruto"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -488,6 +490,7 @@ export default function CleaningRecordScreen() {
 						disabled={detailFieldsDisabled}
 					>
 						<ToggleButtonGroup
+							accessibilityLabel="Fibra: tipo"
 							value={cleaningType}
 							onChange={(value) =>
 								setCleaningType(value as CleaningType)
@@ -521,6 +524,7 @@ export default function CleaningRecordScreen() {
 
 					<View style={{ gap: 12, marginTop: 16 }}>
 						<Button
+							accessibilityLabel="Guardar registro de fibra"
 							mode="contained"
 							onPress={onSave}
 							disabled={saveDisabled}

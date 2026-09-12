@@ -281,6 +281,7 @@ export default function () {
 							: "Completa los pasos de arriba para poder enviar este permiso."}
 				</Text>
 				<Button
+					accessibilityLabel="Finalizar y enviar"
 					mode="contained"
 					icon={isPermitSynced ? "lock" : "cloud-upload"}
 					contentStyle={{ height: 48 }}

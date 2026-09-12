@@ -142,6 +142,12 @@ export function SignaturePad({
 				gesture={disabled ? Gesture.Pan().enabled(false) : gesture}
 			>
 				<Canvas
+					accessible
+					accessibilityLabel={
+						completedPaths.length
+							? "Firma registrada"
+							: "Firma sin registrar"
+					}
 					style={{
 						width: "100%",
 						aspectRatio: 3.2,
@@ -173,6 +179,7 @@ export function SignaturePad({
 				</Canvas>
 			</GestureDetector>
 			<IconButton
+				accessibilityLabel="Borrar firma"
 				icon="eraser"
 				size={18}
 				mode="contained"

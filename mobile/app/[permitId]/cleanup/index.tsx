@@ -96,6 +96,7 @@ function CleaningRecordCard({
 					}}
 				>
 					<Button
+						accessibilityLabel={`${isPermitReadOnly ? "Ver" : isCompleted ? "Editar" : "Continuar"} registro de fibra ${record.fleeceNumber}, estado ${status}`}
 						mode="outlined"
 						compact
 						textColor={accent}
@@ -310,6 +311,7 @@ export default function () {
 				}}
 			>
 				<Button
+					accessibilityLabel="Añadir registro de fibra"
 					mode="contained"
 					icon="plus"
 					contentStyle={{ height: 48 }}

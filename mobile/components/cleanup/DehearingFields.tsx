@@ -32,6 +32,7 @@ export function DehearingFields({
 					name="dehairedWeight"
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
+							accessibilityLabel="Fibra: peso predescerdado"
 							mode="outlined"
 							value={value}
 							onChangeText={onChange}
@@ -56,6 +57,7 @@ export function DehearingFields({
 					name="bristleWeight"
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
+							accessibilityLabel="Fibra: peso cerda"
 							mode="outlined"
 							value={value}
 							onChangeText={onChange}
@@ -78,6 +80,7 @@ export function DehearingFields({
 					name="hasDandruff"
 					render={({ field: { onChange, value } }) => (
 						<ToggleButtonGroup
+							accessibilityLabel="Fibra: caspa"
 							disabled={disabled}
 							value={value ? "Si" : "No"}
 							onChange={(nextValue) =>
@@ -103,6 +106,7 @@ export function DehearingFields({
 					name="dehairerName"
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
+							accessibilityLabel="Fibra: nombre del predescerdador"
 							mode="outlined"
 							value={value}
 							onChangeText={onChange}

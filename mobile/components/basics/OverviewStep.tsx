@@ -30,6 +30,8 @@ export const OverviewStep = ({
 	const cardOnPress = done && action ? action.onPress : undefined
 	return (
 		<Card
+			accessibilityRole={cardOnPress ? "button" : undefined}
+			accessibilityHint={cardOnPress ? `Abre ${title}` : undefined}
 			mode="elevated"
 			style={{ marginBottom: 20 }}
 			onPress={cardOnPress}
@@ -110,6 +112,7 @@ export const OverviewStep = ({
 				</View>
 				{showActionButton && (
 					<Button
+						accessibilityLabel={`Abrir ${title}`}
 						mode="contained"
 						onPress={action.onPress}
 						disabled={disabled}

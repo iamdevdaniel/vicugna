@@ -7,9 +7,13 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
+    "e2e:driver": "appium driver install uiautomator2",
+    "e2e:server": "appium --log-level warn",
+    "e2e:happy": "wdio run ./e2e/wdio.conf.mjs --suite happy --mochaOpts.bail",
+    "e2e:validation": "wdio run ./e2e/wdio.conf.mjs --suite validation",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils --write",
+    "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils ./e2e --write",
     "prepare": "cd .. && husky"
   },
   "dependencies": {
@@ -62,6 +66,12 @@
     "@babel/core": "^7.25.2",
     "@biomejs/biome": "2.1.4",
     "@types/react": "~19.1.10",
+    "@wdio/cli": "^9.31.5",
+    "@wdio/local-runner": "^9.31.5",
+    "@wdio/mocha-framework": "^9.31.5",
+    "@wdio/spec-reporter": "^9.31.2",
+    "appium": "^3.7.0",
+    "appium-uiautomator2-driver": "^8.6.0",
     "husky": "^9.1.7",
     "typescript": "~5.9.2"
   },
@@ -76,7 +86,7 @@
   },
   "private": true,
   "lint-staged": {
-    "{app,components,database,assets,definitions,utils}/**/*.{ts,tsx}": [
+    "{app,components,database,assets,definitions,utils,e2e}/**/*.{ts,tsx,js,mjs}": [
       "biome check --write --no-errors-on-unmatched",
       "biome check --error-on-warnings --no-errors-on-unmatched"
     ]

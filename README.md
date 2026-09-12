@@ -22,6 +22,11 @@ npm install
 Use the project-specific README files and scripts for local backend and mobile
 development.
 
+## Testing
+
+See [TESTING.md](TESTING.md) for the current automated test coverage, setup, and
+architecture.
+
 ## Releases
 
 Backend releases deploy from `main`. Mobile patch releases use OTA updates;

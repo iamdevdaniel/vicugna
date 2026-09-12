@@ -18,6 +18,7 @@ export type MultiSelectButtonGroupProps = {
 	value: string[]
 	onChange: (values: string[]) => void
 	options: MultiSelectOption[]
+	accessibilityLabel?: string
 	style?: StyleProp<ViewStyle>
 	disabled?: boolean
 }
@@ -26,6 +27,7 @@ export function MultiSelectButtonGroup({
 	value,
 	onChange,
 	options,
+	accessibilityLabel,
 	style,
 	disabled = false,
 }: MultiSelectButtonGroupProps) {
@@ -54,6 +56,13 @@ export function MultiSelectButtonGroup({
 					<Pressable
 						key={option.value}
 						disabled={disabled}
+						accessibilityRole="checkbox"
+						accessibilityLabel={
+							accessibilityLabel
+								? `${accessibilityLabel}: ${option.label}`
+								: option.label
+						}
+						accessibilityState={{ checked: selected, disabled }}
 						onPress={() => toggleValue(option.value)}
 						style={[
 							styles.button,

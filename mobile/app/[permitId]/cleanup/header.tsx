@@ -133,12 +133,14 @@ export default function () {
 							render={({ field: { onChange, value } }) => (
 								<View style={{ flexDirection: "row", gap: 8 }}>
 									<DateInput
+										accessibilityLabel="Fibra general: fecha inicio"
 										value={value}
 										onChange={onChange}
 										error={!!errors.startDate}
 										style={{ flex: 1 }}
 									/>
 									<Button
+										accessibilityLabel="Usar hoy para fecha inicio de fibra"
 										mode="outlined"
 										compact
 										style={{
@@ -187,12 +189,14 @@ export default function () {
 							render={({ field: { onChange, value } }) => (
 								<View style={{ flexDirection: "row", gap: 8 }}>
 									<DateInput
+										accessibilityLabel="Fibra general: fecha conclusión"
 										value={value}
 										onChange={onChange}
 										error={!!errors.endDate}
 										style={{ flex: 1 }}
 									/>
 									<Button
+										accessibilityLabel="Usar hoy para fecha conclusión de fibra"
 										mode="outlined"
 										compact
 										style={{
@@ -242,6 +246,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Fibra general: lugar"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -265,6 +270,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Fibra general: responsables"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -284,6 +290,7 @@ export default function () {
 						}}
 					>
 						<Button
+							accessibilityLabel="Guardar información general de fibra"
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
 							disabled={isPermitReadOnly || !isValid || saving}

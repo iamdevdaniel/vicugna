@@ -19,6 +19,7 @@ export type ToggleButtonGroupProps = {
 	value: string
 	onChange: (value: string) => void
 	options: ToggleOption[]
+	accessibilityLabel?: string
 	style?: StyleProp<ViewStyle>
 	disabled?: boolean
 	columns?: number
@@ -28,6 +29,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 	value,
 	onChange,
 	options,
+	accessibilityLabel,
 	style,
 	disabled = false,
 	columns,
@@ -65,6 +67,11 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 							disabled={disabled}
 							onPress={() => onChange(opt.value)}
 							accessibilityRole="radio"
+							accessibilityLabel={
+								accessibilityLabel
+									? `${accessibilityLabel}: ${opt.label}`
+									: opt.label
+							}
 							accessibilityState={{ checked: selected, disabled }}
 							style={[
 								styles.gridButton,
@@ -123,6 +130,9 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 				buttons={options.map((opt) => ({
 					value: opt.value,
 					label: opt.label,
+					accessibilityLabel: accessibilityLabel
+						? `${accessibilityLabel}: ${opt.label}`
+						: opt.label,
 					icon: ({ size }) => {
 						const selected = value === opt.value
 

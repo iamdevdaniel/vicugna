@@ -184,6 +184,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Participante: nombre"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -207,6 +208,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Participante: apellidos"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -228,6 +230,7 @@ export default function () {
 							name="gender"
 							render={({ field: { onChange, value } }) => (
 								<ToggleButtonGroup
+									accessibilityLabel="Participante: género"
 									value={value}
 									onChange={onChange}
 									options={[
@@ -251,6 +254,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Participante: cédula"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -291,6 +295,7 @@ export default function () {
 								field: { onChange, onBlur, value },
 							}) => (
 								<TextInput
+									accessibilityLabel="Participante: notas"
 									mode="outlined"
 									value={value}
 									onChangeText={onChange}
@@ -316,6 +321,7 @@ export default function () {
 						}}
 					>
 						<Button
+							accessibilityLabel="Guardar participante"
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
 							disabled={
@@ -331,6 +337,7 @@ export default function () {
 						</Button>
 
 						<Button
+							accessibilityLabel="Limpiar participante"
 							mode="outlined"
 							onPress={() => reset(defaultValuesParticipant)}
 							disabled={isPermitReadOnly}

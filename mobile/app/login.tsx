@@ -116,6 +116,7 @@ export default function LoginScreen() {
 					</View>
 					<View style={{ gap: 12 }}>
 						<TextInput
+							accessibilityLabel="Inicio de sesión: correo"
 							mode="outlined"
 							dense
 							label="Correo"
@@ -130,6 +131,7 @@ export default function LoginScreen() {
 							left={<TextInput.Icon icon="email-outline" />}
 						/>
 						<TextInput
+							accessibilityLabel="Inicio de sesión: contraseña"
 							mode="outlined"
 							dense
 							label="Contraseña"
@@ -165,6 +167,7 @@ export default function LoginScreen() {
 						</Text>
 					) : null}
 					<Button
+						accessibilityLabel="Enviar inicio de sesión"
 						mode="contained"
 						onPress={onLogin}
 						loading={isLoggingIn}

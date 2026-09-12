@@ -251,6 +251,7 @@ export default function ShearingRecordScreen() {
 									field: { onChange, onBlur, value },
 								}) => (
 									<TextInput
+										accessibilityLabel="Esquila: número de arete"
 										mode="outlined"
 										value={value}
 										onChangeText={onChange}
@@ -272,6 +273,7 @@ export default function ShearingRecordScreen() {
 								name="sex"
 								render={({ field: { onChange, value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: sexo"
 										value={value}
 										onChange={onChange}
 										options={[
@@ -293,6 +295,7 @@ export default function ShearingRecordScreen() {
 								name="ageCategory"
 								render={({ field: { onChange, value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: edad"
 										value={value}
 										onChange={onChange}
 										options={[
@@ -324,6 +327,7 @@ export default function ShearingRecordScreen() {
 									field: { onChange, onBlur, value },
 								}) => (
 									<TextInput
+										accessibilityLabel="Esquila: peso vivo"
 										mode="outlined"
 										value={value}
 										onChangeText={onChange}
@@ -348,6 +352,7 @@ export default function ShearingRecordScreen() {
 									field: { onChange, onBlur, value },
 								}) => (
 									<TextInput
+										accessibilityLabel="Esquila: longitud de fibra"
 										mode="outlined"
 										value={value}
 										onChangeText={onChange}
@@ -369,6 +374,7 @@ export default function ShearingRecordScreen() {
 								name="bodyCondition"
 								render={({ field: { onChange, value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: condición corporal"
 										value={value}
 										onChange={onChange}
 										options={[
@@ -408,6 +414,7 @@ export default function ShearingRecordScreen() {
 								name="gestationStatus"
 								render={({ field: { onChange, value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: gestación"
 										value={value}
 										onChange={onChange}
 										disabled={!gestationAllowed}
@@ -434,6 +441,7 @@ export default function ShearingRecordScreen() {
 								name="externalParasites"
 								render={({ field: { onChange, value } }) => (
 									<MultiSelectButtonGroup
+										accessibilityLabel="Esquila: parásitos externos"
 										value={value}
 										onChange={onChange}
 										options={[
@@ -461,6 +469,7 @@ export default function ShearingRecordScreen() {
 								name="mangeSeverity"
 								render={({ field: { onChange, value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: sarna"
 										value={value}
 										onChange={onChange}
 										options={[
@@ -490,6 +499,7 @@ export default function ShearingRecordScreen() {
 								name="hasDandruff"
 								render={({ field: { onChange, value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: caspa"
 										value={value ? "Si" : "No"}
 										onChange={(val) =>
 											onChange(val === "Si")
@@ -509,6 +519,7 @@ export default function ShearingRecordScreen() {
 								name="isDead"
 								render={({ field: { onChange, value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: muerto"
 										value={value ? "Si" : "No"}
 										onChange={(val) =>
 											onChange(val === "Si")
@@ -537,6 +548,7 @@ export default function ShearingRecordScreen() {
 								name="isSheared"
 								render={({ field: { value } }) => (
 									<ToggleButtonGroup
+										accessibilityLabel="Esquila: esquilado"
 										value={value ? "Si" : "No"}
 										onChange={() => {}}
 										disabled
@@ -561,6 +573,7 @@ export default function ShearingRecordScreen() {
 									field: { onChange, onBlur, value },
 								}) => (
 									<TextInput
+										accessibilityLabel="Esquila: observaciones"
 										mode="outlined"
 										value={value}
 										onChangeText={onChange}
@@ -586,6 +599,7 @@ export default function ShearingRecordScreen() {
 							}}
 						>
 							<Button
+								accessibilityLabel="Guardar registro de esquila"
 								mode="contained"
 								onPress={handleSubmit(onSubmit)}
 								disabled={

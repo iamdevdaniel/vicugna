@@ -6,6 +6,7 @@ import { TextInput } from "react-native-paper"
 type DateInputProps = {
 	value?: string
 	onChange: (value: string) => void
+	accessibilityLabel?: string
 	error?: boolean
 	placeholder?: string
 	disabled?: boolean
@@ -23,6 +24,7 @@ function getDateValue(value: string | undefined) {
 export function DateInput({
 	value,
 	onChange,
+	accessibilityLabel,
 	error = false,
 	placeholder = "DD/MM/YYYY",
 	disabled = false,
@@ -35,6 +37,9 @@ export function DateInput({
 			<Pressable
 				style={style}
 				disabled={disabled}
+				accessibilityRole="button"
+				accessibilityLabel={accessibilityLabel}
+				accessibilityValue={{ text: value || placeholder }}
 				onPress={() => {
 					if (!disabled) {
 						setShow(true)

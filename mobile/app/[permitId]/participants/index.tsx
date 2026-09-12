@@ -106,6 +106,7 @@ export default function () {
 				}}
 				renderItem={({ item: participant, index }) => (
 					<AccentCard
+						accessibilityLabel={`Participante ${participant.name} ${participant.lastNames}, cédula ${participant.identityNumber}. Abrir participante`}
 						accent={
 							participant.gender === "M"
 								? theme.colors.custom.blue
@@ -148,6 +149,7 @@ export default function () {
 				}}
 			>
 				<Button
+					accessibilityLabel="Añadir participante"
 					mode="contained"
 					icon="plus"
 					contentStyle={{ height: 48 }}

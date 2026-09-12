@@ -148,6 +148,7 @@ export default function () {
 									<TotalChip total={shearingRecords.length} />
 									{shearingRecords.map((record, index) => (
 										<AccentCard
+											accessibilityLabel={`Registro de esquila ${record.tagNumber}, peso vivo ${record.liveWeight} kg. Abrir registro de esquila`}
 											key={record.id}
 											accent={theme.colors.tertiary}
 											prefix={index + 1}
@@ -248,6 +249,7 @@ export default function () {
 				}}
 			>
 				<Button
+					accessibilityLabel="Añadir registro de esquila"
 					mode="contained"
 					icon="plus"
 					contentStyle={{ height: 48 }}

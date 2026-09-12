@@ -22,6 +22,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useShallow } from "zustand/react/shallow"
 
+const permitStepLabel = {
+	ready: "pendiente",
+	done: "completado",
+	disabled: "bloqueado",
+}
+
 export default function HomeScreen() {
 	const theme = useAppTheme()
 	const [isRefreshCoolingDown, setIsRefreshCoolingDown] = useState(false)
@@ -174,6 +180,7 @@ export default function HomeScreen() {
 				}
 				renderItem={({ item: permit }) => (
 					<AccentCard
+						accessibilityLabel={`Permiso ${permit.permitNumber}, comunidad ${getCommunityName(permit.communityId)}. Participantes: ${permitStepLabel[permit.participantsStatus]}. Esquila: ${permitStepLabel[permit.shearingStatus]}. Registro de fibra: ${permitStepLabel[permit.cleaningStatus]}. Abrir permiso`}
 						accent={
 							permit.syncStatus === "synced"
 								? theme.colors.custom.green

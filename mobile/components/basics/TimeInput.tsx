@@ -9,6 +9,7 @@ import { IconButton } from "react-native-paper"
 type TimeInputProps = {
 	value?: string
 	onChange: (value: string) => void
+	accessibilityLabel?: string
 	error?: boolean
 	placeholder?: string
 	disabled?: boolean
@@ -26,6 +27,7 @@ const formatDisplayTime = (time: string | undefined) => {
 export function TimeInput({
 	value,
 	onChange,
+	accessibilityLabel,
 	error,
 	placeholder = "Seleccionar hora",
 	disabled = false,
@@ -56,6 +58,11 @@ export function TimeInput({
 					if (!disabled) setShow(true)
 				}}
 				disabled={disabled}
+				accessibilityRole="button"
+				accessibilityLabel={accessibilityLabel}
+				accessibilityValue={{
+					text: formatDisplayTime(value) ?? placeholder,
+				}}
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
