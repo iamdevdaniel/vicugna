@@ -72,7 +72,7 @@ export function MultiSelectButtonGroup({
 									: theme.colors.surface,
 								borderColor: selected
 									? theme.colors.secondary
-									: theme.colors.outlineVariant,
+									: theme.colors.outline,
 							},
 						]}
 					>

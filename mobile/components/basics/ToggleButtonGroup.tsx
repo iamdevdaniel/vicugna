@@ -50,7 +50,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 				style={[
 					styles.grid,
 					{
-						borderColor: theme.colors.outlineVariant,
+						borderColor: theme.colors.outline,
 						backgroundColor: theme.colors.surface,
 					},
 					style,
@@ -80,7 +80,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 									backgroundColor: selected
 										? selectedBackgroundColor
 										: theme.colors.surface,
-									borderColor: theme.colors.outlineVariant,
+									borderColor: theme.colors.outline,
 									borderRightWidth: isLastColumn ? 0 : 1,
 									borderBottomWidth: isLastRow ? 0 : 1,
 								},
@@ -177,7 +177,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 					colors: {
 						secondaryContainer: selectedBackgroundColor,
 						onSecondaryContainer: selectedTextColor,
-						outline: theme.colors.outlineVariant,
+						outline: theme.colors.outline,
 						onSurface: theme.colors.onSurface,
 						onSurfaceDisabled: unselectedTextColor,
 						surfaceDisabled: theme.colors.surfaceVariant,

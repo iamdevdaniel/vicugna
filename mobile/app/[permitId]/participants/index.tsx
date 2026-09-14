@@ -129,10 +129,19 @@ export default function () {
 								paddingVertical: 6,
 							}}
 						>
-							<Text style={{ fontWeight: "bold" }}>
+							<Text
+								style={{
+									fontWeight: "bold",
+									color: theme.colors.onSurface,
+								}}
+							>
 								{participant.name} {participant.lastNames}
 							</Text>
-							<Text>{participant.identityNumber}</Text>
+							<Text
+								style={{ color: theme.colors.onSurfaceVariant }}
+							>
+								{participant.identityNumber}
+							</Text>
 						</View>
 					</AccentCard>
 				)}

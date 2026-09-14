@@ -47,7 +47,7 @@ export function SignaturePreview({ value }: { value: string }) {
 				style={{
 					width: "100%",
 					aspectRatio: 3.2,
-					backgroundColor: "white",
+					backgroundColor: theme.colors.surface,
 				}}
 			>
 				<Group transform={[{ scale }]}>
@@ -56,7 +56,7 @@ export function SignaturePreview({ value }: { value: string }) {
 							key={id}
 							path={path}
 							strokeWidth={2}
-							color="black"
+							color={theme.colors.onSurface}
 							style="stroke"
 							strokeJoin="round"
 							strokeCap="round"
@@ -151,7 +151,7 @@ export function SignaturePad({
 					style={{
 						width: "100%",
 						aspectRatio: 3.2,
-						backgroundColor: "white",
+						backgroundColor: theme.colors.surface,
 					}}
 				>
 					{completedPaths.map((e) => (
@@ -159,7 +159,7 @@ export function SignaturePad({
 							key={`path-${e.id}`}
 							path={e.path}
 							strokeWidth={2}
-							color="black"
+							color={theme.colors.onSurface}
 							style="stroke"
 							strokeJoin="round"
 							strokeCap="round"
@@ -170,7 +170,7 @@ export function SignaturePad({
 							key="active-drawing-path"
 							path={currentPathRef.current}
 							strokeWidth={2}
-							color="black"
+							color={theme.colors.onSurface}
 							style="stroke"
 							strokeJoin="round"
 							strokeCap="round"

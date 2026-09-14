@@ -1,4 +1,14 @@
-export const warm = {
+import {
+	DarkTheme as NavigationDarkTheme,
+	DefaultTheme as NavigationLightTheme,
+} from "@react-navigation/native"
+import {
+	adaptNavigationTheme,
+	MD3DarkTheme,
+	MD3LightTheme,
+} from "react-native-paper"
+
+const warm = {
 	light: {
 		primary: "rgb(0, 95, 175)",
 		onPrimary: "rgb(255, 255, 255)",
@@ -108,5 +118,36 @@ export const warm = {
 			pastelBlue: "#D9E2F3",
 			pastelYellow: "#FFF2CC",
 		},
+	},
+}
+
+const lightTheme = {
+	...MD3LightTheme,
+	colors: { ...MD3LightTheme.colors, ...warm.light },
+}
+
+const darkTheme = {
+	...MD3DarkTheme,
+	colors: { ...MD3DarkTheme.colors, ...warm.dark },
+}
+
+const { LightTheme: lightNavigationTheme, DarkTheme: darkNavigationTheme } =
+	adaptNavigationTheme({
+		reactNavigationLight: NavigationLightTheme,
+		reactNavigationDark: NavigationDarkTheme,
+		materialLight: lightTheme,
+		materialDark: darkTheme,
+	})
+
+export const appThemes = {
+	light: {
+		paper: lightTheme,
+		navigation: lightNavigationTheme,
+		statusBarStyle: "dark" as const,
+	},
+	dark: {
+		paper: darkTheme,
+		navigation: darkNavigationTheme,
+		statusBarStyle: "light" as const,
 	},
 }

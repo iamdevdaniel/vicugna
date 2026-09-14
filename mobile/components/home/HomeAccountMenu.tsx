@@ -1,4 +1,5 @@
 import type { MobileAuthUser } from "@definitions/types"
+import { useActiveThemeMode, useSettingsStore } from "@utils/settings-store"
 import { useAppTheme } from "@utils/useAppTheme"
 import { toSvg } from "jdenticon/browser"
 import { useEffect, useRef } from "react"
@@ -9,7 +10,7 @@ import {
 	useWindowDimensions,
 	View,
 } from "react-native"
-import { Button, Icon, Text } from "react-native-paper"
+import { Button, Icon, Switch, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { SvgXml } from "react-native-svg"
 import mobilePackage from "../../package.json"
@@ -30,6 +31,8 @@ export function HomeAccountMenu({
 	onLogout,
 }: HomeAccountMenuProps) {
 	const theme = useAppTheme()
+	const themeMode = useActiveThemeMode()
+	const setThemeMode = useSettingsStore((state) => state.setThemeMode)
 	const { width } = useWindowDimensions()
 	const menuAnimation = useRef(new Animated.Value(-1)).current
 	const menuWidth = Math.min(width * 0.84, 360)
@@ -165,6 +168,28 @@ export function HomeAccountMenu({
 							padding: 24,
 						}}
 					>
+						<View
+							style={{
+								minHeight: 48,
+								flexDirection: "row",
+								alignItems: "center",
+								gap: 12,
+							}}
+						>
+							<Icon
+								source="theme-light-dark"
+								size={24}
+								color={theme.colors.onSurfaceVariant}
+							/>
+							<Text style={{ flex: 1 }}>Tema oscuro</Text>
+							<Switch
+								accessibilityLabel="Usar tema oscuro"
+								value={themeMode === "dark"}
+								onValueChange={(enabled) =>
+									setThemeMode(enabled ? "dark" : "light")
+								}
+							/>
+						</View>
 						<Text
 							variant="bodySmall"
 							style={{

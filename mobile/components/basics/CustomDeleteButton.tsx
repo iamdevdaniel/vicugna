@@ -34,7 +34,9 @@ export function CustomDeleteButton({
 				style,
 			]}
 			textColor={
-				disabled ? theme.colors.onSurfaceDisabled : theme.colors.onError
+				disabled
+					? theme.colors.onSurfaceDisabled
+					: theme.colors.custom.white
 			}
 		>
 			{children}
