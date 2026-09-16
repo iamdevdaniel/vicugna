@@ -21,7 +21,12 @@ export default function RootLayout() {
 	const theme = appThemes[themeMode]
 
 	return (
-		<GestureHandlerRootView style={{ flex: 1 }}>
+		<GestureHandlerRootView
+			style={{
+				flex: 1,
+				backgroundColor: theme.navigation.colors.background,
+			}}
+		>
 			<PaperProvider theme={theme.paper}>
 				<NavigationThemeProvider value={theme.navigation}>
 					<Stack
