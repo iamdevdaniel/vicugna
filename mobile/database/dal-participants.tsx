@@ -1,6 +1,6 @@
 import type { ParticipantData, ParticipantFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { recalculatePermitStatuses } from "./dal-permit"
+import { batchWithPermitStatusUpdate } from "./dal-permit"
 import { applyParticipantToModel, mapToParticipant } from "./mappers"
 import type { ParticipantModel } from "./models"
 import { database } from "./setup"
@@ -61,13 +61,19 @@ export async function createSingleParticipant(
 ): Promise<ParticipantData> {
 	let record: ParticipantModel | undefined
 	await database.write(async () => {
-		record = await database
-			.get<ParticipantModel>("participants")
-			.create((model) => {
-				model.permitId = permitId
-				applyParticipantToModel(model, data)
-			})
-		await recalculatePermitStatuses(permitId)
+		await batchWithPermitStatusUpdate(permitId, () => {
+			record = database
+				.get<ParticipantModel>("participants")
+				.prepareCreate((model) => {
+					model.permitId = permitId
+					applyParticipantToModel(model, data)
+				})
+
+			return {
+				operations: [record],
+				statusChange: { participantCountDelta: 1 },
+			}
+		})
 	})
 	if (!record) throw new Error("Failed to create participant")
 	return mapToParticipant(record)
@@ -95,7 +101,9 @@ export async function deleteSingleParticipant(
 			.get<ParticipantModel>("participants")
 			.find(participantId)
 		const { permitId } = record
-		await record.destroyPermanently()
-		await recalculatePermitStatuses(permitId)
+		await batchWithPermitStatusUpdate(permitId, () => ({
+			operations: [record.prepareDestroyPermanently()],
+			statusChange: { participantCountDelta: -1 },
+		}))
 	})
 }

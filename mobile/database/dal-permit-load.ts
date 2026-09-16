@@ -1,10 +1,6 @@
-import type {
-	MobilePermitData,
-	PermitFieldData,
-	PermitStepStatus,
-} from "@definitions/types"
+import type { MobilePermitData, PermitFieldData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
-import { getDependentStepStatus } from "@utils/misc"
+import { getPermitStatuses } from "@utils/permit-status-rules"
 import { applyPermitToModel, applySyncPermitToModel } from "./mappers"
 import type {
 	CleaningCommonModel,
@@ -274,21 +270,6 @@ const defaultStatuses = {
 } as const
 
 function getSnapshotStatuses(data: PermitFieldData) {
-	const participantsStatus: PermitStepStatus = data.participants.length
-		? "done"
-		: "ready"
-	const shearingStatus = getDependentStepStatus(
-		participantsStatus === "done",
-		data.shearingHeader.isCompleted && data.shearingRecords.length > 0,
-	)
-	if (shearingStatus !== "done") {
-		return {
-			participantsStatus,
-			shearingStatus,
-			cleaningStatus: "disabled" as const,
-		}
-	}
-
 	const completedCleaningIds = new Set([
 		...data.groomingDetails
 			.filter((record) => record.isCompleted)
@@ -297,18 +278,17 @@ function getSnapshotStatuses(data: PermitFieldData) {
 			.filter((record) => record.isCompleted)
 			.map((record) => record.cleaningCommonId),
 	])
-	const cleaningIsComplete =
-		data.cleaningHeader.isCompleted &&
-		data.cleaningCommonRecords.length > 0 &&
-		data.cleaningCommonRecords.every((record) =>
-			completedCleaningIds.has(record.id),
-		)
 
-	return {
-		participantsStatus,
-		shearingStatus,
-		cleaningStatus: getDependentStepStatus(true, cleaningIsComplete),
-	}
+	return getPermitStatuses({
+		participantCount: data.participants.length,
+		shearingHeaderCompleted: data.shearingHeader.isCompleted,
+		shearingRecordCount: data.shearingRecords.length,
+		cleaningHeaderCompleted: data.cleaningHeader.isCompleted,
+		cleaningRecordIds: new Set(
+			data.cleaningCommonRecords.map((record) => record.id),
+		),
+		completedCleaningRecordIds: completedCleaningIds,
+	})
 }
 
 function applyStatuses(

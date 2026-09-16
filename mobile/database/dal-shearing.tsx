@@ -5,7 +5,7 @@ import type {
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { recalculatePermitStatuses } from "./dal-permit"
+import { batchWithPermitStatusUpdate } from "./dal-permit"
 import {
 	applyShearingHeaderToModel,
 	applyShearingRecordToModel,
@@ -108,10 +108,14 @@ export async function updateShearingHeader(
 		const record = await database
 			.get<ShearingHeaderModel>("shearingHeader")
 			.find(id)
-		await record.update((model) =>
-			applyShearingHeaderToModel(model, data, true),
-		)
-		await recalculatePermitStatuses(record.permitId)
+		await batchWithPermitStatusUpdate(record.permitId, () => ({
+			operations: [
+				record.prepareUpdate((model) =>
+					applyShearingHeaderToModel(model, data, true),
+				),
+			],
+			statusChange: { shearingHeaderCompleted: true },
+		}))
 	})
 }
 
@@ -121,12 +125,18 @@ export async function createSingleShearingRecord(
 ): Promise<ShearingRecordData> {
 	let record: ShearingRecordModel | undefined
 	await database.write(async () => {
-		record = await database
-			.get<ShearingRecordModel>("shearingRecord")
-			.create((model) => {
-				applyShearingRecordToModel(model, data, permitId)
-			})
-		await recalculatePermitStatuses(permitId)
+		await batchWithPermitStatusUpdate(permitId, () => {
+			record = database
+				.get<ShearingRecordModel>("shearingRecord")
+				.prepareCreate((model) => {
+					applyShearingRecordToModel(model, data, permitId)
+				})
+
+			return {
+				operations: [record],
+				statusChange: { shearingRecordCountDelta: 1 },
+			}
+		})
 	})
 	if (!record) throw new Error("Failed to create shearing record")
 	return mapToShearingRecord(record)
@@ -154,7 +164,9 @@ export async function deleteSingleShearingRecord(
 			.get<ShearingRecordModel>("shearingRecord")
 			.find(recordId)
 		const { permitId } = record
-		await record.destroyPermanently()
-		await recalculatePermitStatuses(permitId)
+		await batchWithPermitStatusUpdate(permitId, () => ({
+			operations: [record.prepareDestroyPermanently()],
+			statusChange: { shearingRecordCountDelta: -1 },
+		}))
 	})
 }

@@ -1,6 +1,11 @@
 import type { PermitData, PermitSyncResult } from "@definitions/types"
-import { Q } from "@nozbe/watermelondb"
-import { areCleaningRecordsComplete, getDependentStepStatus } from "@utils/misc"
+import { type Model, Q } from "@nozbe/watermelondb"
+import {
+	applyPermitStatusChange,
+	getPermitStatuses,
+	type PermitStatusChange,
+	type PermitStatuses,
+} from "@utils/permit-status-rules"
 import { mapToPermit } from "./mappers"
 import type {
 	CleaningCommonModel,
@@ -17,6 +22,11 @@ import { database } from "./setup"
 type SubscriptionCallback<T> = {
 	onChange: (data: T) => void
 	onError: (error: Error) => void
+}
+
+type PreparedPermitMutation = {
+	operations: Model[]
+	statusChange: PermitStatusChange
 }
 
 //-------------------READ-------------------
@@ -87,55 +97,48 @@ export async function updatePermitSyncStatus(
 	})
 }
 
-export async function recalculatePermitStatuses(
+export async function batchWithPermitStatusUpdate(
 	permitId: string,
+	prepareMutation: () => PreparedPermitMutation,
 ): Promise<void> {
-	const [permit, participantCount, shearingHeaders, shearingRecordCount] =
-		await Promise.all([
-			database.get<PermitModel>("permits").find(permitId),
-			database
-				.get<ParticipantModel>("participants")
-				.query(Q.where("permitId", permitId))
-				.fetchCount(),
-			database
-				.get<ShearingHeaderModel>("shearingHeader")
-				.query(Q.where("permitId", permitId))
-				.fetch(),
-			database
-				.get<ShearingRecordModel>("shearingRecord")
-				.query(Q.where("permitId", permitId))
-				.fetchCount(),
-		])
-	const participantsStatus = participantCount > 0 ? "done" : "ready"
-	const shearingHeader = shearingHeaders[0]
-	const shearingStatus = getDependentStepStatus(
-		participantsStatus === "done",
-		Boolean(shearingHeader?.isCompleted && shearingRecordCount > 0),
+	const currentState = await readPermitStatusState(permitId)
+	const { operations, statusChange } = prepareMutation()
+	const statuses = getPermitStatuses(
+		applyPermitStatusChange(currentState, statusChange),
 	)
-	const cleaningStatus = await readCleaningStatus(permitId, shearingStatus)
+	const statusUpdate = preparePermitStatusUpdate(
+		currentState.permit,
+		statuses,
+	)
 
-	if (
-		permit.participantsStatus === participantsStatus &&
-		permit.shearingStatus === shearingStatus &&
-		permit.cleaningStatus === cleaningStatus
-	) {
-		return
-	}
-
-	await permit.update((model) => {
-		model.participantsStatus = participantsStatus
-		model.shearingStatus = shearingStatus
-		model.cleaningStatus = cleaningStatus
-	})
+	await database.batch([
+		...operations,
+		...(statusUpdate ? [statusUpdate] : []),
+	])
 }
 
-async function readCleaningStatus(
-	permitId: string,
-	shearingStatus: PermitData["shearingStatus"],
-): Promise<PermitData["cleaningStatus"]> {
-	if (shearingStatus !== "done") return "disabled"
-
-	const [cleaningHeaders, cleaningCommonRecords] = await Promise.all([
+async function readPermitStatusState(permitId: string) {
+	const [
+		permit,
+		participantCount,
+		shearingHeaders,
+		shearingRecordCount,
+		cleaningHeaders,
+		cleaningRecords,
+	] = await Promise.all([
+		database.get<PermitModel>("permits").find(permitId),
+		database
+			.get<ParticipantModel>("participants")
+			.query(Q.where("permitId", permitId))
+			.fetchCount(),
+		database
+			.get<ShearingHeaderModel>("shearingHeader")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+		database
+			.get<ShearingRecordModel>("shearingRecord")
+			.query(Q.where("permitId", permitId))
+			.fetchCount(),
 		database
 			.get<CleaningHeaderModel>("cleaningHeader")
 			.query(Q.where("permitId", permitId))
@@ -145,43 +148,62 @@ async function readCleaningStatus(
 			.query(Q.where("permitId", permitId))
 			.fetch(),
 	])
-	const cleaningHeader = cleaningHeaders[0]
-	if (!cleaningHeader?.isCompleted || cleaningCommonRecords.length === 0) {
-		return "ready"
+	const cleaningRecordIds = new Set(
+		cleaningRecords.map((record) => record.id),
+	)
+	const completedCleaningRecordIds = new Set<string>()
+
+	if (cleaningRecordIds.size > 0) {
+		const ids = [...cleaningRecordIds]
+		const [groomingRecords, dehearingRecords] = await Promise.all([
+			database
+				.get<GroomingModel>("grooming")
+				.query(
+					Q.where("cleaningCommonId", Q.oneOf(ids)),
+					Q.where("isCompleted", true),
+				)
+				.fetch(),
+			database
+				.get<DehearingModel>("dehearing")
+				.query(
+					Q.where("cleaningCommonId", Q.oneOf(ids)),
+					Q.where("isCompleted", true),
+				)
+				.fetch(),
+		])
+
+		for (const record of groomingRecords)
+			completedCleaningRecordIds.add(record.cleaningCommonId)
+		for (const record of dehearingRecords)
+			completedCleaningRecordIds.add(record.cleaningCommonId)
 	}
 
-	const cleaningRecordIds = cleaningCommonRecords.map((record) => record.id)
+	return {
+		permit,
+		participantCount,
+		shearingHeaderCompleted: Boolean(shearingHeaders[0]?.isCompleted),
+		shearingRecordCount,
+		cleaningHeaderCompleted: Boolean(cleaningHeaders[0]?.isCompleted),
+		cleaningRecordIds,
+		completedCleaningRecordIds,
+	}
+}
 
-	const [groomingRecords, dehearingRecords] = await Promise.all([
-		database
-			.get<GroomingModel>("grooming")
-			.query(
-				Q.where("cleaningCommonId", Q.oneOf(cleaningRecordIds)),
-				Q.where("isCompleted", true),
-			)
-			.fetch(),
-		database
-			.get<DehearingModel>("dehearing")
-			.query(
-				Q.where("cleaningCommonId", Q.oneOf(cleaningRecordIds)),
-				Q.where("isCompleted", true),
-			)
-			.fetch(),
-	])
+function preparePermitStatusUpdate(
+	permit: PermitModel,
+	statuses: PermitStatuses,
+): PermitModel | null {
+	if (
+		permit.participantsStatus === statuses.participantsStatus &&
+		permit.shearingStatus === statuses.shearingStatus &&
+		permit.cleaningStatus === statuses.cleaningStatus
+	) {
+		return null
+	}
 
-	const completedGroomingIds = new Set(
-		groomingRecords.map((record) => record.cleaningCommonId),
-	)
-	const completedDehearingIds = new Set(
-		dehearingRecords.map((record) => record.cleaningCommonId),
-	)
-
-	return getDependentStepStatus(
-		true,
-		areCleaningRecordsComplete(
-			cleaningRecordIds,
-			completedGroomingIds,
-			completedDehearingIds,
-		),
-	)
+	return permit.prepareUpdate((model) => {
+		model.participantsStatus = statuses.participantsStatus
+		model.shearingStatus = statuses.shearingStatus
+		model.cleaningStatus = statuses.cleaningStatus
+	})
 }

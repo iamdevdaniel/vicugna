@@ -8,7 +8,7 @@ import type {
 	GroomingData,
 } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
-import { recalculatePermitStatuses } from "./dal-permit"
+import { batchWithPermitStatusUpdate } from "./dal-permit"
 import {
 	applyCleaningCommonToModel,
 	applyCleaningHeaderToModel,
@@ -205,8 +205,17 @@ export async function updateSingleCleaningHeader(
 		const record = await database
 			.get<CleaningHeaderModel>("cleaningHeader")
 			.find(headerId)
-		await record.update((model) => applyCleaningHeaderToModel(model, data))
-		await recalculatePermitStatuses(record.permitId)
+		await batchWithPermitStatusUpdate(record.permitId, () => {
+			let isCompleted = false
+			const operation = record.prepareUpdate((model) => {
+				isCompleted = applyCleaningHeaderToModel(model, data)
+			})
+
+			return {
+				operations: [operation],
+				statusChange: { cleaningHeaderCompleted: isCompleted },
+			}
+		})
 	})
 }
 
@@ -215,14 +224,24 @@ export async function createSingleCleaningRecord(
 	data: CleaningCommonFormData,
 ): Promise<void> {
 	await database.write(async () => {
-		const commonRecord = database
-			.get<CleaningCommonModel>("cleaningCommon")
-			.prepareCreate((model) => {
-				applyCleaningCommonToModel(model, data, permitId)
-			})
+		await batchWithPermitStatusUpdate(permitId, () => {
+			const commonRecord = database
+				.get<CleaningCommonModel>("cleaningCommon")
+				.prepareCreate((model) => {
+					applyCleaningCommonToModel(model, data, permitId)
+				})
 
-		await database.batch(commonRecord)
-		await recalculatePermitStatuses(permitId)
+			return {
+				operations: [commonRecord],
+				statusChange: {
+					cleaningRecord: {
+						id: commonRecord.id,
+						exists: true,
+						isCompleted: false,
+					},
+				},
+			}
+		})
 	})
 }
 
@@ -244,60 +263,70 @@ export async function updateSingleCleaningRecord(
 				.query(Q.where("cleaningCommonId", cleaningCommonId))
 				.fetch(),
 		])
-		const batchOps: Model[] = [
-			commonRecord.prepareUpdate((model) => {
-				applyCleaningCommonToModel(model, data.common)
-			}),
-		]
+		await batchWithPermitStatusUpdate(commonRecord.permitId, () => {
+			const batchOps: Model[] = [
+				commonRecord.prepareUpdate((model) => {
+					applyCleaningCommonToModel(model, data.common)
+				}),
+			]
 
-		if (data.cleaningType === "grooming") {
-			batchOps.push(
-				...dehearingRecords.map((record) =>
-					record.prepareDestroyPermanently(),
-				),
-				...groomingRecords
-					.slice(1)
-					.map((record) => record.prepareDestroyPermanently()),
-				groomingRecords[0]
-					? groomingRecords[0].prepareUpdate((model) => {
-							applyGroomingToModel(model, data.detail)
-						})
-					: database
-							.get<GroomingModel>("grooming")
-							.prepareCreate((model) => {
-								applyGroomingToModel(
-									model,
-									data.detail,
-									cleaningCommonId,
-								)
-							}),
-			)
-		} else {
-			batchOps.push(
-				...groomingRecords.map((record) =>
-					record.prepareDestroyPermanently(),
-				),
-				...dehearingRecords
-					.slice(1)
-					.map((record) => record.prepareDestroyPermanently()),
-				dehearingRecords[0]
-					? dehearingRecords[0].prepareUpdate((model) => {
-							applyDehearingToModel(model, data.detail)
-						})
-					: database
-							.get<DehearingModel>("dehearing")
-							.prepareCreate((model) => {
-								applyDehearingToModel(
-									model,
-									data.detail,
-									cleaningCommonId,
-								)
-							}),
-			)
-		}
+			if (data.cleaningType === "grooming") {
+				batchOps.push(
+					...dehearingRecords.map((record) =>
+						record.prepareDestroyPermanently(),
+					),
+					...groomingRecords
+						.slice(1)
+						.map((record) => record.prepareDestroyPermanently()),
+					groomingRecords[0]
+						? groomingRecords[0].prepareUpdate((model) => {
+								applyGroomingToModel(model, data.detail)
+							})
+						: database
+								.get<GroomingModel>("grooming")
+								.prepareCreate((model) => {
+									applyGroomingToModel(
+										model,
+										data.detail,
+										cleaningCommonId,
+									)
+								}),
+				)
+			} else {
+				batchOps.push(
+					...groomingRecords.map((record) =>
+						record.prepareDestroyPermanently(),
+					),
+					...dehearingRecords
+						.slice(1)
+						.map((record) => record.prepareDestroyPermanently()),
+					dehearingRecords[0]
+						? dehearingRecords[0].prepareUpdate((model) => {
+								applyDehearingToModel(model, data.detail)
+							})
+						: database
+								.get<DehearingModel>("dehearing")
+								.prepareCreate((model) => {
+									applyDehearingToModel(
+										model,
+										data.detail,
+										cleaningCommonId,
+									)
+								}),
+				)
+			}
 
-		await database.batch(batchOps)
-		await recalculatePermitStatuses(commonRecord.permitId)
+			return {
+				operations: batchOps,
+				statusChange: {
+					cleaningRecord: {
+						id: cleaningCommonId,
+						exists: true,
+						isCompleted: true,
+					},
+				},
+			}
+		})
 	})
 }
 
@@ -317,12 +346,19 @@ export async function deleteSingleCleaningRecord(
 			.get<CleaningCommonModel>("cleaningCommon")
 			.find(cleaningCommonId)
 		const { permitId } = record
-		const batchOps: Model[] = [
-			...groomingRecords.map((item) => item.prepareDestroyPermanently()),
-			...dehearingRecords.map((item) => item.prepareDestroyPermanently()),
-			record.prepareDestroyPermanently(),
-		]
-		await database.batch(batchOps)
-		await recalculatePermitStatuses(permitId)
+		await batchWithPermitStatusUpdate(permitId, () => ({
+			operations: [
+				...groomingRecords.map((item) =>
+					item.prepareDestroyPermanently(),
+				),
+				...dehearingRecords.map((item) =>
+					item.prepareDestroyPermanently(),
+				),
+				record.prepareDestroyPermanently(),
+			],
+			statusChange: {
+				cleaningRecord: { id: cleaningCommonId, exists: false },
+			},
+		}))
 	})
 }

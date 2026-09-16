@@ -10,7 +10,7 @@ import {
 	useReadSinglePermit,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
-import { areCleaningRecordsComplete } from "@utils/misc"
+import { areCleaningRecordsComplete } from "@utils/permit-status-rules"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, useLocalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
@@ -154,20 +154,19 @@ export default function () {
 	const cleaningCommonIds = cleaningCommon.map((record) => record.id)
 	const { data: groomingRecords } = useReadBulkGrooming(cleaningCommonIds)
 	const { data: dehearingRecords } = useReadBulkDehearing(cleaningCommonIds)
+	const completedCleaningRecordIds = new Set([
+		...groomingRecords
+			.filter((record) => record.isCompleted)
+			.map((record) => record.cleaningCommonId),
+		...dehearingRecords
+			.filter((record) => record.isCompleted)
+			.map((record) => record.cleaningCommonId),
+	])
 
 	const headerState = cleaningHeader?.isCompleted ? "done" : "ready"
 	const recordsState = areCleaningRecordsComplete(
 		cleaningCommonIds,
-		new Set(
-			groomingRecords
-				.filter((record) => record.isCompleted)
-				.map((record) => record.cleaningCommonId),
-		),
-		new Set(
-			dehearingRecords
-				.filter((record) => record.isCompleted)
-				.map((record) => record.cleaningCommonId),
-		),
+		completedCleaningRecordIds,
 	)
 		? "done"
 		: "ready"

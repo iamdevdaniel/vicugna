@@ -225,17 +225,19 @@ export function mapToCleaningHeader(
 export function applyCleaningHeaderToModel(
 	model: CleaningHeaderModel,
 	data: CleaningHeaderFormData,
-): void {
+): boolean {
 	model.startDate = data.startDate
 	model.endDate = data.endDate
 	model.site = data.site
 	model.supervisors = data.supervisors
-	model.isCompleted = Boolean(
+	const isCompleted = Boolean(
 		data.startDate.trim() &&
 			data.endDate.trim() &&
 			data.site.trim() &&
 			data.supervisors.trim(),
 	)
+	model.isCompleted = isCompleted
+	return isCompleted
 }
 
 export function mapToCleaningCommon(
