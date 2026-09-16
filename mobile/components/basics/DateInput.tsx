@@ -12,7 +12,7 @@ import {
 } from "react-native-paper-dates"
 import { CustomTextInput } from "./CustomTextInput"
 
-registerTranslation("es", es)
+registerTranslation("es-BO", es)
 
 type DateInputProps = {
 	value?: string
@@ -72,7 +72,7 @@ export function DateInput({
 			</Pressable>
 
 			<DatePickerModal
-				locale="es"
+				locale="es-BO"
 				mode="single"
 				visible={show && !disabled}
 				date={getDateValue(value)}
