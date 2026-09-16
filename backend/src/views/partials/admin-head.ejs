@@ -5,6 +5,15 @@
 	<title>
 		<%= pageTitle %>
 	</title>
+	<script>
+		const savedTheme = localStorage.getItem("vicugna-admin-theme")
+		document.documentElement.dataset.theme = savedTheme === "dark" ? "dark" : "light"
+		window.toggleAdminTheme = () => {
+			const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark"
+			document.documentElement.dataset.theme = theme
+			localStorage.setItem("vicugna-admin-theme", theme)
+		}
+	</script>
 	<link rel="icon" type="image/png" href="<%= faviconPath %>" />
 	<link rel="stylesheet" href="/admin.css" />
 	<script defer src="/vendor/htmx.min.js"></script>
