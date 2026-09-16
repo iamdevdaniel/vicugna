@@ -63,6 +63,9 @@ export function MultiSelectButtonGroup({
 								: option.label
 						}
 						accessibilityState={{ checked: selected, disabled }}
+						accessibilityValue={{
+							text: selected ? "Seleccionado" : "No seleccionado",
+						}}
 						onPress={() => toggleValue(option.value)}
 						style={[
 							styles.button,

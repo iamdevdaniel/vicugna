@@ -1,7 +1,13 @@
-import DateTimePicker from "@react-native-community/datetimepicker"
 import { useState } from "react"
 import { Pressable, type StyleProp, type ViewStyle } from "react-native"
 import { TextInput } from "react-native-paper"
+import {
+	DatePickerModal,
+	es,
+	registerTranslation,
+} from "react-native-paper-dates"
+
+registerTranslation("es", es)
 
 type DateInputProps = {
 	value?: string
@@ -18,7 +24,9 @@ export function getTodayDateString() {
 }
 
 function getDateValue(value: string | undefined) {
-	return value ? new Date(value.split("/").reverse().join("-")) : new Date()
+	if (!value) return new Date()
+	const [day, month, year] = value.split("/").map(Number)
+	return new Date(year, month - 1, day)
 }
 
 export function DateInput({
@@ -66,19 +74,17 @@ export function DateInput({
 				/>
 			</Pressable>
 
-			{show && !disabled && (
-				<DateTimePicker
-					value={getDateValue(value)}
-					mode="date"
-					display="default"
-					onChange={(event, selectedDate) => {
-						setShow(false)
-						if (event.type === "set" && selectedDate) {
-							onChange(selectedDate.toLocaleDateString("es-ES"))
-						}
-					}}
-				/>
-			)}
+			<DatePickerModal
+				locale="es"
+				mode="single"
+				visible={show && !disabled}
+				date={getDateValue(value)}
+				onDismiss={() => setShow(false)}
+				onConfirm={({ date }) => {
+					setShow(false)
+					if (date) onChange(date.toLocaleDateString("es-ES"))
+				}}
+			/>
 		</>
 	)
 }

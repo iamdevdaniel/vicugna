@@ -1,4 +1,6 @@
-import {
+const { device } = require("detox")
+const { describe, test } = require("@jest/globals")
+const {
 	addFiberRecord,
 	addParticipant,
 	addShearingRecord,
@@ -11,14 +13,14 @@ import {
 	verifyParticipant,
 	verifyShearingHeader,
 	verifyShearingRecord,
-} from "./flows.mjs"
-import {
+} = require("./flows")
+const {
 	byText,
 	expectEnabled,
 	HAPPY_PERMIT,
 	openPermit,
 	resetLoginAndLoadPermits,
-} from "./support.mjs"
+} = require("./support")
 
 const participants = [
 	{
@@ -163,49 +165,62 @@ const fiberRecords = [
 ]
 
 describe("Recolección local completa", () => {
-	it("restablece los datos, inicia sesión y abre TEST-01", async () => {
-		await resetLoginAndLoadPermits(browser)
-		await openPermit(browser, HAPPY_PERMIT)
+	let completedStage = 0
+
+	function requireStage(stage, description) {
+		if (completedStage < stage) {
+			throw new Error(`No se pudo preparar el requisito: ${description}`)
+		}
+	}
+
+	test("restablece los datos, inicia sesión y abre TEST-01", async () => {
+		await resetLoginAndLoadPermits()
+		await openPermit(HAPPY_PERMIT)
+		completedStage = 1
 	})
 
-	it("guarda y verifica tres participantes", async () => {
-		await openWorkflowStep(browser, "Participantes")
+	test("guarda y verifica tres participantes", async () => {
+		requireStage(1, "abrir TEST-01")
+		await openWorkflowStep("Participantes")
 		for (const participant of participants)
-			await addParticipant(browser, participant)
-		await expectTotal(browser, 3)
-		for (const participant of participants)
-			await verifyParticipant(browser, participant)
-		await browser.back()
+			await addParticipant(participant)
+		await expectTotal(3)
+		for (const participant of participants) {
+			await verifyParticipant(participant)
+		}
+		await device.pressBack()
+		completedStage = 2
 	})
 
-	it("guarda y verifica la información y los registros de esquila", async () => {
-		await openWorkflowStep(browser, "Esquila")
-		const shearingDate = await fillShearingHeader(browser)
-		await verifyShearingHeader(browser, shearingDate)
-		for (const record of shearingRecords)
-			await addShearingRecord(browser, record)
-		await expectTotal(browser, 5)
-		for (const record of shearingRecords)
-			await verifyShearingRecord(browser, record)
-		await browser.back()
+	test("guarda y verifica la información y los registros de esquila", async () => {
+		requireStage(2, "guardar los participantes")
+		await openWorkflowStep("Esquila")
+		const shearingDate = await fillShearingHeader()
+		await verifyShearingHeader(shearingDate)
+		for (const record of shearingRecords) await addShearingRecord(record)
+		await expectTotal(5)
+		for (const record of shearingRecords) await verifyShearingRecord(record)
+		await device.pressBack()
+		completedStage = 3
 	})
 
-	it("guarda y verifica la información y los registros de fibra", async () => {
-		await openWorkflowStep(browser, "Registro de fibra")
-		const cleaningDates = await fillCleaningHeader(browser)
-		await verifyCleaningHeader(browser, cleaningDates)
-		for (const record of fiberRecords) await addFiberRecord(browser, record)
-		await expectTotal(browser, 5)
-		for (const record of fiberRecords)
-			await verifyFiberRecord(browser, record)
-		await browser.back()
+	test("guarda y verifica la información y los registros de fibra", async () => {
+		requireStage(3, "completar Esquila")
+		await openWorkflowStep("Registro de fibra")
+		const cleaningDates = await fillCleaningHeader()
+		await verifyCleaningHeader(cleaningDates)
+		for (const record of fiberRecords) await addFiberRecord(record)
+		await expectTotal(5)
+		for (const record of fiberRecords) await verifyFiberRecord(record)
+		await device.pressBack()
+		completedStage = 4
 	})
 
-	it("deja el permiso listo para sincronizar sin enviarlo", async () => {
+	test("deja el permiso listo para sincronizar sin enviarlo", async () => {
+		requireStage(4, "completar Registro de fibra")
 		await byText(
-			browser,
 			"Finaliza este permiso cuando ya no queden cambios por hacer.",
 		)
-		await expectEnabled(browser, "Finalizar y enviar", true)
+		await expectEnabled("Finalizar y enviar", true)
 	})
 })

@@ -57,7 +57,7 @@
         }
       ],
       "expo-web-browser",
-      "@react-native-community/datetimepicker"
+      "./plugins/withDetox"
     ],
     "experiments": {
       "typedRoutes": true

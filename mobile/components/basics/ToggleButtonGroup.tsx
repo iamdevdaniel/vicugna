@@ -73,6 +73,11 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 									: opt.label
 							}
 							accessibilityState={{ checked: selected, disabled }}
+							accessibilityValue={{
+								text: selected
+									? "Seleccionado"
+									: "No seleccionado",
+							}}
 							style={[
 								styles.gridButton,
 								{
@@ -127,16 +132,19 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 			<SegmentedButtons
 				value={value}
 				onValueChange={onChange}
-				buttons={options.map((opt) => ({
-					value: opt.value,
-					label: opt.label,
-					accessibilityLabel: accessibilityLabel
+				buttons={options.map((opt) => {
+					const selected = value === opt.value
+					const optionLabel = accessibilityLabel
 						? `${accessibilityLabel}: ${opt.label}`
-						: opt.label,
-					icon: ({ size }) => {
-						const selected = value === opt.value
+						: opt.label
 
-						return (
+					return {
+						value: opt.value,
+						label: opt.label,
+						accessibilityLabel: `${optionLabel}, ${
+							selected ? "Seleccionado" : "No seleccionado"
+						}`,
+						icon: ({ size }) => (
 							<Icon
 								source={
 									selected
@@ -150,28 +158,26 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 										: unselectedTextColor
 								}
 							/>
-						)
-					},
-					disabled,
-					checkedColor: selectedTextColor,
-					uncheckedColor: theme.colors.onSurface,
-					showSelectedCheck: false,
-					style: {
-						backgroundColor:
-							value === opt.value
+						),
+						disabled,
+						checkedColor: selectedTextColor,
+						uncheckedColor: theme.colors.onSurface,
+						showSelectedCheck: false,
+						style: {
+							backgroundColor: selected
 								? selectedBackgroundColor
 								: theme.colors.surface,
-					},
-					labelStyle: [
-						styles.buttonLabel,
-						{
-							color:
-								value === opt.value
+						},
+						labelStyle: [
+							styles.buttonLabel,
+							{
+								color: selected
 									? selectedTextColor
 									: unselectedTextColor,
-						},
-					],
-				}))}
+							},
+						],
+					}
+				})}
 				theme={{
 					roundness: 2,
 					colors: {

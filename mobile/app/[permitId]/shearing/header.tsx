@@ -342,7 +342,6 @@ export default function () {
 									value={value}
 									onChange={onChange}
 									error={!!errors.startTime}
-									minuteInterval={5}
 								/>
 							)}
 						/>
@@ -362,7 +361,6 @@ export default function () {
 									value={value}
 									onChange={onChange}
 									error={!!errors.endTime}
-									minuteInterval={5}
 								/>
 							)}
 						/>

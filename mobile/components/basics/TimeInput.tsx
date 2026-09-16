@@ -1,10 +1,14 @@
-import DateTimePicker, {
-	type DateTimePickerEvent,
-} from "@react-native-community/datetimepicker"
 import { useAppTheme } from "@utils/useAppTheme"
 import { useState } from "react"
 import { Pressable, Text } from "react-native"
 import { IconButton } from "react-native-paper"
+import {
+	es,
+	registerTranslation,
+	TimePickerModal,
+} from "react-native-paper-dates"
+
+registerTranslation("es", es)
 
 type TimeInputProps = {
 	value?: string
@@ -13,7 +17,6 @@ type TimeInputProps = {
 	error?: boolean
 	placeholder?: string
 	disabled?: boolean
-	minuteInterval?: 1 | 2 | 3 | 4 | 5 | 6 | 10 | 12 | 15 | 20 | 30
 }
 
 const formatDisplayTime = (time: string | undefined) => {
@@ -31,25 +34,10 @@ export function TimeInput({
 	error,
 	placeholder = "Seleccionar hora",
 	disabled = false,
-	minuteInterval = 1,
 }: TimeInputProps) {
 	const theme = useAppTheme()
 	const [show, setShow] = useState(false)
-
-	const handleTimeChange = (
-		event: DateTimePickerEvent,
-		selectedDate?: Date,
-	) => {
-		setShow(false)
-		if (event.type === "set" && selectedDate) {
-			const hours = selectedDate.getHours().toString().padStart(2, "0")
-			const minutes = selectedDate
-				.getMinutes()
-				.toString()
-				.padStart(2, "0")
-			onChange(`${hours}:${minutes}`)
-		}
-	}
+	const [hours, minutes] = value?.split(":").map(Number) ?? []
 
 	return (
 		<>
@@ -97,27 +85,24 @@ export function TimeInput({
 				/>
 			</Pressable>
 
-			{show && !disabled && (
-				<DateTimePicker
-					value={
-						value ? new Date(`1970-01-01T${value}:00`) : new Date()
-					}
-					mode="time"
-					is24Hour={true}
-					display="spinner"
-					locale="es-ES"
-					minuteInterval={minuteInterval}
-					positiveButton={{
-						label: "Aceptar",
-						textColor: theme.colors.primary,
-					}}
-					negativeButton={{
-						label: "Cancelar",
-						textColor: theme.colors.error,
-					}}
-					onChange={handleTimeChange}
-				/>
-			)}
+			<TimePickerModal
+				locale="es"
+				label="Seleccionar hora"
+				cancelLabel="Cancelar"
+				confirmLabel="Aceptar"
+				visible={show && !disabled}
+				hours={hours}
+				minutes={minutes}
+				use24HourClock
+				defaultInputType="picker"
+				onDismiss={() => setShow(false)}
+				onConfirm={(selectedTime) => {
+					setShow(false)
+					onChange(
+						`${String(selectedTime.hours).padStart(2, "0")}:${String(selectedTime.minutes).padStart(2, "0")}`,
+					)
+				}}
+			/>
 		</>
 	)
 }

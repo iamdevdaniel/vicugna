@@ -78,6 +78,7 @@ export function HomeUserHeader({
 							<Text variant="labelLarge">Sin iniciar sesión</Text>
 						</View>
 						<Button
+							accessibilityLabel="Iniciar sesión"
 							mode="outlined"
 							onPress={onLogin}
 							style={{ marginRight: 6 }}
