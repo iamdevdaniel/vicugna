@@ -185,7 +185,8 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Participante: nombre"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -209,7 +210,8 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Participante: apellidos"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -255,7 +257,8 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Participante: cédula"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -296,15 +299,17 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Participante: notas"
-									mode="outlined"
+									mode="flat"
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
 									autoCapitalize="sentences"
 									multiline
-									style={{ height: 100 }}
+									numberOfLines={2}
+									scrollEnabled
 									contentStyle={{
-										height: 115,
+										paddingTop: 4,
+										paddingBottom: 6,
 										textAlignVertical: "top",
 									}}
 									error={!!errors.notes}

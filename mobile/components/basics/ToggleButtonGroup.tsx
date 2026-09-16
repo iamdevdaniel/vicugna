@@ -186,7 +186,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 						outline: theme.colors.outline,
 						onSurface: theme.colors.onSurface,
 						onSurfaceDisabled: unselectedTextColor,
-						surfaceDisabled: theme.colors.surfaceVariant,
+						surfaceDisabled: theme.colors.custom.mutedSurface,
 					},
 				}}
 			/>

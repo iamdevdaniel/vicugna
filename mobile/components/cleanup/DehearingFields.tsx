@@ -33,7 +33,8 @@ export function DehearingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							accessibilityLabel="Fibra: peso predescerdado"
-							mode="outlined"
+							mode="flat"
+							dense
 							value={value}
 							onChangeText={onChange}
 							onBlur={onBlur}
@@ -58,7 +59,8 @@ export function DehearingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							accessibilityLabel="Fibra: peso cerda"
-							mode="outlined"
+							mode="flat"
+							dense
 							value={value}
 							onChangeText={onChange}
 							onBlur={onBlur}
@@ -107,7 +109,8 @@ export function DehearingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							accessibilityLabel="Fibra: nombre del predescerdador"
-							mode="outlined"
+							mode="flat"
+							dense
 							value={value}
 							onChangeText={onChange}
 							onBlur={onBlur}

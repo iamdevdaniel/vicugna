@@ -3,6 +3,7 @@ import { type MD3Theme, useTheme } from "react-native-paper"
 export type AppTheme = MD3Theme & {
 	colors: MD3Theme["colors"] & {
 		custom: {
+			mutedSurface: string
 			green: string
 			crimson: string
 			yellow: string

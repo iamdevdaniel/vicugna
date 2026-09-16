@@ -124,7 +124,7 @@ export function HomeAccountMenu({
 								borderRadius: 999,
 								backgroundColor: user
 									? theme.colors.custom.yellow
-									: theme.colors.surfaceVariant,
+									: theme.colors.custom.mutedSurface,
 								alignItems: "center",
 								justifyContent: "center",
 							}}

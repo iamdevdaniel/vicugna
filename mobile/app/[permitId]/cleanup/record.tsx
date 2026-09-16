@@ -425,7 +425,8 @@ export default function CleaningRecordScreen() {
 							}) => (
 								<TextInput
 									accessibilityLabel="Fibra: número de vellón"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -450,7 +451,8 @@ export default function CleaningRecordScreen() {
 							}) => (
 								<TextInput
 									accessibilityLabel="Fibra: peso bruto"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}

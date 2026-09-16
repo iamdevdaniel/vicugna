@@ -263,7 +263,7 @@ export default function () {
 					paddingBottom: 16 + insets.bottom,
 					backgroundColor: theme.colors.background,
 					borderTopWidth: 1,
-					borderTopColor: theme.colors.surfaceVariant,
+					borderTopColor: theme.colors.custom.mutedSurface,
 					gap: 10,
 				}}
 			>

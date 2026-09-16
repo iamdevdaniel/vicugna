@@ -30,7 +30,7 @@ const warm = {
 		onBackground: "rgb(26, 28, 30)",
 		surface: "rgb(253, 252, 255)",
 		onSurface: "rgb(26, 28, 30)",
-		surfaceVariant: "rgb(224, 226, 236)",
+		surfaceVariant: "rgb(242, 244, 250)",
 		onSurfaceVariant: "rgb(67, 71, 78)",
 		outline: "rgb(116, 119, 127)",
 		outlineVariant: "rgb(195, 198, 207)",
@@ -51,6 +51,7 @@ const warm = {
 		onSurfaceDisabled: "rgba(26, 28, 30, 0.38)",
 		backdrop: "rgba(45, 49, 56, 0.4)",
 		custom: {
+			mutedSurface: "rgb(224, 226, 236)",
 			green: "#4CAF50",
 			crimson: "#DC143C",
 			yellow: "#ffe957",
@@ -106,6 +107,7 @@ const warm = {
 		onSurfaceDisabled: "rgba(227, 226, 230, 0.38)",
 		backdrop: "rgba(45, 49, 56, 0.4)",
 		custom: {
+			mutedSurface: "#323842",
 			green: "#4CAF50",
 			crimson: "#DC143C",
 			yellow: "#ffe957",

@@ -51,7 +51,7 @@ function CleaningRecordCard({
 			accent={accent}
 			prefix={index + 1}
 			style={{
-				backgroundColor: theme.colors.surfaceVariant,
+				backgroundColor: theme.colors.custom.mutedSurface,
 			}}
 		>
 			<View

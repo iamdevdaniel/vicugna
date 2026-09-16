@@ -81,7 +81,7 @@ export function DevSeedFab({ permits }: { permits: PermitData[] }) {
 									style={{
 										borderRadius: 12,
 										backgroundColor:
-											theme.colors.surfaceVariant,
+											theme.colors.custom.mutedSurface,
 										paddingHorizontal: 14,
 										paddingVertical: 12,
 										gap: 10,

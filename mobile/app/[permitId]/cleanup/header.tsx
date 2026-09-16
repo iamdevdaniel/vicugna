@@ -247,7 +247,8 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Fibra general: lugar"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -271,7 +272,8 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Fibra general: responsables"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}

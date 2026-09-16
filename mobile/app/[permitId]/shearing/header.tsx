@@ -183,7 +183,8 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Esquila general: sitio"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}
@@ -209,7 +210,8 @@ export default function () {
 									}) => (
 										<TextInput
 											accessibilityLabel="Esquila general: latitud"
-											mode="outlined"
+											mode="flat"
+											dense
 											value={value}
 											onChangeText={onChange}
 											onBlur={onBlur}
@@ -235,7 +237,8 @@ export default function () {
 									}) => (
 										<TextInput
 											accessibilityLabel="Esquila general: longitud"
-											mode="outlined"
+											mode="flat"
+											dense
 											value={value}
 											onChangeText={onChange}
 											onBlur={onBlur}
@@ -261,7 +264,8 @@ export default function () {
 							}) => (
 								<TextInput
 									accessibilityLabel="Esquila general: cantidad de arreos"
-									mode="outlined"
+									mode="flat"
+									dense
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}

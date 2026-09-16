@@ -47,7 +47,9 @@ export default function () {
 			>
 				<Chip
 					compact
-					style={{ backgroundColor: theme.colors.surfaceVariant }}
+					style={{
+						backgroundColor: theme.colors.custom.mutedSurface,
+					}}
 				>
 					Total {total}
 				</Chip>

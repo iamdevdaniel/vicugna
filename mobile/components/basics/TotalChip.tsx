@@ -8,7 +8,7 @@ export function TotalChip({ total }: { total: number }) {
 		<Chip
 			compact
 			style={{
-				backgroundColor: theme.colors.surfaceVariant,
+				backgroundColor: theme.colors.custom.mutedSurface,
 				alignSelf: "flex-start",
 			}}
 		>

@@ -34,7 +34,8 @@ export function GroomingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							accessibilityLabel="Fibra: peso vellón limpio"
-							mode="outlined"
+							mode="flat"
+							dense
 							value={value}
 							onChangeText={onChange}
 							onBlur={onBlur}
@@ -59,7 +60,8 @@ export function GroomingFields({
 					render={({ field: { onChange, onBlur, value } }) => (
 						<TextInput
 							accessibilityLabel="Fibra: peso braga"
-							mode="outlined"
+							mode="flat"
+							dense
 							value={value}
 							onChangeText={onChange}
 							onBlur={onBlur}
@@ -88,7 +90,8 @@ export function GroomingFields({
 					render={({ field: { value } }) => (
 						<TextInput
 							accessibilityLabel="Fibra: peso total"
-							mode="outlined"
+							mode="flat"
+							dense
 							value={value}
 							editable={false}
 							textColor={theme.colors.custom.white}

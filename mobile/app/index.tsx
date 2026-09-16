@@ -184,7 +184,7 @@ export default function HomeScreen() {
 						accent={
 							permit.syncStatus === "synced"
 								? theme.colors.custom.green
-								: theme.colors.surfaceVariant
+								: theme.colors.custom.mutedSurface
 						}
 						prefix={
 							<Icon

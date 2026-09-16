@@ -163,7 +163,8 @@ export default function () {
 											}
 											style={{
 												backgroundColor:
-													theme.colors.surfaceVariant,
+													theme.colors.custom
+														.mutedSurface,
 											}}
 										>
 											<View

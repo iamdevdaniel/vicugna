@@ -252,7 +252,8 @@ export default function ShearingRecordScreen() {
 								}) => (
 									<TextInput
 										accessibilityLabel="Esquila: número de arete"
-										mode="outlined"
+										mode="flat"
+										dense
 										value={value}
 										onChangeText={onChange}
 										onBlur={onBlur}
@@ -328,7 +329,8 @@ export default function ShearingRecordScreen() {
 								}) => (
 									<TextInput
 										accessibilityLabel="Esquila: peso vivo"
-										mode="outlined"
+										mode="flat"
+										dense
 										value={value}
 										onChangeText={onChange}
 										onBlur={onBlur}
@@ -353,7 +355,8 @@ export default function ShearingRecordScreen() {
 								}) => (
 									<TextInput
 										accessibilityLabel="Esquila: longitud de fibra"
-										mode="outlined"
+										mode="flat"
+										dense
 										value={value}
 										onChangeText={onChange}
 										onBlur={onBlur}
@@ -574,15 +577,18 @@ export default function ShearingRecordScreen() {
 								}) => (
 									<TextInput
 										accessibilityLabel="Esquila: observaciones"
-										mode="outlined"
+										mode="flat"
 										value={value}
 										onChangeText={onChange}
 										onBlur={onBlur}
 										autoCapitalize="sentences"
 										multiline
-										style={{ height: 100 }}
+										numberOfLines={3}
+										scrollEnabled
+										style={{ height: 96 }}
 										contentStyle={{
-											height: 115,
+											paddingTop: 8,
+											paddingBottom: 8,
 											textAlignVertical: "top",
 										}}
 										error={!!errors.observations}
