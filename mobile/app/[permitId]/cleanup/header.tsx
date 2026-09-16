@@ -1,4 +1,5 @@
 import {
+	CustomTextInput,
 	DateInput,
 	getTodayDateString,
 	LabeledInput,
@@ -21,7 +22,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button, TextInput } from "react-native-paper"
+import { Button } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function () {
@@ -131,7 +132,13 @@ export default function () {
 							control={control}
 							name="startDate"
 							render={({ field: { onChange, value } }) => (
-								<View style={{ flexDirection: "row", gap: 8 }}>
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "flex-end",
+										gap: 8,
+									}}
+								>
 									<DateInput
 										accessibilityLabel="Fibra general: fecha inicio"
 										value={value}
@@ -141,24 +148,8 @@ export default function () {
 									/>
 									<Button
 										accessibilityLabel="Usar hoy para fecha inicio de fibra"
-										mode="outlined"
+										mode="text"
 										compact
-										style={{
-											borderRadius: 4,
-											minWidth: 82,
-										}}
-										contentStyle={{
-											height: 56,
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-										labelStyle={{
-											fontSize: 15,
-											lineHeight: 20,
-											marginHorizontal: 8,
-											marginVertical: 0,
-											textAlignVertical: "center",
-										}}
 										disabled={isPermitReadOnly}
 										onPress={() =>
 											setValue(
@@ -187,7 +178,13 @@ export default function () {
 							control={control}
 							name="endDate"
 							render={({ field: { onChange, value } }) => (
-								<View style={{ flexDirection: "row", gap: 8 }}>
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "flex-end",
+										gap: 8,
+									}}
+								>
 									<DateInput
 										accessibilityLabel="Fibra general: fecha conclusión"
 										value={value}
@@ -197,24 +194,8 @@ export default function () {
 									/>
 									<Button
 										accessibilityLabel="Usar hoy para fecha conclusión de fibra"
-										mode="outlined"
+										mode="text"
 										compact
-										style={{
-											borderRadius: 4,
-											minWidth: 82,
-										}}
-										contentStyle={{
-											height: 56,
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-										labelStyle={{
-											fontSize: 15,
-											lineHeight: 20,
-											marginHorizontal: 8,
-											marginVertical: 0,
-											textAlignVertical: "center",
-										}}
 										disabled={isPermitReadOnly}
 										onPress={() =>
 											setValue(
@@ -245,9 +226,8 @@ export default function () {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Fibra general: lugar"
-									mode="flat"
 									dense
 									value={value}
 									onChangeText={onChange}
@@ -270,9 +250,8 @@ export default function () {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Fibra general: responsables"
-									mode="flat"
 									dense
 									value={value}
 									onChangeText={onChange}

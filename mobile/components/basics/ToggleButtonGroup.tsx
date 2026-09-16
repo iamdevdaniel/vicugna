@@ -1,6 +1,7 @@
 import { useAppTheme } from "@utils/useAppTheme"
 import type React from "react"
 import {
+	Keyboard,
 	Pressable,
 	type StyleProp,
 	StyleSheet,
@@ -8,7 +9,7 @@ import {
 	View,
 	type ViewStyle,
 } from "react-native"
-import { Icon, SegmentedButtons } from "react-native-paper"
+import { Icon } from "react-native-paper"
 
 export type ToggleOption = {
 	label: string
@@ -35,207 +36,124 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 	columns,
 }) => {
 	const theme = useAppTheme()
-	const columnCount = columns && columns > 0 ? columns : 1
-	const selectedBackgroundColor = disabled
-		? theme.colors.custom.darkGray
+	const columnCount =
+		columns && columns > 0 ? columns : Math.max(options.length, 1)
+	const isMultiRow = Boolean(columns && options.length > columnCount)
+	const selectedColor = disabled
+		? theme.colors.onSurfaceVariant
 		: theme.colors.secondary
-	const selectedTextColor = disabled
-		? theme.colors.custom.white
-		: theme.colors.onSecondary
-	const unselectedTextColor = theme.colors.onSurface
-
-	if (columns) {
-		return (
-			<View
-				style={[
-					styles.grid,
-					{
-						borderColor: theme.colors.outline,
-						backgroundColor: theme.colors.surface,
-					},
-					style,
-				]}
-			>
-				{options.map((opt, index) => {
-					const selected = value === opt.value
-					const isLastColumn = (index + 1) % columnCount === 0
-					const isLastRow = index >= options.length - columnCount
-
-					return (
-						<Pressable
-							key={opt.value}
-							disabled={disabled}
-							onPress={() => onChange(opt.value)}
-							accessibilityRole="radio"
-							accessibilityLabel={
-								accessibilityLabel
-									? `${accessibilityLabel}: ${opt.label}`
-									: opt.label
-							}
-							accessibilityState={{ checked: selected, disabled }}
-							accessibilityValue={{
-								text: selected
-									? "Seleccionado"
-									: "No seleccionado",
-							}}
-							style={[
-								styles.gridButton,
-								{
-									width: `${100 / columnCount}%`,
-									backgroundColor: selected
-										? selectedBackgroundColor
-										: theme.colors.surface,
-									borderColor: theme.colors.outline,
-									borderRightWidth: isLastColumn ? 0 : 1,
-									borderBottomWidth: isLastRow ? 0 : 1,
-								},
-							]}
-						>
-							<View style={styles.gridButtonContent}>
-								<View style={styles.gridButtonIcon}>
-									<Icon
-										source={
-											selected
-												? "radiobox-marked"
-												: "radiobox-blank"
-										}
-										size={20}
-										color={
-											selected
-												? selectedTextColor
-												: theme.colors.onSurfaceVariant
-										}
-									/>
-								</View>
-								<Text
-									style={[
-										styles.gridButtonLabel,
-										{
-											color: selected
-												? selectedTextColor
-												: theme.colors.onSurface,
-										},
-									]}
-								>
-									{opt.label}
-								</Text>
-							</View>
-						</Pressable>
-					)
-				})}
-			</View>
-		)
+	const unselectedColor = disabled
+		? theme.colors.onSurfaceVariant
+		: theme.colors.onSurface
+	const unselectedIconColor = disabled
+		? theme.colors.onSurfaceVariant
+		: theme.colors.onSurfaceVariant
+	const selectOption = (optionValue: string) => {
+		Keyboard.dismiss()
+		onChange(optionValue)
 	}
 
 	return (
-		<View style={[styles.container, style]}>
-			<SegmentedButtons
-				value={value}
-				onValueChange={onChange}
-				buttons={options.map((opt) => {
-					const selected = value === opt.value
-					const optionLabel = accessibilityLabel
-						? `${accessibilityLabel}: ${opt.label}`
-						: opt.label
+		<View
+			style={[
+				styles.grid,
+				isMultiRow ? styles.multiRowGrid : styles.singleRowGrid,
+				style,
+			]}
+		>
+			{options.map((opt) => {
+				const selected = value === opt.value
 
-					return {
-						value: opt.value,
-						label: opt.label,
-						accessibilityLabel: `${optionLabel}, ${
-							selected ? "Seleccionado" : "No seleccionado"
-						}`,
-						icon: ({ size }) => (
+				return (
+					<Pressable
+						key={opt.value}
+						disabled={disabled}
+						onPress={() => selectOption(opt.value)}
+						accessibilityRole="radio"
+						accessibilityLabel={
+							accessibilityLabel
+								? `${accessibilityLabel}: ${opt.label}`
+								: opt.label
+						}
+						accessibilityState={{ checked: selected, disabled }}
+						accessibilityValue={{
+							text: selected ? "Seleccionado" : "No seleccionado",
+						}}
+						style={[
+							styles.gridButton,
+							isMultiRow
+								? { width: `${100 / columnCount}%` }
+								: undefined,
+							isMultiRow ? styles.multiRowButton : undefined,
+						]}
+					>
+						<View style={styles.gridButtonContent}>
 							<Icon
 								source={
 									selected
 										? "radiobox-marked"
 										: "radiobox-blank"
 								}
-								size={size}
+								size={20}
 								color={
 									selected
-										? selectedTextColor
-										: unselectedTextColor
+										? selectedColor
+										: unselectedIconColor
 								}
 							/>
-						),
-						disabled,
-						checkedColor: selectedTextColor,
-						uncheckedColor: theme.colors.onSurface,
-						showSelectedCheck: false,
-						style: {
-							backgroundColor: selected
-								? selectedBackgroundColor
-								: theme.colors.surface,
-						},
-						labelStyle: [
-							styles.buttonLabel,
-							{
-								color: selected
-									? selectedTextColor
-									: unselectedTextColor,
-							},
-						],
-					}
-				})}
-				theme={{
-					roundness: 2,
-					colors: {
-						secondaryContainer: selectedBackgroundColor,
-						onSecondaryContainer: selectedTextColor,
-						outline: theme.colors.outline,
-						onSurface: theme.colors.onSurface,
-						onSurfaceDisabled: unselectedTextColor,
-						surfaceDisabled: theme.colors.custom.mutedSurface,
-					},
-				}}
-			/>
+							<Text
+								style={[
+									styles.gridButtonLabel,
+									{
+										color: selected
+											? selectedColor
+											: unselectedColor,
+									},
+								]}
+							>
+								{opt.label}
+							</Text>
+						</View>
+					</Pressable>
+				)
+			})}
 		</View>
 	)
 }
 
 const styles = StyleSheet.create({
-	container: {
-		width: "100%",
-	},
-	buttonLabel: {
-		fontSize: 14,
-		fontWeight: "600",
-		paddingVertical: 6,
-	},
 	grid: {
 		width: "100%",
-		borderWidth: 1,
-		borderRadius: 4,
 		flexDirection: "row",
 		flexWrap: "wrap",
-		overflow: "hidden",
+	},
+	singleRowGrid: {
+		columnGap: 24,
+	},
+	multiRowGrid: {
+		rowGap: 0,
 	},
 	gridButton: {
 		minHeight: 44,
-		alignItems: "center",
+		alignItems: "flex-start",
 		justifyContent: "center",
-		paddingHorizontal: 8,
 		paddingVertical: 6,
+	},
+	multiRowButton: {
+		minHeight: 36,
+		paddingVertical: 2,
 	},
 	gridButtonContent: {
 		width: "100%",
-		position: "relative",
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "center",
-	},
-	gridButtonIcon: {
-		position: "absolute",
-		left: 4,
-		top: "50%",
-		transform: [{ translateY: -10 }],
+		justifyContent: "flex-start",
+		gap: 6,
 	},
 	gridButtonLabel: {
-		width: "100%",
+		flexShrink: 1,
 		fontSize: 14,
 		fontWeight: "600",
-		textAlign: "center",
-		paddingHorizontal: 28,
+		textAlign: "left",
 	},
 })

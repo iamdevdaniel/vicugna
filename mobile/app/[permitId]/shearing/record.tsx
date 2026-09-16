@@ -1,5 +1,6 @@
 import {
 	CustomDeleteButton,
+	CustomTextInput,
 	LabeledInput,
 	LoadingOverlay,
 	MultiSelectButtonGroup,
@@ -27,7 +28,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button, Icon, TextInput } from "react-native-paper"
+import { Button, Icon } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // SHEARING.RECORD /[permitId]/shearing/record
@@ -250,9 +251,8 @@ export default function ShearingRecordScreen() {
 								render={({
 									field: { onChange, onBlur, value },
 								}) => (
-									<TextInput
+									<CustomTextInput
 										accessibilityLabel="Esquila: número de arete"
-										mode="flat"
 										dense
 										value={value}
 										onChangeText={onChange}
@@ -327,9 +327,8 @@ export default function ShearingRecordScreen() {
 								render={({
 									field: { onChange, onBlur, value },
 								}) => (
-									<TextInput
+									<CustomTextInput
 										accessibilityLabel="Esquila: peso vivo"
-										mode="flat"
 										dense
 										value={value}
 										onChangeText={onChange}
@@ -353,9 +352,8 @@ export default function ShearingRecordScreen() {
 								render={({
 									field: { onChange, onBlur, value },
 								}) => (
-									<TextInput
+									<CustomTextInput
 										accessibilityLabel="Esquila: longitud de fibra"
-										mode="flat"
 										dense
 										value={value}
 										onChangeText={onChange}
@@ -575,9 +573,8 @@ export default function ShearingRecordScreen() {
 								render={({
 									field: { onChange, onBlur, value },
 								}) => (
-									<TextInput
+									<CustomTextInput
 										accessibilityLabel="Esquila: observaciones"
-										mode="flat"
 										value={value}
 										onChangeText={onChange}
 										onBlur={onBlur}

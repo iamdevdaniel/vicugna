@@ -1,11 +1,16 @@
 import { useState } from "react"
-import { Pressable, type StyleProp, type ViewStyle } from "react-native"
-import { TextInput } from "react-native-paper"
+import {
+	Keyboard,
+	Pressable,
+	type StyleProp,
+	type ViewStyle,
+} from "react-native"
 import {
 	DatePickerModal,
 	es,
 	registerTranslation,
 } from "react-native-paper-dates"
+import { CustomTextInput } from "./CustomTextInput"
 
 registerTranslation("es", es)
 
@@ -39,6 +44,11 @@ export function DateInput({
 	style,
 }: DateInputProps) {
 	const [show, setShow] = useState(false)
+	const openPicker = () => {
+		if (disabled) return
+		Keyboard.dismiss()
+		setShow(true)
+	}
 
 	return (
 		<>
@@ -48,29 +58,16 @@ export function DateInput({
 				accessibilityRole="button"
 				accessibilityLabel={accessibilityLabel}
 				accessibilityValue={{ text: value || placeholder }}
-				onPress={() => {
-					if (!disabled) {
-						setShow(true)
-					}
-				}}
+				onPress={openPicker}
 			>
-				<TextInput
-					mode="outlined"
+				<CustomTextInput
+					dense
 					value={value}
 					placeholder={placeholder}
 					editable={false}
 					error={error}
 					disabled={disabled}
-					right={
-						<TextInput.Icon
-							icon="calendar"
-							onPress={() => {
-								if (!disabled) {
-									setShow(true)
-								}
-							}}
-						/>
-					}
+					rightIcon="calendar"
 				/>
 			</Pressable>
 

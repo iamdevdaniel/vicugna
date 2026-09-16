@@ -1,12 +1,11 @@
-import { useAppTheme } from "@utils/useAppTheme"
 import { useState } from "react"
-import { Pressable, Text } from "react-native"
-import { IconButton } from "react-native-paper"
+import { Keyboard, Pressable } from "react-native"
 import {
 	es,
 	registerTranslation,
 	TimePickerModal,
 } from "react-native-paper-dates"
+import { CustomTextInput } from "./CustomTextInput"
 
 registerTranslation("es", es)
 
@@ -35,53 +34,33 @@ export function TimeInput({
 	placeholder = "Seleccionar hora",
 	disabled = false,
 }: TimeInputProps) {
-	const theme = useAppTheme()
 	const [show, setShow] = useState(false)
 	const [hours, minutes] = value?.split(":").map(Number) ?? []
+	const openPicker = () => {
+		if (disabled) return
+		Keyboard.dismiss()
+		setShow(true)
+	}
 
 	return (
 		<>
 			<Pressable
-				onPress={() => {
-					if (!disabled) setShow(true)
-				}}
+				onPress={openPicker}
 				disabled={disabled}
 				accessibilityRole="button"
 				accessibilityLabel={accessibilityLabel}
 				accessibilityValue={{
 					text: formatDisplayTime(value) ?? placeholder,
 				}}
-				style={{
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "space-between",
-					borderWidth: 1,
-					borderColor: error
-						? theme.colors.error
-						: theme.colors.outline,
-					borderRadius: 4,
-					paddingHorizontal: 12,
-					height: 56,
-					backgroundColor: theme.colors.surface,
-					marginVertical: 4,
-					opacity: disabled ? 0.6 : 1,
-				}}
 			>
-				<Text
-					style={{
-						fontSize: 16,
-						color: value
-							? theme.colors.onSurface
-							: theme.colors.custom.lightGray,
-					}}
-				>
-					{formatDisplayTime(value) ?? placeholder}
-				</Text>
-				<IconButton
-					icon="clock-outline"
-					size={24}
-					iconColor={theme.colors.onSurfaceVariant}
-					style={{ margin: 0 }}
+				<CustomTextInput
+					dense
+					value={formatDisplayTime(value) ?? ""}
+					placeholder={placeholder}
+					editable={false}
+					error={error}
+					disabled={disabled}
+					rightIcon="clock-outline"
 				/>
 			</Pressable>
 

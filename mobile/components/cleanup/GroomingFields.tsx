@@ -1,7 +1,7 @@
 import type { GroomingFormData } from "@definitions/types"
-import { useAppTheme } from "@utils/useAppTheme"
 import { type Control, Controller, type FieldErrors } from "react-hook-form"
-import { Icon, TextInput } from "react-native-paper"
+import { Icon } from "react-native-paper"
+import { CustomTextInput } from "../basics/CustomTextInput"
 import { LabeledInput } from "../basics/LabeledInput"
 
 type GroomingFieldsProps = {
@@ -17,8 +17,6 @@ export function GroomingFields({
 	startIndex,
 	disabled,
 }: GroomingFieldsProps) {
-	const theme = useAppTheme()
-
 	return (
 		<>
 			<LabeledInput
@@ -32,9 +30,8 @@ export function GroomingFields({
 					control={control}
 					name="cleanWeight"
 					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
+						<CustomTextInput
 							accessibilityLabel="Fibra: peso vellón limpio"
-							mode="flat"
 							dense
 							value={value}
 							onChangeText={onChange}
@@ -58,9 +55,8 @@ export function GroomingFields({
 					control={control}
 					name="dirtyWeight"
 					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
+						<CustomTextInput
 							accessibilityLabel="Fibra: peso braga"
-							mode="flat"
 							dense
 							value={value}
 							onChangeText={onChange}
@@ -88,16 +84,11 @@ export function GroomingFields({
 					control={control}
 					name="totalWeight"
 					render={({ field: { value } }) => (
-						<TextInput
+						<CustomTextInput
 							accessibilityLabel="Fibra: peso total"
-							mode="flat"
 							dense
 							value={value}
 							editable={false}
-							textColor={theme.colors.custom.white}
-							style={{
-								backgroundColor: theme.colors.custom.darkGray,
-							}}
 						/>
 					)}
 				/>

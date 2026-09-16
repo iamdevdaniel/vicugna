@@ -1,5 +1,6 @@
 import {
 	CustomDeleteButton,
+	CustomTextInput,
 	DehearingFields,
 	GroomingFields,
 	LabeledInput,
@@ -35,7 +36,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button, Divider, Text, TextInput } from "react-native-paper"
+import { Button, Divider, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 type CleaningType = "grooming" | "dehearing"
@@ -423,9 +424,8 @@ export default function CleaningRecordScreen() {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Fibra: número de vellón"
-									mode="flat"
 									dense
 									value={value}
 									onChangeText={onChange}
@@ -449,9 +449,8 @@ export default function CleaningRecordScreen() {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Fibra: peso bruto"
-									mode="flat"
 									dense
 									value={value}
 									onChangeText={onChange}

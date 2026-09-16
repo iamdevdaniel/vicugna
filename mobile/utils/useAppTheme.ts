@@ -4,6 +4,7 @@ export type AppTheme = MD3Theme & {
 	colors: MD3Theme["colors"] & {
 		custom: {
 			mutedSurface: string
+			lockedSurface: string
 			green: string
 			crimson: string
 			yellow: string

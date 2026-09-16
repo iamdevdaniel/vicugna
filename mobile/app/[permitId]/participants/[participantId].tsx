@@ -1,5 +1,6 @@
 import {
 	CustomDeleteButton,
+	CustomTextInput,
 	LabeledInput,
 	LoadingOverlay,
 	ReadOnlyField,
@@ -22,7 +23,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button, TextInput } from "react-native-paper"
+import { Button } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // PARTICIPANTS.FORM /[permitId]/participants/[participantId]
@@ -183,9 +184,8 @@ export default function () {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Participante: nombre"
-									mode="flat"
 									dense
 									value={value}
 									onChangeText={onChange}
@@ -208,9 +208,8 @@ export default function () {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Participante: apellidos"
-									mode="flat"
 									dense
 									value={value}
 									onChangeText={onChange}
@@ -255,9 +254,8 @@ export default function () {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Participante: cédula"
-									mode="flat"
 									dense
 									value={value}
 									onChangeText={onChange}
@@ -297,9 +295,8 @@ export default function () {
 							render={({
 								field: { onChange, onBlur, value },
 							}) => (
-								<TextInput
+								<CustomTextInput
 									accessibilityLabel="Participante: notas"
-									mode="flat"
 									value={value}
 									onChangeText={onChange}
 									onBlur={onBlur}

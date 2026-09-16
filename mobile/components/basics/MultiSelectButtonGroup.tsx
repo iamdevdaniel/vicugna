@@ -1,5 +1,6 @@
 import { useAppTheme } from "@utils/useAppTheme"
 import {
+	Keyboard,
 	Pressable,
 	type StyleProp,
 	StyleSheet,
@@ -32,8 +33,10 @@ export function MultiSelectButtonGroup({
 	disabled = false,
 }: MultiSelectButtonGroupProps) {
 	const theme = useAppTheme()
+	const isMultiRow = options.length > 3
 
 	const toggleValue = (optionValue: string) => {
+		Keyboard.dismiss()
 		onChange(
 			value.includes(optionValue)
 				? value.filter((selectedValue) => selectedValue !== optionValue)
@@ -45,6 +48,9 @@ export function MultiSelectButtonGroup({
 		<View
 			style={[
 				styles.container,
+				isMultiRow
+					? styles.multiRowContainer
+					: styles.singleRowContainer,
 				style,
 				disabled ? styles.disabled : undefined,
 			]}
@@ -69,14 +75,7 @@ export function MultiSelectButtonGroup({
 						onPress={() => toggleValue(option.value)}
 						style={[
 							styles.button,
-							{
-								backgroundColor: selected
-									? theme.colors.secondary
-									: theme.colors.surface,
-								borderColor: selected
-									? theme.colors.secondary
-									: theme.colors.outline,
-							},
+							isMultiRow ? styles.multiRowButton : undefined,
 						]}
 					>
 						<Icon
@@ -88,7 +87,7 @@ export function MultiSelectButtonGroup({
 							size={20}
 							color={
 								selected
-									? theme.colors.onSecondary
+									? theme.colors.secondary
 									: theme.colors.onSurfaceVariant
 							}
 						/>
@@ -97,7 +96,7 @@ export function MultiSelectButtonGroup({
 								styles.label,
 								{
 									color: selected
-										? theme.colors.onSecondary
+										? theme.colors.secondary
 										: theme.colors.onSurface,
 								},
 							]}
@@ -116,25 +115,32 @@ const styles = StyleSheet.create({
 		width: "100%",
 		flexDirection: "row",
 		flexWrap: "wrap",
-		gap: 8,
+	},
+	singleRowContainer: {
+		columnGap: 24,
+	},
+	multiRowContainer: {
+		columnGap: 8,
+		rowGap: 0,
 	},
 	button: {
 		minHeight: 44,
-		flexBasis: "30%",
-		flexGrow: 1,
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "center",
+		justifyContent: "flex-start",
 		gap: 6,
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 12,
 		paddingVertical: 8,
+	},
+	multiRowButton: {
+		minHeight: 36,
+		flexBasis: "30%",
+		flexGrow: 1,
+		paddingVertical: 2,
 	},
 	label: {
 		fontSize: 14,
 		fontWeight: "600",
-		textAlign: "center",
+		textAlign: "left",
 	},
 	disabled: {
 		opacity: 0.6,

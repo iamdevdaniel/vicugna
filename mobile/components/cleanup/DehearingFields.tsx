@@ -1,6 +1,6 @@
 import type { DehearingFormData } from "@definitions/types"
 import { type Control, Controller, type FieldErrors } from "react-hook-form"
-import { TextInput } from "react-native-paper"
+import { CustomTextInput } from "../basics/CustomTextInput"
 import { LabeledInput } from "../basics/LabeledInput"
 import { SignaturePad } from "../basics/SignaturePad"
 import { ToggleButtonGroup } from "../basics/ToggleButtonGroup"
@@ -31,9 +31,8 @@ export function DehearingFields({
 					control={control}
 					name="dehairedWeight"
 					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
+						<CustomTextInput
 							accessibilityLabel="Fibra: peso predescerdado"
-							mode="flat"
 							dense
 							value={value}
 							onChangeText={onChange}
@@ -57,9 +56,8 @@ export function DehearingFields({
 					control={control}
 					name="bristleWeight"
 					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
+						<CustomTextInput
 							accessibilityLabel="Fibra: peso cerda"
-							mode="flat"
 							dense
 							value={value}
 							onChangeText={onChange}
@@ -107,9 +105,8 @@ export function DehearingFields({
 					control={control}
 					name="dehairerName"
 					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
+						<CustomTextInput
 							accessibilityLabel="Fibra: nombre del predescerdador"
-							mode="flat"
 							dense
 							value={value}
 							onChangeText={onChange}

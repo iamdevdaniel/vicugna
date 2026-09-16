@@ -1,5 +1,5 @@
 import { useAppTheme } from "@utils/useAppTheme"
-import { Text, View } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 
 type LabeledInputProps = {
 	label: React.ReactNode
@@ -21,22 +21,24 @@ export function LabeledInput({
 	const theme = useAppTheme()
 
 	return (
-		<View style={{ marginBottom: 32 }}>
-			<View
-				style={{
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					marginBottom: 4,
-				}}
-			>
+		<View
+			style={[
+				styles.container,
+				{
+					backgroundColor: disabled
+						? theme.colors.custom.lockedSurface
+						: theme.colors.elevation.level1,
+				},
+			]}
+		>
+			<View style={styles.labelRow}>
 				{labelPrefix && (
 					<Text
 						style={{
 							width: 24,
-							color: disabled
-								? theme.colors.onSurfaceVariant
-								: theme.colors.onSurface,
+							fontSize: 15,
+							fontWeight: "600",
+							color: theme.colors.onSurfaceVariant,
 						}}
 					>
 						{labelPrefix}.
@@ -87,3 +89,19 @@ export function LabeledInput({
 		</View>
 	)
 }
+
+const styles = StyleSheet.create({
+	container: {
+		marginBottom: 12,
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		paddingTop: 12,
+		paddingBottom: 10,
+	},
+	labelRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: 0,
+	},
+})
