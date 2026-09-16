@@ -57,6 +57,12 @@
         }
       ],
       "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permite que Vicugna use tu ubicación para completar las coordenadas."
+        }
+      ],
       "./plugins/withDetox"
     ],
     "experiments": {

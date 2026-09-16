@@ -2,14 +2,12 @@ import { useAppTheme } from "@utils/useAppTheme"
 import type React from "react"
 import {
 	Keyboard,
-	Pressable,
 	type StyleProp,
 	StyleSheet,
-	Text,
 	View,
 	type ViewStyle,
 } from "react-native"
-import { Icon } from "react-native-paper"
+import { RadioButton } from "react-native-paper"
 
 export type ToggleOption = {
 	label: string
@@ -54,55 +52,49 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 	}
 
 	return (
-		<View
-			style={[
-				styles.grid,
-				isMultiRow ? styles.multiRowGrid : styles.singleRowGrid,
-				style,
-			]}
-		>
-			{options.map((opt) => {
-				const selected = value === opt.value
+		<RadioButton.Group value={value} onValueChange={selectOption}>
+			<View
+				style={[
+					styles.grid,
+					isMultiRow ? styles.multiRowGrid : styles.singleRowGrid,
+					style,
+				]}
+			>
+				{options.map((opt) => {
+					const selected = value === opt.value
+					const optionLabel = accessibilityLabel
+						? `${accessibilityLabel}: ${opt.label}`
+						: opt.label
 
-				return (
-					<Pressable
-						key={opt.value}
-						disabled={disabled}
-						onPress={() => selectOption(opt.value)}
-						accessibilityRole="radio"
-						accessibilityLabel={
-							accessibilityLabel
-								? `${accessibilityLabel}: ${opt.label}`
-								: opt.label
-						}
-						accessibilityState={{ checked: selected, disabled }}
-						accessibilityValue={{
-							text: selected ? "Seleccionado" : "No seleccionado",
-						}}
-						style={[
-							styles.gridButton,
-							isMultiRow
-								? { width: `${100 / columnCount}%` }
-								: undefined,
-							isMultiRow ? styles.multiRowButton : undefined,
-						]}
-					>
-						<View style={styles.gridButtonContent}>
-							<Icon
-								source={
+					return (
+						<View
+							key={opt.value}
+							style={
+								isMultiRow
+									? { width: `${100 / columnCount}%` }
+									: undefined
+							}
+						>
+							<RadioButton.Item
+								value={opt.value}
+								label={opt.label}
+								disabled={disabled}
+								mode="android"
+								position="leading"
+								color={selectedColor}
+								uncheckedColor={unselectedIconColor}
+								accessibilityLabel={`${optionLabel}, ${
 									selected
-										? "radiobox-marked"
-										: "radiobox-blank"
-								}
-								size={20}
-								color={
-									selected
-										? selectedColor
-										: unselectedIconColor
-								}
-							/>
-							<Text
+										? "Seleccionado"
+										: "No seleccionado"
+								}`}
 								style={[
+									styles.gridButton,
+									isMultiRow
+										? styles.multiRowButton
+										: undefined,
+								]}
+								labelStyle={[
 									styles.gridButtonLabel,
 									{
 										color: selected
@@ -110,14 +102,12 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({
 											: unselectedColor,
 									},
 								]}
-							>
-								{opt.label}
-							</Text>
+							/>
 						</View>
-					</Pressable>
-				)
-			})}
-		</View>
+					)
+				})}
+			</View>
+		</RadioButton.Group>
 	)
 }
 
@@ -135,22 +125,17 @@ const styles = StyleSheet.create({
 	},
 	gridButton: {
 		minHeight: 44,
-		alignItems: "flex-start",
-		justifyContent: "center",
+		justifyContent: "flex-start",
+		paddingHorizontal: 0,
 		paddingVertical: 6,
 	},
 	multiRowButton: {
+		width: "100%",
 		minHeight: 36,
 		paddingVertical: 2,
 	},
-	gridButtonContent: {
-		width: "100%",
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "flex-start",
-		gap: 6,
-	},
 	gridButtonLabel: {
+		flexGrow: 0,
 		flexShrink: 1,
 		fontSize: 14,
 		fontWeight: "600",

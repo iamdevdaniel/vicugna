@@ -15,19 +15,29 @@ import {
 	useReadSingleShearingHeader,
 	useSingleShearingHeaderActions,
 } from "@hooks"
+import { requestCurrentCoordinates } from "@utils/device-location"
+import { useAppTheme } from "@utils/useAppTheme"
 import {
 	defaultValuesShearingHeader,
 	yupShearingHeader,
 } from "@utils/yup-shearing-header"
 import { useLocalSearchParams, useRouter } from "expo-router"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button } from "react-native-paper"
+import {
+	Alert,
+	Keyboard,
+	KeyboardAvoidingView,
+	ScrollView,
+	View,
+} from "react-native"
+import { Button, IconButton } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function () {
 	const router = useRouter()
+	const theme = useAppTheme()
+	const [locating, setLocating] = useState(false)
 	const { permitId } = useLocalSearchParams<{
 		permitId: string
 		headerId: string
@@ -80,6 +90,27 @@ export default function () {
 
 		void trigger("endTime")
 	}, [endTime, startTime, trigger])
+
+	const fillCoordinatesFromGps = async () => {
+		Keyboard.dismiss()
+		setLocating(true)
+
+		try {
+			const coordinates = await requestCurrentCoordinates()
+			if (!coordinates) return
+
+			setValue("latitude", coordinates.latitude.toFixed(6), {
+				shouldDirty: true,
+				shouldValidate: true,
+			})
+			setValue("longitude", coordinates.longitude.toFixed(6), {
+				shouldDirty: true,
+				shouldValidate: true,
+			})
+		} finally {
+			setLocating(false)
+		}
+	}
 
 	const onSubmit = async (formData: ShearingHeaderFormData) => {
 		if (data) {
@@ -195,7 +226,16 @@ export default function () {
 						/>
 					</LabeledInput>
 
-					<View style={{ flexDirection: "row", gap: 12 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "stretch",
+							marginBottom: 12,
+							borderRadius: 8,
+							overflow: "hidden",
+							backgroundColor: theme.colors.elevation.level1,
+						}}
+					>
 						<View style={{ flex: 1 }}>
 							<LabeledInput
 								label="Latitud"
@@ -246,6 +286,24 @@ export default function () {
 									)}
 								/>
 							</LabeledInput>
+						</View>
+
+						<View
+							style={{
+								width: 64,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<IconButton
+								accessibilityLabel="Completar coordenadas con GPS"
+								icon="crosshairs-gps"
+								iconColor={theme.colors.primary}
+								size={24}
+								loading={locating}
+								disabled={locating || saving}
+								onPress={fillCoordinatesFromGps}
+							/>
 						</View>
 					</View>
 
@@ -368,7 +426,12 @@ export default function () {
 							accessibilityLabel="Guardar información general de esquila"
 							mode="contained"
 							onPress={handleSubmit(onSubmit)}
-							disabled={isPermitReadOnly || !isValid || saving}
+							disabled={
+								isPermitReadOnly ||
+								!isValid ||
+								saving ||
+								locating
+							}
 							style={{ flex: 1 }}
 							loading={saving}
 						>
@@ -377,7 +440,7 @@ export default function () {
 						<Button
 							mode="outlined"
 							onPress={() => reset(defaultValuesShearingHeader)}
-							disabled={isPermitReadOnly}
+							disabled={isPermitReadOnly || locating}
 							style={{ flex: 1 }}
 						>
 							Limpiar
