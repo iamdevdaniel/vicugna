@@ -21,7 +21,7 @@ export function LabeledInput({
 	const theme = useAppTheme()
 
 	return (
-		<View style={{ marginBottom: 16 }}>
+		<View style={{ marginBottom: 32 }}>
 			<View
 				style={{
 					flexDirection: "row",
@@ -31,33 +31,16 @@ export function LabeledInput({
 				}}
 			>
 				{labelPrefix && (
-					<View
+					<Text
 						style={{
-							backgroundColor: error
-								? theme.colors.custom.crimson
-								: disabled
-									? theme.colors.custom.darkGray
-									: theme.colors.custom.blue,
 							width: 24,
-							height: 24,
-							borderRadius: 12,
-							justifyContent: "center",
-							alignItems: "center",
-							marginRight: 8,
+							color: disabled
+								? theme.colors.onSurfaceVariant
+								: theme.colors.onSurface,
 						}}
 					>
-						<Text
-							style={{
-								color: disabled
-									? theme.colors.custom.white
-									: theme.colors.onPrimary,
-								fontSize: 12,
-								fontWeight: "bold",
-							}}
-						>
-							{labelPrefix}
-						</Text>
-					</View>
+						{labelPrefix}.
+					</Text>
 				)}
 				<View
 					style={{
