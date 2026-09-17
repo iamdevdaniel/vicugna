@@ -1,0 +1,10 @@
+{
+	"extends": "../../tsconfig.admin.json",
+	"include": [
+		"../../.react-router/types/**/*",
+		"./**/*",
+		"../types/express-session.d.ts",
+		"../../react-router.config.ts",
+		"../../vite.config.mts"
+	]
+}

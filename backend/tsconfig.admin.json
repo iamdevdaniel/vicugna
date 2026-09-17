@@ -2,6 +2,7 @@
 	"include": [
 		".react-router/types/**/*",
 		"src/admin-v2/**/*",
+		"src/types/express-session.d.ts",
 		"react-router.config.ts",
 		"vite.config.mts"
 	],
@@ -12,6 +13,13 @@
 		"module": "ESNext",
 		"moduleResolution": "Bundler",
 		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"@config": ["./src/config/index"],
+			"@db": ["./src/db/index"],
+			"@shared": ["../shared/types.d.ts"],
+			"@shared/*": ["../shared/*"]
+		},
 		"rootDirs": [".", "./.react-router/types"],
 		"strict": true,
 		"esModuleInterop": true,

@@ -80,7 +80,15 @@ export async function createApp() {
 	app.locals.appVersion = backendPackage.version
 	app.set("trust proxy", 1)
 	app.use(globalRateLimiter)
-	app.post(["/admin/login", "/mobile/auth/login"], loginRateLimiter)
+	app.post(
+		[
+			"/admin/login",
+			"/admin-v2/login",
+			"/admin-v2/login.data",
+			"/mobile/auth/login",
+		],
+		loginRateLimiter,
+	)
 	app.use(cors())
 	app.use(
 		session({
