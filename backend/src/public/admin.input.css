@@ -105,6 +105,7 @@
 
 @source "../views/**/*.ejs";
 @source "../modules/**/*.ts";
+@source "../admin-v2/**/*.{ts,tsx}";
 
 [x-cloak] {
 	display: none !important;

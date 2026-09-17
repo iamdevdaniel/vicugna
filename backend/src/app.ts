@@ -11,12 +11,12 @@ import { rateLimit } from "express-rate-limit"
 import session from "express-session"
 import backendPackage from "../package.json"
 
+import { mountAdminV2 } from "./admin-v2.server"
 import { adminRoutes } from "./modules/admin/admin.routes"
 import { mobileInRoutes } from "./modules/mobile_in"
 import { mobileOutRoutes } from "./modules/mobile_out"
 import { mobileAuthRoutes } from "./modules/mobile-auth/mobile_auth.routes"
 
-export const app = express()
 const srcDir = path.resolve(__dirname, "..", "src")
 const PgSessionStore = connectPgSimple(session)
 const rateLimitMessage =
@@ -72,81 +72,93 @@ const loginRateLimiter = rateLimit({
 	handler: sendRateLimitResponse,
 })
 
-app.locals.faviconPath =
-	env.nodeEnv === "development" ? "/favicon-dev.png" : "/favicon.png"
-app.locals.appVersion = backendPackage.version
-app.set("trust proxy", 1)
-app.use(globalRateLimiter)
-app.post(["/admin/login", "/mobile/auth/login"], loginRateLimiter)
-app.use(cors())
-app.use(express.json({ limit: "10mb" }))
-app.use(express.urlencoded({ extended: false, limit: "10mb" }))
-app.use(
-	session({
-		store: new PgSessionStore({
-			pool,
+export async function createApp() {
+	const app = express()
+
+	app.locals.faviconPath =
+		env.nodeEnv === "development" ? "/favicon-dev.png" : "/favicon.png"
+	app.locals.appVersion = backendPackage.version
+	app.set("trust proxy", 1)
+	app.use(globalRateLimiter)
+	app.post(["/admin/login", "/mobile/auth/login"], loginRateLimiter)
+	app.use(cors())
+	app.use(
+		session({
+			store: new PgSessionStore({
+				pool,
+			}),
+			secret: env.adminAuthSecret,
+			resave: false,
+			saveUninitialized: false,
+			cookie: {
+				httpOnly: true,
+				sameSite: "lax",
+				secure: env.nodeEnv === "production",
+				maxAge: 1000 * 60 * 60 * 12,
+			},
 		}),
-		secret: env.adminAuthSecret,
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			httpOnly: true,
-			sameSite: "lax",
-			secure: env.nodeEnv === "production",
-			maxAge: 1000 * 60 * 60 * 12,
-		},
-	}),
-)
-app.set("views", path.join(srcDir, "views"))
-app.set("view engine", "ejs")
-app.use(express.static(path.join(srcDir, "public")))
-app.use("/admin", adminRoutes)
-app.use("/mobile/auth", mobileAuthRoutes)
-app.use("/mobile", mobileOutRoutes)
-app.use("/permits", mobileInRoutes)
+	)
+	app.set("views", path.join(srcDir, "views"))
+	app.set("view engine", "ejs")
+	app.use(express.static(path.join(srcDir, "public")))
+	await mountAdminV2(app)
+	app.use(express.json({ limit: "10mb" }))
+	app.use(express.urlencoded({ extended: false, limit: "10mb" }))
+	app.use("/admin", adminRoutes)
+	app.use("/mobile/auth", mobileAuthRoutes)
+	app.use("/mobile", mobileOutRoutes)
+	app.use("/permits", mobileInRoutes)
 
-app.get("/", (_req: Request, res: Response) => {
-	res.render("app-home", {
-		pageTitle: "Vicugna App",
-		androidDownloadUrl: env.androidDownloadUrl,
-	})
-})
-
-app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
-	if (res.headersSent) {
-		next(error)
-		return
-	}
-	if (error instanceof SyntaxError && "body" in error) {
-		res.status(400).json({
-			ok: false,
-			error: "El cuerpo de la solicitud no es válido",
+	app.get("/", (_req: Request, res: Response) => {
+		res.render("app-home", {
+			pageTitle: "Vicugna App",
+			androidDownloadUrl: env.androidDownloadUrl,
 		})
-		return
-	}
-
-	if (!isDatabaseConnectionError(error)) {
-		next(error)
-		return
-	}
-
-	if (req.accepts("html")) {
-		res.status(503).send(
-			"Base de datos no disponible. Intenta de nuevo en un momento.",
-		)
-		return
-	}
-
-	res.status(503).json({
-		message: "Base de datos no disponible. Intenta de nuevo en un momento.",
 	})
-})
 
-app.use((req: Request, res: Response) => {
-	sendErrorResponse(req, res, 404)
-})
+	app.use(
+		(error: unknown, req: Request, res: Response, next: NextFunction) => {
+			if (res.headersSent) {
+				next(error)
+				return
+			}
+			if (error instanceof SyntaxError && "body" in error) {
+				res.status(400).json({
+					ok: false,
+					error: "El cuerpo de la solicitud no es válido",
+				})
+				return
+			}
 
-app.use((error: unknown, req: Request, res: Response, _next: NextFunction) => {
-	console.error("Unhandled request error", error)
-	sendErrorResponse(req, res, 500)
-})
+			if (!isDatabaseConnectionError(error)) {
+				next(error)
+				return
+			}
+
+			if (req.accepts("html")) {
+				res.status(503).send(
+					"Base de datos no disponible. Intenta de nuevo en un momento.",
+				)
+				return
+			}
+
+			res.status(503).json({
+				message:
+					"Base de datos no disponible. Intenta de nuevo en un momento.",
+			})
+		},
+	)
+
+	app.use((req: Request, res: Response) => {
+		sendErrorResponse(req, res, 404)
+	})
+
+	app.use(
+		(error: unknown, req: Request, res: Response, _next: NextFunction) => {
+			console.error("Unhandled request error", error)
+			sendErrorResponse(req, res, 500)
+		},
+	)
+
+	return app
+}

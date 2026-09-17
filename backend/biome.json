@@ -8,7 +8,7 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
-			"src/**/*.ts",
+			"src/**/*.{ts,tsx}",
 			"src/public/views/**/*.js",
 			"drizzle.config.ts",
 			"!src/db/migrations/**"
