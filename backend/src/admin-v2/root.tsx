@@ -7,10 +7,11 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from "react-router"
+import { adminThemeScript } from "./theme"
 
 export function Layout({ children }: { children: ReactNode }) {
 	return (
-		<html lang="es" data-theme="light">
+		<html lang="es" data-theme="light" suppressHydrationWarning>
 			<head>
 				<meta charSet="utf-8" />
 				<meta
@@ -18,6 +19,7 @@ export function Layout({ children }: { children: ReactNode }) {
 					content="width=device-width, initial-scale=1"
 				/>
 				<Meta />
+				<script>{adminThemeScript}</script>
 				<Links />
 				<link rel="stylesheet" href="/admin.css" />
 			</head>

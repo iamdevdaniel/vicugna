@@ -1,5 +1,14 @@
-import { Form, Outlet, redirect, useLoaderData } from "react-router"
+import {
+	Form,
+	Link,
+	Outlet,
+	redirect,
+	useLoaderData,
+	useNavigation,
+} from "react-router"
 import { adminSessionContext } from "../../admin-v2-context.server"
+import { getAdminAppInfo } from "../admin-info.server"
+import { ThemeToggle } from "../components/theme-toggle"
 import type { Route } from "./+types/protected"
 
 export function loader({ context }: Route.LoaderArgs) {
@@ -9,30 +18,81 @@ export function loader({ context }: Route.LoaderArgs) {
 		return redirect("/login")
 	}
 
-	return { adminUser: session.adminUser }
+	return { adminUser: session.adminUser, app: getAdminAppInfo() }
 }
 
 export default function ProtectedAdminLayout() {
-	const { adminUser } = useLoaderData<typeof loader>()
+	const { adminUser, app } = useLoaderData<typeof loader>()
+	const navigation = useNavigation()
 
 	return (
-		<div className="min-h-screen bg-base-200">
-			<header className="border-base-300 border-b bg-base-100">
-				<div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
-					<div>
-						<p className="text-xs font-bold uppercase tracking-wide text-base-content/55">
-							Administrador
-						</p>
-						<p className="font-semibold">{adminUser.fullName}</p>
-					</div>
-					<Form method="post" action="/logout" reloadDocument>
-						<button type="submit" className="btn btn-ghost btn-sm">
-							Cerrar sesión
-						</button>
-					</Form>
+		<div className="flex min-h-screen flex-col bg-base-200">
+			{navigation.state !== "idle" ? (
+				<div
+					className="fixed inset-x-0 top-0 z-50 h-1 animate-pulse bg-primary"
+					role="status"
+				>
+					<span className="sr-only">Cargando...</span>
 				</div>
+			) : null}
+			<header className="border-base-300 border-b bg-base-100">
+				<div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
+					<div>
+						<Link
+							to="/"
+							className="text-xs font-bold uppercase tracking-wide text-base-content/55 hover:text-primary"
+						>
+							Administración Vicugna
+						</Link>
+						<p className="mt-1 font-semibold">
+							{adminUser.fullName}
+						</p>
+					</div>
+					<div className="flex items-center gap-1">
+						<ThemeToggle />
+						<Form method="post" action="/logout" reloadDocument>
+							<button
+								type="submit"
+								className="btn btn-outline btn-primary btn-sm"
+							>
+								Cerrar sesión
+							</button>
+						</Form>
+					</div>
+				</div>
+				<nav
+					className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-5 pb-3"
+					aria-label="Secciones administrativas"
+				>
+					<Link to="/" className="btn btn-ghost btn-sm btn-active">
+						Inicio
+					</Link>
+					<a href="/admin/users" className="btn btn-ghost btn-sm">
+						Usuarios
+					</a>
+					<a
+						href="/admin/assignments"
+						className="btn btn-ghost btn-sm"
+					>
+						Asignaciones
+					</a>
+					<a
+						href="/admin/monitoring"
+						className="btn btn-ghost btn-sm"
+					>
+						Seguimiento
+					</a>
+				</nav>
 			</header>
-			<Outlet />
+			<div className="flex-1">
+				<Outlet />
+			</div>
+			<footer className="border-base-300 border-t bg-base-100">
+				<div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 px-5 py-4 text-xs text-base-content/55">
+					<span>Vicugna backend v{app.version}</span>
+					<span>Entorno: {app.environment}</span>
+				</div>
+			</footer>
 		</div>
 	)
 }

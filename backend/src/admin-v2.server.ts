@@ -80,7 +80,11 @@ export async function mountAdminV2(app: Express) {
 				return
 			}
 
-			vite.middlewares(req, res, next)
+			const originalUrl = req.url
+			vite.middlewares(req, res, (error?: unknown) => {
+				req.url = originalUrl
+				next(error)
+			})
 		})
 		app.post(adminLoginPaths, limitAdminLoginBody)
 
