@@ -1,24 +1,18 @@
 import {
 	Form,
 	Link,
+	NavLink,
 	Outlet,
-	redirect,
 	useLoaderData,
 	useNavigation,
 } from "react-router"
-import { adminSessionContext } from "../../admin-v2-context.server"
+import { requireAdminSession } from "../admin-auth.server"
 import { getAdminAppInfo } from "../admin-info.server"
 import { ThemeToggle } from "../components/theme-toggle"
 import type { Route } from "./+types/protected"
 
 export function loader({ context }: Route.LoaderArgs) {
-	const session = context.get(adminSessionContext)
-
-	if (session.adminUser?.role !== "admin") {
-		return redirect("/login")
-	}
-
-	return { adminUser: session.adminUser, app: getAdminAppInfo() }
+	return { adminUser: requireAdminSession(context), app: getAdminAppInfo() }
 }
 
 export default function ProtectedAdminLayout() {
@@ -64,12 +58,23 @@ export default function ProtectedAdminLayout() {
 					className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-5 pb-3"
 					aria-label="Secciones administrativas"
 				>
-					<Link to="/" className="btn btn-ghost btn-sm btn-active">
+					<NavLink
+						to="/"
+						end
+						className={({ isActive }) =>
+							getNavigationClassName(isActive)
+						}
+					>
 						Inicio
-					</Link>
-					<a href="/admin/users" className="btn btn-ghost btn-sm">
+					</NavLink>
+					<NavLink
+						to="/users"
+						className={({ isActive }) =>
+							getNavigationClassName(isActive)
+						}
+					>
 						Usuarios
-					</a>
+					</NavLink>
 					<a
 						href="/admin/assignments"
 						className="btn btn-ghost btn-sm"
@@ -95,4 +100,8 @@ export default function ProtectedAdminLayout() {
 			</footer>
 		</div>
 	)
+}
+
+function getNavigationClassName(isActive: boolean) {
+	return `btn btn-ghost btn-sm ${isActive ? "btn-active" : ""}`
 }

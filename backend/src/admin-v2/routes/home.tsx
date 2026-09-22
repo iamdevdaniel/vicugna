@@ -22,7 +22,7 @@ export default function AdminV2Home() {
 				<SectionCard
 					title="Usuarios"
 					description="Crear encargados y revisar las personas con acceso al sistema."
-					href="/admin/users"
+					href="/admin-v2/users"
 					icon={<UsersIcon />}
 				/>
 				<SectionCard

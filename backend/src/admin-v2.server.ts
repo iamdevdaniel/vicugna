@@ -9,49 +9,66 @@ import { env } from "./config"
 
 const adminV2Path = /^\/admin-v2(?:\/.*)?$/
 const adminLoginPaths = ["/admin-v2/login", "/admin-v2/login.data"]
-const adminLoginBodyLimit = 16 * 1024
+const adminUsersMutationPaths = ["/admin-v2/users", "/admin-v2/users.data"]
 const backendRoot = path.resolve(__dirname, "..")
 const adminBuildDirectory = path.join(backendRoot, "build", "admin-v2")
 
-function limitAdminLoginBody(req: Request, res: Response, next: NextFunction) {
-	const declaredLength = Number(req.get("content-length"))
+function limitRequestBody(maxBytes: number) {
+	return (req: Request, res: Response, next: NextFunction) => {
+		const declaredLength = Number(req.get("content-length"))
 
-	if (
-		Number.isFinite(declaredLength) &&
-		declaredLength > adminLoginBodyLimit
-	) {
-		rejectOversizedBody(req, res)
+		if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+			rejectOversizedBody(req, res)
+			return
+		}
+
+		let receivedBytes = 0
+		const cleanup = () => {
+			req.off("data", trackBodySize)
+			req.off("end", cleanup)
+			req.off("close", cleanup)
+		}
+		const trackBodySize = (chunk: Buffer) => {
+			receivedBytes += chunk.byteLength
+			if (receivedBytes <= maxBytes) return
+
+			cleanup()
+			if (!res.headersSent) {
+				rejectOversizedBody(req, res)
+			}
+		}
+
+		req.on("data", trackBodySize)
+		req.once("end", cleanup)
+		req.once("close", cleanup)
+		next()
+	}
+}
+
+const limitAdminLoginBody = limitRequestBody(16 * 1024)
+const limitAdminUsersBody = limitRequestBody(64 * 1024)
+
+function allowOnlyPostActions(req: Request, res: Response, next: NextFunction) {
+	if (!["PUT", "PATCH", "DELETE"].includes(req.method)) {
+		next()
 		return
 	}
 
-	let receivedBytes = 0
-	const cleanup = () => {
-		req.off("data", trackBodySize)
-		req.off("end", cleanup)
-		req.off("close", cleanup)
-	}
-	const trackBodySize = (chunk: Buffer) => {
-		receivedBytes += chunk.byteLength
-		if (receivedBytes <= adminLoginBodyLimit) return
-
-		cleanup()
-		if (!res.headersSent) {
-			rejectOversizedBody(req, res)
-		}
-	}
-
-	req.on("data", trackBodySize)
-	req.once("end", cleanup)
-	req.once("close", cleanup)
-	next()
+	discardRequestBody(req, res)
+	res.set("Allow", "GET, HEAD, POST")
+	res.status(405).send("Método no permitido")
 }
 
 function rejectOversizedBody(req: Request, res: Response) {
+	discardRequestBody(req, res)
+	res.status(413).send("La solicitud es demasiado grande")
+}
+
+function discardRequestBody(req: Request, res: Response) {
 	res.once("finish", () => {
 		if (!req.complete) req.destroy()
 	})
 	req.resume()
-	res.status(413).send("La solicitud es demasiado grande")
 }
 
 export async function mountAdminV2(app: Express) {
@@ -86,7 +103,10 @@ export async function mountAdminV2(app: Express) {
 				next(error)
 			})
 		})
+		app.all(adminLoginPaths, allowOnlyPostActions)
+		app.all(adminUsersMutationPaths, allowOnlyPostActions)
 		app.post(adminLoginPaths, limitAdminLoginBody)
+		app.post(adminUsersMutationPaths, limitAdminUsersBody)
 
 		app.all(
 			adminV2Path,
@@ -119,6 +139,9 @@ export async function mountAdminV2(app: Express) {
 
 	const build = require(path.join(adminBuildDirectory, "server", "index.js"))
 
+	app.all(adminLoginPaths, allowOnlyPostActions)
+	app.all(adminUsersMutationPaths, allowOnlyPostActions)
 	app.post(adminLoginPaths, limitAdminLoginBody)
+	app.post(adminUsersMutationPaths, limitAdminUsersBody)
 	app.all(adminV2Path, createRequestHandler({ build, getLoadContext }))
 }
