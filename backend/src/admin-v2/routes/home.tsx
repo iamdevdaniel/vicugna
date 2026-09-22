@@ -28,7 +28,7 @@ export default function AdminV2Home() {
 				<SectionCard
 					title="Asignaciones"
 					description="Asignar comunidad, encargado y permisos para la temporada."
-					href="/admin/assignments"
+					href="/admin-v2/assignments"
 					icon={<AssignmentsIcon />}
 				/>
 				<div className="md:col-span-2">

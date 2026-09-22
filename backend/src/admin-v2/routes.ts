@@ -15,5 +15,6 @@ export default [
 			"users/password-suggestion",
 			"routes/user-password-suggestion.ts",
 		),
+		route("assignments", "routes/assignments.tsx"),
 	]),
 ] satisfies RouteConfig

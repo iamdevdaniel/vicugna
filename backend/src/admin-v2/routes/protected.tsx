@@ -75,12 +75,14 @@ export default function ProtectedAdminLayout() {
 					>
 						Usuarios
 					</NavLink>
-					<a
-						href="/admin/assignments"
-						className="btn btn-ghost btn-sm"
+					<NavLink
+						to="/assignments"
+						className={({ isActive }) =>
+							getNavigationClassName(isActive)
+						}
 					>
 						Asignaciones
-					</a>
+					</NavLink>
 					<a
 						href="/admin/monitoring"
 						className="btn btn-ghost btn-sm"

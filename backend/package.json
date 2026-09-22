@@ -16,8 +16,7 @@
     "tscheck": "npm run admin:typecheck && tsc --noEmit",
     "db": "node scripts/db.cjs",
     "lint": "biome check src drizzle.config.ts",
-    "lint-fix": "biome check --write src drizzle.config.ts",
-    "test": "echo \"No backend tests yet\""
+    "lint-fix": "biome check --write src drizzle.config.ts"
   },
   "keywords": [],
   "author": "",
