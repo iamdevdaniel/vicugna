@@ -15,9 +15,9 @@
     "css:watch": "tailwindcss -i src/public/admin.input.css -o src/public/admin.css --watch",
     "tscheck": "npm run admin:typecheck && tsc --noEmit",
     "db": "node scripts/db.cjs",
-    "lint": "biome check src e2e drizzle.config.ts",
-    "lint-fix": "biome check --write src e2e drizzle.config.ts",
-    "test:e2e": "playwright test --config e2e/playwright.config.ts"
+    "lint": "biome check src e2e scripts/e2e.cjs drizzle.config.ts",
+    "lint-fix": "biome check --write src e2e scripts/e2e.cjs drizzle.config.ts",
+    "test:e2e": "node scripts/e2e.cjs"
   },
   "keywords": [],
   "author": "",
@@ -82,6 +82,10 @@
       "biome check --error-on-warnings --no-errors-on-unmatched"
     ],
     "e2e/**/*.ts": [
+      "biome check --write --no-errors-on-unmatched",
+      "biome check --error-on-warnings --no-errors-on-unmatched"
+    ],
+    "scripts/e2e.cjs": [
       "biome check --write --no-errors-on-unmatched",
       "biome check --error-on-warnings --no-errors-on-unmatched"
     ],

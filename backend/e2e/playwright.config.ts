@@ -4,6 +4,11 @@ import { adminAuthFile } from "./admin-auth"
 
 const port = process.env.E2E_PORT ?? "3100"
 const baseURL = `http://127.0.0.1:${port}/admin-v2/`
+const databaseUrl = process.env.VICUGNA_E2E_DATABASE_URL?.trim()
+
+if (!databaseUrl) {
+	throw new Error("VICUGNA_E2E_DATABASE_URL is required for Playwright")
+}
 
 export default defineConfig({
 	testDir: ".",
@@ -56,10 +61,11 @@ export default defineConfig({
 		},
 	],
 	webServer: {
-		command: "npm run build && npm start",
+		command: "npm start",
 		env: {
 			PORT: port,
 			NODE_ENV: "test",
+			VICUGNA_DATABASE_URL: databaseUrl,
 		},
 		url: `${baseURL}login`,
 		reuseExistingServer: false,

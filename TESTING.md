@@ -37,12 +37,15 @@ For the admin browser tests, install Chromium once from `backend`:
 npx playwright install chromium
 ```
 
-Add a real development administrator to `backend/.env`:
+Add the isolated database URL and E2E administrator credentials to `backend/.env`:
 
 ```text
+VICUGNA_E2E_DATABASE_URL=postgresql://vicugna:vicugna@localhost:5432/vicugna_e2e
 E2E_ADMIN_EMAIL=...
 E2E_ADMIN_PASSWORD=...
 ```
+
+The E2E database must use local PostgreSQL, its name must end in `_e2e`, and it must not be the development database. The test command recreates this database inside the existing PostgreSQL container, seeds known fixtures and the administrator from these credentials, runs Playwright, and removes the database afterward. It refuses to continue when the safety checks fail. No administrator needs to be created manually in the E2E database.
 
 ## Architecture
 
@@ -66,7 +69,7 @@ Android app + WatermelonDB
 
 Detox finds buttons and fields through their accessibility labels.
 
-The admin tests live in `backend/e2e`. Playwright builds the backend, starts it on port `3100`, opens Chromium, and keeps screenshots, video, and traces only when a test fails. Authenticated tests log in once and reuse an ignored local session file. Tracing is disabled while credentials are submitted and throughout authenticated tests so passwords and session cookies are not stored in trace files. Normal behavior runs once on desktop; tests marked `@responsive` also run with a mobile-sized browser.
+The admin tests live in `backend/e2e`. The test runner recreates the isolated E2E database, builds the backend, starts it on port `3100`, opens Chromium, and removes the test database when Playwright finishes. It keeps screenshots, video, and traces only when a test fails. Authenticated tests log in once and reuse an ignored local session file. Tracing is disabled while credentials are submitted and throughout authenticated tests so passwords and session cookies are not stored in trace files. Normal behavior runs once on desktop; tests marked `@responsive` also run with a mobile-sized browser.
 
 ## Test suites
 

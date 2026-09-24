@@ -11,6 +11,7 @@
 			"src/**/*.{ts,tsx}",
 			"src/public/views/**/*.js",
 			"e2e/**/*.ts",
+			"scripts/e2e.cjs",
 			"drizzle.config.ts",
 			"!src/db/migrations/**"
 		]
