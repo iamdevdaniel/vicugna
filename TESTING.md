@@ -66,7 +66,7 @@ Android app + WatermelonDB
 
 Detox finds buttons and fields through their accessibility labels.
 
-The admin tests live in `backend/e2e`. Playwright builds the backend, starts it on port `3100`, opens Chromium, and keeps screenshots, video, and traces only when a test fails. Tracing is disabled for tests that submit real credentials so passwords are not stored in trace files. Normal behavior runs once on desktop; tests marked `@responsive` also run with a mobile-sized browser.
+The admin tests live in `backend/e2e`. Playwright builds the backend, starts it on port `3100`, opens Chromium, and keeps screenshots, video, and traces only when a test fails. Authenticated tests log in once and reuse an ignored local session file. Tracing is disabled while credentials are submitted and throughout authenticated tests so passwords and session cookies are not stored in trace files. Normal behavior runs once on desktop; tests marked `@responsive` also run with a mobile-sized browser.
 
 ## Test suites
 
@@ -88,12 +88,12 @@ From `backend`, run the admin browser tests with:
 npm run test:e2e
 ```
 
-The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login.
+The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login. The authenticated home suite checks its desktop and mobile-sized layout and opens Users, Assignments, and Monitoring from their cards.
 
 The happy path does not continue app actions after a failed stage because each later stage needs the previous data. The validation tests report each rule separately. If a required setup step fails, its dependent section reports the missing prerequisite. Failures save screenshots and device logs in `mobile/e2e/artifacts`. Git ignores that directory.
 
 ## Scope
 
-The mobile tests check that a user can enter and keep valid data on an Android device. They do not test the final sync, saved backend data, the public site, iOS, production APKs, or OTA updates. The admin Playwright suite currently covers only login.
+The mobile tests check that a user can enter and keep valid data on an Android device. They do not test the final sync, saved backend data, the public site, iOS, production APKs, or OTA updates. The admin Playwright suite currently covers login, the authenticated home screen, and navigation to each main section.
 
 The React admin will not have a separate component unit-test suite. Playwright covers its user-facing behavior. Backend testing will use API integration tests against a dedicated PostgreSQL test database, with unit tests reserved for important pure business rules.

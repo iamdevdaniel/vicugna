@@ -11,6 +11,7 @@ expo-env.d.ts
 /backend/.react-router/
 /backend/playwright-report/
 /backend/test-results/
+/backend/e2e/.auth/
 
 # Native
 .kotlin/

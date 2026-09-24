@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { defineConfig, devices } from "@playwright/test"
+import { adminAuthFile } from "./admin-auth"
 
 const port = process.env.E2E_PORT ?? "3100"
 const baseURL = `http://127.0.0.1:${port}/admin-v2/`
@@ -18,13 +19,40 @@ export default defineConfig({
 	},
 	projects: [
 		{
-			name: "desktop-chromium",
+			name: "auth-setup",
+			testMatch: "**/auth.setup.ts",
+		},
+		{
+			name: "login-desktop",
+			testMatch: "**/admin/login.spec.ts",
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
-			name: "mobile-chromium",
+			name: "login-mobile",
+			testMatch: "**/admin/login.spec.ts",
 			grep: /@responsive/,
 			use: { ...devices["Pixel 7"] },
+		},
+		{
+			name: "admin-desktop",
+			testMatch: "**/admin/authenticated/**/*.spec.ts",
+			dependencies: ["auth-setup"],
+			use: {
+				...devices["Desktop Chrome"],
+				storageState: adminAuthFile,
+				trace: "off",
+			},
+		},
+		{
+			name: "admin-mobile",
+			testMatch: "**/admin/authenticated/**/*.spec.ts",
+			dependencies: ["auth-setup"],
+			grep: /@responsive/,
+			use: {
+				...devices["Pixel 7"],
+				storageState: adminAuthFile,
+				trace: "off",
+			},
 		},
 	],
 	webServer: {
