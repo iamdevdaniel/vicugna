@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { Link } from "react-router"
 
 type HomeSectionCardProps = {
 	title: string
@@ -14,8 +15,8 @@ export function HomeSectionCard({
 	icon,
 }: HomeSectionCardProps) {
 	return (
-		<a
-			href={href}
+		<Link
+			to={href}
 			className="group card h-full min-h-56 border border-base-300 bg-base-100 shadow-sm transition hover:-translate-y-1 hover:border-primary hover:shadow-md"
 		>
 			<div className="card-body">
@@ -35,6 +36,6 @@ export function HomeSectionCard({
 					{description}
 				</p>
 			</div>
-		</a>
+		</Link>
 	)
 }

@@ -14,6 +14,10 @@ const adminAssignmentsMutationPaths = [
 	"/admin-v2/assignments",
 	"/admin-v2/assignments.data",
 ]
+const adminMonitoringMutationPaths = [
+	"/admin-v2/monitoring",
+	"/admin-v2/monitoring.data",
+]
 const backendRoot = path.resolve(__dirname, "..")
 const adminBuildDirectory = path.join(backendRoot, "build", "admin-v2")
 
@@ -86,6 +90,13 @@ export async function mountAdminV2(app: Express) {
 		context.set(adminSessionContext, req.session)
 		return context
 	}
+	app.use((req: Request, res: Response, next: NextFunction) => {
+		if (req.method === "GET" && req.path === "/admin-v2") {
+			res.redirect(308, "/admin-v2/")
+			return
+		}
+		next()
+	})
 
 	if (env.nodeEnv === "development") {
 		const { createServer } = await import("vite")
@@ -110,9 +121,11 @@ export async function mountAdminV2(app: Express) {
 		app.all(adminLoginPaths, allowOnlyPostActions)
 		app.all(adminUsersMutationPaths, allowOnlyPostActions)
 		app.all(adminAssignmentsMutationPaths, allowOnlyPostActions)
+		app.all(adminMonitoringMutationPaths, allowOnlyPostActions)
 		app.post(adminLoginPaths, limitAdminLoginBody)
 		app.post(adminUsersMutationPaths, limitAdminUsersBody)
 		app.post(adminAssignmentsMutationPaths, limitAdminUsersBody)
+		app.post(adminMonitoringMutationPaths, limitAdminUsersBody)
 
 		app.all(
 			adminV2Path,
@@ -148,8 +161,10 @@ export async function mountAdminV2(app: Express) {
 	app.all(adminLoginPaths, allowOnlyPostActions)
 	app.all(adminUsersMutationPaths, allowOnlyPostActions)
 	app.all(adminAssignmentsMutationPaths, allowOnlyPostActions)
+	app.all(adminMonitoringMutationPaths, allowOnlyPostActions)
 	app.post(adminLoginPaths, limitAdminLoginBody)
 	app.post(adminUsersMutationPaths, limitAdminUsersBody)
 	app.post(adminAssignmentsMutationPaths, limitAdminUsersBody)
+	app.post(adminMonitoringMutationPaths, limitAdminUsersBody)
 	app.all(adminV2Path, createRequestHandler({ build, getLoadContext }))
 }

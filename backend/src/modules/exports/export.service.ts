@@ -6,6 +6,7 @@ import {
 	getRegionalNameByCommunityId,
 } from "../common/common.catalog"
 import { SYNCED_PERMIT_STATUSES } from "../common/common.constants"
+import { PermitExportUnavailableError } from "./export.errors"
 import {
 	alignCenterMiddleCells,
 	alignLeftMiddleCells,
@@ -83,7 +84,7 @@ async function getSyncedPermitForExport(permitId: string) {
 		permit && SYNCED_PERMIT_STATUSES.includes(permit.syncStatus)
 
 	if (!permit || !hasSyncedData) {
-		throw new Error("Permit sync data is not available")
+		throw new PermitExportUnavailableError()
 	}
 
 	return permit

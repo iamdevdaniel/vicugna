@@ -21,6 +21,15 @@ export function Layout({ children }: { children: ReactNode }) {
 				<Meta />
 				<script>{adminThemeScript}</script>
 				<Links />
+				<link
+					rel="icon"
+					type="image/png"
+					href={
+						import.meta.env.DEV
+							? "/favicon-dev.png"
+							: "/favicon.png"
+					}
+				/>
 				<link rel="stylesheet" href="/admin.css" />
 			</head>
 			<body className="min-h-screen bg-base-200 text-base-content">

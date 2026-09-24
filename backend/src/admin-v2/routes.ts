@@ -8,6 +8,7 @@ import {
 export default [
 	route("login", "routes/login.tsx"),
 	route("logout", "routes/logout.tsx"),
+	route("exports/reports/:permitId", "routes/export-reports.ts"),
 	layout("routes/protected.tsx", [
 		index("routes/home.tsx"),
 		route("users", "routes/users.tsx"),
@@ -16,5 +17,6 @@ export default [
 			"routes/user-password-suggestion.ts",
 		),
 		route("assignments", "routes/assignments.tsx"),
+		route("monitoring", "routes/monitoring.tsx"),
 	]),
 ] satisfies RouteConfig

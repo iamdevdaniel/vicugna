@@ -24,10 +24,22 @@ const DATABASE_CONNECTION_ERROR_CODES = new Set([
 const originalPoolQuery = pool.query.bind(pool)
 
 export function isDatabaseConnectionError(error: unknown) {
-	if (!(error instanceof Error)) {
-		return false
+	const checkedErrors = new Set<Error>()
+	let currentError = error
+
+	while (currentError instanceof Error && !checkedErrors.has(currentError)) {
+		if (isDirectDatabaseConnectionError(currentError)) {
+			return true
+		}
+
+		checkedErrors.add(currentError)
+		currentError = currentError.cause
 	}
 
+	return false
+}
+
+function isDirectDatabaseConnectionError(error: Error) {
 	const code =
 		"code" in error && typeof error.code === "string" ? error.code : null
 

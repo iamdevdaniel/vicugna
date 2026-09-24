@@ -17,20 +17,20 @@ export function HomeView() {
 				<HomeSectionCard
 					title="Usuarios"
 					description="Crear encargados y revisar las personas con acceso al sistema."
-					href="/admin-v2/users"
+					href="/users"
 					icon={<UsersIcon />}
 				/>
 				<HomeSectionCard
 					title="Asignaciones"
 					description="Asignar comunidad, encargado y permisos para la temporada."
-					href="/admin-v2/assignments"
+					href="/assignments"
 					icon={<AssignmentsIcon />}
 				/>
 				<div className="md:col-span-2">
 					<HomeSectionCard
 						title="Seguimiento"
 						description="Revisar sincronización, avance y exportar los datos finales."
-						href="/admin/monitoring"
+						href="/monitoring"
 						icon={<MonitoringIcon />}
 					/>
 				</div>
