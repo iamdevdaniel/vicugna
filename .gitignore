@@ -9,6 +9,8 @@ web-build/
 expo-env.d.ts
 /backend/build/
 /backend/.react-router/
+/backend/playwright-report/
+/backend/test-results/
 
 # Native
 .kotlin/

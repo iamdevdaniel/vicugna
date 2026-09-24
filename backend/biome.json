@@ -10,6 +10,7 @@
 		"includes": [
 			"src/**/*.{ts,tsx}",
 			"src/public/views/**/*.js",
+			"e2e/**/*.ts",
 			"drizzle.config.ts",
 			"!src/db/migrations/**"
 		]

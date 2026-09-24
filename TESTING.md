@@ -6,7 +6,7 @@ Automated tests currently cover data entry in the Android app. Jest organizes th
 
 The tests log in and download test permits, but they never press **Finalizar y enviar**. They check the forms and confirm that WatermelonDB keeps the saved data. They do not replace data in the backend.
 
-The backend does not have an automated test suite yet.
+The backend admin uses Playwright for browser tests. The first suite covers login behavior and the login layout on desktop and mobile-sized screens.
 
 ## Installation
 
@@ -31,6 +31,19 @@ Before a run:
 
 See the [mobile E2E guide](mobile/e2e/README.md) for the environment variables and complete device setup.
 
+For the admin browser tests, install Chromium once from `backend`:
+
+```sh
+npx playwright install chromium
+```
+
+Add a real development administrator to `backend/.env`:
+
+```text
+E2E_ADMIN_EMAIL=...
+E2E_ADMIN_PASSWORD=...
+```
+
 ## Architecture
 
 ```text
@@ -53,6 +66,8 @@ Android app + WatermelonDB
 
 Detox finds buttons and fields through their accessibility labels.
 
+The admin tests live in `backend/e2e`. Playwright builds the backend, starts it on port `3100`, opens Chromium, and keeps screenshots, video, and traces only when a test fails. Tracing is disabled for tests that submit real credentials so passwords are not stored in trace files. Normal behavior runs once on desktop; tests marked `@responsive` also run with a mobile-sized browser.
+
 ## Test suites
 
 From `mobile`, run either suite while Metro and the backend remain available:
@@ -67,8 +82,18 @@ The two test groups are independent and can run in either order. Each one clears
 - **Happy path (`TEST-01`):** completes all three steps, reopens saved records, and checks that the permit becomes ready to send.
 - **Validation (`TEST-02`):** checks required fields, allowed number ranges, rules between fields, exact limits, and automatic values.
 
+From `backend`, run the admin browser tests with:
+
+```sh
+npm run test:e2e
+```
+
+The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login.
+
 The happy path does not continue app actions after a failed stage because each later stage needs the previous data. The validation tests report each rule separately. If a required setup step fails, its dependent section reports the missing prerequisite. Failures save screenshots and device logs in `mobile/e2e/artifacts`. Git ignores that directory.
 
 ## Scope
 
-These tests check that a user can enter and keep valid data on an Android device. They do not test the final sync, saved backend data, the admin site, the public site, iOS, production APKs, or OTA updates.
+The mobile tests check that a user can enter and keep valid data on an Android device. They do not test the final sync, saved backend data, the public site, iOS, production APKs, or OTA updates. The admin Playwright suite currently covers only login.
+
+The React admin will not have a separate component unit-test suite. Playwright covers its user-facing behavior. Backend testing will use API integration tests against a dedicated PostgreSQL test database, with unit tests reserved for important pure business rules.
