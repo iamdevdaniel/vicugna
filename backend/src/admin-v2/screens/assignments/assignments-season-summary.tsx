@@ -8,7 +8,7 @@ type SeasonSummaryProps = {
 	permitsCount: number
 }
 
-export function SeasonSummary({
+export function AssignmentsSeasonSummary({
 	seasons,
 	selectedSeasonId,
 	communitiesWithPermitsCount,

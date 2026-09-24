@@ -1,18 +1,14 @@
-import type { UserListItem } from "../../modules/users/user.types"
+import type { UserListItem } from "../../../modules/users/user.types"
 
-type UsersListProps = {
-	users: UserListItem[]
-	emptyMessage: string
-}
+type UsersListProps = { users: UserListItem[]; emptyMessage: string }
 
 export function UsersList({ users, emptyMessage }: UsersListProps) {
-	if (users.length === 0) {
+	if (users.length === 0)
 		return (
 			<p className="px-5 py-8 text-sm text-base-content/60">
 				{emptyMessage}
 			</p>
 		)
-	}
 
 	return (
 		<div className="divide-y divide-base-300">
@@ -38,7 +34,6 @@ export function UsersList({ users, emptyMessage }: UsersListProps) {
 							</p>
 						</div>
 					</div>
-
 					<span
 						className={`badge ${user.isActive ? "badge-success badge-soft" : "badge-neutral badge-soft"}`}
 					>

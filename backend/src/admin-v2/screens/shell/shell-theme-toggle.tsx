@@ -1,23 +1,13 @@
-import { adminThemeStorageKey } from "../theme"
+type ShellThemeToggleProps = {
+	onToggle: () => void
+}
 
-export function ThemeToggle() {
-	function toggleTheme() {
-		const root = document.documentElement
-		const theme = root.dataset.theme === "dark" ? "light" : "dark"
-		root.dataset.theme = theme
-
-		try {
-			localStorage.setItem(adminThemeStorageKey, theme)
-		} catch {
-			// The selected theme still applies for the current page.
-		}
-	}
-
+export function ShellThemeToggle({ onToggle }: ShellThemeToggleProps) {
 	return (
 		<button
 			type="button"
 			className="btn btn-ghost btn-sm"
-			onClick={toggleTheme}
+			onClick={onToggle}
 			aria-label="Cambiar tema"
 			title="Cambiar tema"
 		>
@@ -44,7 +34,7 @@ export function ThemeToggle() {
 				aria-hidden="true"
 			>
 				<circle cx="12" cy="12" r="4" />
-				<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+				<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l1.41 1.41" />
 			</svg>
 			<span className="hidden sm:inline">Tema</span>
 		</button>

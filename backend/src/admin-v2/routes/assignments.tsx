@@ -8,23 +8,9 @@ import {
 	savePermitAssignments,
 } from "../../modules/assignments/assignment.service"
 import { requireAdminSession } from "../admin-auth.server"
-import { AssignmentsWorkspace } from "../components/assignments/assignments-workspace"
-import { SeasonSummary } from "../components/assignments/season-summary"
+import type { AssignmentActionData } from "../screens/assignments/assignments-types"
+import { AssignmentsView } from "../screens/assignments/assignments-view"
 import type { Route } from "./+types/assignments"
-
-export type AssignmentActionData =
-	| {
-			ok: true
-			intent: "create-permit"
-			message: string
-			permitId: string
-	  }
-	| {
-			ok: true
-			intent: "rename-permit" | "save-assignments"
-			message: string
-	  }
-	| { ok: false; intent: string; message: string }
 
 export function meta() {
 	return [{ title: "Asignaciones | Administración Vicugna" }]
@@ -131,35 +117,5 @@ function getTextFields(formData: FormData, name: string) {
 
 export default function AssignmentsPage() {
 	const pageState = useLoaderData<typeof loader>()
-
-	return (
-		<main className="mx-auto flex w-full max-w-6xl flex-col px-5 py-8 lg:min-h-0">
-			<header>
-				<p className="text-xs font-bold uppercase tracking-wide text-base-content/55">
-					Administración
-				</p>
-				<h1 className="mt-1 text-3xl font-semibold">Asignaciones</h1>
-				<p className="mt-2 text-sm text-base-content/60">
-					Gestiona los permisos y sus encargados por temporada.
-				</p>
-			</header>
-
-			<SeasonSummary
-				seasons={pageState.seasons}
-				selectedSeasonId={pageState.selectedSeasonId}
-				communitiesWithPermitsCount={
-					pageState.communitiesWithPermitsCount
-				}
-				permitsCount={pageState.permitsCount}
-			/>
-			<AssignmentsWorkspace
-				key={pageState.selectedSeasonId}
-				permits={pageState.permits}
-				communities={pageState.communities}
-				users={pageState.users}
-				assignmentCards={pageState.assignmentCards}
-				selectedSeasonId={pageState.selectedSeasonId}
-			/>
-		</main>
-	)
+	return <AssignmentsView {...pageState} />
 }

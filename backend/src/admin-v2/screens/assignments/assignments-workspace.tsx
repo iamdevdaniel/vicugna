@@ -1,16 +1,15 @@
-import { useEffect, useRef, useState } from "react"
-import { useFetcher } from "react-router"
 import type {
 	AssignmentPermitCard,
 	ManagedUserOption,
 	PermitListItem,
 	SelectOption,
 } from "../../../modules/assignments/assignment.types"
-import type { AssignmentActionData } from "../../routes/assignments"
-import { useAssignmentEditor } from "../../state/use-assignment-editor"
-import { AssignmentEditorPanel } from "./assignment-editor-panel"
+import { AssignmentEditorPanel } from "./assignments-editor-panel"
 import { AssignmentsListPanel } from "./assignments-list-panel"
-import { PermitsPanel } from "./permits-panel"
+import { useAssignmentsMutation } from "./assignments-mutation"
+import { useAssignmentNavigationGuard } from "./assignments-navigation"
+import { PermitsPanel } from "./assignments-permits-panel"
+import { useAssignmentEditor } from "./assignments-state"
 
 type AssignmentsWorkspaceProps = {
 	permits: PermitListItem[]
@@ -27,71 +26,33 @@ export function AssignmentsWorkspace({
 	assignmentCards,
 	selectedSeasonId,
 }: AssignmentsWorkspaceProps) {
-	const mutation = useFetcher<AssignmentActionData>()
-	const [successMessage, setSuccessMessage] = useState("")
-	const mutationInFlight = useRef(false)
-	const isSubmitting = mutation.state !== "idle"
 	const editor = useAssignmentEditor({
 		permits,
 		users,
 		assignmentCards,
-		isMutationPending: isSubmitting,
 	})
-	const startMutation = () => {
-		if (mutationInFlight.current || mutation.state !== "idle") {
-			return false
-		}
-
-		mutationInFlight.current = true
-		return true
-	}
-
-	useEffect(() => {
-		if (mutation.state === "idle") {
-			mutationInFlight.current = false
-		}
-	}, [mutation.state])
-
-	useEffect(() => {
-		if (mutation.state !== "idle" || !mutation.data?.ok) return
-
-		setSuccessMessage(mutation.data.message)
-		if (mutation.data.intent === "create-permit") {
-			editor.createdPermit(mutation.data.permitId)
-		}
-		if (mutation.data.intent === "rename-permit") {
-			editor.savedRename()
-		}
-		if (mutation.data.intent === "save-assignments") {
-			editor.savedAssignments()
-		}
-		mutation.reset()
-	}, [
-		mutation.data,
-		mutation.reset,
-		mutation.state,
-		editor.createdPermit,
-		editor.savedAssignments,
-		editor.savedRename,
-	])
-
-	useEffect(() => {
-		if (!successMessage) return
-		const timeout = window.setTimeout(() => setSuccessMessage(""), 4000)
-		return () => window.clearTimeout(timeout)
-	}, [successMessage])
+	const mutation = useAssignmentsMutation({
+		onPermitCreated: editor.createdPermit,
+		onPermitRenamed: editor.savedRename,
+		onAssignmentsSaved: editor.savedAssignments,
+	})
+	useAssignmentNavigationGuard({
+		hasUnsavedChanges: editor.hasUnsavedChanges,
+		isMutationPending: mutation.isSubmitting,
+		onDiscard: editor.discardChanges,
+	})
 
 	return (
 		<>
-			{mutation.data?.ok === false ? (
+			{mutation.fetcher.data?.ok === false ? (
 				<div className="alert alert-error alert-soft mt-4" role="alert">
-					{mutation.data.message}
+					{mutation.fetcher.data.message}
 				</div>
 			) : null}
 
 			<section className="mt-4 grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
 				<PermitsPanel
-					fetcher={mutation}
+					fetcher={mutation.fetcher}
 					selectedSeasonId={selectedSeasonId}
 					communities={communities}
 					permits={permits}
@@ -103,8 +64,8 @@ export function AssignmentsWorkspace({
 					hasConflictingChanges={
 						editor.hasDirtyDraft || editor.hasDirtyRename
 					}
-					isSubmitting={isSubmitting}
-					onMutationStart={startMutation}
+					isSubmitting={mutation.isSubmitting}
+					onMutationStart={mutation.startMutation}
 					assignedUsersCount={(permitId) =>
 						editor.permitCards.get(permitId)?.users.length ?? 0
 					}
@@ -119,7 +80,7 @@ export function AssignmentsWorkspace({
 				/>
 
 				<AssignmentEditorPanel
-					fetcher={mutation}
+					fetcher={mutation.fetcher}
 					selectedSeasonId={selectedSeasonId}
 					selectedPermit={editor.selectedPermit}
 					editableUsers={editor.editableUsers}
@@ -129,8 +90,8 @@ export function AssignmentsWorkspace({
 					isRenaming={editor.isRenaming}
 					permitNameDraft={editor.permitNameDraft}
 					hasDirtyDraft={editor.hasDirtyDraft}
-					isSubmitting={isSubmitting}
-					onMutationStart={startMutation}
+					isSubmitting={mutation.isSubmitting}
+					onMutationStart={mutation.startMutation}
 					onBeginRename={editor.beginRename}
 					onCancelRename={editor.cancelRename}
 					onPermitNameChange={(value) =>
@@ -155,7 +116,7 @@ export function AssignmentsWorkspace({
 					selectedPermitId={editor.selectedPermitId}
 					assignmentSearch={editor.assignmentSearch}
 					assignmentCards={editor.visibleAssignmentCards}
-					isSubmitting={isSubmitting}
+					isSubmitting={mutation.isSubmitting}
 					onSearchChange={(value) =>
 						editor.setText("assignmentSearch", value)
 					}
@@ -163,14 +124,14 @@ export function AssignmentsWorkspace({
 				/>
 			</section>
 
-			{successMessage ? (
+			{mutation.successMessage ? (
 				<div className="toast toast-end z-50">
 					<div className="alert alert-success" role="status">
-						<span>{successMessage}</span>
+						<span>{mutation.successMessage}</span>
 						<button
 							type="button"
 							className="btn btn-ghost btn-xs"
-							onClick={() => setSuccessMessage("")}
+							onClick={mutation.dismissSuccess}
 						>
 							Cerrar
 						</button>

@@ -5,7 +5,7 @@ import type {
 	PermitListItem,
 	SelectOption,
 } from "../../../modules/assignments/assignment.types"
-import type { AssignmentActionData } from "../../routes/assignments"
+import type { AssignmentActionData } from "./assignments-types"
 
 type PermitsPanelProps = {
 	fetcher: FetcherWithComponents<AssignmentActionData>

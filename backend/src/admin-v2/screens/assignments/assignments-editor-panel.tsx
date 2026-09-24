@@ -5,8 +5,8 @@ import type {
 	ManagedUserOption,
 	PermitListItem,
 } from "../../../modules/assignments/assignment.types"
-import type { AssignmentActionData } from "../../routes/assignments"
-import type { EditableAssignmentUser } from "../../state/use-assignment-editor"
+import type { EditableAssignmentUser } from "./assignments-state"
+import type { AssignmentActionData } from "./assignments-types"
 
 type AssignmentEditorPanelProps = {
 	fetcher: FetcherWithComponents<AssignmentActionData>

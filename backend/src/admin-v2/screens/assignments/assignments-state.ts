@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react"
-import { useBlocker } from "react-router"
+import { useMemo, useState } from "react"
 import { createStore, useStore } from "zustand"
 import type {
 	AssignmentPermitCard,
 	ManagedUserOption,
 	PermitListItem,
-} from "../../modules/assignments/assignment.types"
+} from "../../../modules/assignments/assignment.types"
 
 export type EditableAssignmentUser = {
 	userId: string
@@ -108,14 +107,12 @@ type UseAssignmentEditorOptions = {
 	permits: PermitListItem[]
 	users: ManagedUserOption[]
 	assignmentCards: AssignmentPermitCard[]
-	isMutationPending: boolean
 }
 
 export function useAssignmentEditor({
 	permits,
 	users,
 	assignmentCards,
-	isMutationPending,
 }: UseAssignmentEditorOptions) {
 	const [store] = useState(createAssignmentEditorStore)
 	const editor = useStore(store)
@@ -152,41 +149,13 @@ export function useAssignmentEditor({
 		editor.isRenaming &&
 		selectedPermit !== undefined &&
 		editor.permitNameDraft.trim() !== selectedPermit.permitNumber
-	const shouldWarnBeforeLeaving =
-		hasDirtyDraft ||
-		hasNewPermitDraft ||
-		hasDirtyRename ||
-		isMutationPending
-	const blocker = useBlocker(shouldWarnBeforeLeaving)
-
-	useEffect(() => {
-		if (blocker.state !== "blocked") return
-
-		if (window.confirm(getLeaveWarning(isMutationPending))) {
-			discardChanges()
-			blocker.proceed()
-			return
-		}
-
-		blocker.reset()
-	}, [blocker, isMutationPending, discardChanges])
-
-	useEffect(() => {
-		if (!shouldWarnBeforeLeaving) return
-
-		const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
-			event.preventDefault()
-			event.returnValue = ""
-		}
-		window.addEventListener("beforeunload", warnBeforeLeaving)
-		return () =>
-			window.removeEventListener("beforeunload", warnBeforeLeaving)
-	}, [shouldWarnBeforeLeaving])
+	const hasUnsavedChanges =
+		hasDirtyDraft || hasNewPermitDraft || hasDirtyRename
 
 	function discardChangesIfNeeded() {
 		return (
-			!shouldWarnBeforeLeaving ||
-			window.confirm(getLeaveWarning(isMutationPending))
+			!hasUnsavedChanges ||
+			window.confirm("Hay cambios sin guardar. ¿Quieres descartarlos?")
 		)
 	}
 
@@ -266,6 +235,7 @@ export function useAssignmentEditor({
 		editableUsers,
 		hasDirtyDraft,
 		hasDirtyRename,
+		hasUnsavedChanges,
 		eligibleUsers: users.filter(
 			(user) =>
 				!editableUsers.some(
@@ -299,13 +269,8 @@ export function useAssignmentEditor({
 		setPrincipalUser,
 		moveUser,
 		discardDraft: () => setDraft(null),
+		discardChanges,
 	}
-}
-
-function getLeaveWarning(isMutationPending: boolean) {
-	return isMutationPending
-		? "Hay una operación en curso. Si sales, puede completarse sin mostrar el resultado. ¿Quieres salir?"
-		: "Hay cambios sin guardar. ¿Quieres descartarlos?"
 }
 
 function sameAssignments(

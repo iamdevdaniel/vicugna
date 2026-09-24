@@ -1,18 +1,18 @@
 import type { ReactNode } from "react"
 
-type SectionCardProps = {
+type HomeSectionCardProps = {
 	title: string
 	description: string
 	href: string
 	icon: ReactNode
 }
 
-export function SectionCard({
+export function HomeSectionCard({
 	title,
 	description,
 	href,
 	icon,
-}: SectionCardProps) {
+}: HomeSectionCardProps) {
 	return (
 		<a
 			href={href}
