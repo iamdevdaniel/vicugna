@@ -203,6 +203,15 @@ export async function savePermitAssignments(
 		throw new AssignmentManagementError("Hay encargados repetidos")
 	}
 
+	const eligibleUserIds = new Set(
+		(await listAssignmentUsers()).map((user) => user.id),
+	)
+	if (formData.userIds.some((userId) => !eligibleUserIds.has(userId))) {
+		throw new AssignmentManagementError(
+			"Uno o más encargados ya no están disponibles",
+		)
+	}
+
 	const activeUserId =
 		formData.userIds.length === 0
 			? null

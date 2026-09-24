@@ -10,6 +10,10 @@ import { env } from "./config"
 const adminV2Path = /^\/admin-v2(?:\/.*)?$/
 const adminLoginPaths = ["/admin-v2/login", "/admin-v2/login.data"]
 const adminUsersMutationPaths = ["/admin-v2/users", "/admin-v2/users.data"]
+const adminAssignmentsMutationPaths = [
+	"/admin-v2/assignments",
+	"/admin-v2/assignments.data",
+]
 const backendRoot = path.resolve(__dirname, "..")
 const adminBuildDirectory = path.join(backendRoot, "build", "admin-v2")
 
@@ -105,8 +109,10 @@ export async function mountAdminV2(app: Express) {
 		})
 		app.all(adminLoginPaths, allowOnlyPostActions)
 		app.all(adminUsersMutationPaths, allowOnlyPostActions)
+		app.all(adminAssignmentsMutationPaths, allowOnlyPostActions)
 		app.post(adminLoginPaths, limitAdminLoginBody)
 		app.post(adminUsersMutationPaths, limitAdminUsersBody)
+		app.post(adminAssignmentsMutationPaths, limitAdminUsersBody)
 
 		app.all(
 			adminV2Path,
@@ -141,7 +147,9 @@ export async function mountAdminV2(app: Express) {
 
 	app.all(adminLoginPaths, allowOnlyPostActions)
 	app.all(adminUsersMutationPaths, allowOnlyPostActions)
+	app.all(adminAssignmentsMutationPaths, allowOnlyPostActions)
 	app.post(adminLoginPaths, limitAdminLoginBody)
 	app.post(adminUsersMutationPaths, limitAdminUsersBody)
+	app.post(adminAssignmentsMutationPaths, limitAdminUsersBody)
 	app.all(adminV2Path, createRequestHandler({ build, getLoadContext }))
 }
