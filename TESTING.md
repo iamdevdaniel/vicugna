@@ -91,7 +91,7 @@ From `backend`, run the admin browser tests with:
 npm run test:e2e
 ```
 
-The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login. The authenticated home suite checks its desktop and mobile-sized layout and opens Users, Assignments, and Monitoring from their cards.
+The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login. The authenticated home suite checks its desktop and mobile-sized layout and opens Users, Assignments, and Monitoring from their cards. The users suite checks its responsive layout, tabs, creation modal, required fields, password suggestion, successful creation, and duplicate-email rejection.
 
 The happy path does not continue app actions after a failed stage because each later stage needs the previous data. The validation tests report each rule separately. If a required setup step fails, its dependent section reports the missing prerequisite. Failures save screenshots and device logs in `mobile/e2e/artifacts`. Git ignores that directory.
 
