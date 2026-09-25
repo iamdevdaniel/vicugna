@@ -56,8 +56,5 @@ AGENTS.md
 .local/
 .env
 
-# Tailwind
-backend/src/public/admin.css
-
 # Excel templates
 .~lock.*

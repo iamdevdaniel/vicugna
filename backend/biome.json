@@ -9,8 +9,8 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"src/**/*.{ts,tsx}",
-			"src/public/views/**/*.js",
 			"e2e/**/*.ts",
+			"scripts/clean-build.cjs",
 			"scripts/e2e.cjs",
 			"drizzle.config.ts",
 			"!src/db/migrations/**"

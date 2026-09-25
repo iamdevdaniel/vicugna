@@ -8,7 +8,7 @@ import {
 } from "./monitoring.repository"
 import type {
 	MonitoringCommunityGroup,
-	MonitoringPageData,
+	MonitoringPageState,
 	MonitoringPermitGroup,
 	SelectedMonitoringPermit,
 } from "./monitoring.types"
@@ -30,16 +30,7 @@ export async function reopenPermit(permitId: string): Promise<void> {
 export async function getMonitoringPageState(
 	selectedSeasonId?: string,
 	selectedPermitId?: string,
-): Promise<
-	Omit<
-		MonitoringPageData,
-		| "pageTitle"
-		| "adminUser"
-		| "syncedStatuses"
-		| "formMessage"
-		| "formMessageType"
-	>
-> {
+): Promise<MonitoringPageState> {
 	const seasons = await listSeasons()
 	const resolvedSeasonId = selectedSeasonId || seasons[0]?.id || ""
 	const assignments = resolvedSeasonId

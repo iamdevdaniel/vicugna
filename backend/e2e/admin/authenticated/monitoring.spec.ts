@@ -1,8 +1,10 @@
 import { expect, type Page, test } from "@playwright/test"
+import { waitForAdminReady } from "../../admin-ready"
 
 test.describe("Seguimiento de permisos", () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto("monitoring", { waitUntil: "networkidle" })
+		await waitForAdminReady(page)
 		await expect(
 			page.getByRole("heading", { name: "Seguimiento", exact: true }),
 		).toBeVisible()

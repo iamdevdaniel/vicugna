@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test"
 import { adminAuthFile } from "./admin-auth"
 
 const port = process.env.E2E_PORT ?? "3100"
-const baseURL = `http://127.0.0.1:${port}/admin-v2/`
+const baseURL = `http://127.0.0.1:${port}/admin/`
 const databaseUrl = process.env.VICUGNA_E2E_DATABASE_URL?.trim()
 
 if (!databaseUrl) {

@@ -1,8 +1,10 @@
 import { expect, type Locator, type Page, test } from "@playwright/test"
+import { waitForAdminReady } from "../../admin-ready"
 
 test.describe("Administración de asignaciones", () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto("assignments", { waitUntil: "networkidle" })
+		await waitForAdminReady(page)
 		await expect(
 			page.getByRole("heading", { name: "Asignaciones", exact: true }),
 		).toBeVisible()

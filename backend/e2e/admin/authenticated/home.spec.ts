@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test"
+import { waitForAdminReady } from "../../admin-ready"
 
 test.describe("Inicio administrativo", () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto("")
+		await waitForAdminReady(page)
 	})
 
 	test("@responsive muestra las secciones principales sin desbordamiento", async ({
@@ -45,9 +47,7 @@ test.describe("Inicio administrativo", () => {
 
 		for (const section of sections) {
 			await page.getByRole("link", { name: section.name }).click()
-			await expect(page).toHaveURL(
-				new RegExp(`/admin-v2/${section.path}$`),
-			)
+			await expect(page).toHaveURL(new RegExp(`/admin/${section.path}$`))
 			await expect(
 				page.getByRole("heading", {
 					name: section.heading,
@@ -55,6 +55,18 @@ test.describe("Inicio administrativo", () => {
 				}),
 			).toBeVisible()
 			await page.goto("")
+			await waitForAdminReady(page)
 		}
+	})
+
+	test("redirige el enlace anterior del panel al inicio", async ({
+		page,
+	}) => {
+		await page.goto("mission-control")
+		await waitForAdminReady(page)
+		await expect(page).toHaveURL(/\/admin\/$/)
+		await expect(
+			page.getByRole("heading", { name: "Inicio" }),
+		).toBeVisible()
 	})
 })

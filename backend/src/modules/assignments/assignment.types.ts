@@ -34,7 +34,6 @@ export interface AssignmentMutationRequestBody {
 	assignmentId: string
 }
 
-// View
 export interface SelectedPermitData {
 	id: string
 	seasonId: string
@@ -84,13 +83,7 @@ export interface AssignmentPermitCard {
 	}>
 }
 
-export interface AssignmentPageData {
-	pageTitle: string
-	adminUser: {
-		fullName: string
-	}
-	formMessage: string | null
-	formMessageType: "error" | null
+export interface AssignmentPageState {
 	selectedSeasonId: string
 	selectedCommunityId: string
 	selectedPermit: SelectedPermitData | null

@@ -1,4 +1,5 @@
 import { expect, type Page, test } from "@playwright/test"
+import { waitForAdminReady } from "../../admin-ready"
 
 const createdUser = {
 	firstName: "Elena",
@@ -11,6 +12,7 @@ const createdUser = {
 test.describe("Administración de usuarios", () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto("users")
+		await waitForAdminReady(page)
 		await expect(
 			page.getByRole("heading", { name: "Usuarios", exact: true }),
 		).toBeVisible()

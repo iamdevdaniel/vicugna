@@ -21,7 +21,7 @@ import {
 } from "./assignment.repository"
 import type {
 	AssignmentMutationRequestBody,
-	AssignmentPageData,
+	AssignmentPageState,
 	AssignmentPermitCard,
 	CreatePermitFormData,
 	RenamePermitFormData,
@@ -35,12 +35,7 @@ import type {
 // PAGE DATA
 // ==========================================
 
-export async function getAssignmentsInitialPageState(): Promise<
-	Omit<
-		AssignmentPageData,
-		"pageTitle" | "adminUser" | "formMessage" | "formMessageType"
-	>
-> {
+export async function getAssignmentsInitialPageState(): Promise<AssignmentPageState> {
 	const [seasons, communities] = await Promise.all([
 		listSeasons(),
 		listCommunities(),
@@ -69,12 +64,7 @@ export async function getAssignmentsInitialPageState(): Promise<
 
 export async function getAssignmentsPageStateForSeason(
 	selectedSeasonId: string,
-): Promise<
-	Omit<
-		AssignmentPageData,
-		"pageTitle" | "adminUser" | "formMessage" | "formMessageType"
-	>
-> {
+): Promise<AssignmentPageState> {
 	const [seasons, permits, communities, users, assignments] =
 		await Promise.all([
 			listSeasons(),
@@ -318,7 +308,7 @@ function normalizeUserIds(userIds?: string | string[]) {
 	return rawValues.map((value) => value.trim()).filter(Boolean)
 }
 
-function buildPermitSummary(permits: AssignmentPageData["permits"]) {
+function buildPermitSummary(permits: AssignmentPageState["permits"]) {
 	return {
 		communitiesWithPermitsCount: new Set(
 			permits.map((permit) => permit.communityId),
@@ -380,7 +370,7 @@ function throwAssignmentCreationError(error: unknown): never {
 }
 
 function buildAssignmentCards(
-	assignments: AssignmentPageData["assignments"],
+	assignments: AssignmentPageState["assignments"],
 ): AssignmentPermitCard[] {
 	const cardsByPermit = new Map<string, AssignmentPermitCard>()
 

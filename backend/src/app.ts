@@ -11,8 +11,7 @@ import { rateLimit } from "express-rate-limit"
 import session from "express-session"
 import backendPackage from "../package.json"
 
-import { mountAdminV2 } from "./admin-v2.server"
-import { adminRoutes } from "./modules/admin/admin.routes"
+import { mountAdmin, mountAdminAssets } from "./admin.server"
 import { mobileInRoutes } from "./modules/mobile_in"
 import { mobileOutRoutes } from "./modules/mobile_out"
 import { mobileAuthRoutes } from "./modules/mobile-auth/mobile_auth.routes"
@@ -63,6 +62,34 @@ const globalRateLimiter = rateLimit({
 	handler: sendRateLimitResponse,
 })
 
+function rejectAmbiguousAdminPath(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) {
+	const rawPath = req.originalUrl.split("?", 1)[0]
+	let decodedPath: string
+
+	try {
+		decodedPath = decodeURIComponent(rawPath)
+	} catch {
+		res.status(400).send("Ruta administrativa no válida")
+		return
+	}
+
+	if (
+		decodedPath.startsWith("/admin/") &&
+		decodedPath
+			.split("/")
+			.some((segment) => segment === "." || segment === "..")
+	) {
+		res.status(400).send("Ruta administrativa no válida")
+		return
+	}
+
+	next()
+}
+
 const loginRateLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
 	limit: 5,
@@ -79,14 +106,11 @@ export async function createApp() {
 		env.nodeEnv === "development" ? "/favicon-dev.png" : "/favicon.png"
 	app.locals.appVersion = backendPackage.version
 	app.set("trust proxy", 1)
+	app.use(rejectAmbiguousAdminPath)
+	mountAdminAssets(app)
 	app.use(globalRateLimiter)
 	app.post(
-		[
-			"/admin/login",
-			"/admin-v2/login",
-			"/admin-v2/login.data",
-			"/mobile/auth/login",
-		],
+		["/admin/login", "/admin/login.data", "/mobile/auth/login"],
 		loginRateLimiter,
 	)
 	app.use(cors())
@@ -109,10 +133,9 @@ export async function createApp() {
 	app.set("views", path.join(srcDir, "views"))
 	app.set("view engine", "ejs")
 	app.use(express.static(path.join(srcDir, "public")))
-	await mountAdminV2(app)
+	await mountAdmin(app)
 	app.use(express.json({ limit: "10mb" }))
 	app.use(express.urlencoded({ extended: false, limit: "10mb" }))
-	app.use("/admin", adminRoutes)
 	app.use("/mobile/auth", mobileAuthRoutes)
 	app.use("/mobile", mobileOutRoutes)
 	app.use("/permits", mobileInRoutes)

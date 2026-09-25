@@ -19,5 +19,5 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/admin-v2/**/*"]
+  "exclude": ["node_modules", "src/admin/**/*"]
 }

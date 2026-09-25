@@ -23,13 +23,3 @@ export interface CreateUserFormData extends UserName {
 	email: string
 	password: string
 }
-
-// View
-export interface UsersPageData {
-	pageTitle: string
-	adminUser: {
-		fullName: string
-	}
-	users: UserListItem[]
-	suggestedPassword: string
-}

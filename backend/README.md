@@ -21,9 +21,9 @@
 
 - **Domain**: app/business meaning. Example: `UserListItem`.
 - **HTTP**: data coming from requests/forms. Example: `CreateUserFormData`.
-- **View**: data needed to render EJS pages/partials. Example: `UsersPageData`.
+- **Page state**: data returned by services and rendered by React Router screens.
 
-These sections describe what the type represents, not where it is allowed to be used. Controllers are the fork in the road: they connect requests, services, and views.
+These sections describe what the type represents, not where it is allowed to be used. React Router routes connect requests, services, and screens.
 
 ## Assignment Rules
 

@@ -1,7 +1,7 @@
 {
 	"include": [
 		".react-router/types/**/*",
-		"src/admin-v2/**/*",
+		"src/admin/**/*",
 		"src/types/express-session.d.ts",
 		"react-router.config.ts",
 		"vite.config.mts"

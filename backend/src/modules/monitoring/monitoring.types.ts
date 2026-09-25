@@ -45,14 +45,7 @@ export interface MonitoringCommunityGroup {
 	permits: MonitoringPermitGroup[]
 }
 
-export interface MonitoringPageData {
-	pageTitle: string
-	syncedStatuses: readonly PermitSyncStatus[]
-	formMessage: string | null
-	formMessageType: "error" | "success" | null
-	adminUser: {
-		fullName: string
-	}
+export interface MonitoringPageState {
 	selectedSeasonId: string
 	seasons: MonitoringSeasonOption[]
 	communitiesCount: number
