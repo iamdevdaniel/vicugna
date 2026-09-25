@@ -18,7 +18,7 @@ export function MonitoringOverview({
 	const state = useMonitoringState(seasonId, communityGroups)
 
 	return (
-		<section className="flex flex-col rounded-box border border-base-300 bg-base-100 p-4 shadow-sm lg:h-full lg:min-h-0">
+		<section className="flex flex-col rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
 			<div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
 				<div className="flex w-full items-end gap-2 md:max-w-xl">
 					<label className="form-control w-full">
@@ -55,11 +55,7 @@ export function MonitoringOverview({
 				</button>
 			</div>
 
-			<div
-				ref={state.scrollContainerRef}
-				onScroll={state.handleScroll}
-				className="mt-4 flex flex-col gap-3 overflow-y-auto pr-1 lg:h-0 lg:min-h-0 lg:flex-1 lg:basis-0"
-			>
+			<div className="mt-4 flex flex-col gap-3 pr-1">
 				{state.filteredCommunityGroups.length === 0 ? (
 					<p className="px-3 py-12 text-center text-sm text-base-content/55">
 						No se encontraron permisos.

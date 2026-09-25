@@ -12,7 +12,7 @@ export function MonitoringDetail({ permit, seasonId }: MonitoringDetailProps) {
 	const synced = SYNCED_PERMIT_STATUSES.includes(permit.syncStatus)
 
 	return (
-		<article className="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm lg:h-full lg:min-h-0">
+		<article className="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
 			<section className="flex flex-col gap-3 rounded-xl border border-base-300 p-3 md:flex-row md:items-start md:justify-between">
 				<div className="flex min-w-0 items-start gap-3">
 					<Link

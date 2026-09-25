@@ -227,6 +227,7 @@ function seedExistingFixtures(environment) {
 		"dist/db/seeders/seed-regionals.js",
 		"dist/db/seeders/seed-users.js",
 		"dist/db/seeders/seed-assignments.js",
+		"dist/db/seeders/seed-e2e-monitoring.js",
 	]
 
 	for (const seedFile of seedFiles) {

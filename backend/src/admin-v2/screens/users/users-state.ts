@@ -33,12 +33,12 @@ export function useUsersState({
 	}, [passwordSuggestion.data])
 
 	useEffect(() => {
-		if (!createUser.data?.ok) return
+		if (!createUser.data?.ok || createUser.state !== "idle") return
 		setSuccessMessage(createUser.data.successMessage)
 		setIsModalOpen(false)
 		formRef.current?.reset()
 		createUser.reset()
-	}, [createUser.data, createUser.reset])
+	}, [createUser.data, createUser.reset, createUser.state])
 
 	useEffect(() => {
 		if (!successMessage) return

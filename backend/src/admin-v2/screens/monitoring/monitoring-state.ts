@@ -23,7 +23,6 @@ export function useMonitoringState(
 	const [expandedCommunityIds, setExpandedCommunityIds] =
 		useState(allCommunityIds)
 	const [hydrated, setHydrated] = useState(false)
-	const scrollContainerRef = useRef<HTMLDivElement>(null)
 	const savedScrollTop = useRef(0)
 	const scrollSaveTimeout = useRef<number>(undefined)
 
@@ -45,9 +44,7 @@ export function useMonitoringState(
 	useEffect(() => {
 		if (!hydrated) return
 		const frame = window.requestAnimationFrame(() => {
-			if (scrollContainerRef.current) {
-				scrollContainerRef.current.scrollTop = savedScrollTop.current
-			}
+			window.scrollTo(0, savedScrollTop.current)
 		})
 		return () => window.cancelAnimationFrame(frame)
 	}, [hydrated])
@@ -60,7 +57,7 @@ export function useMonitoringState(
 					search,
 					showSyncedOnly,
 					expandedCommunityIds,
-					scrollTop: scrollContainerRef.current?.scrollTop ?? 0,
+					scrollTop: window.scrollY,
 				}),
 			)
 		} catch {
@@ -73,14 +70,24 @@ export function useMonitoringState(
 		saveState()
 	}, [hydrated, saveState])
 
-	useEffect(
-		() => () => {
+	useEffect(() => {
+		if (!hydrated) return
+
+		const handleScroll = () => {
 			if (scrollSaveTimeout.current) {
 				window.clearTimeout(scrollSaveTimeout.current)
 			}
-		},
-		[],
-	)
+			scrollSaveTimeout.current = window.setTimeout(saveState, 150)
+		}
+
+		window.addEventListener("scroll", handleScroll, { passive: true })
+		return () => {
+			window.removeEventListener("scroll", handleScroll)
+			if (scrollSaveTimeout.current) {
+				window.clearTimeout(scrollSaveTimeout.current)
+			}
+		}
+	}, [hydrated, saveState])
 
 	const filteredCommunityGroups = useMemo(() => {
 		const normalizedSearch = search.trim().toLocaleLowerCase("es")
@@ -116,7 +123,6 @@ export function useMonitoringState(
 		showSyncedOnly,
 		filteredCommunityGroups,
 		areAllCommunitiesExpanded,
-		scrollContainerRef,
 		setSearch,
 		toggleSyncedOnly: () => setShowSyncedOnly((current) => !current),
 		isExpanded: (communityId: string) =>
@@ -132,12 +138,6 @@ export function useMonitoringState(
 			setExpandedCommunityIds(
 				areAllCommunitiesExpanded ? [] : allCommunityIds,
 			),
-		handleScroll: () => {
-			if (scrollSaveTimeout.current) {
-				window.clearTimeout(scrollSaveTimeout.current)
-			}
-			scrollSaveTimeout.current = window.setTimeout(saveState, 150)
-		},
 		saveState,
 	}
 }

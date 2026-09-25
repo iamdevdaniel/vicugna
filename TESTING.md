@@ -91,12 +91,12 @@ From `backend`, run the admin browser tests with:
 npm run test:e2e
 ```
 
-The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login. The authenticated home suite checks its desktop and mobile-sized layout and opens Users, Assignments, and Monitoring from their cards. The users suite checks its responsive layout, tabs, creation modal, required fields, password suggestion, successful creation, and duplicate-email rejection. The assignments suite checks season and permit selection, unsaved-change protection, duplicate rejection, permit creation and renaming, assignment order, and the principal user.
+The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login. The authenticated home suite checks its desktop and mobile-sized layout and opens Users, Assignments, and Monitoring from their cards. The users suite checks its responsive layout, tabs, creation modal, required fields, password suggestion, successful creation, and duplicate-email rejection. The assignments suite checks season and permit selection, unsaved-change protection, duplicate rejection, permit creation and renaming, assignment order, and the principal user. The monitoring suite checks searching, synchronized filtering, permit details, report downloads, reopening, empty seasons, and its mobile-sized layout.
 
 The happy path does not continue app actions after a failed stage because each later stage needs the previous data. The validation tests report each rule separately. If a required setup step fails, its dependent section reports the missing prerequisite. Failures save screenshots and device logs in `mobile/e2e/artifacts`. Git ignores that directory.
 
 ## Scope
 
-The mobile tests check that a user can enter and keep valid data on an Android device. They do not test the final sync, saved backend data, the public site, iOS, production APKs, or OTA updates. The admin Playwright suite currently covers login, the authenticated home screen, and navigation to each main section.
+The mobile tests check that a user can enter and keep valid data on an Android device. They do not test the final sync, saved backend data, the public site, iOS, production APKs, or OTA updates. The admin Playwright suite covers login, the authenticated home screen, users, assignments, and monitoring.
 
 The React admin will not have a separate component unit-test suite. Playwright covers its user-facing behavior. Backend testing will use API integration tests against a dedicated PostgreSQL test database, with unit tests reserved for important pure business rules.

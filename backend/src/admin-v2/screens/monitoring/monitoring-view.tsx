@@ -20,7 +20,7 @@ type MonitoringViewProps = {
 
 export function MonitoringView({ pageData, actionData }: MonitoringViewProps) {
 	return (
-		<main className="mx-auto flex w-full max-w-6xl flex-col px-5 py-8 lg:min-h-0">
+		<main className="mx-auto flex w-full max-w-6xl flex-col px-5 py-8">
 			<header>
 				<p className="text-xs font-bold uppercase tracking-wide text-base-content/55">
 					Administración
@@ -49,7 +49,7 @@ export function MonitoringView({ pageData, actionData }: MonitoringViewProps) {
 				</div>
 			) : null}
 
-			<section className="mt-4 lg:min-h-0 lg:flex-1">
+			<section className="mt-4">
 				{pageData.selectedPermit ? (
 					<MonitoringDetail
 						permit={pageData.selectedPermit}
