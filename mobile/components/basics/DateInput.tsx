@@ -1,3 +1,4 @@
+import { formatCalendarDate } from "@utils/calendar-date"
 import { useState } from "react"
 import {
 	Keyboard,
@@ -25,7 +26,7 @@ type DateInputProps = {
 }
 
 export function getTodayDateString() {
-	return new Date().toLocaleDateString("es-ES")
+	return formatCalendarDate(new Date())
 }
 
 function getDateValue(value: string | undefined) {
@@ -79,7 +80,7 @@ export function DateInput({
 				onDismiss={() => setShow(false)}
 				onConfirm={({ date }) => {
 					setShow(false)
-					if (date) onChange(date.toLocaleDateString("es-ES"))
+					if (date) onChange(formatCalendarDate(date))
 				}}
 			/>
 		</>

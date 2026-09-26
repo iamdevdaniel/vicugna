@@ -1,4 +1,5 @@
 import * as yup from "yup"
+import { isValidCalendarDate } from "./calendar-date"
 
 // ==========================================
 // NUMERIC
@@ -6,6 +7,32 @@ import * as yup from "yup"
 
 const numericTextPattern = /^-?(?:\d+|\d*\.\d+)$/
 const positiveIntegerTextPattern = /^\d+$/
+
+function calendarDateTest(value: string | undefined) {
+	return !value || isValidCalendarDate(value)
+}
+
+export function yupRequiredCalendarDate() {
+	return yup
+		.string()
+		.required("Campo requerido")
+		.test(
+			"is-calendar-date",
+			"Debe ser una fecha válida con formato DD/MM/YYYY",
+			calendarDateTest,
+		)
+}
+
+export function yupOptionalCalendarDate() {
+	return yup
+		.string()
+		.defined()
+		.test(
+			"is-calendar-date",
+			"Debe ser una fecha válida con formato DD/MM/YYYY",
+			calendarDateTest,
+		)
+}
 
 function formatBound(value: number, unit?: string) {
 	const formattedValue = value.toLocaleString("es-BO")

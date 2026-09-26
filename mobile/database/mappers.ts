@@ -15,6 +15,7 @@ import type {
 	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
+import { normalizeCalendarDate } from "@utils/calendar-date"
 import { calculateTotalWeight } from "@utils/grooming-record-rules"
 import {
 	deriveIsSheared,
@@ -117,7 +118,7 @@ export function mapToShearingHeader(
 		latitude: model.latitude,
 		longitude: model.longitude,
 		roundupCount: model.roundupCount,
-		eventDate: model.eventDate,
+		eventDate: normalizeCalendarDate(model.eventDate),
 		startTime: model.startTime,
 		endTime: model.endTime,
 		isCompleted: model.isCompleted,
@@ -214,8 +215,8 @@ export function mapToCleaningHeader(
 	return {
 		id: model.id,
 		permitId: model.permitId,
-		startDate: model.startDate,
-		endDate: model.endDate,
+		startDate: normalizeCalendarDate(model.startDate),
+		endDate: normalizeCalendarDate(model.endDate),
 		site: model.site,
 		supervisors: model.supervisors,
 		isCompleted: model.isCompleted,

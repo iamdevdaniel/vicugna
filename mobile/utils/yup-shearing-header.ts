@@ -1,6 +1,7 @@
 import type { ShearingHeaderFormData } from "@definitions/types"
 import * as yup from "yup"
 import {
+	yupRequiredCalendarDate,
 	yupRequiredNumericTextInRange,
 	yupRequiredPositiveIntegerText,
 } from "./yup-utils"
@@ -39,7 +40,7 @@ export const yupShearingHeader = yup.object().shape({
 	latitude: yupRequiredNumericTextInRange(-90, 90),
 	longitude: yupRequiredNumericTextInRange(-180, 180),
 	roundupCount: yupRequiredPositiveIntegerText(100),
-	eventDate: yup.string().required("Campo requerido"),
+	eventDate: yupRequiredCalendarDate(),
 	startTime: yup.string().required("Campo requerido"),
 	endTime: yup
 		.string()

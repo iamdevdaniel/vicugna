@@ -16,6 +16,12 @@ const {
 	waitForFieldValueChange,
 } = require("./support")
 
+function expectCalendarDateFormat(value, label) {
+	if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+		throw new Error(`${label} should use DD/MM/YYYY, found ${value}`)
+	}
+}
+
 async function addParticipant(participant) {
 	await tapLabel("Añadir participante")
 	await replaceField("Participante: nombre", participant.name)
@@ -52,6 +58,7 @@ async function fillShearingHeader() {
 		"Esquila general: fecha",
 		previousEventDate,
 	)
+	expectCalendarDateFormat(eventDate, "Esquila general: fecha")
 	await setTime("Esquila general: hora inicial", 8, 0)
 	await setTime("Esquila general: hora conclusión", 10, 0)
 	await expectEnabled("Guardar información general de esquila", true)
@@ -132,6 +139,7 @@ async function fillCleaningHeader() {
 		"Fibra general: fecha inicio",
 		previousStartDate,
 	)
+	expectCalendarDateFormat(startDate, "Fibra general: fecha inicio")
 	const previousEndDate = await getFieldValue(
 		"Fibra general: fecha conclusión",
 	)
@@ -140,6 +148,7 @@ async function fillCleaningHeader() {
 		"Fibra general: fecha conclusión",
 		previousEndDate,
 	)
+	expectCalendarDateFormat(endDate, "Fibra general: fecha conclusión")
 	await replaceField("Fibra general: lugar", "Centro E2E")
 	await replaceField("Fibra general: responsables", "Equipo de prueba")
 	await expectEnabled("Guardar información general de fibra", true)

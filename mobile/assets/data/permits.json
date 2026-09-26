@@ -1,19 +1,19 @@
 [
 	{
 		"id": "permit-1",
-		"date": "2026-05-19",
+		"date": "19/05/2026",
 		"site": "Sora Sora Sector Norte",
 		"codigoAutorizacion": "AUT-2026-098A"
 	},
 	{
 		"id": "permit-2",
-		"date": "2026-05-20",
+		"date": "20/05/2026",
 		"site": "Cerro Calvario Alta",
 		"codigoAutorizacion": "AUT-2026-104B"
 	},
 	{
 		"id": "permit-3",
-		"date": "2026-05-22",
+		"date": "22/05/2026",
 		"site": "Bofedal Central Chachacomani",
 		"codigoAutorizacion": "AUT-2026-112C"
 	}

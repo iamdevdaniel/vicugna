@@ -4,7 +4,7 @@ import {
 	type ServiceValidationIssue,
 } from "./mobile_in.errors"
 
-const CALENDAR_DATE_PATTERN = /^\d{1,2}\/\d{1,2}\/\d{4}$/
+const CALENDAR_DATE_PATTERN = /^\d{2}\/\d{2}\/\d{4}$/
 const TIME_PATTERN = /^\d{2}:\d{2}$/
 const DATE_TIME_WITH_OFFSET_PATTERN =
 	/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/
