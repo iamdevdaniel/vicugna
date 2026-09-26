@@ -1,13 +1,15 @@
 # Vicugna
 
-Vicugna is an offline-first Android field application for recording vicuña
-management data, with an Express/PostgreSQL backend and administrative web
-interface.
+Vicugna is an offline-first field application for recording vicuña management
+data, with an Express/PostgreSQL backend and administrative web interface. The
+existing Expo project targets Android and is being extended with a laptop-first
+Chrome PWA.
 
 ## Projects
 
-- `mobile/` — Expo/React Native Android application with local WatermelonDB
-  storage and synchronization.
+- `mobile/` — Expo project containing the Android application and its laptop
+  PWA port. Android uses WatermelonDB; the PWA will use Dexie/IndexedDB behind
+  web-specific files.
 - `backend/` — Express API, PostgreSQL persistence, and admin frontend.
 - `shared/` — Shared TypeScript contracts.
 

@@ -11,15 +11,12 @@
       "@api": ["./api/index"],
       "@database": ["./database/index"],
       "@components": ["./components/index"],
+      "@components/*": ["./components/*"],
       "@hooks": ["./hooks/index"],
+      "@screens/*": ["./screens/*"],
       "@vicugna/shared": ["../shared/types.d.ts"],
       "@vicugna/shared/*": ["../shared/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

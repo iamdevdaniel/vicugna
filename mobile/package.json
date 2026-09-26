@@ -12,12 +12,13 @@
     "e2e:validation": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/validation.test.js",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils ./e2e --write",
+    "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils ./e2e ./screens --write",
     "prepare": "cd .. && husky"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@hookform/resolvers": "^5.2.1",
+    "@mantine/core": "^8.3.18",
     "@morrowdigital/watermelondb-expo-plugin": "^2.3.3",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -82,7 +83,7 @@
   },
   "private": true,
   "lint-staged": {
-    "{app,components,database,assets,definitions,utils,e2e}/**/*.{ts,tsx,js,mjs}": [
+    "{app,components,database,assets,definitions,utils,e2e,screens}/**/*.{ts,tsx,js,mjs,css}": [
       "biome check --write --no-errors-on-unmatched",
       "biome check --error-on-warnings --no-errors-on-unmatched"
     ]
