@@ -1,6 +1,7 @@
 import "@mantine/core/styles.css"
 import "../../assets/styles/web.css"
 
+import { MessageSnackbar } from "@components/basics/MessageSnackbar.web"
 import { MantineProvider } from "@mantine/core"
 import {
 	webColorSchemeManager,
@@ -18,6 +19,7 @@ export default function WebAppLayout() {
 			defaultColorScheme="light"
 		>
 			<Slot />
+			<MessageSnackbar />
 		</MantineProvider>
 	)
 }

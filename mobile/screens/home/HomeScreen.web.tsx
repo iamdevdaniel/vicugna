@@ -1,5 +1,5 @@
 import { AppShell } from "@components/basics/AppShell.web"
-import { useReadPermits } from "@hooks"
+import { useLoadPermits, useReadPermits } from "@hooks"
 import {
 	Alert,
 	Badge,
@@ -14,11 +14,25 @@ import {
 	Title,
 } from "@mantine/core"
 import { ROUTES } from "@utils/constants"
+import { useMessageStore } from "@utils/message-store.web"
 import { getCommunityName } from "@utils/regionals"
 import { Link } from "expo-router"
 
 export default function WebHomeScreen() {
 	const { data: permits, loading, error } = useReadPermits()
+	const { loadPermits, loadingPermits } = useLoadPermits()
+	const showMessage = useMessageStore((state) => state.showMessage)
+
+	const downloadPermits = async () => {
+		const result = await loadPermits()
+		if ("cancelled" in result) return
+
+		if (result.ok) {
+			showMessage("success", "Permisos actualizados")
+		} else {
+			showMessage("error", result.error)
+		}
+	}
 
 	return (
 		<AppShell>
@@ -31,7 +45,15 @@ export default function WebHomeScreen() {
 								Prueba de persistencia local para Chrome.
 							</Text>
 						</div>
-						<Badge variant="light">Chrome PWA</Badge>
+						<Group>
+							<Badge variant="light">Chrome PWA</Badge>
+							<Button
+								onClick={() => void downloadPermits()}
+								loading={loadingPermits}
+							>
+								Actualizar permisos
+							</Button>
+						</Group>
 					</Group>
 
 					{error ? <Alert color="red">{error.message}</Alert> : null}
@@ -84,6 +106,20 @@ export default function WebHomeScreen() {
 											</Table.Td>
 										</Table.Tr>
 									))}
+									{permits.length === 0 ? (
+										<Table.Tr>
+											<Table.Td colSpan={4}>
+												<Text
+													ta="center"
+													c="dimmed"
+													py="xl"
+												>
+													Actualice los permisos para
+													comenzar.
+												</Text>
+											</Table.Td>
+										</Table.Tr>
+									) : null}
 								</Table.Tbody>
 							</Table>
 						)}

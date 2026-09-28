@@ -2,15 +2,37 @@ import {
 	Button,
 	Container,
 	Group,
+	Loader,
 	AppShell as MantineAppShell,
 	Stack,
 	Text,
 } from "@mantine/core"
-import { Link } from "expo-router"
+import { useMobileAuthStore } from "@utils/auth-store"
+import { useMessageStore } from "@utils/message-store.web"
+import { Redirect } from "expo-router"
 import type { ReactNode } from "react"
 import { ThemeToggle } from "./ThemeToggle.web"
 
 export function AppShell({ children }: { children: ReactNode }) {
+	const isHydrated = useMobileAuthStore((state) => state.isHydrated)
+	const isAuthenticated = useMobileAuthStore((state) => state.isAuthenticated)
+	const user = useMobileAuthStore((state) => state.user)
+	const logout = useMobileAuthStore((state) => state.logout)
+	const dismissMessage = useMessageStore((state) => state.dismissMessage)
+	const closeSession = () => {
+		dismissMessage()
+		logout()
+	}
+
+	if (!isHydrated) {
+		return (
+			<Group justify="center" h="100vh">
+				<Loader />
+			</Group>
+		)
+	}
+	if (!isAuthenticated || !user) return <Redirect href="/login" />
+
 	return (
 		<MantineAppShell header={{ height: 72 }} padding="md">
 			<MantineAppShell.Header>
@@ -19,18 +41,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 						<Stack gap={0}>
 							<Text fw={800}>Vicugna Campo</Text>
 							<Text size="xs" c="dimmed">
-								Versión para computadora portátil
+								{user.fullName}
 							</Text>
 						</Stack>
 						<Group gap="xs">
 							<ThemeToggle />
 							<Button
-								component={Link}
-								href="/login"
+								onClick={closeSession}
 								variant="outline"
 								size="sm"
 							>
-								Volver
+								Cerrar sesión
 							</Button>
 						</Group>
 					</Group>

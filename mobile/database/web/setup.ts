@@ -1,12 +1,16 @@
 import type { ParticipantData, PermitData } from "@definitions/types"
 import Dexie, { type EntityTable } from "dexie"
 
+export type WebPermitRecord = PermitData & {
+	syncVersion: number | null
+}
+
 export type WebParticipantRecord = ParticipantData & {
 	createdAt: number
 }
 
 export class WebFieldDatabase extends Dexie {
-	permits!: EntityTable<PermitData, "id">
+	permits!: EntityTable<WebPermitRecord, "id">
 	participants!: EntityTable<WebParticipantRecord, "id">
 
 	constructor(accountId: string) {
@@ -29,4 +33,12 @@ export function getWebFieldDatabase(accountId: string): WebFieldDatabase {
 	const database = new WebFieldDatabase(accountId)
 	databases.set(accountId, database)
 	return database
+}
+
+export function closeWebFieldDatabase(accountId: string): void {
+	const database = databases.get(accountId)
+	if (!database) return
+
+	database.close()
+	databases.delete(accountId)
 }

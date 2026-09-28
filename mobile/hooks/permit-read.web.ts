@@ -1,41 +1,37 @@
 import type { PermitData } from "@definitions/types"
+import { useMobileAuthStore } from "@utils/auth-store"
 import { useEffect, useReducer } from "react"
-import {
-	ensureFeasibilityPermit,
-	FEASIBILITY_ACCOUNT_ID,
-	subscribePermits,
-	subscribeSinglePermit,
-} from "../database/index.web"
+import { subscribePermits, subscribeSinglePermit } from "../database/index.web"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadPermits(): DbState<PermitData[]> {
+	const accountId = useMobileAuthStore((state) => state.user?.id)
 	const [state, dispatch] = useReducer(
 		readReducer<PermitData[]>,
 		makeReadInitial<PermitData[]>([]),
 	)
 
 	useEffect(() => {
-		let active = true
-		let unsubscribe: (() => void) | undefined
+		if (!accountId) {
+			dispatch({ type: "success", data: [] })
+			return
+		}
 
-		void ensureFeasibilityPermit()
-			.then(() => {
-				if (!active) return
-				unsubscribe = subscribePermits(FEASIBILITY_ACCOUNT_ID, {
-					onChange: (permits) =>
-						dispatch({ type: "success", data: permits }),
-					onError: (error) => dispatch({ type: "error", error }),
-				})
-			})
-			.catch((error: Error) => {
+		let active = true
+		const unsubscribe = subscribePermits(accountId, {
+			onChange: (permits) => {
+				if (active) dispatch({ type: "success", data: permits })
+			},
+			onError: (error) => {
 				if (active) dispatch({ type: "error", error })
-			})
+			},
+		})
 
 		return () => {
 			active = false
-			unsubscribe?.()
+			unsubscribe()
 		}
-	}, [])
+	}, [accountId])
 
 	return state
 }
@@ -43,42 +39,33 @@ export function useReadPermits(): DbState<PermitData[]> {
 export function useReadSinglePermit(
 	permitId?: string,
 ): DbState<PermitData | null> {
+	const accountId = useMobileAuthStore((state) => state.user?.id)
 	const [state, dispatch] = useReducer(
 		readReducer<PermitData | null>,
 		makeReadInitial<PermitData | null>(null),
 	)
 
 	useEffect(() => {
-		if (!permitId) {
+		if (!permitId || !accountId) {
 			dispatch({ type: "success", data: null })
 			return
 		}
 
 		let active = true
-		let unsubscribe: (() => void) | undefined
-
-		void ensureFeasibilityPermit()
-			.then(() => {
-				if (!active) return
-				unsubscribe = subscribeSinglePermit(
-					FEASIBILITY_ACCOUNT_ID,
-					permitId,
-					{
-						onChange: (permit) =>
-							dispatch({ type: "success", data: permit }),
-						onError: (error) => dispatch({ type: "error", error }),
-					},
-				)
-			})
-			.catch((error: Error) => {
+		const unsubscribe = subscribeSinglePermit(accountId, permitId, {
+			onChange: (permit) => {
+				if (active) dispatch({ type: "success", data: permit })
+			},
+			onError: (error) => {
 				if (active) dispatch({ type: "error", error })
-			})
+			},
+		})
 
 		return () => {
 			active = false
-			unsubscribe?.()
+			unsubscribe()
 		}
-	}, [permitId])
+	}, [accountId, permitId])
 
 	return state
 }

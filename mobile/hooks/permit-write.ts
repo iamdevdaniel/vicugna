@@ -1,10 +1,56 @@
-import { submitSyncFieldData } from "@api"
-import { getFieldSyncData, updatePermitSyncStatus } from "@database"
+import { fetchPermits, submitSyncFieldData } from "@api"
+import {
+	getFieldSyncData,
+	savePermits,
+	updatePermitSyncStatus,
+} from "@database"
 import { useMobileAuthStore } from "@utils/auth-store"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { BackendRequestError } from "../api/backend-request"
 
+type PermitLoadResult = { ok: true } | { ok: false; error: string }
 type SyncPermitResult = { ok: true } | { ok: false; error: string }
+
+export function useLoadPermits() {
+	const [loadingPermits, setLoadingPermits] = useState(false)
+	const isLoadRunning = useRef(false)
+	const token = useMobileAuthStore((state) => state.token)
+
+	const loadPermits = useCallback(async (): Promise<PermitLoadResult> => {
+		if (isLoadRunning.current) {
+			return {
+				ok: false,
+				error: "La actualización de permisos ya está en curso",
+			}
+		}
+
+		if (!token) {
+			return { ok: false, error: "Sesión no disponible" }
+		}
+
+		isLoadRunning.current = true
+		setLoadingPermits(true)
+
+		try {
+			const permits = await fetchPermits(token)
+			await savePermits(permits)
+			return { ok: true }
+		} catch (error) {
+			return {
+				ok: false,
+				error:
+					error instanceof Error
+						? error.message
+						: "No se pudieron cargar los permisos",
+			}
+		} finally {
+			isLoadRunning.current = false
+			setLoadingPermits(false)
+		}
+	}, [token])
+
+	return { loadPermits, loadingPermits }
+}
 
 export function useSyncPermit() {
 	const [syncingPermit, setSyncingPermit] = useState(false)

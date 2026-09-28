@@ -1,9 +1,12 @@
 import type { ParticipantFormData } from "@definitions/types"
+import {
+	getWebSessionSnapshot,
+	isWebSessionCurrent,
+} from "@utils/auth-store.web"
 import { useCallback, useRef, useState } from "react"
 import {
 	createSingleParticipant as createParticipantData,
 	deleteSingleParticipant as deleteParticipantData,
-	FEASIBILITY_ACCOUNT_ID,
 	updateSingleParticipant as updateParticipantData,
 } from "../database/index.web"
 
@@ -14,8 +17,16 @@ export function useSingleParticipantActions() {
 	const [error, setError] = useState<Error | null>(null)
 
 	const run = useCallback(
-		async (operation: () => Promise<void>, kind: "save" | "delete") => {
+		async (
+			operation: (accountId: string) => Promise<void>,
+			kind: "save" | "delete",
+		) => {
 			if (operationInFlight.current) return false
+			const session = getWebSessionSnapshot()
+			if (!session) {
+				setError(new Error("Sesión no disponible"))
+				return false
+			}
 
 			operationInFlight.current = true
 			setError(null)
@@ -23,9 +34,11 @@ export function useSingleParticipantActions() {
 			else setDeleting(true)
 
 			try {
-				await operation()
-				return true
+				await operation(session.accountId)
+				return isWebSessionCurrent(session)
 			} catch (caught) {
+				if (!isWebSessionCurrent(session)) return false
+
 				setError(
 					caught instanceof Error
 						? caught
@@ -43,35 +56,24 @@ export function useSingleParticipantActions() {
 
 	const createSingleParticipant = useCallback(
 		(permitId: string, data: ParticipantFormData) =>
-			run(async () => {
-				await createParticipantData(
-					FEASIBILITY_ACCOUNT_ID,
-					permitId,
-					data,
-				)
+			run(async (accountId) => {
+				await createParticipantData(accountId, permitId, data)
 			}, "save"),
 		[run],
 	)
 
 	const updateSingleParticipant = useCallback(
 		(participantId: string, data: ParticipantFormData) =>
-			run(async () => {
-				await updateParticipantData(
-					FEASIBILITY_ACCOUNT_ID,
-					participantId,
-					data,
-				)
+			run(async (accountId) => {
+				await updateParticipantData(accountId, participantId, data)
 			}, "save"),
 		[run],
 	)
 
 	const deleteSingleParticipant = useCallback(
 		(participantId: string) =>
-			run(async () => {
-				await deleteParticipantData(
-					FEASIBILITY_ACCOUNT_ID,
-					participantId,
-				)
+			run(async (accountId) => {
+				await deleteParticipantData(accountId, participantId)
 			}, "delete"),
 		[run],
 	)

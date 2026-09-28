@@ -11,11 +11,12 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core"
+import { useMessageStore } from "@utils/message-store.web"
 import {
 	defaultValuesParticipant,
 	yupParticipant,
 } from "@utils/yup-participants"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 
 const TEST_SIGNATURE = JSON.stringify(["M20 50 L80 20 L140 50"])
@@ -41,6 +42,7 @@ export function ParticipantTable({
 		error,
 		clearError,
 	} = useSingleParticipantActions()
+	const showMessage = useMessageStore((state) => state.showMessage)
 	const {
 		control,
 		handleSubmit,
@@ -53,6 +55,10 @@ export function ParticipantTable({
 		resolver: yupResolver(yupParticipant),
 	})
 	const signature = watch("signature")
+
+	useEffect(() => {
+		if (error) showMessage("error", error.message)
+	}, [error, showMessage])
 
 	const beginCreate = () => {
 		clearError()
@@ -87,12 +93,21 @@ export function ParticipantTable({
 					? await updateSingleParticipant(editingId, data)
 					: false
 
-		if (saved) cancelEdit()
+		if (saved) {
+			showMessage(
+				"success",
+				editingId === "new"
+					? "Participante guardado"
+					: "Participante actualizado",
+			)
+			cancelEdit()
+		}
 	})
 
 	const remove = async (participant: ParticipantData) => {
 		if (!window.confirm(`¿Borrar a ${participant.name}?`)) return
-		await deleteSingleParticipant(participant.id)
+		const deleted = await deleteSingleParticipant(participant.id)
+		if (deleted) showMessage("success", "Participante borrado")
 	}
 
 	return (
@@ -115,12 +130,6 @@ export function ParticipantTable({
 					Este permiso está sincronizado y es de solo lectura.
 				</Alert>
 			) : null}
-			{error ? (
-				<Alert color="red" mb="md" withCloseButton onClose={clearError}>
-					{error.message}
-				</Alert>
-			) : null}
-
 			<ScrollArea>
 				<Table striped highlightOnHover miw={1180} verticalSpacing="sm">
 					<Table.Thead>

@@ -8,8 +8,5 @@ export {
 	subscribePermits,
 	subscribeSinglePermit,
 } from "./web/dal-permit"
-export {
-	ensureFeasibilityPermit,
-	FEASIBILITY_ACCOUNT_ID,
-	FEASIBILITY_PERMIT_ID,
-} from "./web/feasibility-fixture"
+export { savePermitDownloads } from "./web/dal-permit-load"
+export { closeWebFieldDatabase } from "./web/setup"

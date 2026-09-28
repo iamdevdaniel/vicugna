@@ -12,12 +12,11 @@ export {
 	useReadSingleParticipant,
 } from "./participant-read"
 export { useSingleParticipantActions } from "./participant-write"
-export { useLoadPermits } from "./permit-load"
 export {
 	useReadPermits,
 	useReadSinglePermit,
 } from "./permit-read"
-export { useSyncPermit } from "./permit-write"
+export { useLoadPermits, useSyncPermit } from "./permit-write"
 export { useReadSingleShearingHeader } from "./shearing-header-read"
 export { useSingleShearingHeaderActions } from "./shearing-header-write"
 export {

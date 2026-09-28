@@ -8,7 +8,11 @@ import {
 	subscribeBulkParticipants,
 	updateSingleParticipant,
 } from "./dal-participants"
-import { getWebFieldDatabase, WebFieldDatabase } from "./setup"
+import {
+	getWebFieldDatabase,
+	WebFieldDatabase,
+	type WebPermitRecord,
+} from "./setup"
 
 const participant: ParticipantFormData = {
 	name: "Ana",
@@ -19,7 +23,7 @@ const participant: ParticipantFormData = {
 	notes: "Prueba web",
 }
 
-function makePermit(id: string, accountId: string): PermitData {
+function makePermit(id: string, accountId: string): WebPermitRecord {
 	return {
 		id,
 		permitNumber: "PWA-TEST",
@@ -36,6 +40,7 @@ function makePermit(id: string, accountId: string): PermitData {
 		participantsStatus: "ready",
 		shearingStatus: "disabled",
 		cleaningStatus: "disabled",
+		syncVersion: null,
 	}
 }
 
