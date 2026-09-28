@@ -12,6 +12,7 @@
     "e2e:validation": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/validation.test.js",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "test:web-db": "tsx --test database/web/*.test.ts",
     "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils ./e2e ./screens --write",
     "prepare": "cd .. && husky"
   },
@@ -27,6 +28,7 @@
     "@react-navigation/native": "^7.1.6",
     "@shopify/react-native-skia": "2.2.12",
     "decimal.js": "^10.6.0",
+    "dexie": "^4.4.6",
     "expo": "~54.0.36",
     "expo-blur": "~15.0.7",
     "expo-build-properties": "~1.0.9",
@@ -68,8 +70,10 @@
     "@biomejs/biome": "2.1.4",
     "@types/react": "~19.1.10",
     "detox": "^20.51.4",
+    "fake-indexeddb": "^6.2.5",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "tsx": "^4.23.15",
     "typescript": "~5.9.2"
   },
   "expo": {

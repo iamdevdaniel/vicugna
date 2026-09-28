@@ -64,6 +64,27 @@ export function getPermitStatuses(source: PermitStatusSource): PermitStatuses {
 	}
 }
 
+export function getPermitStatusesAfterParticipantCount(
+	current: PermitStatuses,
+	participantCount: number,
+): PermitStatuses {
+	const participantsStatus = participantCount > 0 ? "done" : "ready"
+	const shearingStatus =
+		participantsStatus === "done"
+			? current.shearingStatus === "disabled"
+				? "ready"
+				: current.shearingStatus
+			: "disabled"
+	const cleaningStatus =
+		shearingStatus === "done"
+			? current.cleaningStatus === "disabled"
+				? "ready"
+				: current.cleaningStatus
+			: "disabled"
+
+	return { participantsStatus, shearingStatus, cleaningStatus }
+}
+
 export function applyPermitStatusChange(
 	currentState: PermitStatusSource,
 	change: PermitStatusChange,
