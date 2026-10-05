@@ -1,3 +1,4 @@
+export { useBackupSettings } from "./backup-read.web"
 export { type BackupWritableFile, useBackupActions } from "./backup-write.web"
 export {
 	type BrowserPersistenceStatus,

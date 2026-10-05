@@ -1,9 +1,12 @@
+import { SettingsDrawer } from "@components/settings/SettingsDrawer.web"
 import { openWebDatabase } from "@database/web"
 import type { MobileAuthUser } from "@definitions/types"
+import { useBackupSettings } from "@hooks/web"
 import {
 	Button,
 	Container,
 	Group,
+	Indicator,
 	Loader,
 	AppShell as MantineAppShell,
 	Stack,
@@ -128,32 +131,60 @@ function AppFrame({
 	onCloseSession: () => void
 	children: ReactNode
 }) {
-	return (
-		<MantineAppShell header={{ height: 72 }} padding="md">
-			<MantineAppShell.Header>
-				<Container size="xl" h="100%">
-					<Group h="100%" justify="space-between">
-						<Stack gap={0}>
-							<Text fw={800}>Vicugna Campo</Text>
-							<Text size="xs" c="dimmed">
-								{user.fullName}
-							</Text>
-						</Stack>
-						<Group gap="xs">
-							<ThemeToggle />
-							<Button
-								onClick={onCloseSession}
-								variant="outline"
-								size="sm"
-							>
-								Cerrar sesión
-							</Button>
-						</Group>
-					</Group>
-				</Container>
-			</MantineAppShell.Header>
+	const [settingsOpened, setSettingsOpened] = useState(false)
+	const { settings, settingsLoaded } = useBackupSettings()
+	const backupColor = !settingsLoaded
+		? "gray"
+		: settings?.status === "ready"
+			? "green"
+			: "yellow"
 
-			<MantineAppShell.Main>{children}</MantineAppShell.Main>
-		</MantineAppShell>
+	return (
+		<>
+			<MantineAppShell header={{ height: 72 }} padding="md">
+				<MantineAppShell.Header>
+					<Container size="xl" h="100%">
+						<Group h="100%" justify="space-between">
+							<Stack gap={0}>
+								<Text fw={800}>Vicugna Campo</Text>
+								<Text size="xs" c="dimmed">
+									{user.fullName}
+								</Text>
+							</Stack>
+							<Group gap="xs">
+								<ThemeToggle />
+								<Indicator
+									color={backupColor}
+									size={10}
+									offset={5}
+									withBorder
+								>
+									<Button
+										onClick={() => setSettingsOpened(true)}
+										variant="subtle"
+										size="sm"
+									>
+										Configuración
+									</Button>
+								</Indicator>
+								<Button
+									onClick={onCloseSession}
+									variant="outline"
+									size="sm"
+								>
+									Cerrar sesión
+								</Button>
+							</Group>
+						</Group>
+					</Container>
+				</MantineAppShell.Header>
+
+				<MantineAppShell.Main>{children}</MantineAppShell.Main>
+			</MantineAppShell>
+			<SettingsDrawer
+				opened={settingsOpened}
+				onClose={() => setSettingsOpened(false)}
+			/>
+		</>
 	)
 }

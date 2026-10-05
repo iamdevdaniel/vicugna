@@ -1,6 +1,7 @@
 import {
 	type BackupWritableFile,
 	useBackupActions,
+	useBackupSettings,
 	useBrowserPersistenceStatus,
 	useRequestBrowserPersistence,
 } from "@hooks/web"
@@ -37,14 +38,9 @@ export function BackupPanel() {
 	const requestPersistence = useRequestBrowserPersistence()
 	const accountId = useMobileAuthStore((state) => state.user?.id)
 	const showMessage = useMessageStore((state) => state.showMessage)
-	const {
-		configureBackup,
-		retryBackup,
-		restoreBackup,
-		working,
-		settings,
-		settingsLoaded,
-	} = useBackupActions()
+	const { configureBackup, retryBackup, restoreBackup, working } =
+		useBackupActions()
+	const { settings, settingsLoaded } = useBackupSettings()
 	const filePickerWindow = window as FilePickerWindow
 	const fileAccessSupported = Boolean(
 		filePickerWindow.showOpenFilePicker &&

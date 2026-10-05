@@ -1,19 +1,16 @@
 import {
 	restoreBackupSnapshot,
 	saveBackupFileHandle,
-	subscribeBackupSettings,
 	type WebBackupFileHandle,
-	type WebBackupSettingsRecord,
 	writeBackup,
 } from "@database/web"
 import {
 	getWebSessionSnapshot,
 	isWebSessionCurrent,
-	useMobileAuthStore,
 	type WebSessionSnapshot,
 } from "@utils/auth-store.web"
 import { parseBackupFile } from "@utils/backup-file.web"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 
 export type BackupWritableFile = WebBackupFileHandle
 
@@ -25,31 +22,6 @@ type BackupResult =
 export function useBackupActions() {
 	const operationInFlight = useRef(false)
 	const [working, setWorking] = useState(false)
-	const [settings, setSettings] = useState<WebBackupSettingsRecord | null>(
-		null,
-	)
-	const [settingsLoaded, setSettingsLoaded] = useState(false)
-	const accountId = useMobileAuthStore((state) => state.user?.id)
-
-	useEffect(() => {
-		if (!accountId) {
-			setSettings(null)
-			setSettingsLoaded(true)
-			return
-		}
-
-		setSettingsLoaded(false)
-		return subscribeBackupSettings(accountId, {
-			onChange: (value) => {
-				setSettings(value)
-				setSettingsLoaded(true)
-			},
-			onError: () => {
-				setSettings(null)
-				setSettingsLoaded(true)
-			},
-		})
-	}, [accountId])
 
 	const run = useCallback(
 		async (
@@ -136,7 +108,5 @@ export function useBackupActions() {
 		retryBackup,
 		restoreBackup,
 		working,
-		settings,
-		settingsLoaded,
 	}
 }

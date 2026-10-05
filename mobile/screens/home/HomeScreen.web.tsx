@@ -1,4 +1,3 @@
-import { BackupPanel } from "@components/backup/BackupPanel.web"
 import { AppShell } from "@components/basics/AppShell.web"
 import { useLoadPermits, useReadPermits } from "@hooks/web"
 import {
@@ -130,7 +129,6 @@ export default function WebHomeScreen() {
 							</Table>
 						)}
 					</Paper>
-					<BackupPanel />
 				</Stack>
 			</Container>
 		</AppShell>
