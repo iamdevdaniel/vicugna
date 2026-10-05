@@ -1,5 +1,6 @@
 import type { MobilePermitData, PermitData } from "@definitions/types"
-import { getWebFieldDatabase, type WebPermitRecord } from "./setup"
+import { markBackupPending } from "./dal-backup"
+import { getWebDatabase, type WebPermitRecord } from "./setup"
 
 const syncStatuses = new Set<PermitData["syncStatus"]>([
 	"created",
@@ -15,32 +16,38 @@ export async function savePermitDownloads(
 ): Promise<void> {
 	const downloads = parseDownloads(accountId, value)
 
-	const database = getWebFieldDatabase(accountId)
-	await database.transaction("rw", database.permits, async () => {
-		for (const { permit, syncVersion } of downloads) {
-			const existing = await database.permits.get(permit.id)
-			const backendVersion = syncVersion ?? 0
-			const localVersion = existing?.syncVersion ?? 0
+	const database = getWebDatabase(accountId)
+	await database.transaction(
+		"rw",
+		database.permits,
+		database.backupSettings,
+		async () => {
+			for (const { permit, syncVersion } of downloads) {
+				const existing = await database.permits.get(permit.id)
+				const backendVersion = syncVersion ?? 0
+				const localVersion = existing?.syncVersion ?? 0
 
-			if (backendVersion < localVersion) continue
-			if (
-				existing &&
-				existing.syncStatus !== "synced" &&
-				backendVersion > localVersion
-			) {
-				continue
-			}
+				if (backendVersion < localVersion) continue
+				if (
+					existing &&
+					existing.syncStatus !== "synced" &&
+					backendVersion > localVersion
+				) {
+					continue
+				}
 
-			const record: WebPermitRecord = {
-				...permit,
-				syncVersion,
-				participantsStatus: existing?.participantsStatus ?? "ready",
-				shearingStatus: existing?.shearingStatus ?? "disabled",
-				cleaningStatus: existing?.cleaningStatus ?? "disabled",
+				const record: WebPermitRecord = {
+					...permit,
+					syncVersion,
+					participantsStatus: existing?.participantsStatus ?? "ready",
+					shearingStatus: existing?.shearingStatus ?? "disabled",
+					cleaningStatus: existing?.cleaningStatus ?? "disabled",
+				}
+				await database.permits.put(record)
 			}
-			await database.permits.put(record)
-		}
-	})
+			await markBackupPending(database)
+		},
+	)
 }
 
 function parseDownloads(accountId: string, value: unknown): MobilePermitData[] {

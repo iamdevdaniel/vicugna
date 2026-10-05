@@ -1,14 +1,19 @@
+import {
+	createSingleParticipant as createParticipantData,
+	deleteSingleParticipant as deleteParticipantData,
+	updateSingleParticipant as updateParticipantData,
+	writeBackup,
+} from "@database/web"
 import type { ParticipantFormData } from "@definitions/types"
 import {
 	getWebSessionSnapshot,
 	isWebSessionCurrent,
 } from "@utils/auth-store.web"
 import { useCallback, useRef, useState } from "react"
-import {
-	createSingleParticipant as createParticipantData,
-	deleteSingleParticipant as deleteParticipantData,
-	updateSingleParticipant as updateParticipantData,
-} from "../database/index.web"
+
+export type WebWriteResult =
+	| { ok: true; backupStatus: "ready" | "pending" }
+	| { ok: false }
 
 export function useSingleParticipantActions() {
 	const operationInFlight = useRef(false)
@@ -20,12 +25,12 @@ export function useSingleParticipantActions() {
 		async (
 			operation: (accountId: string) => Promise<void>,
 			kind: "save" | "delete",
-		) => {
-			if (operationInFlight.current) return false
+		): Promise<WebWriteResult> => {
+			if (operationInFlight.current) return { ok: false }
 			const session = getWebSessionSnapshot()
 			if (!session) {
 				setError(new Error("Sesión no disponible"))
-				return false
+				return { ok: false }
 			}
 
 			operationInFlight.current = true
@@ -35,16 +40,33 @@ export function useSingleParticipantActions() {
 
 			try {
 				await operation(session.accountId)
-				return isWebSessionCurrent(session)
+				if (!isWebSessionCurrent(session)) return { ok: false }
+
+				try {
+					const status = await writeBackup(
+						session.accountId,
+						false,
+						() => isWebSessionCurrent(session),
+					)
+					if (!isWebSessionCurrent(session)) return { ok: false }
+					if (status === "cancelled") return { ok: false }
+					return {
+						ok: true,
+						backupStatus: status === "ready" ? "ready" : "pending",
+					}
+				} catch {
+					if (!isWebSessionCurrent(session)) return { ok: false }
+					return { ok: true, backupStatus: "pending" }
+				}
 			} catch (caught) {
-				if (!isWebSessionCurrent(session)) return false
+				if (!isWebSessionCurrent(session)) return { ok: false }
 
 				setError(
 					caught instanceof Error
 						? caught
 						: new Error("No se pudo guardar el participante"),
 				)
-				return false
+				return { ok: false }
 			} finally {
 				operationInFlight.current = false
 				if (kind === "save") setSaving(false)

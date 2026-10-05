@@ -1,8 +1,8 @@
 import { login as loginRequest } from "@api"
+import { closeWebDatabase } from "@database/web"
 import type { MobileAuthUser } from "@definitions/types"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import { closeWebFieldDatabase } from "../database/index.web"
 
 type WebAuthState = {
 	token: string | null
@@ -67,7 +67,7 @@ export const useMobileAuthStore = create<WebAuthState>()(
 					error: null,
 					sessionRevision: state.sessionRevision + 1,
 				}))
-				if (accountId) closeWebFieldDatabase(accountId)
+				if (accountId) closeWebDatabase(accountId)
 			},
 			clearError: () => set({ error: null }),
 		}),

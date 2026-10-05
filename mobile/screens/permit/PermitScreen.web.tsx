@@ -1,5 +1,5 @@
 import { AppShell } from "@components/basics/AppShell.web"
-import { useReadSinglePermit } from "@hooks"
+import { useReadSinglePermit } from "@hooks/web"
 import {
 	Alert,
 	Badge,

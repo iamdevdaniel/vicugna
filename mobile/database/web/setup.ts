@@ -9,9 +9,32 @@ export type WebParticipantRecord = ParticipantData & {
 	createdAt: number
 }
 
-export class WebFieldDatabase extends Dexie {
+export type WebBackupFileHandle = {
+	getFile: () => Promise<File>
+	createWritable: () => Promise<{
+		write: (contents: string) => Promise<void>
+		close: () => Promise<void>
+		abort?: () => Promise<void>
+	}>
+	queryPermission?: (options: {
+		mode: "readwrite"
+	}) => Promise<PermissionState>
+	requestPermission?: (options: {
+		mode: "readwrite"
+	}) => Promise<PermissionState>
+}
+
+export type WebBackupSettingsRecord = {
+	id: "backup"
+	fileHandle: WebBackupFileHandle
+	status: "pending" | "ready"
+	revision: number
+}
+
+export class WebDatabase extends Dexie {
 	permits!: EntityTable<WebPermitRecord, "id">
 	participants!: EntityTable<WebParticipantRecord, "id">
+	backupSettings!: EntityTable<WebBackupSettingsRecord, "id">
 
 	constructor(accountId: string) {
 		if (!accountId.trim()) throw new Error("La cuenta local no es válida")
@@ -21,24 +44,33 @@ export class WebFieldDatabase extends Dexie {
 			permits: "id, permitNumber",
 			participants: "id, permitId, createdAt",
 		})
+		this.version(2).stores({
+			permits: "id, permitNumber",
+			participants: "id, permitId, createdAt",
+			backupSettings: "id",
+		})
 	}
 }
 
-const databases = new Map<string, WebFieldDatabase>()
+const databases = new Map<string, WebDatabase>()
 
-export function getWebFieldDatabase(accountId: string): WebFieldDatabase {
+export function getWebDatabase(accountId: string): WebDatabase {
 	const existing = databases.get(accountId)
 	if (existing) return existing
 
-	const database = new WebFieldDatabase(accountId)
+	const database = new WebDatabase(accountId)
 	databases.set(accountId, database)
 	return database
 }
 
-export function closeWebFieldDatabase(accountId: string): void {
+export function closeWebDatabase(accountId: string): void {
 	const database = databases.get(accountId)
 	if (!database) return
 
 	database.close()
 	databases.delete(accountId)
+}
+
+export async function openWebDatabase(accountId: string): Promise<void> {
+	await getWebDatabase(accountId).open()
 }

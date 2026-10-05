@@ -1,6 +1,6 @@
 import { AppShell } from "@components/basics/AppShell.web"
 import { ParticipantTable } from "@components/participants/ParticipantTable.web"
-import { useReadBulkParticipants, useReadSinglePermit } from "@hooks"
+import { useReadBulkParticipants, useReadSinglePermit } from "@hooks/web"
 import {
 	Alert,
 	Container,

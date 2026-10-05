@@ -3,11 +3,7 @@ import { test } from "node:test"
 import type { MobilePermitData } from "@definitions/types"
 import "fake-indexeddb/auto"
 import { savePermitDownloads } from "./dal-permit-load"
-import {
-	closeWebFieldDatabase,
-	getWebFieldDatabase,
-	type WebPermitRecord,
-} from "./setup"
+import { closeWebDatabase, getWebDatabase, type WebPermitRecord } from "./setup"
 
 function makeDownload(
 	accountId: string,
@@ -49,33 +45,27 @@ test("permit downloads remain isolated by account and survive reopening", async 
 		])
 
 		assert.ok(
-			await getWebFieldDatabase(firstAccountId).permits.get(
-				firstPermitId,
-			),
+			await getWebDatabase(firstAccountId).permits.get(firstPermitId),
 		)
 		assert.equal(
-			await getWebFieldDatabase(firstAccountId).permits.get(
-				secondPermitId,
-			),
+			await getWebDatabase(firstAccountId).permits.get(secondPermitId),
 			undefined,
 		)
 
-		closeWebFieldDatabase(firstAccountId)
+		closeWebDatabase(firstAccountId)
 		assert.ok(
-			await getWebFieldDatabase(firstAccountId).permits.get(
-				firstPermitId,
-			),
+			await getWebDatabase(firstAccountId).permits.get(firstPermitId),
 		)
 	} finally {
-		await getWebFieldDatabase(firstAccountId).delete()
-		await getWebFieldDatabase(secondAccountId).delete()
+		await getWebDatabase(firstAccountId).delete()
+		await getWebDatabase(secondAccountId).delete()
 	}
 })
 
 test("a download cannot cross the active account boundary", async () => {
 	const activeAccountId = crypto.randomUUID()
 	const otherAccountId = crypto.randomUUID()
-	const database = getWebFieldDatabase(activeAccountId)
+	const database = getWebDatabase(activeAccountId)
 
 	try {
 		await assert.rejects(
@@ -93,7 +83,7 @@ test("a download cannot cross the active account boundary", async () => {
 test("a newer server version does not overwrite unsynchronized local work", async () => {
 	const accountId = crypto.randomUUID()
 	const permitId = crypto.randomUUID()
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 
 	try {
 		const download = makeDownload(accountId, permitId, 1)
@@ -119,7 +109,7 @@ test("a newer server version does not overwrite unsynchronized local work", asyn
 
 test("unsupported complete snapshots are rejected before writing", async () => {
 	const accountId = crypto.randomUUID()
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 	const download = makeDownload(accountId, crypto.randomUUID())
 	download.fieldData = {} as MobilePermitData["fieldData"]
 
@@ -136,7 +126,7 @@ test("unsupported complete snapshots are rejected before writing", async () => {
 
 test("malformed downloads are rejected with a controlled error", async () => {
 	const accountId = crypto.randomUUID()
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 	const malformedDownloads: unknown[] = [
 		null,
 		{},

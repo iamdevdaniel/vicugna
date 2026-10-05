@@ -1,7 +1,8 @@
 import type { ParticipantData, ParticipantFormData } from "@definitions/types"
+import { getPermitStatusesAfterParticipantCount } from "@utils/permit-status-rules"
 import { liveQuery } from "dexie"
-import { getPermitStatusesAfterParticipantCount } from "../../utils/permit-status-rules"
-import { getWebFieldDatabase, type WebFieldDatabase } from "./setup"
+import { markBackupPending } from "./dal-backup"
+import { getWebDatabase, type WebDatabase } from "./setup"
 
 type SubscriptionCallbacks<T> = {
 	onChange: (data: T) => void
@@ -13,7 +14,7 @@ export function subscribeBulkParticipants(
 	permitId: string,
 	callbacks: SubscriptionCallbacks<ParticipantData[]>,
 ): () => void {
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 	const subscription = liveQuery(async () => {
 		const records = await database.participants
 			.where("permitId")
@@ -34,7 +35,7 @@ export async function createSingleParticipant(
 	permitId: string,
 	data: ParticipantFormData,
 ): Promise<ParticipantData> {
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 	const participant: ParticipantData = {
 		id: crypto.randomUUID(),
 		permitId,
@@ -45,6 +46,7 @@ export async function createSingleParticipant(
 		"rw",
 		database.permits,
 		database.participants,
+		database.backupSettings,
 		async () => {
 			await assertPermitEditable(database, permitId)
 			await database.participants.add({
@@ -52,6 +54,7 @@ export async function createSingleParticipant(
 				createdAt: Date.now(),
 			})
 			await updateParticipantStatus(database, permitId)
+			await markBackupPending(database)
 		},
 	)
 
@@ -63,18 +66,20 @@ export async function updateSingleParticipant(
 	participantId: string,
 	data: ParticipantFormData,
 ): Promise<void> {
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 
 	await database.transaction(
 		"rw",
 		database.permits,
 		database.participants,
+		database.backupSettings,
 		async () => {
 			const participant = await database.participants.get(participantId)
 			if (!participant) throw new Error("El participante no existe")
 
 			await assertPermitEditable(database, participant.permitId)
 			await database.participants.update(participantId, data)
+			await markBackupPending(database)
 		},
 	)
 }
@@ -83,12 +88,13 @@ export async function deleteSingleParticipant(
 	accountId: string,
 	participantId: string,
 ): Promise<void> {
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 
 	await database.transaction(
 		"rw",
 		database.permits,
 		database.participants,
+		database.backupSettings,
 		async () => {
 			const participant = await database.participants.get(participantId)
 			if (!participant) throw new Error("El participante no existe")
@@ -96,12 +102,13 @@ export async function deleteSingleParticipant(
 			await assertPermitEditable(database, participant.permitId)
 			await database.participants.delete(participantId)
 			await updateParticipantStatus(database, participant.permitId)
+			await markBackupPending(database)
 		},
 	)
 }
 
 async function assertPermitEditable(
-	database: WebFieldDatabase,
+	database: WebDatabase,
 	permitId: string,
 ): Promise<void> {
 	const permit = await database.permits.get(permitId)
@@ -112,7 +119,7 @@ async function assertPermitEditable(
 }
 
 async function updateParticipantStatus(
-	database: WebFieldDatabase,
+	database: WebDatabase,
 	permitId: string,
 ): Promise<void> {
 	const [permit, participantCount] = await Promise.all([

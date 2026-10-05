@@ -1,4 +1,11 @@
 export {
+	readBackupSnapshot,
+	restoreBackupSnapshot,
+	saveBackupFileHandle,
+	subscribeBackupSettings,
+	writeBackup,
+} from "./web/dal-backup"
+export {
 	createSingleParticipant,
 	deleteSingleParticipant,
 	subscribeBulkParticipants,
@@ -9,4 +16,9 @@ export {
 	subscribeSinglePermit,
 } from "./web/dal-permit"
 export { savePermitDownloads } from "./web/dal-permit-load"
-export { closeWebFieldDatabase } from "./web/setup"
+export {
+	closeWebDatabase,
+	openWebDatabase,
+	type WebBackupFileHandle,
+	type WebBackupSettingsRecord,
+} from "./web/setup"

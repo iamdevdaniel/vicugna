@@ -1,7 +1,7 @@
+import { subscribeBulkParticipants } from "@database/web"
 import type { ParticipantData } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { useEffect, useReducer } from "react"
-import { subscribeBulkParticipants } from "../database/index.web"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkParticipants(

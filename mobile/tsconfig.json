@@ -1,22 +1,24 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "strict": true,
-    "paths": {
-      "@app/*": ["./app/*"],
-      "@definitions/*": ["./definitions/*"],
-      "@assets/*": ["./assets/*"],
-      "@utils/*": ["./utils/*"],
-      "@api": ["./api/index"],
-      "@database": ["./database/index"],
-      "@components": ["./components/index"],
-      "@components/*": ["./components/*"],
-      "@hooks": ["./hooks/index"],
-      "@screens/*": ["./screens/*"],
-      "@vicugna/shared": ["../shared/types.d.ts"],
-      "@vicugna/shared/*": ["../shared/*"]
-    }
-  },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+	"extends": "expo/tsconfig.base",
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"strict": true,
+		"paths": {
+			"@app/*": ["./app/*"],
+			"@definitions/*": ["./definitions/*"],
+			"@assets/*": ["./assets/*"],
+			"@utils/*": ["./utils/*"],
+			"@api": ["./api/index"],
+			"@database": ["./database/index"],
+			"@database/web": ["./database/index.web"],
+			"@components": ["./components/index"],
+			"@components/*": ["./components/*"],
+			"@hooks": ["./hooks/index"],
+			"@hooks/web": ["./hooks/index.web"],
+			"@screens/*": ["./screens/*"],
+			"@vicugna/shared": ["../shared/types.d.ts"],
+			"@vicugna/shared/*": ["../shared/*"]
+		}
+	},
+	"include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

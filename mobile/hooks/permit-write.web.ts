@@ -1,13 +1,13 @@
 import { fetchPermits } from "@api"
+import { savePermitDownloads, writeBackup } from "@database/web"
 import {
 	getWebSessionSnapshot,
 	isWebSessionCurrent,
 } from "@utils/auth-store.web"
 import { useCallback, useRef, useState } from "react"
-import { savePermitDownloads } from "../database/index.web"
 
 type PermitLoadResult =
-	| { ok: true }
+	| { ok: true; backupStatus: "ready" | "pending" }
 	| { ok: false; error: string }
 	| { ok: false; cancelled: true }
 
@@ -37,7 +37,26 @@ export function useLoadPermits() {
 			if (!isWebSessionCurrent(session))
 				return { ok: false, cancelled: true }
 
-			return { ok: true }
+			try {
+				const status = await writeBackup(session.accountId, false, () =>
+					isWebSessionCurrent(session),
+				)
+				if (!isWebSessionCurrent(session)) {
+					return { ok: false, cancelled: true }
+				}
+				if (status === "cancelled") {
+					return { ok: false, cancelled: true }
+				}
+				return {
+					ok: true,
+					backupStatus: status === "ready" ? "ready" : "pending",
+				}
+			} catch {
+				if (!isWebSessionCurrent(session)) {
+					return { ok: false, cancelled: true }
+				}
+				return { ok: true, backupStatus: "pending" }
+			}
 		} catch (error) {
 			if (!isWebSessionCurrent(session))
 				return { ok: false, cancelled: true }

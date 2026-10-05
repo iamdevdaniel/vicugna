@@ -9,6 +9,7 @@ import {
 	webTheme,
 } from "@utils/web-theme.web"
 import { Slot } from "expo-router"
+import { BrowserSafetyGate } from "./BrowserSafetyGate.web"
 
 export default function WebAppLayout() {
 	return (
@@ -18,7 +19,9 @@ export default function WebAppLayout() {
 			colorSchemeManager={webColorSchemeManager}
 			defaultColorScheme="light"
 		>
-			<Slot />
+			<BrowserSafetyGate>
+				<Slot />
+			</BrowserSafetyGate>
 			<MessageSnackbar />
 		</MantineProvider>
 	)

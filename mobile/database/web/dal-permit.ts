@@ -1,6 +1,6 @@
 import type { PermitData } from "@definitions/types"
 import { liveQuery } from "dexie"
-import { getWebFieldDatabase } from "./setup"
+import { getWebDatabase } from "./setup"
 
 type SubscriptionCallbacks<T> = {
 	onChange: (data: T) => void
@@ -11,7 +11,7 @@ export function subscribePermits(
 	accountId: string,
 	callbacks: SubscriptionCallbacks<PermitData[]>,
 ): () => void {
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 	const subscription = liveQuery(() =>
 		database.permits.orderBy("permitNumber").toArray(),
 	).subscribe({
@@ -27,7 +27,7 @@ export function subscribeSinglePermit(
 	permitId: string,
 	callbacks: SubscriptionCallbacks<PermitData | null>,
 ): () => void {
-	const database = getWebFieldDatabase(accountId)
+	const database = getWebDatabase(accountId)
 	const subscription = liveQuery(
 		async () => (await database.permits.get(permitId)) ?? null,
 	).subscribe({

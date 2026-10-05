@@ -1,7 +1,7 @@
+import { subscribePermits, subscribeSinglePermit } from "@database/web"
 import type { PermitData } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { useEffect, useReducer } from "react"
-import { subscribePermits, subscribeSinglePermit } from "../database/index.web"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadPermits(): DbState<PermitData[]> {

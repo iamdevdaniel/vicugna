@@ -1,6 +1,6 @@
 import type { ParticipantData, ParticipantFormData } from "@definitions/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useSingleParticipantActions } from "@hooks"
+import { useSingleParticipantActions } from "@hooks/web"
 import {
 	Alert,
 	Button,
@@ -91,14 +91,16 @@ export function ParticipantTable({
 				? await createSingleParticipant(permitId, data)
 				: editingId
 					? await updateSingleParticipant(editingId, data)
-					: false
+					: { ok: false as const }
 
-		if (saved) {
+		if (saved.ok) {
 			showMessage(
-				"success",
-				editingId === "new"
-					? "Participante guardado"
-					: "Participante actualizado",
+				saved.backupStatus === "ready" ? "success" : "info",
+				saved.backupStatus === "ready"
+					? editingId === "new"
+						? "Participante guardado y respaldado"
+						: "Participante actualizado y respaldado"
+					: "Participante guardado localmente; copia pendiente",
 			)
 			cancelEdit()
 		}
@@ -107,7 +109,14 @@ export function ParticipantTable({
 	const remove = async (participant: ParticipantData) => {
 		if (!window.confirm(`¿Borrar a ${participant.name}?`)) return
 		const deleted = await deleteSingleParticipant(participant.id)
-		if (deleted) showMessage("success", "Participante borrado")
+		if (deleted.ok) {
+			showMessage(
+				deleted.backupStatus === "ready" ? "success" : "info",
+				deleted.backupStatus === "ready"
+					? "Participante borrado y copia actualizada"
+					: "Participante borrado localmente; copia pendiente",
+			)
+		}
 	}
 
 	return (

@@ -1,5 +1,6 @@
+import { BackupPanel } from "@components/backup/BackupPanel.web"
 import { AppShell } from "@components/basics/AppShell.web"
-import { useLoadPermits, useReadPermits } from "@hooks"
+import { useLoadPermits, useReadPermits } from "@hooks/web"
 import {
 	Alert,
 	Badge,
@@ -28,7 +29,12 @@ export default function WebHomeScreen() {
 		if ("cancelled" in result) return
 
 		if (result.ok) {
-			showMessage("success", "Permisos actualizados")
+			showMessage(
+				result.backupStatus === "ready" ? "success" : "info",
+				result.backupStatus === "ready"
+					? "Permisos actualizados y respaldados"
+					: "Permisos guardados localmente; copia pendiente",
+			)
 		} else {
 			showMessage("error", result.error)
 		}
@@ -124,6 +130,7 @@ export default function WebHomeScreen() {
 							</Table>
 						)}
 					</Paper>
+					<BackupPanel />
 				</Stack>
 			</Container>
 		</AppShell>
