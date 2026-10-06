@@ -125,6 +125,7 @@ export function PermitsPanel({
 						{...permitNumberField}
 						value={newPermitNumber}
 						placeholder="Número de permiso"
+						autoComplete="off"
 						disabled={!selectedCommunityId || isSubmitting}
 						aria-invalid={Boolean(errors.permitNumber)}
 					/>
