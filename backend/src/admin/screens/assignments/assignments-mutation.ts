@@ -5,13 +5,13 @@ import type { AssignmentActionData } from "./assignments-types"
 type UseAssignmentsMutationOptions = {
 	onPermitCreated: (permitId: string) => void
 	onPermitRenamed: () => void
-	onAssignmentsSaved: () => void
+	onAssignmentSaved: () => void
 }
 
 export function useAssignmentsMutation({
 	onPermitCreated,
 	onPermitRenamed,
-	onAssignmentsSaved,
+	onAssignmentSaved,
 }: UseAssignmentsMutationOptions) {
 	const fetcher = useFetcher<AssignmentActionData>()
 	const [successMessage, setSuccessMessage] = useState("")
@@ -30,13 +30,13 @@ export function useAssignmentsMutation({
 			onPermitCreated(fetcher.data.permitId)
 		}
 		if (fetcher.data.intent === "rename-permit") onPermitRenamed()
-		if (fetcher.data.intent === "save-assignments") onAssignmentsSaved()
+		if (fetcher.data.intent === "save-assignments") onAssignmentSaved()
 		fetcher.reset()
 	}, [
 		fetcher.data,
 		fetcher.reset,
 		fetcher.state,
-		onAssignmentsSaved,
+		onAssignmentSaved,
 		onPermitCreated,
 		onPermitRenamed,
 	])

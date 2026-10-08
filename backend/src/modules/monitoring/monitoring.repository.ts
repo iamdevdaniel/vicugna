@@ -18,7 +18,7 @@ export async function listMonitoringAssignments(seasonId: string) {
 		orderBy: (table, { asc: sortAsc }) => [
 			sortAsc(table.communityId),
 			sortAsc(table.permitId),
-			sortAsc(table.position),
+			sortAsc(table.assignedAt),
 			sortAsc(table.id),
 		],
 	})

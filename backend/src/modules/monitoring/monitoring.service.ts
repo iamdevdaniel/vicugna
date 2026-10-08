@@ -1,6 +1,6 @@
 import { SYNCED_PERMIT_STATUSES } from "../common/common.constants"
 import { listSeasons } from "../common/common.repository"
-import { compareUserNames, getUserFullName } from "../users/user-name"
+import { getUserFullName } from "../users/user-name"
 import { MonitoringError } from "./monitoring.errors"
 import {
 	listMonitoringAssignments,
@@ -60,15 +60,7 @@ function buildCommunityGroups(
 ): MonitoringCommunityGroup[] {
 	const communitiesById = new Map<string, MonitoringCommunityGroup>()
 
-	const sortedAssignments = [...assignments].sort((left, right) => {
-		if (left.active !== right.active) {
-			return left.active ? -1 : 1
-		}
-
-		return compareUserNames(left.user, right.user)
-	})
-
-	for (const assignment of sortedAssignments) {
+	for (const assignment of assignments) {
 		let communityGroup = communitiesById.get(assignment.communityId)
 
 		if (!communityGroup) {
@@ -88,12 +80,6 @@ function buildCommunityGroups(
 			permitGroup = createPermitGroup(assignment)
 			communityGroup.permits.push(permitGroup)
 		}
-
-		permitGroup.users.push({
-			userId: assignment.userId,
-			fullName: getUserFullName(assignment.user),
-			active: assignment.active,
-		})
 	}
 
 	return Array.from(communitiesById.values())
@@ -135,7 +121,10 @@ function createPermitGroup(
 		)
 			? assignment.permit.shearingRecords.length
 			: null,
-		users: [],
+		user: {
+			userId: assignment.userId,
+			fullName: getUserFullName(assignment.user),
+		},
 	}
 }
 
@@ -164,11 +153,10 @@ function getSelectedPermit(
 			syncStatus: permit.syncStatus,
 			syncedAt: permit.syncedAt,
 			syncedAtLabel: formatSyncedAtLabel(permit.syncedAt),
-			assignedUsersCount: permit.users.length,
 			participantsCount: permit.participantsCount,
 			cleaningRecordsCount: permit.cleaningRecordsCount,
 			shearingRecordsCount: permit.shearingRecordsCount,
-			users: permit.users,
+			user: permit.user,
 		}
 	}
 

@@ -35,7 +35,7 @@ export function AssignmentsWorkspace({
 	const mutation = useAssignmentsMutation({
 		onPermitCreated: editor.createdPermit,
 		onPermitRenamed: editor.savedRename,
-		onAssignmentsSaved: editor.savedAssignments,
+		onAssignmentSaved: editor.savedAssignment,
 	})
 	useAssignmentNavigationGuard({
 		hasUnsavedChanges: editor.hasUnsavedChanges,
@@ -68,8 +68,8 @@ export function AssignmentsWorkspace({
 						}
 						isSubmitting={mutation.isSubmitting}
 						onMutationStart={mutation.startMutation}
-						assignedUsersCount={(permitId) =>
-							editor.permitCards.get(permitId)?.users.length ?? 0
+						isAssigned={(permitId) =>
+							editor.permitCards.has(permitId)
 						}
 						onSelectCommunity={editor.selectCommunity}
 						onSelectPermit={editor.selectPermit}
@@ -87,10 +87,9 @@ export function AssignmentsWorkspace({
 						fetcher={mutation.fetcher}
 						selectedSeasonId={selectedSeasonId}
 						selectedPermit={editor.selectedPermit}
-						editableUsers={editor.editableUsers}
-						eligibleUsers={editor.eligibleUsers}
-						selectedUserId={editor.selectedUserId}
-						userSearch={editor.userSearch}
+						users={editor.users}
+						assignedUserId={editor.assignedUserId}
+						canChangeAssignment={editor.canChangeAssignment}
 						isRenaming={editor.isRenaming}
 						permitNameDraft={editor.permitNameDraft}
 						hasDirtyDraft={editor.hasDirtyDraft}
@@ -101,18 +100,8 @@ export function AssignmentsWorkspace({
 						onPermitNameChange={(value) =>
 							editor.setText("permitNameDraft", value)
 						}
-						onSelectedUserChange={(value) =>
-							editor.setText("selectedUserId", value)
-						}
-						onUserSearchChange={(value) => {
-							editor.setText("userSearch", value)
-							editor.setText("selectedUserId", "")
-						}}
-						onAddUser={editor.addSelectedUser}
-						onRemoveUser={editor.removeUser}
-						onSetPrincipal={editor.setPrincipalUser}
-						onMoveUser={editor.moveUser}
-						onDiscardDraft={editor.discardDraft}
+						onAssignedUserChange={editor.setAssignmentDraft}
+						onDiscardDraft={editor.discardAssignmentDraft}
 					/>
 				</Grid.Col>
 

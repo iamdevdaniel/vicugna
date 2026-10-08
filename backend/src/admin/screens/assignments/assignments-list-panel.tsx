@@ -78,25 +78,12 @@ export function AssignmentsListPanel({
 										Permiso {card.permitNumber}
 									</Text>
 									<Badge variant="outline" size="sm">
-										{card.users.length === 1
-											? "1 usuario"
-											: `${card.users.length} usuarios`}
+										Encargado
 									</Badge>
 								</Group>
-								<Stack mt="xs" gap={4}>
-									{card.users.map((user) => (
-										<Text
-											key={user.assignmentId}
-											truncate
-											size="sm"
-											fw={user.active ? 600 : undefined}
-											c={user.active ? "green" : "dimmed"}
-										>
-											{user.userFullName}
-											{user.active ? " · Principal" : ""}
-										</Text>
-									))}
-								</Stack>
+								<Text mt="xs" truncate size="sm" c="dimmed">
+									{card.user.userFullName}
+								</Text>
 							</UnstyledButton>
 						))
 					)}

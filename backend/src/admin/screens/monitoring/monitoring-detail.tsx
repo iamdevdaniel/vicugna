@@ -5,7 +5,6 @@ import {
 	Grid,
 	Group,
 	Paper,
-	Stack,
 	Text,
 	Title,
 } from "@mantine/core"
@@ -96,33 +95,23 @@ export function MonitoringDetail({ permit, seasonId }: MonitoringDetailProps) {
 				<Grid.Col span={{ base: 12, lg: 7 }}>
 					<Paper component="section" p="sm" withBorder>
 						<Title order={3} size="sm">
-							Asignados
+							Encargado
 						</Title>
-						<Stack mt="sm" gap="xs">
-							{permit.users.map((user) => (
-								<Group
-									key={user.userId}
-									justify="space-between"
-									gap="md"
-									p="sm"
-									wrap="nowrap"
-									style={{
-										border: "1px solid var(--mantine-color-default-border)",
-										borderRadius:
-											"var(--mantine-radius-md)",
-									}}
-								>
-									<Text truncate size="sm" fw={500}>
-										{user.fullName}
-									</Text>
-									{user.active ? (
-										<Badge color="green" variant="light">
-											Principal
-										</Badge>
-									) : null}
-								</Group>
-							))}
-						</Stack>
+						<Group
+							mt="sm"
+							justify="space-between"
+							gap="md"
+							p="sm"
+							wrap="nowrap"
+							style={{
+								border: "1px solid var(--mantine-color-default-border)",
+								borderRadius: "var(--mantine-radius-md)",
+							}}
+						>
+							<Text truncate size="sm" fw={500}>
+								{permit.user.fullName}
+							</Text>
+						</Group>
 					</Paper>
 				</Grid.Col>
 			</Grid>

@@ -33,7 +33,7 @@ type PermitsPanelProps = {
 	hasConflictingChanges: boolean
 	isSubmitting: boolean
 	onMutationStart: () => boolean
-	assignedUsersCount: (permitId: string) => number
+	isAssigned: (permitId: string) => boolean
 	onSelectCommunity: (communityId: string) => void
 	onSelectPermit: (permitId: string) => void
 	onPermitSearchChange: (value: string) => void
@@ -53,7 +53,7 @@ export function PermitsPanel({
 	hasConflictingChanges,
 	isSubmitting,
 	onMutationStart,
-	assignedUsersCount,
+	isAssigned,
 	onSelectCommunity,
 	onSelectPermit,
 	onPermitSearchChange,
@@ -194,7 +194,9 @@ export function PermitsPanel({
 									{permit.permitNumber}
 								</Text>
 								<Badge variant="light" color="gray" size="sm">
-									{assignedUsersCount(permit.id)}
+									{isAssigned(permit.id)
+										? "Asignado"
+										: "Sin asignar"}
 								</Badge>
 							</Group>
 						</UnstyledButton>

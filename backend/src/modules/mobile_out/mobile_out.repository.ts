@@ -1,6 +1,6 @@
 import { db } from "@db"
 import type { PermitData, PermitFieldData } from "@shared"
-import { and, eq, inArray } from "drizzle-orm"
+import { and, asc, eq, inArray } from "drizzle-orm"
 
 import { assignments, permits } from "../../db/schema"
 import { getUserFullName } from "../users/user-name"
@@ -10,31 +10,55 @@ export async function listMobilePermitsByUserId(
 	userId: string,
 ): Promise<MobilePermitData[]> {
 	const rows = await db.transaction(async (tx) => {
+		const initialAssignments = await tx
+			.select({ permitId: assignments.permitId })
+			.from(assignments)
+			.where(eq(assignments.userId, userId))
+			.orderBy(asc(assignments.permitId))
+
+		if (initialAssignments.length === 0) return []
+
+		const initialPermitIds = initialAssignments.map(
+			(assignment) => assignment.permitId,
+		)
+
+		await tx
+			.select({ id: permits.id })
+			.from(permits)
+			.where(inArray(permits.id, initialPermitIds))
+			.orderBy(asc(permits.id))
+			.for("update")
+
+		const currentAssignments = await tx
+			.select({ permitId: assignments.permitId })
+			.from(assignments)
+			.where(
+				and(
+					eq(assignments.userId, userId),
+					inArray(assignments.permitId, initialPermitIds),
+				),
+			)
+
+		const currentPermitIds = currentAssignments.map(
+			(assignment) => assignment.permitId,
+		)
+
+		if (currentPermitIds.length === 0) return []
+
 		await tx
 			.update(permits)
 			.set({ syncStatus: "in_progress", updatedAt: new Date() })
 			.where(
 				and(
 					eq(permits.syncStatus, "assigned"),
-					inArray(
-						permits.id,
-						tx
-							.select({ permitId: assignments.permitId })
-							.from(assignments)
-							.where(
-								and(
-									eq(assignments.userId, userId),
-									eq(assignments.active, true),
-								),
-							),
-					),
+					inArray(permits.id, currentPermitIds),
 				),
 			)
 
 		return tx.query.assignments.findMany({
 			where: and(
 				eq(assignments.userId, userId),
-				eq(assignments.active, true),
+				inArray(assignments.permitId, currentPermitIds),
 			),
 			with: {
 				user: true,
@@ -56,7 +80,10 @@ export async function listMobilePermitsByUserId(
 					},
 				},
 			},
-			orderBy: (table, { asc }) => [asc(table.position), asc(table.id)],
+			orderBy: (table, { asc: sortAsc }) => [
+				sortAsc(table.assignedAt),
+				sortAsc(table.id),
+			],
 		})
 	})
 	const mapFieldData = (
@@ -101,7 +128,7 @@ export async function listMobilePermitsByUserId(
 			departmentId: permit.community.regional.departmentId,
 			userId: assignment.userId,
 			userFullName: getUserFullName(assignment.user),
-			isActiveAssignmentUser: assignment.active,
+			isActiveAssignmentUser: true,
 			syncStatus: permit.syncStatus,
 			syncedAt: permit.syncedAt?.toISOString() ?? null,
 		}

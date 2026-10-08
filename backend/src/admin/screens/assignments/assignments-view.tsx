@@ -30,7 +30,7 @@ export function AssignmentsView(props: AssignmentsViewProps) {
 					Asignaciones
 				</Title>
 				<Text mt="xs" size="sm" c="dimmed">
-					Gestiona los permisos y sus encargados por temporada.
+					Gestiona los permisos y su encargado por temporada.
 				</Text>
 			</header>
 
