@@ -6,19 +6,11 @@ import type {
 	PermitListItem,
 } from "../../../modules/assignments/assignment.types"
 
-export type EditableAssignmentUser = {
-	userId: string
-	userFullName: string
-	active: boolean
-}
-
 type EditorTextField =
 	| "permitSearch"
 	| "assignmentSearch"
 	| "newPermitNumber"
 	| "permitNameDraft"
-	| "userSearch"
-	| "selectedUserId"
 
 type EditorState = {
 	selectedCommunityId: string
@@ -28,9 +20,7 @@ type EditorState = {
 	newPermitNumber: string
 	isRenaming: boolean
 	permitNameDraft: string
-	draftUsers: EditableAssignmentUser[] | null
-	userSearch: string
-	selectedUserId: string
+	assignmentDraftUserId: string | undefined
 }
 
 type EditorStore = EditorState & {
@@ -39,10 +29,10 @@ type EditorStore = EditorState & {
 	selectPermit: (permitId: string) => void
 	beginRename: (permitNumber: string) => void
 	cancelRename: () => void
-	setDraft: (users: EditableAssignmentUser[] | null) => void
+	setAssignmentDraft: (userId: string | undefined) => void
 	createdPermit: (permitId: string) => void
 	savedRename: () => void
-	savedAssignments: () => void
+	savedAssignment: () => void
 	discardChanges: () => void
 }
 
@@ -54,18 +44,14 @@ const initialState: EditorState = {
 	newPermitNumber: "",
 	isRenaming: false,
 	permitNameDraft: "",
-	draftUsers: null,
-	userSearch: "",
-	selectedUserId: "",
+	assignmentDraftUserId: undefined,
 }
 
 const clearedDrafts = {
 	newPermitNumber: "",
 	isRenaming: false,
 	permitNameDraft: "",
-	draftUsers: null,
-	userSearch: "",
-	selectedUserId: "",
+	assignmentDraftUserId: undefined,
 } satisfies Partial<EditorState>
 
 function createAssignmentEditorStore() {
@@ -90,15 +76,15 @@ function createAssignmentEditorStore() {
 		beginRename: (permitNumber) =>
 			set({ isRenaming: true, permitNameDraft: permitNumber }),
 		cancelRename: () => set({ isRenaming: false, permitNameDraft: "" }),
-		setDraft: (draftUsers) => set({ draftUsers }),
+		setAssignmentDraft: (assignmentDraftUserId) =>
+			set({ assignmentDraftUserId }),
 		createdPermit: (permitId) =>
 			set({
 				...clearedDrafts,
 				selectedPermitId: permitId,
 			}),
 		savedRename: () => set({ isRenaming: false, permitNameDraft: "" }),
-		savedAssignments: () =>
-			set({ draftUsers: null, userSearch: "", selectedUserId: "" }),
+		savedAssignment: () => set({ assignmentDraftUserId: undefined }),
 		discardChanges: () => set(clearedDrafts),
 	}))
 }
@@ -117,11 +103,10 @@ export function useAssignmentEditor({
 	const [store] = useState(createAssignmentEditorStore)
 	const editor = useStore(store)
 	const {
-		draftUsers,
+		assignmentDraftUserId,
 		selectCommunity: selectCommunityState,
 		selectPermit: selectPermitState,
 		beginRename: beginRenameState,
-		setDraft,
 		discardChanges,
 		...exposedEditor
 	} = editor
@@ -135,15 +120,11 @@ export function useAssignmentEditor({
 	const selectedAssignment = selectedPermit
 		? permitCards.get(selectedPermit.id)
 		: undefined
-	const savedUsers: EditableAssignmentUser[] =
-		selectedAssignment?.users.map((user) => ({
-			userId: user.userId,
-			userFullName: user.userFullName,
-			active: user.active,
-		})) ?? []
-	const editableUsers = draftUsers ?? savedUsers
+	const savedUserId = selectedAssignment?.user.userId ?? ""
+	const assignedUserId = assignmentDraftUserId ?? savedUserId
 	const hasDirtyDraft =
-		draftUsers !== null && !sameAssignments(draftUsers, savedUsers)
+		assignmentDraftUserId !== undefined &&
+		assignmentDraftUserId !== savedUserId
 	const hasNewPermitDraft = Boolean(editor.newPermitNumber.trim())
 	const hasDirtyRename =
 		editor.isRenaming &&
@@ -169,79 +150,17 @@ export function useAssignmentEditor({
 		selectPermitState(permitId)
 	}
 
-	function addSelectedUser() {
-		const user = users.find(
-			(candidate) => candidate.id === editor.selectedUserId,
-		)
-		if (!user) return
-
-		setDraft([
-			...editableUsers,
-			{
-				userId: user.id,
-				userFullName: user.name,
-				active: editableUsers.length === 0,
-			},
-		])
-		editor.setText("selectedUserId", "")
-		editor.setText("userSearch", "")
-	}
-
-	function removeUser(userId: string) {
-		const removedUser = editableUsers.find((user) => user.userId === userId)
-		const remainingUsers = editableUsers.filter(
-			(user) => user.userId !== userId,
-		)
-
-		if (removedUser?.active && remainingUsers.length > 0) {
-			remainingUsers[0] = { ...remainingUsers[0], active: true }
-		}
-		setDraft(remainingUsers)
-	}
-
-	function setPrincipalUser(userId: string) {
-		setDraft(
-			editableUsers.map((user) => ({
-				...user,
-				active: user.userId === userId,
-			})),
-		)
-	}
-
-	function moveUser(userId: string, offset: -1 | 1) {
-		const currentIndex = editableUsers.findIndex(
-			(user) => user.userId === userId,
-		)
-		const targetIndex = currentIndex + offset
-		if (
-			currentIndex < 0 ||
-			targetIndex < 0 ||
-			targetIndex >= editableUsers.length
-		) {
-			return
-		}
-
-		const reorderedUsers = [...editableUsers]
-		const movedUser = reorderedUsers[currentIndex]
-		reorderedUsers[currentIndex] = reorderedUsers[targetIndex]
-		reorderedUsers[targetIndex] = movedUser
-		setDraft(reorderedUsers)
-	}
-
 	return {
 		...exposedEditor,
 		selectedPermit,
 		permitCards,
-		editableUsers,
+		assignedUserId,
+		canChangeAssignment:
+			selectedPermit?.syncStatus === "created" ||
+			selectedPermit?.syncStatus === "assigned",
 		hasDirtyDraft,
 		hasDirtyRename,
 		hasUnsavedChanges,
-		eligibleUsers: users.filter(
-			(user) =>
-				!editableUsers.some(
-					(assignedUser) => assignedUser.userId === user.id,
-				) && includesSearch(user.name, editor.userSearch),
-		),
 		visiblePermits: permits.filter(
 			(permit) =>
 				permit.communityId === editor.selectedCommunityId &&
@@ -251,10 +170,7 @@ export function useAssignmentEditor({
 			(card) =>
 				card.communityId === editor.selectedCommunityId &&
 				includesSearch(
-					[
-						card.permitNumber,
-						...card.users.map((user) => user.userFullName),
-					].join(" "),
+					`${card.permitNumber} ${card.user.userFullName}`,
 					editor.assignmentSearch,
 				),
 		),
@@ -264,27 +180,10 @@ export function useAssignmentEditor({
 			if (!selectedPermit) return
 			beginRenameState(selectedPermit.permitNumber)
 		},
-		addSelectedUser,
-		removeUser,
-		setPrincipalUser,
-		moveUser,
-		discardDraft: () => setDraft(null),
+		discardAssignmentDraft: () => editor.setAssignmentDraft(undefined),
 		discardChanges,
+		users,
 	}
-}
-
-function sameAssignments(
-	left: EditableAssignmentUser[],
-	right: EditableAssignmentUser[],
-) {
-	return (
-		left.length === right.length &&
-		left.every(
-			(user, index) =>
-				user.userId === right[index]?.userId &&
-				user.active === right[index]?.active,
-		)
-	)
 }
 
 function includesSearch(value: string, search: string) {

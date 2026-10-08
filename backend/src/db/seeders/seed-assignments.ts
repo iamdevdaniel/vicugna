@@ -44,14 +44,13 @@ async function seedAssignments() {
 		],
 	})
 
-	if (availableUsers.length < 4) {
+	if (availableUsers.length < SEEDED_PERMITS.length) {
 		throw new Error(
-			"Need at least 4 active non-admin users to seed assignments",
+			"Need at least 3 active non-admin users to seed assignments",
 		)
 	}
 
-	const sharedUser = availableUsers[0]
-	const secondaryUsers = availableUsers.slice(1, 4)
+	const assignedUsers = availableUsers.slice(0, SEEDED_PERMITS.length)
 	const permitIds = SEEDED_PERMITS.map((permit) => permit.id)
 
 	await db.transaction(async (tx) => {
@@ -82,28 +81,15 @@ async function seedAssignments() {
 			.where(inArray(assignments.permitId, permitIds))
 
 		for (const [index, permit] of SEEDED_PERMITS.entries()) {
-			const secondaryUser = secondaryUsers[index]
+			const assignedUser = assignedUsers[index]
 
-			await tx.insert(assignments).values([
-				{
-					id: `assignment-seed-asg-${index + 1}-01`,
-					seasonId: activeSeason.id,
-					communityId: community.id,
-					userId: sharedUser.id,
-					permitId: permit.id,
-					position: 0,
-					active: true,
-				},
-				{
-					id: `assignment-seed-asg-${index + 1}-02`,
-					seasonId: activeSeason.id,
-					communityId: community.id,
-					userId: secondaryUser.id,
-					permitId: permit.id,
-					position: 1,
-					active: false,
-				},
-			])
+			await tx.insert(assignments).values({
+				id: `assignment-seed-asg-${index + 1}`,
+				seasonId: activeSeason.id,
+				communityId: community.id,
+				userId: assignedUser.id,
+				permitId: permit.id,
+			})
 		}
 	})
 }

@@ -5,7 +5,7 @@ import {
 	getAssignmentsInitialPageState,
 	getAssignmentsPageStateForSeason,
 	renamePermit,
-	savePermitAssignments,
+	savePermitAssignment,
 } from "../../modules/assignments/assignment.service"
 import { requireAdminSession } from "../admin-auth.server"
 import type { AssignmentActionData } from "../screens/assignments/assignments-types"
@@ -67,17 +67,18 @@ export async function action({ request, context }: Route.ActionArgs) {
 					message: "Permiso actualizado",
 				})
 			case "save-assignments":
-				await savePermitAssignments({
+				await savePermitAssignment({
 					seasonId: getTextField(formData, "seasonId"),
 					communityId: getTextField(formData, "communityId"),
 					permitId: getTextField(formData, "permitId"),
-					activeUserId: getTextField(formData, "activeUserId"),
-					userIds: getTextFields(formData, "userIds"),
+					userId: formData.has("userId")
+						? getTextField(formData, "userId")
+						: getTextField(formData, "activeUserId"),
 				})
 				return data<AssignmentActionData>({
 					ok: true,
 					intent,
-					message: "Asignaciones guardadas",
+					message: "Encargado guardado",
 				})
 			default:
 				return assignmentError("La operación solicitada no es válida")
@@ -107,12 +108,6 @@ function assignmentError(message: string, status = 400, intent = "") {
 function getTextField(formData: FormData, name: string) {
 	const value = formData.get(name)
 	return typeof value === "string" ? value : ""
-}
-
-function getTextFields(formData: FormData, name: string) {
-	return formData
-		.getAll(name)
-		.filter((value): value is string => typeof value === "string")
 }
 
 export default function AssignmentsPage() {

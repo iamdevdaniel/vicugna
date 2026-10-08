@@ -1,3 +1,5 @@
+import type { PermitSyncStatus } from "@shared"
+
 // HTTP
 export interface CreateAssignmentData {
 	seasonId: string
@@ -6,12 +8,11 @@ export interface CreateAssignmentData {
 	permitId: string
 }
 
-export interface SavePermitAssignmentsFormData {
+export interface SavePermitAssignmentFormData {
 	seasonId: string
 	communityId: string
 	permitId: string
-	userIds?: string | string[]
-	activeUserId: string
+	userId: string
 }
 
 export interface CreatePermitFormData {
@@ -54,6 +55,7 @@ export interface PermitListItem {
 	communityId: string
 	communityName: string
 	permitNumber: string
+	syncStatus: PermitSyncStatus
 }
 
 export interface AssignmentListItem {
@@ -61,8 +63,6 @@ export interface AssignmentListItem {
 	permitId: string
 	communityId: string
 	userId: string
-	position: number
-	active: boolean
 	seasonName: string
 	communityName: string
 	userFullName: string
@@ -75,12 +75,11 @@ export interface AssignmentPermitCard {
 	seasonName: string
 	communityId: string
 	communityName: string
-	users: Array<{
+	user: {
 		assignmentId: string
 		userId: string
 		userFullName: string
-		active: boolean
-	}>
+	}
 }
 
 export interface AssignmentPageState {

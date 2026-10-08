@@ -104,7 +104,7 @@ export function useMonitoringState(
 					return [
 						community.communityName,
 						permit.permitNumber,
-						...permit.users.map((user) => user.fullName),
+						permit.user.fullName,
 					]
 						.join(" ")
 						.toLocaleLowerCase("es")

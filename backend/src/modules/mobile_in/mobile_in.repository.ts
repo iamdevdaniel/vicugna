@@ -40,15 +40,14 @@ export async function saveSyncFieldData(
 			throw new PermitNotFoundError("El permiso no existe")
 		}
 
-		const activeAssignment = await tx.query.assignments.findFirst({
+		const assignment = await tx.query.assignments.findFirst({
 			where: and(
 				eq(assignments.permitId, data.permit.id),
 				eq(assignments.userId, userId),
-				eq(assignments.active, true),
 			),
 		})
 
-		if (!activeAssignment) {
+		if (!assignment) {
 			throw new PermitSyncForbiddenError(
 				"No tienes autorización para enviar este permiso",
 			)

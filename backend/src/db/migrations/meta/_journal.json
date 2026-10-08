@@ -8,6 +8,13 @@
       "when": 1787605758958,
       "tag": "0000_flat_spiral",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791433839677,
+      "tag": "0001_military_chamber",
+      "breakpoints": true
     }
   ]
 }

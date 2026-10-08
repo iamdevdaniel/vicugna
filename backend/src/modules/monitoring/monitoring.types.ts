@@ -8,7 +8,6 @@ export interface MonitoringSeasonOption {
 export interface MonitoringAssignedUser {
 	userId: string
 	fullName: string
-	active: boolean
 }
 
 export interface MonitoringPermitGroup {
@@ -21,7 +20,7 @@ export interface MonitoringPermitGroup {
 	participantsCount: number | null
 	cleaningRecordsCount: number | null
 	shearingRecordsCount: number | null
-	users: MonitoringAssignedUser[]
+	user: MonitoringAssignedUser
 }
 
 export interface SelectedMonitoringPermit {
@@ -32,11 +31,10 @@ export interface SelectedMonitoringPermit {
 	syncStatus: PermitSyncStatus
 	syncedAt: string | null
 	syncedAtLabel: string | null
-	assignedUsersCount: number
 	participantsCount: number | null
 	cleaningRecordsCount: number | null
 	shearingRecordsCount: number | null
-	users: MonitoringAssignedUser[]
+	user: MonitoringAssignedUser
 }
 
 export interface MonitoringCommunityGroup {

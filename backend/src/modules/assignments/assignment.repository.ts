@@ -1,5 +1,5 @@
 import { db } from "@db"
-import { and, eq, notInArray } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 
 import { assignments, permits, users } from "../../db/schema"
 import { getUserFullName } from "../users/user-name"
@@ -34,6 +34,7 @@ export async function listPermits(): Promise<PermitListItem[]> {
 		communityId: permit.communityId,
 		communityName: permit.community.name,
 		permitNumber: permit.permitNumber,
+		syncStatus: permit.syncStatus,
 	}))
 }
 
@@ -66,7 +67,7 @@ export async function listAssignments(
 			permit: true,
 		},
 		orderBy: (table, { asc: sortAsc }) => [
-			sortAsc(table.position),
+			sortAsc(table.assignedAt),
 			sortAsc(table.id),
 		],
 	})
@@ -76,28 +77,11 @@ export async function listAssignments(
 		permitId: assignment.permitId,
 		communityId: assignment.communityId,
 		userId: assignment.userId,
-		position: assignment.position,
-		active: assignment.active,
 		seasonName: assignment.season.name,
 		communityName: assignment.community.name,
 		userFullName: getUserFullName(assignment.user),
 		permitNumber: assignment.permit.permitNumber,
 	}))
-}
-
-export async function findFirstAssignmentByPermit(permitId: string) {
-	return db.query.assignments.findFirst({
-		where: eq(assignments.permitId, permitId),
-		with: {
-			community: true,
-		},
-	})
-}
-
-export async function findAssignmentById(assignmentId: string) {
-	return db.query.assignments.findFirst({
-		where: eq(assignments.id, assignmentId),
-	})
 }
 
 export async function listPermitsBySeason(
@@ -116,6 +100,7 @@ export async function listPermitsBySeason(
 		communityId: permit.communityId,
 		communityName: permit.community.name,
 		permitNumber: permit.permitNumber,
+		syncStatus: permit.syncStatus,
 	}))
 }
 
@@ -135,46 +120,6 @@ export async function findPermitById(permitId: string) {
 	return db.query.permits.findFirst({
 		where: eq(permits.id, permitId),
 	})
-}
-
-export async function listAssignedUserIdsByPermit(
-	permitId: string,
-): Promise<string[]> {
-	const rows = await db.query.assignments.findMany({
-		where: eq(assignments.permitId, permitId),
-		columns: {
-			userId: true,
-		},
-	})
-
-	return rows.map((row) => row.userId)
-}
-
-export async function listEligibleAssignmentUsersByPermit(
-	permitId: string,
-): Promise<ManagedUserOption[]> {
-	const assignedUserIds = await listAssignedUserIdsByPermit(permitId)
-
-	const rows = await db.query.users.findMany({
-		where: and(
-			eq(users.role, "user"),
-			eq(users.isActive, true),
-			assignedUserIds.length > 0
-				? notInArray(users.id, assignedUserIds)
-				: undefined,
-		),
-		orderBy: (table, { asc: sortAsc }) => [
-			sortAsc(table.paternalLastName),
-			sortAsc(table.maternalLastName),
-			sortAsc(table.firstName),
-		],
-	})
-
-	return rows.map((user) => ({
-		id: user.id,
-		name: getUserFullName(user),
-		isActive: user.isActive,
-	}))
 }
 
 export async function createPermit(
@@ -207,63 +152,72 @@ export async function updatePermitNumber(
 		.where(eq(permits.id, permitId))
 }
 
-export async function replaceAssignmentsForPermit(
-	permitId: string,
-	records: Array<{
-		seasonId: string
-		communityId: string
-		userId: string
-		permitId: string
-		position: number
-		active: boolean
-	}>,
-) {
-	await db.transaction(async (tx) => {
-		await tx.delete(assignments).where(eq(assignments.permitId, permitId))
+export type SavePermitAssignmentResult =
+	| "saved"
+	| "permit_missing"
+	| "permit_locked"
+	| "user_unavailable"
 
-		if (records.length === 0) {
-			return
+export async function saveAssignmentForPermit(
+	permitId: string,
+	userId: string | null,
+): Promise<SavePermitAssignmentResult> {
+	return db.transaction(async (tx) => {
+		const [permit] = await tx
+			.select({
+				id: permits.id,
+				seasonId: permits.seasonId,
+				communityId: permits.communityId,
+				syncStatus: permits.syncStatus,
+			})
+			.from(permits)
+			.where(eq(permits.id, permitId))
+			.for("update")
+
+		if (!permit) return "permit_missing"
+		if (
+			permit.syncStatus !== "created" &&
+			permit.syncStatus !== "assigned"
+		) {
+			return "permit_locked"
 		}
 
-		await tx.insert(assignments).values(
-			records.map((record) => ({
+		if (userId) {
+			const [eligibleUser] = await tx
+				.select({ id: users.id })
+				.from(users)
+				.where(
+					and(
+						eq(users.id, userId),
+						eq(users.role, "user"),
+						eq(users.isActive, true),
+					),
+				)
+				.for("update")
+
+			if (!eligibleUser) return "user_unavailable"
+		}
+
+		await tx.delete(assignments).where(eq(assignments.permitId, permitId))
+
+		if (userId) {
+			await tx.insert(assignments).values({
 				id: crypto.randomUUID(),
-				seasonId: record.seasonId,
-				communityId: record.communityId,
-				userId: record.userId,
-				permitId: record.permitId,
-				position: record.position,
-				active: record.active,
-			})),
-		)
+				seasonId: permit.seasonId,
+				communityId: permit.communityId,
+				userId,
+				permitId,
+			})
+		}
 
 		await tx
 			.update(permits)
 			.set({
-				syncStatus: "assigned",
+				syncStatus: userId ? "assigned" : "created",
 				updatedAt: new Date(),
 			})
 			.where(eq(permits.id, permitId))
+
+		return "saved"
 	})
-}
-
-export async function setActiveAssignment(
-	assignmentId: string,
-	permitId: string,
-) {
-	await db.transaction(async (tx) => {
-		await tx
-			.update(assignments)
-			.set({ active: false })
-			.where(eq(assignments.permitId, permitId))
-
-		await tx
-			.update(assignments)
-			.set({ active: true })
-			.where(eq(assignments.id, assignmentId))
-	})
-}
-
-export async function deleteAssignment(assignmentId: string) {
-	await db.delete(assignments).where(eq(assignments.id, assignmentId))
 }

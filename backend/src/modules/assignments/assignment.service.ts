@@ -6,26 +6,21 @@ import { listSeasons } from "../common/common.repository"
 import { AssignmentManagementError } from "./assignment.errors"
 import {
 	createPermit as createPermitRecord,
-	deleteAssignment as deleteAssignmentRecord,
-	findAssignmentById,
 	findPermitById,
 	findPermitBySeasonAndNumber,
 	listAssignments,
 	listAssignmentUsers,
 	listCommunities,
-	listEligibleAssignmentUsersByPermit,
 	listPermitsBySeason,
-	replaceAssignmentsForPermit as replaceAssignmentsForPermitRecord,
-	setActiveAssignment as setActiveAssignmentRecord,
+	saveAssignmentForPermit as saveAssignmentForPermitRecord,
 	updatePermitNumber as updatePermitNumberRecord,
 } from "./assignment.repository"
 import type {
-	AssignmentMutationRequestBody,
 	AssignmentPageState,
 	AssignmentPermitCard,
 	CreatePermitFormData,
 	RenamePermitFormData,
-	SavePermitAssignmentsFormData,
+	SavePermitAssignmentFormData,
 } from "./assignment.types"
 
 // Keep the assignment rules in one file for now so this feature stays easier
@@ -86,10 +81,6 @@ export async function getAssignmentsPageStateForSeason(
 		assignments,
 		assignmentCards: buildAssignmentCards(assignments),
 	}
-}
-
-export async function getEligibleAssignmentUsersForPermit(permitId: string) {
-	return listEligibleAssignmentUsersByPermit(permitId)
 }
 
 // ==========================================
@@ -160,20 +151,12 @@ export async function renamePermit(data: RenamePermitFormData) {
 	await updatePermitNumberRecord(formData.permitId, formData.permitNumber)
 }
 
-export async function savePermitAssignments(
-	data: SavePermitAssignmentsFormData,
-) {
-	const formData = normalizeSavePermitAssignmentsForm(data)
+export async function savePermitAssignment(data: SavePermitAssignmentFormData) {
+	const formData = normalizeSavePermitAssignmentForm(data)
 
 	if (!formData.seasonId || !formData.permitId) {
 		throw new AssignmentManagementError(
 			"Temporada y permiso son obligatorios",
-		)
-	}
-
-	if (formData.userIds.length === 0) {
-		throw new AssignmentManagementError(
-			"El permiso debe tener al menos un encargado",
 		)
 	}
 
@@ -189,69 +172,29 @@ export async function savePermitAssignments(
 		)
 	}
 
-	if (new Set(formData.userIds).size !== formData.userIds.length) {
-		throw new AssignmentManagementError("Hay encargados repetidos")
-	}
-
-	const eligibleUserIds = new Set(
-		(await listAssignmentUsers()).map((user) => user.id),
-	)
-	if (formData.userIds.some((userId) => !eligibleUserIds.has(userId))) {
-		throw new AssignmentManagementError(
-			"Uno o más encargados ya no están disponibles",
-		)
-	}
-
-	const activeUserId =
-		formData.userIds.length === 0
-			? null
-			: formData.userIds.includes(formData.activeUserId)
-				? formData.activeUserId
-				: formData.userIds[0]
-
 	try {
-		await replaceAssignmentsForPermitRecord(
+		const result = await saveAssignmentForPermitRecord(
 			formData.permitId,
-			formData.userIds.map((userId, position) => ({
-				seasonId: formData.seasonId,
-				communityId: permit.communityId,
-				userId,
-				permitId: formData.permitId,
-				position,
-				active: activeUserId === userId,
-			})),
+			formData.userId || null,
 		)
+
+		if (result === "permit_missing") {
+			throw new AssignmentManagementError("Ese permiso ya no existe")
+		}
+		if (result === "permit_locked") {
+			throw new AssignmentManagementError(
+				"El encargado no puede cambiarse después de descargar el permiso",
+			)
+		}
+		if (result === "user_unavailable") {
+			throw new AssignmentManagementError(
+				"El encargado ya no está disponible",
+			)
+		}
 	} catch (error) {
+		if (error instanceof AssignmentManagementError) throw error
 		throwAssignmentCreationError(error)
 	}
-}
-
-export async function setAssignmentAsActive(
-	data: AssignmentMutationRequestBody,
-) {
-	const formData = normalizeAssignmentMutationForm(data)
-	const assignment = await getAssignmentForMutation(formData)
-
-	if (assignment.permitId !== formData.permitId) {
-		throw new AssignmentManagementError(
-			"Esa asignacion no pertenece al permiso seleccionado",
-		)
-	}
-
-	await setActiveAssignmentRecord(formData.assignmentId, formData.permitId)
-}
-
-export async function removeAssignment(data: AssignmentMutationRequestBody) {
-	const formData = normalizeAssignmentMutationForm(data)
-	const assignment = await getAssignmentForMutation(formData)
-
-	if (assignment.permitId !== formData.permitId) {
-		throw new AssignmentManagementError(
-			"Esa asignacion no pertenece al permiso seleccionado",
-		)
-	}
-
-	await deleteAssignmentRecord(formData.assignmentId)
 }
 
 // ==========================================
@@ -266,15 +209,12 @@ function normalizePermitForm(data: CreatePermitFormData) {
 	}
 }
 
-function normalizeSavePermitAssignmentsForm(
-	data: SavePermitAssignmentsFormData,
-) {
+function normalizeSavePermitAssignmentForm(data: SavePermitAssignmentFormData) {
 	return {
 		seasonId: data.seasonId.trim(),
 		communityId: data.communityId.trim(),
 		permitId: data.permitId.trim(),
-		activeUserId: data.activeUserId.trim(),
-		userIds: normalizeUserIds(data.userIds),
+		userId: data.userId.trim(),
 	}
 }
 
@@ -287,27 +227,6 @@ function normalizeRenamePermitForm(data: RenamePermitFormData) {
 	}
 }
 
-function normalizeAssignmentMutationForm(
-	data: AssignmentMutationRequestBody,
-): AssignmentMutationRequestBody {
-	return {
-		seasonId: data.seasonId.trim(),
-		communityId: data.communityId.trim(),
-		permitId: data.permitId.trim(),
-		assignmentId: data.assignmentId.trim(),
-	}
-}
-
-function normalizeUserIds(userIds?: string | string[]) {
-	if (!userIds) {
-		return []
-	}
-
-	const rawValues = Array.isArray(userIds) ? userIds : [userIds]
-
-	return rawValues.map((value) => value.trim()).filter(Boolean)
-}
-
 function buildPermitSummary(permits: AssignmentPageState["permits"]) {
 	return {
 		communitiesWithPermitsCount: new Set(
@@ -317,42 +236,14 @@ function buildPermitSummary(permits: AssignmentPageState["permits"]) {
 	}
 }
 
-async function getAssignmentForMutation(data: AssignmentMutationRequestBody) {
-	if (!data.seasonId || !data.permitId || !data.assignmentId) {
-		throw new AssignmentManagementError("Faltan datos de la asignacion")
-	}
-
-	const assignment = await findAssignmentById(data.assignmentId)
-
-	if (!assignment) {
-		throw new AssignmentManagementError("Esa asignacion ya no existe")
-	}
-
-	if (assignment.seasonId !== data.seasonId) {
-		throw new AssignmentManagementError(
-			"Esa asignacion pertenece a otra temporada",
-		)
-	}
-
-	return assignment
-}
-
 function throwAssignmentCreationError(error: unknown): never {
 	const uniqueConstraint = getPostgresConstraintName(
 		error,
 		POSTGRES_ERROR_CODES.uniqueViolation,
 	)
 
-	if (
-		uniqueConstraint === "assignments_season_community_user_permit_unique"
-	) {
-		throw new AssignmentManagementError("Esa asignacion ya existe")
-	}
-
-	if (uniqueConstraint === "assignments_active_permit_unique") {
-		throw new AssignmentManagementError(
-			"No se pudo definir el encargado principal del permiso",
-		)
+	if (uniqueConstraint === "assignments_permit_unique") {
+		throw new AssignmentManagementError("Ese permiso ya tiene un encargado")
 	}
 
 	const foreignKeyConstraint = getPostgresConstraintName(
@@ -372,37 +263,16 @@ function throwAssignmentCreationError(error: unknown): never {
 function buildAssignmentCards(
 	assignments: AssignmentPageState["assignments"],
 ): AssignmentPermitCard[] {
-	const cardsByPermit = new Map<string, AssignmentPermitCard>()
-
-	for (const assignment of assignments) {
-		const existingCard = cardsByPermit.get(assignment.permitId)
-
-		if (existingCard) {
-			existingCard.users.push({
-				assignmentId: assignment.id,
-				userId: assignment.userId,
-				userFullName: assignment.userFullName,
-				active: assignment.active,
-			})
-			continue
-		}
-
-		cardsByPermit.set(assignment.permitId, {
-			permitId: assignment.permitId,
-			permitNumber: assignment.permitNumber,
-			seasonName: assignment.seasonName,
-			communityId: assignment.communityId,
-			communityName: assignment.communityName,
-			users: [
-				{
-					assignmentId: assignment.id,
-					userId: assignment.userId,
-					userFullName: assignment.userFullName,
-					active: assignment.active,
-				},
-			],
-		})
-	}
-
-	return Array.from(cardsByPermit.values())
+	return assignments.map((assignment) => ({
+		permitId: assignment.permitId,
+		permitNumber: assignment.permitNumber,
+		seasonName: assignment.seasonName,
+		communityId: assignment.communityId,
+		communityName: assignment.communityName,
+		user: {
+			assignmentId: assignment.id,
+			userId: assignment.userId,
+			userFullName: assignment.userFullName,
+		},
+	}))
 }

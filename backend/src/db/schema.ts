@@ -1,5 +1,5 @@
 import type { PermitSyncStatus } from "@shared"
-import { relations, sql } from "drizzle-orm"
+import { relations } from "drizzle-orm"
 import {
 	boolean,
 	doublePrecision,
@@ -145,21 +145,9 @@ export const assignments = pgTable(
 		permitId: text("permit_id")
 			.notNull()
 			.references(() => permits.id, { onDelete: "cascade" }),
-		position: integer("position").notNull(),
-		active: boolean("active").notNull().default(false),
 		assignedAt: timestamp("assigned_at").notNull().defaultNow(),
 	},
-	(table) => [
-		uniqueIndex("assignments_season_community_user_permit_unique").on(
-			table.seasonId,
-			table.communityId,
-			table.userId,
-			table.permitId,
-		),
-		uniqueIndex("assignments_active_permit_unique")
-			.on(table.permitId)
-			.where(sql`${table.active} = true`),
-	],
+	(table) => [uniqueIndex("assignments_permit_unique").on(table.permitId)],
 )
 
 export const participants = pgTable("participants", {
