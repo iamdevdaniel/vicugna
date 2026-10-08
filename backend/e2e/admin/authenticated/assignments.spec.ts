@@ -78,6 +78,41 @@ test.describe("Administración de asignaciones", () => {
 		)
 	})
 
+	test("rechaza un formulario viejo sin cambiar el encargado", async ({
+		page,
+	}) => {
+		const response = await page.evaluate(async () => {
+			const body = new URLSearchParams({
+				intent: "save-assignments",
+				seasonId: "season-2026",
+				communityId: "aguaquisa",
+				permitId: "permit-seed-asg-01",
+				activeUserId: "user-seed-02",
+			})
+			const result = await fetch(window.location.href, {
+				method: "POST",
+				body,
+			})
+
+			return { status: result.status, text: await result.text() }
+		})
+
+		expect(response.status).toBe(400)
+		expect(response.text).toContain(
+			"Esta página está desactualizada. Recárgala antes de guardar",
+		)
+
+		await page.reload({ waitUntil: "networkidle" })
+		await waitForAdminReady(page)
+		await selectSeedCommunity(page)
+		await getCreatePermitPanel(page)
+			.getByRole("button", { name: /ASG-001/ })
+			.click()
+		await expect(
+			getEditorPanel(page).getByLabel("Encargado responsable"),
+		).toHaveValue("user-seed-03")
+	})
+
 	test("crea, renombra y asigna un encargado a un permiso", async ({
 		page,
 	}) => {

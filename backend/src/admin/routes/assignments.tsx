@@ -66,20 +66,26 @@ export async function action({ request, context }: Route.ActionArgs) {
 					intent,
 					message: "Permiso actualizado",
 				})
-			case "save-assignments":
+			case "save-assignments": {
+				if (!formData.has("userId")) {
+					return assignmentError(
+						"Esta página está desactualizada. Recárgala antes de guardar",
+						400,
+						intent,
+					)
+				}
 				await savePermitAssignment({
 					seasonId: getTextField(formData, "seasonId"),
 					communityId: getTextField(formData, "communityId"),
 					permitId: getTextField(formData, "permitId"),
-					userId: formData.has("userId")
-						? getTextField(formData, "userId")
-						: getTextField(formData, "activeUserId"),
+					userId: getTextField(formData, "userId"),
 				})
 				return data<AssignmentActionData>({
 					ok: true,
 					intent,
 					message: "Encargado guardado",
 				})
+			}
 			default:
 				return assignmentError("La operación solicitada no es válida")
 		}

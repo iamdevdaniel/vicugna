@@ -8,6 +8,17 @@ BEGIN
 	) THEN
 		RAISE EXCEPTION 'Cannot migrate assignments without exactly one active user per assigned permit';
 	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM "permits"
+		LEFT JOIN "assignments" ON "assignments"."permit_id" = "permits"."id"
+		WHERE "permits"."sync_status" IN ('in_progress', 'synced', 'reopened')
+		GROUP BY "permits"."id"
+		HAVING COUNT("assignments"."id") = 0
+	) THEN
+		RAISE EXCEPTION 'Cannot migrate downloaded permits without an active assigned user';
+	END IF;
 END $$;--> statement-breakpoint
 DELETE FROM "assignments" WHERE "active" = false;--> statement-breakpoint
 UPDATE "permits"
