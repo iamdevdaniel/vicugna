@@ -13,6 +13,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test:web-db": "tsx --test database/web/*.test.ts",
+    "test:android-compat": "tsx --test database/permit-ownership.test.ts",
     "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils ./e2e ./screens --write",
     "prepare": "cd .. && husky"
   },

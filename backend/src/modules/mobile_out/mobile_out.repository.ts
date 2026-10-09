@@ -118,7 +118,7 @@ export async function listMobilePermitsByUserId(
 	return rows.map((assignment) => {
 		const { permit } = assignment
 		const latestVersion = permit.permitSyncVersions[0]
-		const permitData: PermitData = {
+		const permitData: PermitData & { isActiveAssignmentUser: true } = {
 			id: permit.id,
 			permitNumber: permit.permitNumber,
 			seasonId: permit.seasonId,

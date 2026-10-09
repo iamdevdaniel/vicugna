@@ -2,6 +2,7 @@ import type { ParticipantData, PermitData } from "@definitions/types"
 import Dexie, { type EntityTable } from "dexie"
 
 export type WebPermitRecord = PermitData & {
+	isActiveAssignmentUser: boolean
 	syncVersion: number | null
 }
 

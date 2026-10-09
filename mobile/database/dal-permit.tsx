@@ -32,11 +32,12 @@ type PreparedPermitMutation = {
 //-------------------READ-------------------
 
 export function subscribePermits(
+	accountId: string,
 	callbacks: SubscriptionCallback<PermitData[]>,
 ): () => void {
 	const sub = database
 		.get<PermitModel>("permits")
-		.query(Q.sortBy("permitNumber", Q.asc))
+		.query(Q.where("userId", accountId), Q.sortBy("permitNumber", Q.asc))
 		.observeWithColumns([
 			"permitNumber",
 			"communityId",
@@ -59,13 +60,16 @@ export function subscribePermits(
 
 export function subscribeSinglePermit(
 	permitId: string,
-	callbacks: SubscriptionCallback<PermitData>,
+	accountId: string,
+	callbacks: SubscriptionCallback<PermitData | null>,
 ): () => void {
 	const sub = database
 		.get<PermitModel>("permits")
-		.findAndObserve(permitId)
+		.query(Q.where("id", permitId), Q.where("userId", accountId))
+		.observe()
 		.subscribe({
-			next: (record) => callbacks.onChange(mapToPermit(record)),
+			next: (records) =>
+				callbacks.onChange(records[0] ? mapToPermit(records[0]) : null),
 			error: (error) => callbacks.onError(error as Error),
 		})
 

@@ -45,7 +45,6 @@ export type PermitData = {
 	departmentId: string
 	userId: string
 	userFullName: string
-	isActiveAssignmentUser: boolean
 	syncStatus: PermitSyncStatus
 	syncedAt: string | null
 }

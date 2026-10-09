@@ -10,6 +10,10 @@ const syncStatuses = new Set<PermitData["syncStatus"]>([
 	"reopened",
 ])
 
+type LegacyWebPermitDownload = Omit<MobilePermitData, "permit"> & {
+	permit: PermitData & { isActiveAssignmentUser: boolean }
+}
+
 export async function savePermitDownloads(
 	accountId: string,
 	value: unknown,
@@ -50,7 +54,10 @@ export async function savePermitDownloads(
 	)
 }
 
-function parseDownloads(accountId: string, value: unknown): MobilePermitData[] {
+function parseDownloads(
+	accountId: string,
+	value: unknown,
+): LegacyWebPermitDownload[] {
 	if (!Array.isArray(value)) throwInvalidDownload()
 
 	return value.map((download) => {
@@ -65,7 +72,7 @@ function parseDownloads(accountId: string, value: unknown): MobilePermitData[] {
 		}
 
 		assertValidDownload(accountId, download, permit)
-		return download as MobilePermitData
+		return download as LegacyWebPermitDownload
 	})
 }
 

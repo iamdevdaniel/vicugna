@@ -12,20 +12,30 @@ import type {
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
+import { assertPermitOwner } from "./permit-ownership"
 import { database } from "./setup"
 
 let pendingSave: Promise<void> = Promise.resolve()
 
-export function savePermits(downloads: MobilePermitData[]): Promise<void> {
-	const operation = pendingSave.then(() => savePermitDownloads(downloads))
+export function savePermits(
+	accountId: string,
+	downloads: MobilePermitData[],
+): Promise<void> {
+	const operation = pendingSave.then(() =>
+		savePermitDownloads(accountId, downloads),
+	)
 	pendingSave = operation.catch(() => undefined)
 	return operation
 }
 
 async function savePermitDownloads(
+	accountId: string,
 	downloads: MobilePermitData[],
 ): Promise<void> {
 	if (downloads.length === 0) return
+	for (const { permit } of downloads) {
+		assertPermitOwner(permit.userId, accountId)
+	}
 
 	await database.write(async () => {
 		const permitIds = downloads.map(({ permit }) => permit.id)
