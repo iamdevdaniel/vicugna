@@ -26,7 +26,6 @@ export class PermitModel extends Model {
 	@text("permitNumber") permitNumber!: string
 	@text("userId") userId!: string
 	@text("userFullName") userFullName!: string
-	@field("isActiveAssignmentUser") isActiveAssignmentUser!: boolean
 	@text("syncStatus") permitSyncStatus!: PermitSyncStatus
 	@text("syncedAt") syncedAt!: string | null
 	@field("syncVersion") syncVersion!: number | null

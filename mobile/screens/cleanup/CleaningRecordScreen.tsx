@@ -55,11 +55,11 @@ export default function NativeCleaningRecordScreen() {
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 
 	const { data: commonData, loading: loadingCommon } =
-		useReadSingleCleaningCommon(recordId)
+		useReadSingleCleaningCommon(recordId, permitId)
 	const { data: groomingData, loading: loadingGrooming } =
-		useReadSingleGrooming(recordId)
+		useReadSingleGrooming(commonData?.id)
 	const { data: dehearingData, loading: loadingDehearing } =
-		useReadSingleDehearing(recordId)
+		useReadSingleDehearing(commonData?.id)
 
 	const {
 		createSingleCleaningRecord,
@@ -176,9 +176,8 @@ export default function NativeCleaningRecordScreen() {
 		loadingPermit ||
 		(isEditForm &&
 			(loadingCommon ||
-				loadingGrooming ||
-				loadingDehearing ||
-				!commonData))
+				(!!commonData && (loadingGrooming || loadingDehearing))))
+	const isRecordUnavailable = isEditForm && !loadingCommon && !commonData
 	const detailFieldsDisabled = !isEditForm
 	const saveDisabled =
 		isPermitReadOnly ||
@@ -302,6 +301,29 @@ export default function NativeCleaningRecordScreen() {
 		return (
 			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
 				<LoadingOverlay message="Cargando..." />
+			</SafeAreaView>
+		)
+	}
+
+	if (isRecordUnavailable) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<View
+					style={{
+						flex: 1,
+						justifyContent: "center",
+						padding: 20,
+						gap: 16,
+					}}
+				>
+					<Text variant="titleMedium">
+						El registro de fibra no está disponible para este
+						permiso.
+					</Text>
+					<Button mode="contained" onPress={() => router.back()}>
+						Volver
+					</Button>
+				</View>
 			</SafeAreaView>
 		)
 	}

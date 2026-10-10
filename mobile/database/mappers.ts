@@ -53,7 +53,6 @@ export function mapToSyncPermit(model: PermitModel): SyncPermitData {
 		departmentId: model.departmentId,
 		userId: model.userId,
 		userFullName: model.userFullName,
-		isActiveAssignmentUser: model.isActiveAssignmentUser,
 		syncStatus: model.permitSyncStatus,
 		syncedAt: model.syncedAt,
 	}
@@ -78,7 +77,6 @@ export function applySyncPermitToModel(
 	model.permitNumber = data.permitNumber
 	model.userId = data.userId
 	model.userFullName = data.userFullName
-	model.isActiveAssignmentUser = data.isActiveAssignmentUser
 	model.permitSyncStatus = data.syncStatus
 	model.syncedAt = data.syncedAt
 }

@@ -23,7 +23,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button } from "react-native-paper"
+import { Button, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // PARTICIPANTS.FORM /[permitId]/participants/[participantId]
@@ -35,7 +35,7 @@ export default function NativeParticipantScreen() {
 	}>()
 	const { data: permit, loading: loadingPermit } =
 		useReadSinglePermit(permitId)
-	const { data, loading } = useReadSingleParticipant(participantId)
+	const { data, loading } = useReadSingleParticipant(participantId, permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const {
 		createSingleParticipant,
@@ -47,8 +47,8 @@ export default function NativeParticipantScreen() {
 
 	const isEditForm = participantId !== "new"
 	const isDeleteDisabled = isPermitReadOnly || saving || deleting
-	const isLoadingScreenData =
-		loadingPermit || (isEditForm && (loading || !data))
+	const isLoadingScreenData = loadingPermit || (isEditForm && loading)
+	const isRecordUnavailable = isEditForm && !loading && !data
 
 	const {
 		control,
@@ -113,6 +113,28 @@ export default function NativeParticipantScreen() {
 		return (
 			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
 				<LoadingOverlay message="Cargando..." />
+			</SafeAreaView>
+		)
+	}
+
+	if (isRecordUnavailable) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<View
+					style={{
+						flex: 1,
+						justifyContent: "center",
+						padding: 20,
+						gap: 16,
+					}}
+				>
+					<Text variant="titleMedium">
+						El participante no está disponible para este permiso.
+					</Text>
+					<Button mode="contained" onPress={() => router.back()}>
+						Volver
+					</Button>
+				</View>
 			</SafeAreaView>
 		)
 	}

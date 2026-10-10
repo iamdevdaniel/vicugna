@@ -14,7 +14,6 @@ export const appDbSchema = appSchema({
 				{ name: "permitNumber", type: "string", isIndexed: true },
 				{ name: "userId", type: "string", isIndexed: true },
 				{ name: "userFullName", type: "string" },
-				{ name: "isActiveAssignmentUser", type: "boolean" },
 				{ name: "syncStatus", type: "string" },
 				{ name: "syncedAt", type: "string", isOptional: true },
 				{ name: "syncVersion", type: "number", isOptional: true },

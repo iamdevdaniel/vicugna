@@ -128,7 +128,6 @@ export async function listMobilePermitsByUserId(
 			departmentId: permit.community.regional.departmentId,
 			userId: assignment.userId,
 			userFullName: getUserFullName(assignment.user),
-			isActiveAssignmentUser: true,
 			syncStatus: permit.syncStatus,
 			syncedAt: permit.syncedAt?.toISOString() ?? null,
 		}

@@ -91,7 +91,6 @@ function assertValidDownload(
 		requiredStrings.some(
 			(value) => typeof value !== "string" || value.trim() === "",
 		) ||
-		typeof permit.isActiveAssignmentUser !== "boolean" ||
 		typeof permit.syncStatus !== "string" ||
 		!syncStatuses.has(permit.syncStatus as PermitData["syncStatus"]) ||
 		(permit.syncedAt !== null && typeof permit.syncedAt !== "string") ||
@@ -103,7 +102,7 @@ function assertValidDownload(
 		throwInvalidDownload()
 	}
 
-	if (permit.userId !== accountId || !permit.isActiveAssignmentUser) {
+	if (permit.userId !== accountId) {
 		throw new Error("El permiso no pertenece a la cuenta activa")
 	}
 }

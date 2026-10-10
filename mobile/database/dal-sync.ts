@@ -1,5 +1,6 @@
 import type { SyncFieldData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
+import { assertPermitOwner } from "./dal-permit"
 import {
 	mapToCleaningCommon,
 	mapToCleaningHeader,
@@ -24,10 +25,12 @@ import { database } from "./setup"
 
 export async function getFieldSyncData(
 	permitId: string,
+	accountId: string,
 ): Promise<SyncFieldData> {
 	const permitRecord = await database
 		.get<PermitModel>("permits")
 		.find(permitId)
+	assertPermitOwner(permitRecord.userId, accountId)
 	const participants = await database
 		.get<ParticipantModel>("participants")
 		.query(Q.where("permitId", permitId))

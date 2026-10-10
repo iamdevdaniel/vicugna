@@ -1,11 +1,10 @@
 import {
 	subscribeBulkParticipants,
-	subscribeSingleParticipant
+	subscribeSingleParticipant,
 } from "@database"
-import { type DbState } from './utils'
 import type { ParticipantData } from "@definitions/types"
 import { useEffect, useReducer } from "react"
-import { makeReadInitial, readReducer } from "./utils"
+import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkParticipants(
 	permitId: string,
@@ -28,6 +27,7 @@ export function useReadBulkParticipants(
 
 export function useReadSingleParticipant(
 	participantId?: string,
+	permitId?: string,
 ): DbState<ParticipantData | null> {
 	const [state, dispatch] = useReducer(
 		readReducer<ParticipantData | null>,
@@ -35,17 +35,17 @@ export function useReadSingleParticipant(
 	)
 
 	useEffect(() => {
-		if (!participantId || participantId === "new") {
+		if (!participantId || participantId === "new" || !permitId) {
 			dispatch({ type: "success", data: null })
 			return
 		}
 
-		return subscribeSingleParticipant(participantId, {
+		return subscribeSingleParticipant(participantId, permitId, {
 			onChange: (participant) =>
 				dispatch({ type: "success", data: participant }),
 			onError: (error) => dispatch({ type: "error", error }),
 		})
-	}, [participantId])
+	}, [participantId, permitId])
 
 	return state
 }

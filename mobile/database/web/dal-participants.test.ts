@@ -35,7 +35,6 @@ function makePermit(id: string, accountId: string): WebPermitRecord {
 		departmentId: "la-paz",
 		userId: accountId,
 		userFullName: "Usuario PWA",
-		isActiveAssignmentUser: true,
 		syncStatus: "in_progress",
 		syncedAt: null,
 		participantsStatus: "ready",

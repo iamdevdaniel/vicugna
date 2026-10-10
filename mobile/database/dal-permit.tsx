@@ -29,14 +29,24 @@ type PreparedPermitMutation = {
 	statusChange: PermitStatusChange
 }
 
+export function assertPermitOwner(
+	permitUserId: string,
+	accountId: string,
+): void {
+	if (permitUserId !== accountId) {
+		throw new Error("El permiso no pertenece a la cuenta activa")
+	}
+}
+
 //-------------------READ-------------------
 
 export function subscribePermits(
+	accountId: string,
 	callbacks: SubscriptionCallback<PermitData[]>,
 ): () => void {
 	const sub = database
 		.get<PermitModel>("permits")
-		.query(Q.sortBy("permitNumber", Q.asc))
+		.query(Q.where("userId", accountId), Q.sortBy("permitNumber", Q.asc))
 		.observeWithColumns([
 			"permitNumber",
 			"communityId",
@@ -59,13 +69,24 @@ export function subscribePermits(
 
 export function subscribeSinglePermit(
 	permitId: string,
-	callbacks: SubscriptionCallback<PermitData>,
+	accountId: string,
+	callbacks: SubscriptionCallback<PermitData | null>,
 ): () => void {
 	const sub = database
 		.get<PermitModel>("permits")
-		.findAndObserve(permitId)
+		.query(Q.where("id", permitId), Q.where("userId", accountId))
+		.observeWithColumns([
+			"permitNumber",
+			"communityId",
+			"syncStatus",
+			"syncedAt",
+			"participantsStatus",
+			"shearingStatus",
+			"cleaningStatus",
+		])
 		.subscribe({
-			next: (record) => callbacks.onChange(mapToPermit(record)),
+			next: (records) =>
+				callbacks.onChange(records[0] ? mapToPermit(records[0]) : null),
 			error: (error) => callbacks.onError(error as Error),
 		})
 
@@ -99,9 +120,10 @@ export async function updatePermitSyncStatus(
 
 export async function batchWithPermitStatusUpdate(
 	permitId: string,
+	accountId: string,
 	prepareMutation: () => PreparedPermitMutation,
 ): Promise<void> {
-	const currentState = await readPermitStatusState(permitId)
+	const currentState = await readPermitStatusState(permitId, accountId)
 	const { operations, statusChange } = prepareMutation()
 	const statuses = getPermitStatuses(
 		applyPermitStatusChange(currentState, statusChange),
@@ -117,16 +139,24 @@ export async function batchWithPermitStatusUpdate(
 	])
 }
 
-async function readPermitStatusState(permitId: string) {
+export async function assertStoredPermitOwner(
+	permitId: string,
+	accountId: string,
+): Promise<void> {
+	const permit = await database.get<PermitModel>("permits").find(permitId)
+	assertPermitOwner(permit.userId, accountId)
+}
+
+async function readPermitStatusState(permitId: string, accountId: string) {
+	const permit = await database.get<PermitModel>("permits").find(permitId)
+	assertPermitOwner(permit.userId, accountId)
 	const [
-		permit,
 		participantCount,
 		shearingHeaders,
 		shearingRecordCount,
 		cleaningHeaders,
 		cleaningRecords,
 	] = await Promise.all([
-		database.get<PermitModel>("permits").find(permitId),
 		database
 			.get<ParticipantModel>("participants")
 			.query(Q.where("permitId", permitId))

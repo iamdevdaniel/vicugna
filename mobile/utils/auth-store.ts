@@ -8,6 +8,7 @@ type MobileAuthState = {
 	token: string | null
 	expiresAt: string | null
 	user: MobileAuthUser | null
+	localDataUserId: string | null
 	isAuthenticated: boolean
 	error: string | null
 	isHydrated: boolean
@@ -24,11 +25,17 @@ export const useMobileAuthStore = create<MobileAuthState>()(
 			token: null,
 			expiresAt: null,
 			user: null,
+			localDataUserId: null,
 			isAuthenticated: false,
 			error: null,
 			isHydrated: false,
 			isLoggingIn: false,
-			setHydrated: (value) => set({ isHydrated: value }),
+			setHydrated: (value) =>
+				set((state) => ({
+					isHydrated: value,
+					localDataUserId:
+						state.localDataUserId ?? state.user?.id ?? null,
+				})),
 			login: async (email, password) => {
 				set({ isLoggingIn: true, error: null })
 
@@ -39,6 +46,7 @@ export const useMobileAuthStore = create<MobileAuthState>()(
 						token: payload.token,
 						expiresAt: payload.expiresAt,
 						user: payload.user,
+						localDataUserId: payload.user.id,
 						isAuthenticated: true,
 						error: null,
 						isLoggingIn: false,
@@ -72,6 +80,7 @@ export const useMobileAuthStore = create<MobileAuthState>()(
 				token: state.token,
 				expiresAt: state.expiresAt,
 				user: state.user,
+				localDataUserId: state.localDataUserId,
 				isAuthenticated: state.isAuthenticated,
 			}),
 			onRehydrateStorage: () => (state) => {

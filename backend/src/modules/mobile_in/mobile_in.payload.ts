@@ -18,7 +18,6 @@ const permitSchema = z
 		departmentId: z.string(),
 		userId: z.string(),
 		userFullName: z.string(),
-		isActiveAssignmentUser: z.boolean(),
 		syncStatus: z.enum([
 			"created",
 			"assigned",
