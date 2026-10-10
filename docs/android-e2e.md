@@ -1,4 +1,4 @@
-# Android E2E tests
+# Android E2E Tests
 
 Detox drives the real Android app. Jest organizes the scenarios and reports each named test. The tests never press **Finalizar y enviar**, so their data stays in WatermelonDB.
 
