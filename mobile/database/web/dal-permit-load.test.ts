@@ -5,21 +5,11 @@ import "fake-indexeddb/auto"
 import { savePermitDownloads } from "./dal-permit-load"
 import { closeWebDatabase, getWebDatabase, type WebPermitRecord } from "./setup"
 
-type WebPermitDownload = Omit<MobilePermitData, "permit"> & {
-	permit: Omit<
-		WebPermitRecord,
-		| "syncVersion"
-		| "participantsStatus"
-		| "shearingStatus"
-		| "cleaningStatus"
-	>
-}
-
 function makeDownload(
 	accountId: string,
 	permitId: string,
 	syncVersion: number | null = null,
-): WebPermitDownload {
+): MobilePermitData {
 	return {
 		permit: {
 			id: permitId,
@@ -31,7 +21,6 @@ function makeDownload(
 			departmentId: "la-paz",
 			userId: accountId,
 			userFullName: "Usuario PWA",
-			isActiveAssignmentUser: true,
 			syncStatus: "in_progress",
 			syncedAt: null,
 		},

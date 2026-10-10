@@ -118,7 +118,7 @@ export async function listMobilePermitsByUserId(
 	return rows.map((assignment) => {
 		const { permit } = assignment
 		const latestVersion = permit.permitSyncVersions[0]
-		const permitData: PermitData & { isActiveAssignmentUser: true } = {
+		const permitData: PermitData = {
 			id: permit.id,
 			permitNumber: permit.permitNumber,
 			seasonId: permit.seasonId,
@@ -128,7 +128,6 @@ export async function listMobilePermitsByUserId(
 			departmentId: permit.community.regional.departmentId,
 			userId: assignment.userId,
 			userFullName: getUserFullName(assignment.user),
-			isActiveAssignmentUser: true,
 			syncStatus: permit.syncStatus,
 			syncedAt: permit.syncedAt?.toISOString() ?? null,
 		}

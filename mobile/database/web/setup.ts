@@ -1,10 +1,7 @@
 import type { ParticipantData, PermitData } from "@definitions/types"
 import Dexie, { type EntityTable } from "dexie"
 
-export type WebPermitRecord = PermitData & {
-	isActiveAssignmentUser: boolean
-	syncVersion: number | null
-}
+export type WebPermitRecord = PermitData & { syncVersion: number | null }
 
 export type WebParticipantRecord = ParticipantData & {
 	createdAt: number

@@ -239,12 +239,7 @@ export async function restoreBackupSnapshot(
 	if (value.accountId !== accountId) {
 		throw new Error("La copia pertenece a otra cuenta")
 	}
-	if (
-		value.permits.some(
-			(permit) =>
-				permit.userId !== accountId || !permit.isActiveAssignmentUser,
-		)
-	) {
+	if (value.permits.some((permit) => permit.userId !== accountId)) {
 		throw new Error("La copia contiene permisos de otra cuenta")
 	}
 
@@ -315,7 +310,6 @@ function isStoredPermit(value: unknown): value is WebPermitRecord {
 		isNonEmptyString(value.departmentId) &&
 		isNonEmptyString(value.userId) &&
 		isNonEmptyString(value.userFullName) &&
-		typeof value.isActiveAssignmentUser === "boolean" &&
 		typeof value.syncStatus === "string" &&
 		permitSyncStatuses.has(value.syncStatus) &&
 		(value.syncedAt === null ||

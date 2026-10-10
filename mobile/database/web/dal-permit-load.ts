@@ -10,10 +10,6 @@ const syncStatuses = new Set<PermitData["syncStatus"]>([
 	"reopened",
 ])
 
-type LegacyWebPermitDownload = Omit<MobilePermitData, "permit"> & {
-	permit: PermitData & { isActiveAssignmentUser: boolean }
-}
-
 export async function savePermitDownloads(
 	accountId: string,
 	value: unknown,
@@ -54,10 +50,7 @@ export async function savePermitDownloads(
 	)
 }
 
-function parseDownloads(
-	accountId: string,
-	value: unknown,
-): LegacyWebPermitDownload[] {
+function parseDownloads(accountId: string, value: unknown): MobilePermitData[] {
 	if (!Array.isArray(value)) throwInvalidDownload()
 
 	return value.map((download) => {
@@ -72,7 +65,7 @@ function parseDownloads(
 		}
 
 		assertValidDownload(accountId, download, permit)
-		return download as LegacyWebPermitDownload
+		return download as MobilePermitData
 	})
 }
 
@@ -98,7 +91,6 @@ function assertValidDownload(
 		requiredStrings.some(
 			(value) => typeof value !== "string" || value.trim() === "",
 		) ||
-		typeof permit.isActiveAssignmentUser !== "boolean" ||
 		typeof permit.syncStatus !== "string" ||
 		!syncStatuses.has(permit.syncStatus as PermitData["syncStatus"]) ||
 		(permit.syncedAt !== null && typeof permit.syncedAt !== "string") ||
@@ -110,7 +102,7 @@ function assertValidDownload(
 		throwInvalidDownload()
 	}
 
-	if (permit.userId !== accountId || !permit.isActiveAssignmentUser) {
+	if (permit.userId !== accountId) {
 		throw new Error("El permiso no pertenece a la cuenta activa")
 	}
 }

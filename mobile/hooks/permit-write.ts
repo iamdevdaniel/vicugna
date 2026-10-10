@@ -15,10 +15,10 @@ type SyncPermitResult = { ok: true } | { ok: false; error: string }
 export function useLoadPermits() {
 	const [loadingPermits, setLoadingPermits] = useState(false)
 	const isLoadRunning = useRef(false)
-	const { token, accountId } = useMobileAuthStore(
+	const { token, userId } = useMobileAuthStore(
 		useShallow((state) => ({
 			token: state.token,
-			accountId: state.user?.id ?? null,
+			userId: state.user?.id ?? null,
 		})),
 	)
 
@@ -30,7 +30,7 @@ export function useLoadPermits() {
 			}
 		}
 
-		if (!token || !accountId) {
+		if (!token || !userId) {
 			return { ok: false, error: "Sesión no disponible" }
 		}
 
@@ -39,7 +39,7 @@ export function useLoadPermits() {
 
 		try {
 			const permits = await fetchPermits(token)
-			await savePermits(accountId, permits)
+			await savePermits(userId, permits)
 			return { ok: true }
 		} catch (error) {
 			return {
@@ -53,7 +53,7 @@ export function useLoadPermits() {
 			isLoadRunning.current = false
 			setLoadingPermits(false)
 		}
-	}, [accountId, token])
+	}, [token, userId])
 
 	return { loadPermits, loadingPermits }
 }
@@ -61,16 +61,16 @@ export function useLoadPermits() {
 export function useSyncPermit() {
 	const [syncingPermit, setSyncingPermit] = useState(false)
 	const [error, setError] = useState<string | null>(null)
-	const { token, accountId } = useMobileAuthStore(
+	const { token, userId } = useMobileAuthStore(
 		useShallow((state) => ({
 			token: state.token,
-			accountId: state.user?.id ?? null,
+			userId: state.user?.id ?? null,
 		})),
 	)
 
 	const syncPermit = useCallback(
 		async (permitId: string): Promise<SyncPermitResult> => {
-			if (!token || !accountId) {
+			if (!token || !userId) {
 				const message = "Debes iniciar sesión para enviar este permiso"
 				setError(message)
 				return { ok: false, error: message }
@@ -80,7 +80,7 @@ export function useSyncPermit() {
 			setError(null)
 
 			try {
-				const payload = await getFieldSyncData(permitId, accountId)
+				const payload = await getFieldSyncData(permitId, userId)
 				const result = await submitSyncFieldData(token, payload)
 				await updatePermitSyncStatus(result)
 				return { ok: true }
@@ -101,7 +101,7 @@ export function useSyncPermit() {
 				setSyncingPermit(false)
 			}
 		},
-		[accountId, token],
+		[token, userId],
 	)
 
 	const clearError = useCallback(() => setError(null), [])

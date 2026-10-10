@@ -14,8 +14,6 @@ export const appDbSchema = appSchema({
 				{ name: "permitNumber", type: "string", isIndexed: true },
 				{ name: "userId", type: "string", isIndexed: true },
 				{ name: "userFullName", type: "string" },
-				// Kept physically for safe upgrades from 1.2; application code no longer uses it.
-				{ name: "isActiveAssignmentUser", type: "boolean" },
 				{ name: "syncStatus", type: "string" },
 				{ name: "syncedAt", type: "string", isOptional: true },
 				{ name: "syncVersion", type: "number", isOptional: true },

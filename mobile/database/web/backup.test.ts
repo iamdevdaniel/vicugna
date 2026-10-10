@@ -142,7 +142,6 @@ function makePermit(account: string, id: string, permitNumber: string) {
 		departmentId: "department-1",
 		userId: account,
 		userFullName: "Test User",
-		isActiveAssignmentUser: true,
 		syncStatus: "in_progress" as const,
 		syncedAt: null,
 		syncVersion: 0,

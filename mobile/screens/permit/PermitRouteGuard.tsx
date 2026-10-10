@@ -5,19 +5,19 @@ import { ROUTES } from "@utils/constants"
 import { Redirect, useLocalSearchParams } from "expo-router"
 import type { ReactNode } from "react"
 
-type PermitOwnershipGateProps = {
+type PermitRouteGuardProps = {
 	children: ReactNode
 }
 
-export default function NativePermitOwnershipGate({
+export default function NativePermitRouteGuard({
 	children,
-}: PermitOwnershipGateProps) {
+}: PermitRouteGuardProps) {
 	const { permitId } = useLocalSearchParams<{ permitId: string }>()
-	const accountId = useMobileAuthStore((state) => state.localDataUserId)
+	const userId = useMobileAuthStore((state) => state.localDataUserId)
 	const { data: permit, loading } = useReadSinglePermit(permitId)
 
 	if (loading) return <LoadingOverlay message="Cargando..." />
-	if (!accountId || permit?.userId !== accountId) {
+	if (!userId || permit?.userId !== userId) {
 		return <Redirect href={ROUTES.HOME} />
 	}
 
