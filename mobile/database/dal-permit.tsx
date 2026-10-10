@@ -75,7 +75,15 @@ export function subscribeSinglePermit(
 	const sub = database
 		.get<PermitModel>("permits")
 		.query(Q.where("id", permitId), Q.where("userId", accountId))
-		.observe()
+		.observeWithColumns([
+			"permitNumber",
+			"communityId",
+			"syncStatus",
+			"syncedAt",
+			"participantsStatus",
+			"shearingStatus",
+			"cleaningStatus",
+		])
 		.subscribe({
 			next: (records) =>
 				callbacks.onChange(records[0] ? mapToPermit(records[0]) : null),
