@@ -49,7 +49,9 @@ export default function NativePermitScreen() {
 	const { data: cleaningRecords } = useReadBulkCleaningCommon(permitId)
 	const {
 		syncPermit,
+		discardAndDownload,
 		syncingPermit,
+		syncOperation,
 		clearError: clearSyncError,
 	} = useSyncPermit()
 	const participantsStatus = permit?.participantsStatus ?? "ready"
@@ -113,6 +115,44 @@ export default function NativePermitScreen() {
 		router.push(route)
 	}
 
+	const confirmDiscardAndDownload = () => {
+		Alert.alert(
+			"Descartar datos de este dispositivo",
+			"Los datos guardados en este dispositivo serán reemplazados por los datos actuales del servidor.",
+			[
+				{ text: "Cancelar", style: "cancel" },
+				{
+					text: "Descartar y descargar",
+					style: "destructive",
+					onPress: async () => {
+						const result = await discardAndDownload(permitId)
+						if (result.ok) {
+							showSnackbar("Se descargaron los datos actuales")
+							return
+						}
+
+						showSnackbar(result.error, "error")
+					},
+				},
+			],
+		)
+	}
+
+	const showOutdatedDataChoice = () => {
+		Alert.alert(
+			"Hay datos más recientes",
+			"Este permiso cambió en el servidor. Puedes conservar los datos de este dispositivo o reemplazarlos por los actuales.",
+			[
+				{ text: "Conservar mis datos", style: "cancel" },
+				{
+					text: "Descartar estos datos y descargar los actuales",
+					style: "destructive",
+					onPress: confirmDiscardAndDownload,
+				},
+			],
+		)
+	}
+
 	const onPressSend = () => {
 		Alert.alert(
 			"Finalizar y enviar",
@@ -132,6 +172,10 @@ export default function NativePermitScreen() {
 								"El permiso se envió correctamente",
 								"success",
 							)
+							return
+						}
+						if (result.reason === "outdated") {
+							showOutdatedDataChoice()
 							return
 						}
 
@@ -367,7 +411,9 @@ export default function NativePermitScreen() {
 							textAlign: "center",
 						}}
 					>
-						Enviando permiso...
+						{syncOperation === "download"
+							? "Descargando datos actuales..."
+							: "Enviando permiso..."}
 					</Text>
 				</Modal>
 			</Portal>
