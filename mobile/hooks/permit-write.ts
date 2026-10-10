@@ -2,6 +2,7 @@ import { fetchPermits, submitSyncFieldData } from "@api"
 import {
 	getFieldSyncData,
 	savePermits,
+	savePermitsReplacingOne,
 	updatePermitSyncStatus,
 } from "@database"
 import { useMobileAuthStore } from "@utils/auth-store"
@@ -10,7 +11,9 @@ import { useShallow } from "zustand/react/shallow"
 import { BackendRequestError } from "../api/backend-request"
 
 type PermitLoadResult = { ok: true } | { ok: false; error: string }
-type SyncPermitResult = { ok: true } | { ok: false; error: string }
+type SyncPermitResult =
+	| { ok: true }
+	| { ok: false; error: string; reason?: "outdated" }
 
 export function useLoadPermits() {
 	const [loadingPermits, setLoadingPermits] = useState(false)
@@ -59,8 +62,11 @@ export function useLoadPermits() {
 }
 
 export function useSyncPermit() {
-	const [syncingPermit, setSyncingPermit] = useState(false)
+	const [syncOperation, setSyncOperation] = useState<
+		"upload" | "download" | null
+	>(null)
 	const [error, setError] = useState<string | null>(null)
+	const operationRunning = useRef(false)
 	const { token, userId } = useMobileAuthStore(
 		useShallow((state) => ({
 			token: state.token,
@@ -70,13 +76,18 @@ export function useSyncPermit() {
 
 	const syncPermit = useCallback(
 		async (permitId: string): Promise<SyncPermitResult> => {
+			if (operationRunning.current) {
+				return { ok: false, error: "Ya hay una operación en curso" }
+			}
+
 			if (!token || !userId) {
 				const message = "Debes iniciar sesión para enviar este permiso"
 				setError(message)
 				return { ok: false, error: message }
 			}
 
-			setSyncingPermit(true)
+			operationRunning.current = true
+			setSyncOperation("upload")
 			setError(null)
 
 			try {
@@ -90,15 +101,61 @@ export function useSyncPermit() {
 						? error.message
 						: "No se pudo enviar el permiso"
 				const syncError =
-					error instanceof BackendRequestError && error.code
-						? {
-								error: `${message} (${error.code})`,
-							}
-						: { error: message }
+					error instanceof BackendRequestError &&
+					error.code === "SYNC_VERSION_CONFLICT"
+						? { error: message, reason: "outdated" as const }
+						: error instanceof BackendRequestError && error.code
+							? {
+									error: `${message} (${error.code})`,
+								}
+							: { error: message }
 				setError(syncError.error)
 				return { ok: false, ...syncError }
 			} finally {
-				setSyncingPermit(false)
+				operationRunning.current = false
+				setSyncOperation(null)
+			}
+		},
+		[token, userId],
+	)
+
+	const discardAndDownload = useCallback(
+		async (permitId: string): Promise<PermitLoadResult> => {
+			if (operationRunning.current) {
+				return { ok: false, error: "Ya hay una operación en curso" }
+			}
+			if (!token || !userId) {
+				return { ok: false, error: "Sesión no disponible" }
+			}
+
+			operationRunning.current = true
+			setSyncOperation("download")
+			try {
+				const downloads = await fetchPermits(token)
+				const download = downloads.find(
+					({ permit }) => permit.id === permitId,
+				)
+				if (!download) {
+					throw new Error("El permiso ya no está disponible")
+				}
+
+				await savePermitsReplacingOne(
+					userId,
+					downloads,
+					download.permit.id,
+				)
+				return { ok: true }
+			} catch (error) {
+				return {
+					ok: false,
+					error:
+						error instanceof Error
+							? error.message
+							: "No se pudieron descargar los datos actuales",
+				}
+			} finally {
+				operationRunning.current = false
+				setSyncOperation(null)
 			}
 		},
 		[token, userId],
@@ -108,7 +165,9 @@ export function useSyncPermit() {
 
 	return {
 		syncPermit,
-		syncingPermit,
+		discardAndDownload,
+		syncingPermit: syncOperation !== null,
+		syncOperation,
 		error,
 		clearError,
 	}

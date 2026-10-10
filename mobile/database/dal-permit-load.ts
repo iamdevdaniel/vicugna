@@ -22,7 +22,23 @@ export function savePermits(
 	downloads: MobilePermitData[],
 ): Promise<void> {
 	const operation = pendingSave.then(() =>
-		savePermitDownloads(accountId, downloads),
+		savePermitDownloads(accountId, downloads, new Set()),
+	)
+	pendingSave = operation.catch(() => undefined)
+	return operation
+}
+
+export function savePermitsReplacingOne(
+	accountId: string,
+	downloads: MobilePermitData[],
+	replacementPermitId: string,
+): Promise<void> {
+	const operation = pendingSave.then(() =>
+		savePermitDownloads(
+			accountId,
+			downloads,
+			new Set([replacementPermitId]),
+		),
 	)
 	pendingSave = operation.catch(() => undefined)
 	return operation
@@ -31,6 +47,7 @@ export function savePermits(
 async function savePermitDownloads(
 	accountId: string,
 	downloads: MobilePermitData[],
+	replacementPermitIds: Set<string>,
 ): Promise<void> {
 	if (downloads.length === 0) return
 	for (const { permit } of downloads) {
@@ -52,6 +69,7 @@ async function savePermitDownloads(
 			const backendVersion = syncVersion ?? 0
 
 			if (backendVersion < localVersion) return false
+			if (replacementPermitIds.has(permit.id)) return true
 
 			return !(
 				existingPermit &&

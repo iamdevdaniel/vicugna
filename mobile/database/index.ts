@@ -24,7 +24,7 @@ export {
 	subscribeSinglePermit,
 	updatePermitSyncStatus,
 } from "./dal-permit"
-export { savePermits } from "./dal-permit-load"
+export { savePermits, savePermitsReplacingOne } from "./dal-permit-load"
 export {
 	createSingleShearingRecord,
 	deleteSingleShearingRecord,
