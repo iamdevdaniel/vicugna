@@ -28,7 +28,7 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Alert, KeyboardAvoidingView, ScrollView, View } from "react-native"
-import { Button, Icon } from "react-native-paper"
+import { Button, Icon, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 // SHEARING.RECORD /[permitId]/shearing/record
@@ -42,8 +42,10 @@ export default function NativeShearingRecordScreen() {
 		useReadSinglePermit(permitId)
 	const isPermitReadOnly = permit?.syncStatus === "synced"
 	const isEditForm = !!recordId
-	const { data, loading: loadingData } =
-		useReadSingleShearingRecordFormData(recordId)
+	const { data, loading: loadingData } = useReadSingleShearingRecordFormData(
+		recordId,
+		permitId,
+	)
 	const {
 		createSingleShearingRecord,
 		updateSingleShearingRecord,
@@ -51,8 +53,8 @@ export default function NativeShearingRecordScreen() {
 		saving,
 		deleting,
 	} = useSingleShearingRecordActions()
-	const isLoadingScreenData =
-		loadingPermit || (isEditForm && (loadingData || !data))
+	const isLoadingScreenData = loadingPermit || (isEditForm && loadingData)
+	const isRecordUnavailable = isEditForm && !loadingData && !data
 
 	const {
 		control,
@@ -131,11 +133,40 @@ export default function NativeShearingRecordScreen() {
 		)
 	}
 
+	if (isLoadingScreenData) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<LoadingOverlay message="Cargando..." />
+			</SafeAreaView>
+		)
+	}
+
+	if (isRecordUnavailable) {
+		return (
+			<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+				<View
+					style={{
+						flex: 1,
+						justifyContent: "center",
+						padding: 20,
+						gap: 16,
+					}}
+				>
+					<Text variant="titleMedium">
+						El registro de esquila no está disponible para este
+						permiso.
+					</Text>
+					<Button mode="contained" onPress={() => router.back()}>
+						Volver
+					</Button>
+				</View>
+			</SafeAreaView>
+		)
+	}
+
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-			{isLoadingScreenData ? (
-				<LoadingOverlay message="Cargando..." />
-			) : isPermitReadOnly && data ? (
+			{isPermitReadOnly && data ? (
 				<ScrollView
 					style={{ flex: 1 }}
 					contentContainerStyle={{

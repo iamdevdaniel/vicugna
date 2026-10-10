@@ -1,5 +1,6 @@
 import type { SyncFieldData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
+import { assertPermitOwner } from "./dal-permit"
 import {
 	mapToCleaningCommon,
 	mapToCleaningHeader,
@@ -20,7 +21,6 @@ import type {
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
-import { assertPermitOwner } from "./permit-ownership"
 import { database } from "./setup"
 
 export async function getFieldSyncData(

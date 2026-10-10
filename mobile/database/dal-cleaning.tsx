@@ -78,13 +78,18 @@ export function subscribeBulkCleaningCommon(
 
 export function subscribeSingleCleaningCommon(
 	cleaningCommonId: string,
-	callbacks: SubscriptionCallback<CleaningCommonData>,
+	permitId: string,
+	callbacks: SubscriptionCallback<CleaningCommonData | null>,
 ): () => void {
 	const sub = database
 		.get<CleaningCommonModel>("cleaningCommon")
-		.findAndObserve(cleaningCommonId)
+		.query(Q.where("id", cleaningCommonId), Q.where("permitId", permitId))
+		.observeWithColumns(["fleeceNumber", "grossWeight"])
 		.subscribe({
-			next: (record) => callbacks.onChange(mapToCleaningCommon(record)),
+			next: (records) =>
+				callbacks.onChange(
+					records[0] ? mapToCleaningCommon(records[0]) : null,
+				),
 			error: (e) => callbacks.onError(e as Error),
 		})
 
@@ -200,12 +205,13 @@ export function subscribeBulkDehearing(
 export async function updateSingleCleaningHeader(
 	headerId: string,
 	data: CleaningHeaderFormData,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<CleaningHeaderModel>("cleaningHeader")
 			.find(headerId)
-		await batchWithPermitStatusUpdate(record.permitId, () => {
+		await batchWithPermitStatusUpdate(record.permitId, accountId, () => {
 			let isCompleted = false
 			const operation = record.prepareUpdate((model) => {
 				isCompleted = applyCleaningHeaderToModel(model, data)
@@ -222,9 +228,10 @@ export async function updateSingleCleaningHeader(
 export async function createSingleCleaningRecord(
 	permitId: string,
 	data: CleaningCommonFormData,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
-		await batchWithPermitStatusUpdate(permitId, () => {
+		await batchWithPermitStatusUpdate(permitId, accountId, () => {
 			const commonRecord = database
 				.get<CleaningCommonModel>("cleaningCommon")
 				.prepareCreate((model) => {
@@ -248,11 +255,13 @@ export async function createSingleCleaningRecord(
 export async function updateSingleCleaningRecord(
 	cleaningCommonId: string,
 	data: CleaningRecordSaveData,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const commonRecord = await database
 			.get<CleaningCommonModel>("cleaningCommon")
 			.find(cleaningCommonId)
+		const { permitId } = commonRecord
 		const [groomingRecords, dehearingRecords] = await Promise.all([
 			database
 				.get<GroomingModel>("grooming")
@@ -263,7 +272,7 @@ export async function updateSingleCleaningRecord(
 				.query(Q.where("cleaningCommonId", cleaningCommonId))
 				.fetch(),
 		])
-		await batchWithPermitStatusUpdate(commonRecord.permitId, () => {
+		await batchWithPermitStatusUpdate(permitId, accountId, () => {
 			const batchOps: Model[] = [
 				commonRecord.prepareUpdate((model) => {
 					applyCleaningCommonToModel(model, data.common)
@@ -332,6 +341,7 @@ export async function updateSingleCleaningRecord(
 
 export async function deleteSingleCleaningRecord(
 	cleaningCommonId: string,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const groomingRecords = await database
@@ -346,7 +356,7 @@ export async function deleteSingleCleaningRecord(
 			.get<CleaningCommonModel>("cleaningCommon")
 			.find(cleaningCommonId)
 		const { permitId } = record
-		await batchWithPermitStatusUpdate(permitId, () => ({
+		await batchWithPermitStatusUpdate(permitId, accountId, () => ({
 			operations: [
 				...groomingRecords.map((item) =>
 					item.prepareDestroyPermanently(),

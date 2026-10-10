@@ -1,3 +1,10 @@
 import ParticipantScreen from "@screens/participants/ParticipantScreen"
+import PermitOwnershipGate from "@screens/permit/PermitOwnershipGate"
 
-export default ParticipantScreen
+export default function ParticipantRoute() {
+	return (
+		<PermitOwnershipGate>
+			<ParticipantScreen />
+		</PermitOwnershipGate>
+	)
+}

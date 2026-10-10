@@ -2,13 +2,12 @@ import {
 	subscribeBulkShearingRecords,
 	subscribeSingleShearingRecordFormData,
 } from "@database"
-import { type DbState } from './utils'
 import type {
 	ShearingRecordData,
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { useEffect, useReducer } from "react"
-import { makeReadInitial, readReducer } from "./utils"
+import { type DbState, makeReadInitial, readReducer } from "./utils"
 
 export function useReadBulkShearingRecords(
 	permitId: string,
@@ -20,8 +19,7 @@ export function useReadBulkShearingRecords(
 
 	useEffect(() => {
 		return subscribeBulkShearingRecords(permitId, {
-			onChange: (records) =>
-				dispatch({ type: "success", data: records }),
+			onChange: (records) => dispatch({ type: "success", data: records }),
 			onError: (error) => dispatch({ type: "error", error }),
 		})
 	}, [permitId])
@@ -31,6 +29,7 @@ export function useReadBulkShearingRecords(
 
 export function useReadSingleShearingRecordFormData(
 	recordId?: string,
+	permitId?: string,
 ): DbState<ShearingRecordFormData | null> {
 	const [state, dispatch] = useReducer(
 		readReducer<ShearingRecordFormData | null>,
@@ -38,16 +37,16 @@ export function useReadSingleShearingRecordFormData(
 	)
 
 	useEffect(() => {
-		if (!recordId) {
+		if (!recordId || !permitId) {
 			dispatch({ type: "success", data: null })
 			return
 		}
 
-		return subscribeSingleShearingRecordFormData(recordId, {
+		return subscribeSingleShearingRecordFormData(recordId, permitId, {
 			onChange: (data) => dispatch({ type: "success", data }),
 			onError: (error) => dispatch({ type: "error", error }),
 		})
-	}, [recordId])
+	}, [recordId, permitId])
 
 	return state
 }

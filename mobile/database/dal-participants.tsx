@@ -1,6 +1,9 @@
 import type { ParticipantData, ParticipantFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { batchWithPermitStatusUpdate } from "./dal-permit"
+import {
+	assertStoredPermitOwner,
+	batchWithPermitStatusUpdate,
+} from "./dal-permit"
 import { applyParticipantToModel, mapToParticipant } from "./mappers"
 import type { ParticipantModel } from "./models"
 import { database } from "./setup"
@@ -40,13 +43,18 @@ export function subscribeBulkParticipants(
 
 export function subscribeSingleParticipant(
 	participantId: string,
-	callbacks: SubscriptionCallback<ParticipantData>,
+	permitId: string,
+	callbacks: SubscriptionCallback<ParticipantData | null>,
 ): () => void {
 	const sub = database
 		.get<ParticipantModel>("participants")
-		.findAndObserve(participantId)
+		.query(Q.where("id", participantId), Q.where("permitId", permitId))
+		.observeWithColumns(COLUMNS)
 		.subscribe({
-			next: (record) => callbacks.onChange(mapToParticipant(record)),
+			next: (records) =>
+				callbacks.onChange(
+					records[0] ? mapToParticipant(records[0]) : null,
+				),
 			error: (e) => callbacks.onError(e as Error),
 		})
 
@@ -58,10 +66,11 @@ export function subscribeSingleParticipant(
 export async function createSingleParticipant(
 	permitId: string,
 	data: ParticipantFormData,
+	accountId: string,
 ): Promise<ParticipantData> {
 	let record: ParticipantModel | undefined
 	await database.write(async () => {
-		await batchWithPermitStatusUpdate(permitId, () => {
+		await batchWithPermitStatusUpdate(permitId, accountId, () => {
 			record = database
 				.get<ParticipantModel>("participants")
 				.prepareCreate((model) => {
@@ -82,11 +91,13 @@ export async function createSingleParticipant(
 export async function updateSingleParticipant(
 	participantId: string,
 	data: ParticipantFormData,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ParticipantModel>("participants")
 			.find(participantId)
+		await assertStoredPermitOwner(record.permitId, accountId)
 		await record.update((model) => {
 			applyParticipantToModel(model, data)
 		})
@@ -95,13 +106,14 @@ export async function updateSingleParticipant(
 
 export async function deleteSingleParticipant(
 	participantId: string,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ParticipantModel>("participants")
 			.find(participantId)
 		const { permitId } = record
-		await batchWithPermitStatusUpdate(permitId, () => ({
+		await batchWithPermitStatusUpdate(permitId, accountId, () => ({
 			operations: [record.prepareDestroyPermanently()],
 			statusChange: { participantCountDelta: -1 },
 		}))

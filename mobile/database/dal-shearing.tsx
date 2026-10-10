@@ -5,7 +5,10 @@ import type {
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import { batchWithPermitStatusUpdate } from "./dal-permit"
+import {
+	assertStoredPermitOwner,
+	batchWithPermitStatusUpdate,
+} from "./dal-permit"
 import {
 	applyShearingHeaderToModel,
 	applyShearingRecordToModel,
@@ -84,14 +87,32 @@ export function subscribeBulkShearingRecords(
 
 export function subscribeSingleShearingRecordFormData(
 	recordId: string,
-	callbacks: SubscriptionCallback<ShearingRecordFormData>,
+	permitId: string,
+	callbacks: SubscriptionCallback<ShearingRecordFormData | null>,
 ): () => void {
 	const sub = database
 		.get<ShearingRecordModel>("shearingRecord")
-		.findAndObserve(recordId)
+		.query(Q.where("id", recordId), Q.where("permitId", permitId))
+		.observeWithColumns([
+			"tagNumber",
+			"sex",
+			"ageCategory",
+			"liveWeight",
+			"fiberLength",
+			"bodyCondition",
+			"gestationStatus",
+			"externalParasites",
+			"mangeSeverity",
+			"hasDandruff",
+			"isSheared",
+			"isDead",
+			"observations",
+		])
 		.subscribe({
-			next: (record) =>
-				callbacks.onChange(mapToShearingRecordFormData(record)),
+			next: (records) =>
+				callbacks.onChange(
+					records[0] ? mapToShearingRecordFormData(records[0]) : null,
+				),
 			error: (e) => callbacks.onError(e as Error),
 		})
 
@@ -103,12 +124,13 @@ export function subscribeSingleShearingRecordFormData(
 export async function updateShearingHeader(
 	id: string,
 	data: ShearingHeaderSaveData,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ShearingHeaderModel>("shearingHeader")
 			.find(id)
-		await batchWithPermitStatusUpdate(record.permitId, () => ({
+		await batchWithPermitStatusUpdate(record.permitId, accountId, () => ({
 			operations: [
 				record.prepareUpdate((model) =>
 					applyShearingHeaderToModel(model, data, true),
@@ -122,10 +144,11 @@ export async function updateShearingHeader(
 export async function createSingleShearingRecord(
 	permitId: string,
 	data: ShearingRecordFormData,
+	accountId: string,
 ): Promise<ShearingRecordData> {
 	let record: ShearingRecordModel | undefined
 	await database.write(async () => {
-		await batchWithPermitStatusUpdate(permitId, () => {
+		await batchWithPermitStatusUpdate(permitId, accountId, () => {
 			record = database
 				.get<ShearingRecordModel>("shearingRecord")
 				.prepareCreate((model) => {
@@ -145,11 +168,13 @@ export async function createSingleShearingRecord(
 export async function updateSingleShearingRecord(
 	recordId: string,
 	data: ShearingRecordFormData,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ShearingRecordModel>("shearingRecord")
 			.find(recordId)
+		await assertStoredPermitOwner(record.permitId, accountId)
 		await record.update((model) => {
 			applyShearingRecordToModel(model, data)
 		})
@@ -158,13 +183,14 @@ export async function updateSingleShearingRecord(
 
 export async function deleteSingleShearingRecord(
 	recordId: string,
+	accountId: string,
 ): Promise<void> {
 	await database.write(async () => {
 		const record = await database
 			.get<ShearingRecordModel>("shearingRecord")
 			.find(recordId)
 		const { permitId } = record
-		await batchWithPermitStatusUpdate(permitId, () => ({
+		await batchWithPermitStatusUpdate(permitId, accountId, () => ({
 			operations: [record.prepareDestroyPermanently()],
 			statusChange: { shearingRecordCountDelta: -1 },
 		}))

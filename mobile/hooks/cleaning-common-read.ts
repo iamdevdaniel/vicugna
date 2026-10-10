@@ -16,8 +16,7 @@ export function useReadBulkCleaningCommon(
 
 	useEffect(() => {
 		return subscribeBulkCleaningCommon(permitId, {
-			onChange: (records) =>
-				dispatch({ type: "success", data: records }),
+			onChange: (records) => dispatch({ type: "success", data: records }),
 			onError: (error) => dispatch({ type: "error", error }),
 		})
 	}, [permitId])
@@ -27,6 +26,7 @@ export function useReadBulkCleaningCommon(
 
 export function useReadSingleCleaningCommon(
 	cleaningCommonId?: string,
+	permitId?: string,
 ): DbState<CleaningCommonData | null> {
 	const [state, dispatch] = useReducer(
 		readReducer<CleaningCommonData | null>,
@@ -34,16 +34,16 @@ export function useReadSingleCleaningCommon(
 	)
 
 	useEffect(() => {
-		if (!cleaningCommonId || cleaningCommonId === "new") {
+		if (!cleaningCommonId || cleaningCommonId === "new" || !permitId) {
 			dispatch({ type: "success", data: null })
 			return
 		}
 
-		return subscribeSingleCleaningCommon(cleaningCommonId, {
+		return subscribeSingleCleaningCommon(cleaningCommonId, permitId, {
 			onChange: (record) => dispatch({ type: "success", data: record }),
 			onError: (error) => dispatch({ type: "error", error }),
 		})
-	}, [cleaningCommonId])
+	}, [cleaningCommonId, permitId])
 
 	return state
 }

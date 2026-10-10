@@ -1,6 +1,7 @@
 import type { MobilePermitData, PermitFieldData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import { getPermitStatuses } from "@utils/permit-status-rules"
+import { assertPermitOwner } from "./dal-permit"
 import { applyPermitToModel, applySyncPermitToModel } from "./mappers"
 import type {
 	CleaningCommonModel,
@@ -12,7 +13,6 @@ import type {
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
-import { assertPermitOwner } from "./permit-ownership"
 import { database } from "./setup"
 
 let pendingSave: Promise<void> = Promise.resolve()
