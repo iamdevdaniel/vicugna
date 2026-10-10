@@ -30,6 +30,7 @@ export const OverviewStep = ({
 	const cardOnPress = done && action ? action.onPress : undefined
 	return (
 		<Card
+			accessibilityLabel={cardOnPress ? `Abrir ${title}` : undefined}
 			accessibilityRole={cardOnPress ? "button" : undefined}
 			accessibilityHint={cardOnPress ? `Abre ${title}` : undefined}
 			mode="elevated"

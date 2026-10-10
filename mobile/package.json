@@ -9,6 +9,7 @@
     "android": "expo run:android",
     "e2e:build": "expo prebuild --platform android --no-install && detox build -C ./e2e/detox.config.js -c android.attached.debug",
     "e2e:happy": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/happy-path.test.js",
+    "e2e:isolation": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/account-isolation.test.js",
     "e2e:validation": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/validation.test.js",
     "ios": "expo run:ios",
     "web": "expo start --web",

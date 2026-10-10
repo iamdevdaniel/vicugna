@@ -201,6 +201,7 @@ export function HomeAccountMenu({
 						</Text>
 						{user ? (
 							<Button
+								accessibilityLabel="Cerrar sesión"
 								mode="outlined"
 								icon="logout"
 								onPress={() => close(onLogout)}

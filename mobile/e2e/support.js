@@ -206,8 +206,8 @@ async function setTime(label, hour, minute) {
 }
 
 async function resetLoginAndLoadPermits() {
-	const email = requiredEnvironment("E2E_USER_EMAIL")
-	const password = requiredEnvironment("E2E_USER_PASSWORD")
+	const email = requiredEnvironment("E2E_TEST_USER_01_EMAIL")
+	const password = requiredEnvironment("E2E_TEST_USER_01_PASSWORD")
 
 	console.log("Resetting local app data...")
 	console.log("Opening the Expo development client...")
@@ -259,6 +259,7 @@ module.exports = {
 	expectText,
 	getFieldValue,
 	openPermit,
+	requiredEnvironment,
 	replaceField,
 	resetLoginAndLoadPermits,
 	setTime,
