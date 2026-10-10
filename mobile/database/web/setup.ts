@@ -41,10 +41,6 @@ export class WebDatabase extends Dexie {
 		this.version(1).stores({
 			permits: "id, permitNumber",
 			participants: "id, permitId, createdAt",
-		})
-		this.version(2).stores({
-			permits: "id, permitNumber",
-			participants: "id, permitId, createdAt",
 			backupSettings: "id",
 		})
 	}
