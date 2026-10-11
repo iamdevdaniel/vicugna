@@ -2,7 +2,18 @@ import type { MobilePermitData, PermitFieldData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import { getPermitStatuses } from "@utils/permit-status-rules"
 import { assertPermitOwner } from "./dal-permit"
-import { applyPermitToModel, applySyncPermitToModel } from "./mappers"
+import {
+	applyCleaningCommonSnapshotToModel,
+	applyCleaningHeaderSnapshotToModel,
+	applyDehearingSnapshotToModel,
+	applyGroomingSnapshotToModel,
+	applyParticipantSnapshotToModel,
+	applyPermitStatusesToModel,
+	applyPermitToModel,
+	applyShearingHeaderSnapshotToModel,
+	applyShearingRecordSnapshotToModel,
+	applySyncPermitToModel,
+} from "./model-mapping"
 import type {
 	CleaningCommonModel,
 	CleaningHeaderModel,
@@ -14,6 +25,10 @@ import type {
 	ShearingRecordModel,
 } from "./models"
 import { database } from "./setup"
+
+// ==========================================
+// WRITE
+// ==========================================
 
 export async function savePermits(
 	accountId: string,
@@ -97,7 +112,8 @@ export async function savePermits(
 					existingPermit.prepareUpdate((model) => {
 						applySyncPermitToModel(model, permit)
 						model.syncVersion = syncVersion ?? 0
-						if (statuses) applyStatuses(model, statuses)
+						if (statuses)
+							applyPermitStatusesToModel(model, statuses)
 					}),
 				)
 			} else {
@@ -136,6 +152,10 @@ export async function savePermits(
 		if (batchOps.length > 0) await database.batch(batchOps)
 	})
 }
+
+// ==========================================
+// HELPERS
+// ==========================================
 
 async function readFieldData(permitIds: string[]) {
 	if (permitIds.length === 0) {
@@ -231,7 +251,7 @@ function prepareSnapshotReplacement(
 		const currentHeader = shearingHeader
 		batchOps.push(
 			currentHeader.prepareUpdate((model) =>
-				applyShearingHeaderSnapshot(model, data.shearingHeader),
+				applyShearingHeaderSnapshotToModel(model, data.shearingHeader),
 			),
 		)
 	} else {
@@ -244,7 +264,7 @@ function prepareSnapshotReplacement(
 		const currentHeader = cleaningHeader
 		batchOps.push(
 			currentHeader.prepareUpdate((model) =>
-				applyCleaningHeaderSnapshot(model, data.cleaningHeader),
+				applyCleaningHeaderSnapshotToModel(model, data.cleaningHeader),
 			),
 		)
 	} else {
@@ -290,15 +310,6 @@ function getSnapshotStatuses(data: PermitFieldData) {
 	})
 }
 
-function applyStatuses(
-	model: PermitModel,
-	statuses: ReturnType<typeof getSnapshotStatuses>,
-) {
-	model.participantsStatus = statuses.participantsStatus
-	model.shearingStatus = statuses.shearingStatus
-	model.cleaningStatus = statuses.cleaningStatus
-}
-
 function prepareEmptyShearingHeader(permitId: string) {
 	return database
 		.get<ShearingHeaderModel>("shearingHeader")
@@ -328,21 +339,6 @@ function prepareEmptyCleaningHeader(permitId: string) {
 		})
 }
 
-function applyShearingHeaderSnapshot(
-	model: ShearingHeaderModel,
-	data: PermitFieldData["shearingHeader"],
-) {
-	model.permitId = data.permitId
-	model.site = data.site
-	model.latitude = data.latitude
-	model.longitude = data.longitude
-	model.roundupCount = data.roundupCount
-	model.eventDate = data.eventDate
-	model.startTime = data.startTime
-	model.endTime = data.endTime
-	model.isCompleted = data.isCompleted
-}
-
 function prepareShearingHeaderSnapshot(
 	data: PermitFieldData["shearingHeader"],
 ) {
@@ -350,20 +346,8 @@ function prepareShearingHeaderSnapshot(
 		.get<ShearingHeaderModel>("shearingHeader")
 		.prepareCreate((model) => {
 			model._raw.id = data.id
-			applyShearingHeaderSnapshot(model, data)
+			applyShearingHeaderSnapshotToModel(model, data)
 		})
-}
-
-function applyCleaningHeaderSnapshot(
-	model: CleaningHeaderModel,
-	data: PermitFieldData["cleaningHeader"],
-) {
-	model.permitId = data.permitId
-	model.startDate = data.startDate
-	model.endDate = data.endDate
-	model.site = data.site
-	model.supervisors = data.supervisors
-	model.isCompleted = data.isCompleted
 }
 
 function prepareCleaningHeaderSnapshot(
@@ -373,7 +357,7 @@ function prepareCleaningHeaderSnapshot(
 		.get<CleaningHeaderModel>("cleaningHeader")
 		.prepareCreate((model) => {
 			model._raw.id = data.id
-			applyCleaningHeaderSnapshot(model, data)
+			applyCleaningHeaderSnapshotToModel(model, data)
 		})
 }
 
@@ -384,13 +368,7 @@ function prepareParticipantSnapshot(
 		.get<ParticipantModel>("participants")
 		.prepareCreate((model) => {
 			model._raw.id = data.id
-			model.permitId = data.permitId
-			model.name = data.name
-			model.lastNames = data.lastNames
-			model.gender = data.gender
-			model.identityNumber = data.identityNumber
-			model.signature = data.signature
-			model.notes = data.notes
+			applyParticipantSnapshotToModel(model, data)
 		})
 }
 
@@ -401,20 +379,7 @@ function prepareShearingRecordSnapshot(
 		.get<ShearingRecordModel>("shearingRecord")
 		.prepareCreate((model) => {
 			model._raw.id = data.id
-			model.permitId = data.permitId
-			model.tagNumber = data.tagNumber
-			model.sex = data.sex
-			model.ageCategory = data.ageCategory
-			model.liveWeight = data.liveWeight
-			model.fiberLength = data.fiberLength
-			model.bodyCondition = data.bodyCondition
-			model.gestationStatus = data.gestationStatus
-			model.externalParasites = data.externalParasites
-			model.mangeSeverity = data.mangeSeverity
-			model.hasDandruff = data.hasDandruff
-			model.isSheared = data.isSheared
-			model.isDead = data.isDead
-			model.observations = data.observations
+			applyShearingRecordSnapshotToModel(model, data)
 		})
 }
 
@@ -425,9 +390,7 @@ function prepareCleaningCommonSnapshot(
 		.get<CleaningCommonModel>("cleaningCommon")
 		.prepareCreate((model) => {
 			model._raw.id = data.id
-			model.permitId = data.permitId
-			model.fleeceNumber = data.fleeceNumber
-			model.grossWeight = data.grossWeight
+			applyCleaningCommonSnapshotToModel(model, data)
 		})
 }
 
@@ -436,11 +399,7 @@ function prepareGroomingSnapshot(
 ) {
 	return database.get<GroomingModel>("grooming").prepareCreate((model) => {
 		model._raw.id = data.id
-		model.cleaningCommonId = data.cleaningCommonId
-		model.cleanWeight = data.cleanWeight
-		model.dirtyWeight = data.dirtyWeight
-		model.totalWeight = data.totalWeight
-		model.isCompleted = data.isCompleted
+		applyGroomingSnapshotToModel(model, data)
 	})
 }
 
@@ -449,12 +408,6 @@ function prepareDehearingSnapshot(
 ) {
 	return database.get<DehearingModel>("dehearing").prepareCreate((model) => {
 		model._raw.id = data.id
-		model.cleaningCommonId = data.cleaningCommonId
-		model.dehairedWeight = data.dehairedWeight
-		model.bristleWeight = data.bristleWeight
-		model.hasDandruff = data.hasDandruff
-		model.dehairerName = data.dehairerName
-		model.signature = data.signature
-		model.isCompleted = data.isCompleted
+		applyDehearingSnapshotToModel(model, data)
 	})
 }

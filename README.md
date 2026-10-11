@@ -23,6 +23,14 @@ npm install
 
 Project guides are listed in [docs/README.md](docs/README.md).
 
+Section-title comments always use this format:
+
+```ts
+// ==========================================
+// TITLE
+// ==========================================
+```
+
 ## Testing
 
 See [docs/testing.md](docs/testing.md) for the current automated test coverage,

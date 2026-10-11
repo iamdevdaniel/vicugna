@@ -55,11 +55,15 @@ export type MobileLoginResponseData = {
 	user: MobileAuthUser
 }
 
+// ==========================================
 // PARTICIPANTS
+// ==========================================
 
 export type ParticipantFormData = Omit<ParticipantData, "id" | "permitId">
 
+// ==========================================
 // SHEARING
+// ==========================================
 
 export type ShearingHeaderSaveData = Omit<
 	ShearingHeaderData,
@@ -84,7 +88,9 @@ export type ShearingRecordFormData = Omit<
 	fiberLength: string
 }
 
+// ==========================================
 // CLEANING
+// ==========================================
 
 export type CleaningHeaderFormData = Omit<
 	CleaningHeaderData,

@@ -6,7 +6,7 @@ import {
 	type PermitStatusChange,
 	type PermitStatuses,
 } from "@utils/permit-status-rules"
-import { mapToPermit } from "./mappers"
+import { mapToPermit } from "./model-mapping"
 import type {
 	CleaningCommonModel,
 	CleaningHeaderModel,
@@ -29,7 +29,9 @@ type PreparedPermitMutation = {
 	statusChange: PermitStatusChange
 }
 
-/* ---------- READ ---------- */
+// ==========================================
+// READ
+// ==========================================
 
 export function subscribePermits(
 	accountId: string,
@@ -92,7 +94,9 @@ export async function assertStoredPermitOwner(
 	assertPermitOwner(permit.userId, accountId)
 }
 
-/* ---------- WRITE ---------- */
+// ==========================================
+// WRITE
+// ==========================================
 
 export async function updatePermitSyncStatus(
 	data:
@@ -138,7 +142,9 @@ export async function batchWithPermitStatusUpdate(
 	])
 }
 
-/* ---------- HELPERS ---------- */
+// ==========================================
+// HELPERS
+// ==========================================
 
 export function assertPermitOwner(
 	permitUserId: string,

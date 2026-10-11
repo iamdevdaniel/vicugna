@@ -10,6 +10,7 @@ import type {
 	ParticipantData,
 	ParticipantFormData,
 	PermitData,
+	PermitFieldData,
 	ShearingHeaderData,
 	ShearingHeaderSaveData,
 	ShearingRecordData,
@@ -17,6 +18,7 @@ import type {
 } from "@definitions/types"
 import { normalizeCalendarDate } from "@utils/calendar-date"
 import { calculateTotalWeight } from "@utils/grooming-record-rules"
+import type { PermitStatuses } from "@utils/permit-status-rules"
 import {
 	deriveIsSheared,
 	normalizeGestationStatus,
@@ -32,6 +34,10 @@ import type {
 	ShearingHeaderModel,
 	ShearingRecordModel,
 } from "./models"
+
+// ==========================================
+// PERMIT
+// ==========================================
 
 export function mapToPermit(model: PermitModel): PermitData {
 	return {
@@ -81,6 +87,19 @@ export function applySyncPermitToModel(
 	model.syncedAt = data.syncedAt
 }
 
+export function applyPermitStatusesToModel(
+	model: PermitModel,
+	statuses: PermitStatuses,
+): void {
+	model.participantsStatus = statuses.participantsStatus
+	model.shearingStatus = statuses.shearingStatus
+	model.cleaningStatus = statuses.cleaningStatus
+}
+
+// ==========================================
+// PARTICIPANT
+// ==========================================
+
 export function mapToParticipant(m: ParticipantModel): ParticipantData {
 	return {
 		id: m.id,
@@ -105,6 +124,23 @@ export function applyParticipantToModel(
 	model.signature = data.signature
 	model.notes = data.notes
 }
+
+export function applyParticipantSnapshotToModel(
+	model: ParticipantModel,
+	data: PermitFieldData["participants"][number],
+): void {
+	model.permitId = data.permitId
+	model.name = data.name
+	model.lastNames = data.lastNames
+	model.gender = data.gender
+	model.identityNumber = data.identityNumber
+	model.signature = data.signature
+	model.notes = data.notes
+}
+
+// ==========================================
+// SHEARING HEADER
+// ==========================================
 
 export function mapToShearingHeader(
 	model: ShearingHeaderModel,
@@ -137,6 +173,25 @@ export function applyShearingHeaderToModel(
 	model.endTime = data.endTime
 	model.isCompleted = isCompleted
 }
+
+export function applyShearingHeaderSnapshotToModel(
+	model: ShearingHeaderModel,
+	data: PermitFieldData["shearingHeader"],
+): void {
+	model.permitId = data.permitId
+	model.site = data.site
+	model.latitude = data.latitude
+	model.longitude = data.longitude
+	model.roundupCount = data.roundupCount
+	model.eventDate = data.eventDate
+	model.startTime = data.startTime
+	model.endTime = data.endTime
+	model.isCompleted = data.isCompleted
+}
+
+// ==========================================
+// SHEARING RECORD
+// ==========================================
 
 export function mapToShearingRecord(
 	model: ShearingRecordModel,
@@ -207,6 +262,30 @@ export function applyShearingRecordToModel(
 	model.observations = data.observations
 }
 
+export function applyShearingRecordSnapshotToModel(
+	model: ShearingRecordModel,
+	data: PermitFieldData["shearingRecords"][number],
+): void {
+	model.permitId = data.permitId
+	model.tagNumber = data.tagNumber
+	model.sex = data.sex
+	model.ageCategory = data.ageCategory
+	model.liveWeight = data.liveWeight
+	model.fiberLength = data.fiberLength
+	model.bodyCondition = data.bodyCondition
+	model.gestationStatus = data.gestationStatus
+	model.externalParasites = data.externalParasites
+	model.mangeSeverity = data.mangeSeverity
+	model.hasDandruff = data.hasDandruff
+	model.isSheared = data.isSheared
+	model.isDead = data.isDead
+	model.observations = data.observations
+}
+
+// ==========================================
+// CLEANING HEADER
+// ==========================================
+
 export function mapToCleaningHeader(
 	model: CleaningHeaderModel,
 ): CleaningHeaderData {
@@ -239,6 +318,22 @@ export function applyCleaningHeaderToModel(
 	return isCompleted
 }
 
+export function applyCleaningHeaderSnapshotToModel(
+	model: CleaningHeaderModel,
+	data: PermitFieldData["cleaningHeader"],
+): void {
+	model.permitId = data.permitId
+	model.startDate = data.startDate
+	model.endDate = data.endDate
+	model.site = data.site
+	model.supervisors = data.supervisors
+	model.isCompleted = data.isCompleted
+}
+
+// ==========================================
+// CLEANING COMMON
+// ==========================================
+
 export function mapToCleaningCommon(
 	model: CleaningCommonModel,
 ): CleaningCommonData {
@@ -259,6 +354,19 @@ export function applyCleaningCommonToModel(
 	model.fleeceNumber = data.fleeceNumber
 	model.grossWeight = Number(data.grossWeight)
 }
+
+export function applyCleaningCommonSnapshotToModel(
+	model: CleaningCommonModel,
+	data: PermitFieldData["cleaningCommonRecords"][number],
+): void {
+	model.permitId = data.permitId
+	model.fleeceNumber = data.fleeceNumber
+	model.grossWeight = data.grossWeight
+}
+
+// ==========================================
+// GROOMING
+// ==========================================
 
 export function mapToGrooming(model: GroomingModel): GroomingData {
 	return {
@@ -286,6 +394,21 @@ export function applyGroomingToModel(
 	model.isCompleted = true
 }
 
+export function applyGroomingSnapshotToModel(
+	model: GroomingModel,
+	data: PermitFieldData["groomingDetails"][number],
+): void {
+	model.cleaningCommonId = data.cleaningCommonId
+	model.cleanWeight = data.cleanWeight
+	model.dirtyWeight = data.dirtyWeight
+	model.totalWeight = data.totalWeight
+	model.isCompleted = data.isCompleted
+}
+
+// ==========================================
+// DEHEARING
+// ==========================================
+
 export function mapToDehearing(model: DehearingModel): DehearingData {
 	return {
 		id: model.id,
@@ -311,4 +434,17 @@ export function applyDehearingToModel(
 	model.dehairerName = data.dehairerName
 	model.signature = data.signature
 	model.isCompleted = true
+}
+
+export function applyDehearingSnapshotToModel(
+	model: DehearingModel,
+	data: PermitFieldData["dehearingDetails"][number],
+): void {
+	model.cleaningCommonId = data.cleaningCommonId
+	model.dehairedWeight = data.dehairedWeight
+	model.bristleWeight = data.bristleWeight
+	model.hasDandruff = data.hasDandruff
+	model.dehairerName = data.dehairerName
+	model.signature = data.signature
+	model.isCompleted = data.isCompleted
 }

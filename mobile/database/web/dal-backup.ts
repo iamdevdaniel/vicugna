@@ -34,7 +34,9 @@ export type WebBackupSnapshot = {
 	participants: Array<ParticipantData & { createdAt: number }>
 }
 
-/* ---------- BACKUP CONFIGURATION ---------- */
+// ==========================================
+// BACKUP CONFIGURATION
+// ==========================================
 
 type SubscriptionCallbacks = {
 	onChange: (settings: WebBackupSettingsRecord | null) => void
@@ -82,7 +84,9 @@ export async function markBackupPending(database: WebDatabase): Promise<void> {
 	})
 }
 
-/* ---------- BACKUP WRITING ---------- */
+// ==========================================
+// BACKUP WRITING
+// ==========================================
 
 export async function writeBackup(
 	accountId: string,
@@ -228,7 +232,9 @@ function getBackupRevision(
 	return settings.revision >= 0 ? settings.revision : 0
 }
 
-/* ---------- SNAPSHOT RESTORE ---------- */
+// ==========================================
+// SNAPSHOT RESTORE
+// ==========================================
 
 export async function restoreBackupSnapshot(
 	accountId: string,
@@ -265,7 +271,9 @@ export async function restoreBackupSnapshot(
 	)
 }
 
-/* ---------- BACKUP VALIDATION ---------- */
+// ==========================================
+// BACKUP VALIDATION
+// ==========================================
 
 function assertBackupSnapshot(
 	value: unknown,
@@ -358,7 +366,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
-/* ---------- FILE PERMISSION ---------- */
+// ==========================================
+// FILE PERMISSION
+// ==========================================
 
 async function ensureWritePermission(
 	fileHandle: WebBackupFileHandle,
