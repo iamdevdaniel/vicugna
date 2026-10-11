@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import { z } from "zod"
 import {
 	PermitValidationError,
@@ -147,6 +148,10 @@ export function parseSyncPayload(payload: unknown): SyncFieldData {
 	}
 
 	return result.data
+}
+
+export function getSyncPayloadHash(data: SyncFieldData): string {
+	return createHash("sha256").update(JSON.stringify(data)).digest("hex")
 }
 
 export function getPayloadPermitIdForLog(payload: unknown): string | null {

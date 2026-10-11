@@ -7,7 +7,7 @@ import {
 	dehearingDetails,
 	groomingDetails,
 	participants,
-	permitSyncVersions,
+	permitSyncAttempts,
 	permits,
 	shearingHeaders,
 	shearingRecords,
@@ -25,6 +25,7 @@ type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 export async function saveSyncFieldData(
 	data: SyncFieldData,
 	userId: string,
+	uploadHash: string,
 ): Promise<PermitSyncResult> {
 	const syncedAt = new Date()
 	let syncVersion = 0
@@ -53,9 +54,9 @@ export async function saveSyncFieldData(
 			)
 		}
 
-		const latestVersion = await tx.query.permitSyncVersions.findFirst({
-			where: eq(permitSyncVersions.permitId, data.permit.id),
-			orderBy: [desc(permitSyncVersions.version)],
+		const latestVersion = await tx.query.permitSyncAttempts.findFirst({
+			where: eq(permitSyncAttempts.permitId, data.permit.id),
+			orderBy: [desc(permitSyncAttempts.version)],
 		})
 		const currentVersion = latestVersion?.version ?? null
 
@@ -79,10 +80,11 @@ export async function saveSyncFieldData(
 
 		await deletePermitChildData(data, tx)
 		await insertPermitChildData(data, tx)
-		await tx.insert(permitSyncVersions).values({
-			id: crypto.randomUUID(),
+		await tx.insert(permitSyncAttempts).values({
+			syncAttemptId: crypto.randomUUID(),
 			permitId: data.permit.id,
 			version: syncVersion,
+			uploadHash,
 			submittedByUserId: userId,
 			submittedAt: syncedAt,
 		})

@@ -15,6 +15,13 @@
       "when": 1791433839677,
       "tag": "0001_military_chamber",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791695844804,
+      "tag": "0002_bent_shooting_star",
+      "breakpoints": true
     }
   ]
 }

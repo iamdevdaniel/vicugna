@@ -107,14 +107,15 @@ export const permits = pgTable(
 	],
 )
 
-export const permitSyncVersions = pgTable(
-	"permit_sync_versions",
+export const permitSyncAttempts = pgTable(
+	"permit_sync_attempts",
 	{
-		id: text("id").primaryKey(),
+		syncAttemptId: text("sync_attempt_id").primaryKey(),
 		permitId: text("permit_id")
 			.notNull()
 			.references(() => permits.id, { onDelete: "cascade" }),
 		version: integer("version").notNull(),
+		uploadHash: text("upload_hash"),
 		submittedByUserId: text("submitted_by_user_id")
 			.notNull()
 			.references(() => users.id),
@@ -122,7 +123,7 @@ export const permitSyncVersions = pgTable(
 		exportedAt: timestamp("exported_at"),
 	},
 	(table) => [
-		uniqueIndex("permit_sync_versions_permit_version_unique").on(
+		uniqueIndex("permit_sync_attempts_permit_version_unique").on(
 			table.permitId,
 			table.version,
 		),
@@ -307,7 +308,7 @@ export const communityRelations = relations(communities, ({ one, many }) => ({
 
 export const userRelations = relations(users, ({ many }) => ({
 	assignments: many(assignments),
-	permitSyncVersions: many(permitSyncVersions),
+	permitSyncAttempts: many(permitSyncAttempts),
 }))
 
 export const assignmentRelations = relations(assignments, ({ one }) => ({
@@ -344,18 +345,18 @@ export const permitRelations = relations(permits, ({ one, many }) => ({
 	shearingRecords: many(shearingRecords),
 	cleaningHeader: one(cleaningHeaders),
 	cleaningCommonRecords: many(cleaningCommonRecords),
-	permitSyncVersions: many(permitSyncVersions),
+	permitSyncAttempts: many(permitSyncAttempts),
 }))
 
-export const permitSyncVersionRelations = relations(
-	permitSyncVersions,
+export const permitSyncAttemptRelations = relations(
+	permitSyncAttempts,
 	({ one }) => ({
 		permit: one(permits, {
-			fields: [permitSyncVersions.permitId],
+			fields: [permitSyncAttempts.permitId],
 			references: [permits.id],
 		}),
 		submittedByUser: one(users, {
-			fields: [permitSyncVersions.submittedByUserId],
+			fields: [permitSyncAttempts.submittedByUserId],
 			references: [users.id],
 		}),
 	}),
