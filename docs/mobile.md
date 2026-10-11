@@ -1,10 +1,12 @@
+# Mobile
+
 ## Tech Stack
 
 ### App
 
 - **Expo / React Native**: One project for Android and the laptop Chrome PWA.
 - **WatermelonDB**: Android local database for offline data.
-- **Dexie / IndexedDB**: Planned PWA local database behind web-specific files.
+- **Dexie / IndexedDB**: PWA local database behind web-specific files.
 - **React Native Paper**: Android components.
 - **Mantine**: Laptop web components; it must not be imported by
   native files.

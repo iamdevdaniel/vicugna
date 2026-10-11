@@ -29,7 +29,7 @@ Before a run:
 - Start the backend and Metro.
 - Give the test user two empty permits named `TEST-01` and `TEST-02`.
 
-See the [mobile E2E guide](mobile/e2e/README.md) for the environment variables and complete device setup.
+See the [Android E2E guide](android-e2e.md) for the environment variables and complete device setup.
 
 For the admin browser tests, install Chromium once from `backend`:
 

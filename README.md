@@ -21,13 +21,12 @@ Install dependencies from the repository root:
 npm install
 ```
 
-Use the project-specific README files and scripts for local backend and mobile
-development.
+Project guides are listed in [docs/README.md](docs/README.md).
 
 ## Testing
 
-See [TESTING.md](TESTING.md) for the current automated test coverage, setup, and
-architecture.
+See [docs/testing.md](docs/testing.md) for the current automated test coverage,
+setup, and architecture.
 
 ## Releases
 

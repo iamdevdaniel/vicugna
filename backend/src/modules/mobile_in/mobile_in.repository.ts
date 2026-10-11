@@ -53,15 +53,6 @@ export async function saveSyncFieldData(
 			)
 		}
 
-		if (
-			existingPermit.syncStatus !== "in_progress" &&
-			existingPermit.syncStatus !== "reopened"
-		) {
-			throw new PermitSyncConflictError(
-				"El permiso no está disponible para sincronizar",
-			)
-		}
-
 		const latestVersion = await tx.query.permitSyncVersions.findFirst({
 			where: eq(permitSyncVersions.permitId, data.permit.id),
 			orderBy: [desc(permitSyncVersions.version)],
@@ -70,7 +61,17 @@ export async function saveSyncFieldData(
 
 		if (data.expectedSyncVersion !== currentVersion) {
 			throw new PermitSyncConflictError(
-				"El permiso cambió en el servidor. Vuelve a descargarlo antes de enviarlo",
+				"Hay datos más nuevos de este permiso. ¿Qué quieres hacer?",
+				"SYNC_VERSION_CONFLICT",
+			)
+		}
+
+		if (
+			existingPermit.syncStatus !== "in_progress" &&
+			existingPermit.syncStatus !== "reopened"
+		) {
+			throw new PermitSyncConflictError(
+				"El permiso no está disponible para sincronizar",
 			)
 		}
 

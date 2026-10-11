@@ -1,4 +1,4 @@
-# Backend Notes
+# Backend
 
 ## Database Commands
 

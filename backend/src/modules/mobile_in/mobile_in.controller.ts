@@ -51,7 +51,11 @@ export async function syncPermit(
 		}
 
 		if (error instanceof PermitSyncConflictError) {
-			res.status(409).json({ ok: false, error: error.message })
+			res.status(409).json({
+				ok: false,
+				error: error.message,
+				code: error.code,
+			})
 			return
 		}
 
