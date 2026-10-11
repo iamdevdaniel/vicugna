@@ -198,7 +198,7 @@ export class PermitSyncForbiddenError extends Error {
 export class PermitSyncConflictError extends Error {
 	constructor(
 		message: string,
-		readonly code?: "SYNC_VERSION_CONFLICT",
+		readonly code?: "SYNC_ATTEMPT_CONFLICT" | "SYNC_VERSION_CONFLICT",
 	) {
 		super(message)
 		this.name = "PermitSyncConflictError"

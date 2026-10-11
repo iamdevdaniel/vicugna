@@ -30,7 +30,8 @@ comparing the message text.
 
 Current validation-code families are `PYLD`, `VPRM`, `VPRT`, `VSHE`, and
 `VCLG`. An outdated permit upload uses `SYNC_VERSION_CONFLICT` so the app can
-offer to keep the local data or replace it with the current server data.
+offer to keep the local data or replace it with the current server data. Reuse
+of a sync-attempt ID with different data uses `SYNC_ATTEMPT_CONFLICT`.
 
 ## HTTP status
 
