@@ -29,16 +29,7 @@ type PreparedPermitMutation = {
 	statusChange: PermitStatusChange
 }
 
-export function assertPermitOwner(
-	permitUserId: string,
-	accountId: string,
-): void {
-	if (permitUserId !== accountId) {
-		throw new Error("El permiso no pertenece a la cuenta activa")
-	}
-}
-
-//-------------------READ-------------------
+/* ---------- READ ---------- */
 
 export function subscribePermits(
 	accountId: string,
@@ -93,7 +84,15 @@ export function subscribeSinglePermit(
 	return () => sub.unsubscribe()
 }
 
-//-------------------WRITE-------------------
+export async function assertStoredPermitOwner(
+	permitId: string,
+	accountId: string,
+): Promise<void> {
+	const permit = await database.get<PermitModel>("permits").find(permitId)
+	assertPermitOwner(permit.userId, accountId)
+}
+
+/* ---------- WRITE ---------- */
 
 export async function updatePermitSyncStatus(
 	data:
@@ -139,12 +138,15 @@ export async function batchWithPermitStatusUpdate(
 	])
 }
 
-export async function assertStoredPermitOwner(
-	permitId: string,
+/* ---------- HELPERS ---------- */
+
+export function assertPermitOwner(
+	permitUserId: string,
 	accountId: string,
-): Promise<void> {
-	const permit = await database.get<PermitModel>("permits").find(permitId)
-	assertPermitOwner(permit.userId, accountId)
+): void {
+	if (permitUserId !== accountId) {
+		throw new Error("El permiso no pertenece a la cuenta activa")
+	}
 }
 
 async function readPermitStatusState(permitId: string, accountId: string) {
