@@ -16,6 +16,13 @@ in `screens`: `.tsx` is the Android implementation and `.web.tsx` is the laptop
 implementation. Keeping the platform pair outside `app` prevents Expo Router
 from including both interfaces in both bundles.
 
+### DAL organization
+
+In mobile DAL files, exported database reads go under `READ` and exported
+database writes go under `WRITE`. Supporting implementation goes under
+`HELPERS`. An exported helper that accesses the database belongs under `READ`
+or `WRITE`, not `HELPERS`.
+
 ### Backend
 
 - **Express (Node.js)**: API server and administrative interface.

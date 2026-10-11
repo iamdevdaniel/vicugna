@@ -15,7 +15,7 @@ import {
 	mapToShearingHeader,
 	mapToShearingRecord,
 	mapToShearingRecordFormData,
-} from "./mappers"
+} from "./model-mapping"
 import type { ShearingHeaderModel, ShearingRecordModel } from "./models"
 import { database } from "./setup"
 
@@ -24,7 +24,9 @@ type SubscriptionCallback<T> = {
 	onError: (error: Error) => void
 }
 
-//-------------------READ-------------------
+// ==========================================
+// READ
+// ==========================================
 
 export function subscribeSingleShearingHeader(
 	permitId: string,
@@ -119,7 +121,9 @@ export function subscribeSingleShearingRecordFormData(
 	return () => sub.unsubscribe()
 }
 
-//-------------------WRITE-------------------
+// ==========================================
+// WRITE
+// ==========================================
 
 export async function updateShearingHeader(
 	id: string,

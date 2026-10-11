@@ -1,6 +1,8 @@
 import type { PermitSyncStatus } from "@shared"
 
+// ==========================================
 // HTTP
+// ==========================================
 export interface CreateAssignmentData {
 	seasonId: string
 	communityId: string

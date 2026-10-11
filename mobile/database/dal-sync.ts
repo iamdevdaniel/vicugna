@@ -10,7 +10,7 @@ import {
 	mapToShearingHeader,
 	mapToShearingRecord,
 	mapToSyncPermit,
-} from "./mappers"
+} from "./model-mapping"
 import type {
 	CleaningCommonModel,
 	CleaningHeaderModel,

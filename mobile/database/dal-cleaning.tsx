@@ -18,7 +18,7 @@ import {
 	mapToCleaningHeader,
 	mapToDehearing,
 	mapToGrooming,
-} from "./mappers"
+} from "./model-mapping"
 import type {
 	CleaningCommonModel,
 	CleaningHeaderModel,
@@ -32,7 +32,9 @@ type SubscriptionCallback<T> = {
 	onError: (error: Error) => void
 }
 
-//-------------------READ-------------------
+// ==========================================
+// READ
+// ==========================================
 
 export function subscribeSingleCleaningHeader(
 	permitId: string,
@@ -200,7 +202,9 @@ export function subscribeBulkDehearing(
 	return () => sub.unsubscribe()
 }
 
-//-------------------WRITE-------------------
+// ==========================================
+// WRITE
+// ==========================================
 
 export async function updateSingleCleaningHeader(
 	headerId: string,

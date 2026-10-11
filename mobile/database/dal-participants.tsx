@@ -4,7 +4,7 @@ import {
 	assertStoredPermitOwner,
 	batchWithPermitStatusUpdate,
 } from "./dal-permit"
-import { applyParticipantToModel, mapToParticipant } from "./mappers"
+import { applyParticipantToModel, mapToParticipant } from "./model-mapping"
 import type { ParticipantModel } from "./models"
 import { database } from "./setup"
 
@@ -22,7 +22,9 @@ const COLUMNS = [
 	"notes",
 ]
 
-//-------------------READ-------------------
+// ==========================================
+// READ
+// ==========================================
 
 export function subscribeBulkParticipants(
 	permitId: string,
@@ -61,7 +63,9 @@ export function subscribeSingleParticipant(
 	return () => sub.unsubscribe()
 }
 
-//-------------------WRITE-------------------
+// ==========================================
+// WRITE
+// ==========================================
 
 export async function createSingleParticipant(
 	permitId: string,

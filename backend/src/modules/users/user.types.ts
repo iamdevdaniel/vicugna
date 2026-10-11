@@ -1,4 +1,6 @@
-// Domain
+// ==========================================
+// DOMAIN
+// ==========================================
 export type ManagedUserRole = "admin" | "user"
 
 export interface UserName {
@@ -17,7 +19,9 @@ export interface UserListItem {
 	avatarSeed: string
 }
 
+// ==========================================
 // HTTP
+// ==========================================
 export interface CreateUserFormData extends UserName {
 	phoneNumber: string
 	email: string
