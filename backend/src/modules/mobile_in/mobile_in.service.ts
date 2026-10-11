@@ -4,7 +4,11 @@ import {
 	PermitValidationError,
 	permitValidationErrors,
 } from "./mobile_in.errors"
-import { getPayloadPermitIdForLog, parseSyncPayload } from "./mobile_in.payload"
+import {
+	getPayloadPermitIdForLog,
+	getSyncPayloadHash,
+	parseSyncPayload,
+} from "./mobile_in.payload"
 import { saveSyncFieldData } from "./mobile_in.repository"
 import type {
 	CleaningCommonData,
@@ -44,7 +48,7 @@ export async function submitSyncFieldData(
 		validateShearing(data)
 		validateCleaning(data)
 
-		return saveSyncFieldData(data, user.id)
+		return saveSyncFieldData(data, user.id, getSyncPayloadHash(data))
 	} catch (error) {
 		if (error instanceof PermitValidationError) {
 			console.error("Mobile sync payload validation failed", {

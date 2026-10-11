@@ -73,7 +73,7 @@ export async function listMobilePermitsByUserId(
 						cleaningCommonRecords: {
 							with: { grooming: true, dehearing: true },
 						},
-						permitSyncVersions: {
+						permitSyncAttempts: {
 							orderBy: (table, { desc }) => [desc(table.version)],
 							limit: 1,
 						},
@@ -117,7 +117,7 @@ export async function listMobilePermitsByUserId(
 
 	return rows.map((assignment) => {
 		const { permit } = assignment
-		const latestVersion = permit.permitSyncVersions[0]
+		const latestVersion = permit.permitSyncAttempts[0]
 		const permitData: PermitData = {
 			id: permit.id,
 			permitNumber: permit.permitNumber,
