@@ -138,19 +138,15 @@ export default function NativePermitScreen() {
 		)
 	}
 
-	const showOutdatedDataChoice = () => {
-		Alert.alert(
-			"Hay datos más recientes",
-			"Este permiso cambió en el servidor. Puedes conservar los datos de este dispositivo o reemplazarlos por los actuales.",
-			[
-				{ text: "Conservar mis datos", style: "cancel" },
-				{
-					text: "Descartar estos datos y descargar los actuales",
-					style: "destructive",
-					onPress: confirmDiscardAndDownload,
-				},
-			],
-		)
+	const showOutdatedDataChoice = (message: string) => {
+		Alert.alert("Hay datos más recientes", message, [
+			{ text: "Conservar mis datos", style: "cancel" },
+			{
+				text: "Descartar estos datos y descargar los actuales",
+				style: "destructive",
+				onPress: confirmDiscardAndDownload,
+			},
+		])
 	}
 
 	const onPressSend = () => {
@@ -175,7 +171,7 @@ export default function NativePermitScreen() {
 							return
 						}
 						if (result.reason === "outdated") {
-							showOutdatedDataChoice()
+							showOutdatedDataChoice(result.error)
 							return
 						}
 

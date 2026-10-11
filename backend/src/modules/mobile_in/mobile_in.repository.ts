@@ -61,7 +61,7 @@ export async function saveSyncFieldData(
 
 		if (data.expectedSyncVersion !== currentVersion) {
 			throw new PermitSyncConflictError(
-				"El permiso cambió en el servidor. Vuelve a descargarlo antes de enviarlo",
+				"Hay datos más nuevos de este permiso. ¿Qué quieres hacer?",
 				"SYNC_VERSION_CONFLICT",
 			)
 		}
