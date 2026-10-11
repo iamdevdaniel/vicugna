@@ -23,6 +23,10 @@ const DEV_SIGNATURE = JSON.stringify([
 	"M 35 82 C 102 76 184 84 284 75",
 ])
 
+// ==========================================
+// WRITE
+// ==========================================
+
 export async function clearPermitFieldData(permitId: string): Promise<void> {
 	await database.write(async () => {
 		const participants = await database
