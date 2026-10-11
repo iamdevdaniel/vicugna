@@ -2,7 +2,6 @@ import { fetchPermits, submitSyncFieldData } from "@api"
 import {
 	getFieldSyncData,
 	savePermits,
-	savePermitsReplacingOne,
 	updatePermitSyncStatus,
 } from "@database"
 import { useMobileAuthStore } from "@utils/auth-store"
@@ -139,11 +138,9 @@ export function useSyncPermit() {
 					throw new Error("El permiso ya no está disponible")
 				}
 
-				await savePermitsReplacingOne(
-					userId,
-					downloads,
-					download.permit.id,
-				)
+				await savePermits(userId, downloads, {
+					confirmedReplacementId: download.permit.id,
+				})
 				return { ok: true }
 			} catch (error) {
 				return {
