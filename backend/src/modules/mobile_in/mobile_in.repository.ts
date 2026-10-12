@@ -25,7 +25,7 @@ type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 export async function getRepeatedSyncResult(
 	data: SyncFieldData,
 	userId: string,
-	uploadHash: string,
+	payloadHash: string,
 ): Promise<PermitSyncResult | null> {
 	if (!data.syncAttemptId) return null
 
@@ -37,14 +37,14 @@ export async function getRepeatedSyncResult(
 		previousAttempt,
 		data.permit.id,
 		userId,
-		uploadHash,
+		payloadHash,
 	)
 }
 
 export async function saveSyncFieldData(
 	data: SyncFieldData,
 	userId: string,
-	uploadHash: string,
+	payloadHash: string,
 ): Promise<PermitSyncResult> {
 	const syncedAt = new Date()
 
@@ -73,7 +73,7 @@ export async function saveSyncFieldData(
 				previousAttempt,
 				data.permit.id,
 				userId,
-				uploadHash,
+				payloadHash,
 			)
 			if (repeatedResult) return repeatedResult
 		}
@@ -121,7 +121,7 @@ export async function saveSyncFieldData(
 				syncAttemptId,
 				permitId: data.permit.id,
 				version: syncVersion,
-				uploadHash,
+				payloadHash,
 				submittedByUserId: userId,
 				submittedAt: syncedAt,
 			})
@@ -142,7 +142,7 @@ export async function saveSyncFieldData(
 				previousAttempt,
 				data.permit.id,
 				userId,
-				uploadHash,
+				payloadHash,
 			)
 			if (repeatedResult) return repeatedResult
 
@@ -173,13 +173,13 @@ function resolveRepeatedSyncResult(
 	attempt: typeof permitSyncAttempts.$inferSelect | null | undefined,
 	permitId: string,
 	userId: string,
-	uploadHash: string,
+	payloadHash: string,
 ): PermitSyncResult | null {
 	if (!attempt) return null
 	if (
 		attempt.permitId !== permitId ||
 		attempt.submittedByUserId !== userId ||
-		attempt.uploadHash !== uploadHash
+		attempt.payloadHash !== payloadHash
 	) {
 		throw new PermitSyncConflictError(
 			"Este intento de envío no coincide con los datos originales",

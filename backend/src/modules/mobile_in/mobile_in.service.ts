@@ -46,11 +46,11 @@ export async function submitSyncFieldData(
 
 	try {
 		const data = parseSyncPayload(payload)
-		const uploadHash = getSyncPayloadHash(data)
+		const payloadHash = getSyncPayloadHash(data)
 		const repeatedResult = await getRepeatedSyncResult(
 			data,
 			user.id,
-			uploadHash,
+			payloadHash,
 		)
 		if (repeatedResult) return repeatedResult
 
@@ -59,7 +59,7 @@ export async function submitSyncFieldData(
 		validateShearing(data)
 		validateCleaning(data)
 
-		return saveSyncFieldData(data, user.id, uploadHash)
+		return saveSyncFieldData(data, user.id, payloadHash)
 	} catch (error) {
 		if (error instanceof PermitValidationError) {
 			console.error("Mobile sync payload validation failed", {
