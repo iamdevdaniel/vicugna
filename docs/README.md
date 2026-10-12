@@ -4,7 +4,7 @@ Project documentation lives in this directory. The root `README.md` remains the
 short project introduction. Local plans and unfinished decisions remain under
 `.local/`.
 
-- [API errors](api-errors.md)
+- [API errors](API_ERRORS.md)
 - [Backend](backend.md)
 - [Mobile](mobile.md)
 - [Mobile authentication](mobile-auth-spec.md)

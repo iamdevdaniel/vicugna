@@ -182,7 +182,7 @@ function resolveRepeatedSyncResult(
 		attempt.payloadHash !== payloadHash
 	) {
 		throw new PermitSyncConflictError(
-			"Este intento de envío no coincide con los datos originales",
+			"No se pudo confirmar el envío. Sus datos siguen guardados. No los borre y pida ayuda.",
 			"SYNC_ATTEMPT_CONFLICT",
 		)
 	}
