@@ -37,6 +37,20 @@ type PermitValidationDefinition = {
 	message: string
 }
 
+type PermitSyncErrorCode =
+	| "PERMIT_NOT_FOUND"
+	| "PERMIT_SYNC_FORBIDDEN"
+	| "PERMIT_SYNC_UNAVAILABLE"
+	| "SYNC_ATTEMPT_MISMATCH"
+	| "SYNC_ATTEMPT_READ_FAILED"
+	| "SYNC_VERSION_CONFLICT"
+
+type PermitSyncErrorDefinition = {
+	code: PermitSyncErrorCode
+	message: string
+	status: 403 | 404 | 409 | 500
+}
+
 export const permitValidationErrors = {
 	invalidPayload: {
 		code: "PYLD",
@@ -167,6 +181,40 @@ export const permitValidationErrors = {
 	},
 } as const satisfies Record<string, PermitValidationDefinition>
 
+export const permitSyncErrors = {
+	notFound: {
+		code: "PERMIT_NOT_FOUND",
+		message: "El permiso no existe",
+		status: 404,
+	},
+	forbidden: {
+		code: "PERMIT_SYNC_FORBIDDEN",
+		message: "No tienes autorización para enviar este permiso",
+		status: 403,
+	},
+	versionConflict: {
+		code: "SYNC_VERSION_CONFLICT",
+		message: "Hay datos más nuevos de este permiso. ¿Qué quieres hacer?",
+		status: 409,
+	},
+	unavailable: {
+		code: "PERMIT_SYNC_UNAVAILABLE",
+		message: "El permiso no está disponible para sincronizar",
+		status: 409,
+	},
+	attemptMismatch: {
+		code: "SYNC_ATTEMPT_MISMATCH",
+		message:
+			"No se pudo confirmar el envío. Sus datos siguen guardados. No los borre y pida ayuda.",
+		status: 409,
+	},
+	attemptReadFailed: {
+		code: "SYNC_ATTEMPT_READ_FAILED",
+		message: "Error interno del servidor",
+		status: 500,
+	},
+} as const satisfies Record<string, PermitSyncErrorDefinition>
+
 export class PermitValidationError extends Error {
 	constructor(
 		readonly definition: PermitValidationDefinition,
@@ -181,26 +229,17 @@ export class PermitValidationError extends Error {
 	}
 }
 
-export class PermitNotFoundError extends Error {
-	constructor(message: string) {
-		super(message)
-		this.name = "PermitNotFoundError"
+export class PermitSyncError extends Error {
+	constructor(readonly definition: PermitSyncErrorDefinition) {
+		super(definition.message)
+		this.name = "PermitSyncError"
 	}
-}
 
-export class PermitSyncForbiddenError extends Error {
-	constructor(message: string) {
-		super(message)
-		this.name = "PermitSyncForbiddenError"
+	get code() {
+		return this.definition.code
 	}
-}
 
-export class PermitSyncConflictError extends Error {
-	constructor(
-		message: string,
-		readonly code?: "SYNC_ATTEMPT_CONFLICT" | "SYNC_VERSION_CONFLICT",
-	) {
-		super(message)
-		this.name = "PermitSyncConflictError"
+	get status() {
+		return this.definition.status
 	}
 }

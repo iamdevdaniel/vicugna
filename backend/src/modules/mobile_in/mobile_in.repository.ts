@@ -12,11 +12,7 @@ import {
 	shearingHeaders,
 	shearingRecords,
 } from "../../db/schema"
-import {
-	PermitNotFoundError,
-	PermitSyncConflictError,
-	PermitSyncForbiddenError,
-} from "./mobile_in.errors"
+import { PermitSyncError, permitSyncErrors } from "./mobile_in.errors"
 
 import type { PermitSyncResult, SyncFieldData } from "./mobile_in.types"
 
@@ -56,7 +52,7 @@ export async function saveSyncFieldData(
 			.for("update")
 
 		if (!existingPermit) {
-			throw new PermitNotFoundError("El permiso no existe")
+			throw new PermitSyncError(permitSyncErrors.notFound)
 		}
 
 		if (data.syncAttemptId) {
@@ -86,9 +82,7 @@ export async function saveSyncFieldData(
 		})
 
 		if (!assignment) {
-			throw new PermitSyncForbiddenError(
-				"No tienes autorización para enviar este permiso",
-			)
+			throw new PermitSyncError(permitSyncErrors.forbidden)
 		}
 
 		const latestVersion = await tx.query.permitSyncAttempts.findFirst({
@@ -98,19 +92,14 @@ export async function saveSyncFieldData(
 		const currentVersion = latestVersion?.version ?? null
 
 		if (data.expectedSyncVersion !== currentVersion) {
-			throw new PermitSyncConflictError(
-				"Hay datos más nuevos de este permiso. ¿Qué quieres hacer?",
-				"SYNC_VERSION_CONFLICT",
-			)
+			throw new PermitSyncError(permitSyncErrors.versionConflict)
 		}
 
 		if (
 			existingPermit.syncStatus !== "in_progress" &&
 			existingPermit.syncStatus !== "reopened"
 		) {
-			throw new PermitSyncConflictError(
-				"El permiso no está disponible para sincronizar",
-			)
+			throw new PermitSyncError(permitSyncErrors.unavailable)
 		}
 
 		const syncVersion = (currentVersion ?? 0) + 1
@@ -146,7 +135,7 @@ export async function saveSyncFieldData(
 			)
 			if (repeatedResult) return repeatedResult
 
-			throw new Error("The reserved sync attempt could not be read")
+			throw new PermitSyncError(permitSyncErrors.attemptReadFailed)
 		}
 
 		await deletePermitChildData(data, tx)
@@ -181,10 +170,7 @@ function resolveRepeatedSyncResult(
 		attempt.submittedByUserId !== userId ||
 		attempt.payloadHash !== payloadHash
 	) {
-		throw new PermitSyncConflictError(
-			"No se pudo confirmar el envío. Sus datos siguen guardados. No los borre y pida ayuda.",
-			"SYNC_ATTEMPT_CONFLICT",
-		)
+		throw new PermitSyncError(permitSyncErrors.attemptMismatch)
 	}
 
 	return {

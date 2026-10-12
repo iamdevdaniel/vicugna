@@ -1,11 +1,6 @@
 import type { Request, Response } from "express"
 import { MobileAuthError } from "../mobile-auth/mobile_auth.errors"
-import {
-	PermitNotFoundError,
-	PermitSyncConflictError,
-	PermitSyncForbiddenError,
-	PermitValidationError,
-} from "./mobile_in.errors"
+import { PermitSyncError, PermitValidationError } from "./mobile_in.errors"
 import { submitSyncFieldData } from "./mobile_in.service"
 export async function syncPermit(
 	req: Request<Record<string, never>, Record<string, never>, unknown>,
@@ -37,21 +32,11 @@ export async function syncPermit(
 			return
 		}
 
-		if (error instanceof PermitNotFoundError) {
-			res.status(404).json({
-				ok: false,
-				error: error.message,
-			})
-			return
-		}
-
-		if (error instanceof PermitSyncForbiddenError) {
-			res.status(403).json({ ok: false, error: error.message })
-			return
-		}
-
-		if (error instanceof PermitSyncConflictError) {
-			res.status(409).json({
+		if (error instanceof PermitSyncError) {
+			if (error.status === 500) {
+				console.error("Failed to sync mobile permit", error)
+			}
+			res.status(error.status).json({
 				ok: false,
 				error: error.message,
 				code: error.code,

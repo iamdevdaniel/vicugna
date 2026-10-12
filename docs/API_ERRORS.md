@@ -60,8 +60,12 @@ Expected error:
 - `VCLG_17`: The request contains a duplicated cleaning detail.
 - `VCLG_18`: More than one dehairing detail points to the same fiber record.
 - `VCLG_19`: The request contains a duplicated dehairing detail.
+- `PERMIT_NOT_FOUND`: The requested permit does not exist.
+- `PERMIT_SYNC_FORBIDDEN`: The user is not allowed to upload the permit.
+- `PERMIT_SYNC_UNAVAILABLE`: The permit is not currently available for upload.
 - `SYNC_VERSION_CONFLICT`: The server has a newer version of the permit.
-- `SYNC_ATTEMPT_CONFLICT`: The same attempt ID was reused with different details.
+- `SYNC_ATTEMPT_MISMATCH`: The same attempt ID was reused with different details.
+- `SYNC_ATTEMPT_READ_FAILED`: The backend could not read a reserved sync attempt.
 
 ## HTTP status
 

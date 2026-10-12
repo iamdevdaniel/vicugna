@@ -97,14 +97,14 @@ test("recognizes an exact retry and rejects changed data", async ({
 	expect(changedResponse.status()).toBe(409)
 	await expect(changedResponse.json()).resolves.toMatchObject({
 		ok: false,
-		code: "SYNC_ATTEMPT_CONFLICT",
+		code: "SYNC_ATTEMPT_MISMATCH",
 	})
 
 	const otherUserResponse = await sendPermit(request, otherUserToken, payload)
 	expect(otherUserResponse.status()).toBe(409)
 	await expect(otherUserResponse.json()).resolves.toMatchObject({
 		ok: false,
-		code: "SYNC_ATTEMPT_CONFLICT",
+		code: "SYNC_ATTEMPT_MISMATCH",
 	})
 
 	const refreshedResponse = await request.get("/mobile/permits", {
@@ -146,7 +146,7 @@ test("recognizes an exact retry and rejects changed data", async ({
 		throw new Error("No se recibió el conflicto esperado")
 	await expect(conflictResponse.json()).resolves.toMatchObject({
 		ok: false,
-		code: "SYNC_ATTEMPT_CONFLICT",
+		code: "SYNC_ATTEMPT_MISMATCH",
 	})
 })
 
