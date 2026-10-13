@@ -1,4 +1,5 @@
 export type SyncFieldData = {
+	syncAttemptId?: string
 	expectedSyncVersion: number | null
 	permit: PermitData
 	participants: ParticipantData[]
@@ -12,7 +13,7 @@ export type SyncFieldData = {
 
 export type PermitFieldData = Omit<
 	SyncFieldData,
-	"permit" | "expectedSyncVersion"
+	"permit" | "syncAttemptId" | "expectedSyncVersion"
 >
 
 export type PermitSyncResult = {

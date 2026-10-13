@@ -1,0 +1,1 @@
+ALTER TABLE "permit_sync_attempts" RENAME COLUMN "upload_hash" TO "payload_hash";

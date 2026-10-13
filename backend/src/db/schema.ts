@@ -115,7 +115,7 @@ export const permitSyncAttempts = pgTable(
 			.notNull()
 			.references(() => permits.id, { onDelete: "cascade" }),
 		version: integer("version").notNull(),
-		uploadHash: text("upload_hash"),
+		payloadHash: text("payload_hash"),
 		submittedByUserId: text("submitted_by_user_id")
 			.notNull()
 			.references(() => users.id),

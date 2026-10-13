@@ -12,25 +12,39 @@ import {
 	shearingHeaders,
 	shearingRecords,
 } from "../../db/schema"
-import {
-	PermitNotFoundError,
-	PermitSyncConflictError,
-	PermitSyncForbiddenError,
-} from "./mobile_in.errors"
+import { PermitSyncError, permitSyncErrors } from "./mobile_in.errors"
 
 import type { PermitSyncResult, SyncFieldData } from "./mobile_in.types"
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
+export async function getPreviousSyncResponse(
+	data: SyncFieldData,
+	userId: string,
+	payloadHash: string,
+): Promise<PermitSyncResult | null> {
+	if (!data.syncAttemptId) return null
+
+	const previousAttempt = await db.query.permitSyncAttempts.findFirst({
+		where: eq(permitSyncAttempts.syncAttemptId, data.syncAttemptId),
+	})
+
+	return resolveRepeatedSyncResult(
+		previousAttempt,
+		data.permit.id,
+		userId,
+		payloadHash,
+	)
+}
+
 export async function saveSyncFieldData(
 	data: SyncFieldData,
 	userId: string,
-	uploadHash: string,
+	payloadHash: string,
 ): Promise<PermitSyncResult> {
 	const syncedAt = new Date()
-	let syncVersion = 0
 
-	await db.transaction(async (tx) => {
+	return db.transaction(async (tx) => {
 		const [existingPermit] = await tx
 			.select()
 			.from(permits)
@@ -38,7 +52,26 @@ export async function saveSyncFieldData(
 			.for("update")
 
 		if (!existingPermit) {
-			throw new PermitNotFoundError("El permiso no existe")
+			throw new PermitSyncError(permitSyncErrors.notFound)
+		}
+
+		if (data.syncAttemptId) {
+			const previousAttempt = await tx.query.permitSyncAttempts.findFirst(
+				{
+					where: eq(
+						permitSyncAttempts.syncAttemptId,
+						data.syncAttemptId,
+					),
+				},
+			)
+
+			const repeatedResult = resolveRepeatedSyncResult(
+				previousAttempt,
+				data.permit.id,
+				userId,
+				payloadHash,
+			)
+			if (repeatedResult) return repeatedResult
 		}
 
 		const assignment = await tx.query.assignments.findFirst({
@@ -49,9 +82,7 @@ export async function saveSyncFieldData(
 		})
 
 		if (!assignment) {
-			throw new PermitSyncForbiddenError(
-				"No tienes autorización para enviar este permiso",
-			)
+			throw new PermitSyncError(permitSyncErrors.forbidden)
 		}
 
 		const latestVersion = await tx.query.permitSyncAttempts.findFirst({
@@ -61,33 +92,54 @@ export async function saveSyncFieldData(
 		const currentVersion = latestVersion?.version ?? null
 
 		if (data.expectedSyncVersion !== currentVersion) {
-			throw new PermitSyncConflictError(
-				"Hay datos más nuevos de este permiso. ¿Qué quieres hacer?",
-				"SYNC_VERSION_CONFLICT",
-			)
+			throw new PermitSyncError(permitSyncErrors.versionConflict)
 		}
 
 		if (
 			existingPermit.syncStatus !== "in_progress" &&
 			existingPermit.syncStatus !== "reopened"
 		) {
-			throw new PermitSyncConflictError(
-				"El permiso no está disponible para sincronizar",
-			)
+			throw new PermitSyncError(permitSyncErrors.unavailable)
 		}
 
-		syncVersion = (currentVersion ?? 0) + 1
+		const syncVersion = (currentVersion ?? 0) + 1
+		const syncAttemptId = data.syncAttemptId ?? crypto.randomUUID()
+		const insertedAttempts = await tx
+			.insert(permitSyncAttempts)
+			.values({
+				syncAttemptId,
+				permitId: data.permit.id,
+				version: syncVersion,
+				payloadHash,
+				submittedByUserId: userId,
+				submittedAt: syncedAt,
+			})
+			.onConflictDoNothing({
+				target: permitSyncAttempts.syncAttemptId,
+			})
+			.returning({
+				syncAttemptId: permitSyncAttempts.syncAttemptId,
+			})
+
+		if (insertedAttempts.length === 0) {
+			const previousAttempt = await tx.query.permitSyncAttempts.findFirst(
+				{
+					where: eq(permitSyncAttempts.syncAttemptId, syncAttemptId),
+				},
+			)
+			const repeatedResult = resolveRepeatedSyncResult(
+				previousAttempt,
+				data.permit.id,
+				userId,
+				payloadHash,
+			)
+			if (repeatedResult) return repeatedResult
+
+			throw new PermitSyncError(permitSyncErrors.attemptReadFailed)
+		}
 
 		await deletePermitChildData(data, tx)
 		await insertPermitChildData(data, tx)
-		await tx.insert(permitSyncAttempts).values({
-			syncAttemptId: crypto.randomUUID(),
-			permitId: data.permit.id,
-			version: syncVersion,
-			uploadHash,
-			submittedByUserId: userId,
-			submittedAt: syncedAt,
-		})
 		await tx
 			.update(permits)
 			.set({
@@ -96,13 +148,36 @@ export async function saveSyncFieldData(
 				updatedAt: new Date(),
 			})
 			.where(eq(permits.id, data.permit.id))
+
+		return {
+			permitId: data.permit.id,
+			syncStatus: "synced",
+			syncVersion,
+			syncedAt: syncedAt.toISOString(),
+		}
 	})
+}
+
+function resolveRepeatedSyncResult(
+	attempt: typeof permitSyncAttempts.$inferSelect | null | undefined,
+	permitId: string,
+	userId: string,
+	payloadHash: string,
+): PermitSyncResult | null {
+	if (!attempt) return null
+	if (
+		attempt.permitId !== permitId ||
+		attempt.submittedByUserId !== userId ||
+		attempt.payloadHash !== payloadHash
+	) {
+		throw new PermitSyncError(permitSyncErrors.attemptMismatch)
+	}
 
 	return {
-		permitId: data.permit.id,
+		permitId: attempt.permitId,
 		syncStatus: "synced",
-		syncVersion,
-		syncedAt: syncedAt.toISOString(),
+		syncVersion: attempt.version,
+		syncedAt: attempt.submittedAt.toISOString(),
 	}
 }
 

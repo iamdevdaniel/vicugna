@@ -9,7 +9,10 @@ import {
 	getSyncPayloadHash,
 	parseSyncPayload,
 } from "./mobile_in.payload"
-import { saveSyncFieldData } from "./mobile_in.repository"
+import {
+	getPreviousSyncResponse,
+	saveSyncFieldData,
+} from "./mobile_in.repository"
 import type {
 	CleaningCommonData,
 	GroomingData,
@@ -43,12 +46,20 @@ export async function submitSyncFieldData(
 
 	try {
 		const data = parseSyncPayload(payload)
+		const payloadHash = getSyncPayloadHash(data)
+		const previousResponse = await getPreviousSyncResponse(
+			data,
+			user.id,
+			payloadHash,
+		)
+		if (previousResponse) return previousResponse
+
 		validatePermit(data)
 		validateParticipants(data)
 		validateShearing(data)
 		validateCleaning(data)
 
-		return saveSyncFieldData(data, user.id, getSyncPayloadHash(data))
+		return saveSyncFieldData(data, user.id, payloadHash)
 	} catch (error) {
 		if (error instanceof PermitValidationError) {
 			console.error("Mobile sync payload validation failed", {

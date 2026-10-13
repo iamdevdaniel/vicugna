@@ -39,6 +39,10 @@ export default defineConfig({
 			use: { ...devices["Pixel 7"] },
 		},
 		{
+			name: "mobile-api",
+			testMatch: "**/mobile/**/*.spec.ts",
+		},
+		{
 			name: "admin-desktop",
 			testMatch: "**/admin/authenticated/**/*.spec.ts",
 			dependencies: ["auth-setup"],
@@ -62,6 +66,7 @@ export default defineConfig({
 	],
 	webServer: {
 		command: "npm start",
+		cwd: "..",
 		env: {
 			PORT: port,
 			NODE_ENV: "test",
