@@ -18,7 +18,7 @@ import type { PermitSyncResult, SyncFieldData } from "./mobile_in.types"
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
-export async function getRepeatedSyncResult(
+export async function getPreviousSyncResponse(
 	data: SyncFieldData,
 	userId: string,
 	payloadHash: string,

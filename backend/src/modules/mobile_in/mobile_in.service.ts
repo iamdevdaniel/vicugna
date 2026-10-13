@@ -10,7 +10,7 @@ import {
 	parseSyncPayload,
 } from "./mobile_in.payload"
 import {
-	getRepeatedSyncResult,
+	getPreviousSyncResponse,
 	saveSyncFieldData,
 } from "./mobile_in.repository"
 import type {
@@ -47,12 +47,12 @@ export async function submitSyncFieldData(
 	try {
 		const data = parseSyncPayload(payload)
 		const payloadHash = getSyncPayloadHash(data)
-		const repeatedResult = await getRepeatedSyncResult(
+		const previousResponse = await getPreviousSyncResponse(
 			data,
 			user.id,
 			payloadHash,
 		)
-		if (repeatedResult) return repeatedResult
+		if (previousResponse) return previousResponse
 
 		validatePermit(data)
 		validateParticipants(data)
