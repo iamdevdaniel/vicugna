@@ -1,9 +1,11 @@
 import type {
 	MobilePermitData,
 	PermitFieldData,
+	PermitSyncResult,
 	SyncFieldData,
 } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
+import { randomId } from "@nozbe/watermelondb/utils/common"
 import { getPermitStatuses } from "@utils/permit-status-rules"
 import { assertPermitOwner } from "./dal-permit"
 import {
@@ -50,6 +52,9 @@ export async function getFieldSyncData(
 		.get<PermitModel>("permits")
 		.find(permitId)
 	assertPermitOwner(permitRecord.userId, accountId)
+	if (!permitRecord.syncAttemptId) {
+		throw new Error("Este permiso no tiene un envío pendiente")
+	}
 	const participants = await database
 		.get<ParticipantModel>("participants")
 		.query(Q.where("permitId", permitId))
@@ -103,6 +108,7 @@ export async function getFieldSyncData(
 	}
 
 	return {
+		syncAttemptId: permitRecord.syncAttemptId,
 		expectedSyncVersion: permitRecord.syncVersion || null,
 		permit: mapToSyncPermit(permitRecord),
 		participants: participants.map(mapToParticipant),
@@ -118,6 +124,41 @@ export async function getFieldSyncData(
 // ==========================================
 // WRITE
 // ==========================================
+
+export async function startPermitSyncAttempt(
+	permitId: string,
+	accountId: string,
+): Promise<void> {
+	const syncAttemptId = randomId()
+
+	await updateOwnedPermit(permitId, accountId, (permit) => {
+		if (permit.syncAttemptId) {
+			throw new Error("Este permiso ya tiene un envío pendiente")
+		}
+		permit.syncAttemptId = syncAttemptId
+	})
+}
+
+export async function clearPermitSyncAttempt(
+	permitId: string,
+	accountId: string,
+): Promise<void> {
+	await updateOwnedPermit(permitId, accountId, (permit) => {
+		permit.syncAttemptId = null
+	})
+}
+
+export async function completePermitSyncAttempt(
+	result: PermitSyncResult,
+	accountId: string,
+): Promise<void> {
+	await updateOwnedPermit(result.permitId, accountId, (permit) => {
+		permit.syncedAt = result.syncedAt
+		permit.syncVersion = result.syncVersion
+		permit.permitSyncStatus = result.syncStatus
+		permit.syncAttemptId = null
+	})
+}
 
 export async function savePermits(
 	accountId: string,
@@ -138,8 +179,10 @@ export async function savePermits(
 		const permitsById = new Map(
 			existingPermits.map((permit) => [permit.id, permit]),
 		)
-		const currentDownloads = downloads.filter(({ permit, syncVersion }) => {
+		const downloadsToSave = downloads.filter(({ permit, syncVersion }) => {
 			const existingPermit = permitsById.get(permit.id)
+			if (existingPermit?.syncAttemptId) return false
+
 			const localVersion = existingPermit?.syncVersion ?? 0
 			const backendVersion = syncVersion ?? 0
 
@@ -152,17 +195,17 @@ export async function savePermits(
 				backendVersion > localVersion
 			)
 		})
-		if (currentDownloads.length === 0) return
+		if (downloadsToSave.length === 0) return
 
-		const currentPermitIds = currentDownloads.map(({ permit }) => permit.id)
+		const permitIdsToSave = downloadsToSave.map(({ permit }) => permit.id)
 		const [shearingHeaders, cleaningHeaders] = await Promise.all([
 			database
 				.get<ShearingHeaderModel>("shearingHeader")
-				.query(Q.where("permitId", Q.oneOf(currentPermitIds)))
+				.query(Q.where("permitId", Q.oneOf(permitIdsToSave)))
 				.fetch(),
 			database
 				.get<CleaningHeaderModel>("cleaningHeader")
-				.query(Q.where("permitId", Q.oneOf(currentPermitIds)))
+				.query(Q.where("permitId", Q.oneOf(permitIdsToSave)))
 				.fetch(),
 		])
 		const shearingHeadersByPermitId = new Map(
@@ -171,29 +214,35 @@ export async function savePermits(
 		const cleaningHeadersByPermitId = new Map(
 			cleaningHeaders.map((header) => [header.permitId, header]),
 		)
-		const hydrationDownloads = currentDownloads.filter(
+		const downloadsReplacingLocalData = downloadsToSave.filter(
 			({ permit, syncVersion, fieldData }) =>
 				fieldData !== null &&
 				syncVersion !== null &&
 				syncVersion > (permitsById.get(permit.id)?.syncVersion ?? 0),
 		)
-		const hydrationIds = hydrationDownloads.map(({ permit }) => permit.id)
-		const hydrationByPermitId = new Map(
-			hydrationDownloads.map((download) => [
+		const replacementPermitIds = downloadsReplacingLocalData.map(
+			({ permit }) => permit.id,
+		)
+		const replacementsByPermitId = new Map(
+			downloadsReplacingLocalData.map((download) => [
 				download.permit.id,
 				download,
 			]),
 		)
-		const oldFieldData = await readFieldData(hydrationIds)
+		const oldFieldData = await readFieldData(replacementPermitIds)
 		const batchOps: Model[] = []
-		prepareFieldDataDeletion(batchOps, new Set(hydrationIds), oldFieldData)
+		prepareFieldDataDeletion(
+			batchOps,
+			new Set(replacementPermitIds),
+			oldFieldData,
+		)
 
-		for (const download of currentDownloads) {
+		for (const download of downloadsToSave) {
 			const { permit, syncVersion } = download
 			const existingPermit = permitsById.get(permit.id)
-			const hydration = hydrationByPermitId.get(permit.id)
-			const statuses = hydration?.fieldData
-				? getSnapshotStatuses(hydration.fieldData)
+			const replacement = replacementsByPermitId.get(permit.id)
+			const statuses = replacement?.fieldData
+				? getSnapshotStatuses(replacement.fieldData)
 				: null
 
 			if (existingPermit) {
@@ -220,10 +269,10 @@ export async function savePermits(
 				)
 			}
 
-			if (hydration?.fieldData) {
+			if (replacement?.fieldData) {
 				prepareSnapshotReplacement(
 					batchOps,
-					hydration.fieldData,
+					replacement.fieldData,
 					shearingHeadersByPermitId.get(permit.id),
 					cleaningHeadersByPermitId.get(permit.id),
 				)
@@ -245,6 +294,18 @@ export async function savePermits(
 // ==========================================
 // HELPERS
 // ==========================================
+
+async function updateOwnedPermit(
+	permitId: string,
+	accountId: string,
+	change: (permit: PermitModel) => void,
+): Promise<void> {
+	await database.write(async () => {
+		const permit = await database.get<PermitModel>("permits").find(permitId)
+		assertPermitOwner(permit.userId, accountId)
+		await permit.update(change)
+	})
+}
 
 async function readFieldData(permitIds: string[]) {
 	if (permitIds.length === 0) {

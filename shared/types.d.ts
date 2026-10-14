@@ -1,5 +1,5 @@
 export type SyncFieldData = {
-	syncAttemptId?: string
+	syncAttemptId: string
 	expectedSyncVersion: number | null
 	permit: PermitData
 	participants: ParticipantData[]

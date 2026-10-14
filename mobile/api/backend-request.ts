@@ -15,6 +15,7 @@ export type BackendRequestFailure =
 	| "unreachable"
 	| "invalid_response"
 	| "rejected"
+	| "server_error"
 	| "unexpected"
 
 export class BackendRequestError extends Error {
@@ -22,6 +23,7 @@ export class BackendRequestError extends Error {
 		readonly failure: BackendRequestFailure,
 		message: string,
 		readonly code?: string,
+		readonly status?: number,
 	) {
 		super(message)
 		this.name = "BackendRequestError"
@@ -65,13 +67,6 @@ export async function requestBackend<T>(
 		}
 
 		if (error instanceof TypeError) {
-			if (await isOffline()) {
-				throw new BackendRequestError(
-					"offline",
-					"Sin conexión a internet. Intente nuevamente cuando recupere la conexión.",
-				)
-			}
-
 			throw new BackendRequestError(
 				"unreachable",
 				"No se pudo conectar con el servidor. Intente más tarde.",
@@ -96,13 +91,24 @@ export async function requestBackend<T>(
 			"El servidor devolvió una respuesta inválida. Intente nuevamente.",
 		)
 	}
+	if (
+		!payload ||
+		typeof payload !== "object" ||
+		typeof payload.ok !== "boolean"
+	) {
+		throw new BackendRequestError(
+			"invalid_response",
+			"El servidor devolvió una respuesta inválida. Intente nuevamente.",
+		)
+	}
 
 	if (!response.ok || !payload.ok) {
 		const message = response.status >= 500 ? fallbackError : payload.error
 		throw new BackendRequestError(
-			"rejected",
+			response.status >= 500 ? "server_error" : "rejected",
 			message ?? fallbackError,
 			payload.code,
+			response.status,
 		)
 	}
 

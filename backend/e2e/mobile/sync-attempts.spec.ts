@@ -74,6 +74,14 @@ test("recognizes an exact retry and rejects changed data", async ({
 	expect(download).toBeDefined()
 
 	const payload = makePayload(download?.permit)
+	const { syncAttemptId: _syncAttemptId, ...payloadWithoutAttemptId } =
+		payload
+	const missingAttemptResponse = await request.post("/permits/sync", {
+		headers: { Authorization: `Bearer ${token}` },
+		data: payloadWithoutAttemptId,
+	})
+	expect(missingAttemptResponse.status()).toBe(400)
+
 	const firstResponse = await sendPermit(request, token, payload)
 	expect(firstResponse.status()).toBe(200)
 	const firstResult = (await firstResponse.json()) as {

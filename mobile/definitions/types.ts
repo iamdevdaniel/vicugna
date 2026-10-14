@@ -34,6 +34,10 @@ export interface PermitData extends SyncPermitData {
 	cleaningStatus: PermitStepStatus
 }
 
+export interface NativePermitData extends PermitData {
+	syncAttemptId: string | null
+}
+
 export type AdminPermit = {
 	id: string
 	date: string

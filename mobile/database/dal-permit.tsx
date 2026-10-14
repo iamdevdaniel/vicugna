@@ -1,4 +1,8 @@
-import type { PermitData, PermitSyncResult } from "@definitions/types"
+import type {
+	NativePermitData,
+	PermitData,
+	PermitSyncResult,
+} from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import {
 	applyPermitStatusChange,
@@ -35,7 +39,7 @@ type PreparedPermitMutation = {
 
 export function subscribePermits(
 	accountId: string,
-	callbacks: SubscriptionCallback<PermitData[]>,
+	callbacks: SubscriptionCallback<NativePermitData[]>,
 ): () => void {
 	const sub = database
 		.get<PermitModel>("permits")
@@ -45,6 +49,7 @@ export function subscribePermits(
 			"communityId",
 			"syncStatus",
 			"syncedAt",
+			"syncAttemptId",
 			"participantsStatus",
 			"shearingStatus",
 			"cleaningStatus",
@@ -63,7 +68,7 @@ export function subscribePermits(
 export function subscribeSinglePermit(
 	permitId: string,
 	accountId: string,
-	callbacks: SubscriptionCallback<PermitData | null>,
+	callbacks: SubscriptionCallback<NativePermitData | null>,
 ): () => void {
 	const sub = database
 		.get<PermitModel>("permits")
@@ -73,6 +78,7 @@ export function subscribeSinglePermit(
 			"communityId",
 			"syncStatus",
 			"syncedAt",
+			"syncAttemptId",
 			"participantsStatus",
 			"shearingStatus",
 			"cleaningStatus",
@@ -92,6 +98,7 @@ export async function assertStoredPermitOwner(
 ): Promise<void> {
 	const permit = await database.get<PermitModel>("permits").find(permitId)
 	assertPermitOwner(permit.userId, accountId)
+	assertPermitHasNoPendingSync(permit)
 }
 
 // ==========================================
@@ -155,9 +162,18 @@ export function assertPermitOwner(
 	}
 }
 
+function assertPermitHasNoPendingSync(permit: PermitModel): void {
+	if (permit.syncAttemptId) {
+		throw new Error(
+			"Este permiso tiene un envío pendiente. Reintente el envío antes de modificarlo.",
+		)
+	}
+}
+
 async function readPermitStatusState(permitId: string, accountId: string) {
 	const permit = await database.get<PermitModel>("permits").find(permitId)
 	assertPermitOwner(permit.userId, accountId)
+	assertPermitHasNoPendingSync(permit)
 	const [
 		participantCount,
 		shearingHeaders,

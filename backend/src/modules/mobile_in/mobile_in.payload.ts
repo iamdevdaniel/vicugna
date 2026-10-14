@@ -125,7 +125,7 @@ const dehearingSchema = z
 
 const syncPayloadSchema = z
 	.object({
-		syncAttemptId: z.string().uuid().optional(),
+		syncAttemptId: z.string().min(16).max(128),
 		expectedSyncVersion: z.number().nullable(),
 		permit: permitSchema,
 		participants: z.array(participantSchema),
@@ -153,7 +153,28 @@ export function parseSyncPayload(payload: unknown): SyncFieldData {
 
 export function getSyncPayloadHash(data: SyncFieldData): string {
 	const { syncAttemptId: _syncAttemptId, ...payload } = data
-	return createHash("sha256").update(JSON.stringify(payload)).digest("hex")
+	const payloadWithStableRecordOrder = {
+		...payload,
+		participants: [...payload.participants].sort((left, right) =>
+			left.id.localeCompare(right.id),
+		),
+		shearingRecords: [...payload.shearingRecords].sort((left, right) =>
+			left.id.localeCompare(right.id),
+		),
+		cleaningCommonRecords: [...payload.cleaningCommonRecords].sort(
+			(left, right) => left.id.localeCompare(right.id),
+		),
+		groomingDetails: [...payload.groomingDetails].sort((left, right) =>
+			left.id.localeCompare(right.id),
+		),
+		dehearingDetails: [...payload.dehearingDetails].sort((left, right) =>
+			left.id.localeCompare(right.id),
+		),
+	}
+
+	return createHash("sha256")
+		.update(JSON.stringify(payloadWithStableRecordOrder))
+		.digest("hex")
 }
 
 export function getPayloadPermitIdForLog(payload: unknown): string | null {

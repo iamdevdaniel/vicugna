@@ -23,8 +23,6 @@ export async function getPreviousSyncResponse(
 	userId: string,
 	payloadHash: string,
 ): Promise<PermitSyncResult | null> {
-	if (!data.syncAttemptId) return null
-
 	const previousAttempt = await db.query.permitSyncAttempts.findFirst({
 		where: eq(permitSyncAttempts.syncAttemptId, data.syncAttemptId),
 	})
@@ -55,24 +53,17 @@ export async function saveSyncFieldData(
 			throw new PermitSyncError(permitSyncErrors.notFound)
 		}
 
-		if (data.syncAttemptId) {
-			const previousAttempt = await tx.query.permitSyncAttempts.findFirst(
-				{
-					where: eq(
-						permitSyncAttempts.syncAttemptId,
-						data.syncAttemptId,
-					),
-				},
-			)
+		const previousAttempt = await tx.query.permitSyncAttempts.findFirst({
+			where: eq(permitSyncAttempts.syncAttemptId, data.syncAttemptId),
+		})
 
-			const repeatedResult = resolveRepeatedSyncResult(
-				previousAttempt,
-				data.permit.id,
-				userId,
-				payloadHash,
-			)
-			if (repeatedResult) return repeatedResult
-		}
+		const repeatedResult = resolveRepeatedSyncResult(
+			previousAttempt,
+			data.permit.id,
+			userId,
+			payloadHash,
+		)
+		if (repeatedResult) return repeatedResult
 
 		const assignment = await tx.query.assignments.findFirst({
 			where: and(
@@ -103,7 +94,7 @@ export async function saveSyncFieldData(
 		}
 
 		const syncVersion = (currentVersion ?? 0) + 1
-		const syncAttemptId = data.syncAttemptId ?? crypto.randomUUID()
+		const syncAttemptId = data.syncAttemptId
 		const insertedAttempts = await tx
 			.insert(permitSyncAttempts)
 			.values({
