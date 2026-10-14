@@ -33,7 +33,7 @@ export async function requestBackend<T>(
 	options: RequestInit,
 	fallbackError: string,
 ): Promise<T> {
-	if (await isOffline()) {
+	if (await isDeviceOffline()) {
 		throw new BackendRequestError(
 			mobileRequestErrors.offline.code,
 			mobileRequestErrors.offline.message,
@@ -116,7 +116,7 @@ export async function requestBackend<T>(
 	return payload.data
 }
 
-async function isOffline() {
+export async function isDeviceOffline() {
 	try {
 		const network = await getNetworkStateAsync()
 		return (

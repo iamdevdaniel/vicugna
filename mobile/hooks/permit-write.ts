@@ -1,4 +1,9 @@
-import { fetchPermits, submitSyncFieldData } from "@api"
+import {
+	BackendRequestError,
+	fetchPermits,
+	isDeviceOffline,
+	submitSyncFieldData,
+} from "@api"
 import {
 	clearPermitSyncAttempt,
 	completePermitSyncAttempt,
@@ -16,7 +21,6 @@ import {
 import { useMobileAuthStore } from "@utils/auth-store"
 import { useCallback, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
-import { BackendRequestError } from "../api/backend-request"
 
 type PermitLoadResult = { ok: true } | { ok: false; error: string }
 type SyncPermitResult =
@@ -96,6 +100,13 @@ export function useSyncPermit() {
 			setSyncOperation("upload")
 
 			try {
+				if (await isDeviceOffline()) {
+					return {
+						ok: false,
+						error: mobileRequestErrors.offline.message,
+					}
+				}
+
 				await startPermitSyncAttempt(permitId, userId)
 				const payload = await getFieldSyncData(permitId, userId)
 				const result = await submitSyncFieldData(token, payload)
@@ -141,9 +152,7 @@ export function useSyncPermit() {
 				if (isUncertainRequestFailure(caught)) {
 					return {
 						ok: false,
-						error: getMobileSyncError(
-							mobilePermitSyncErrors.resultUnknown,
-						),
+						error: getPendingSyncError(caught),
 						reason: "pending",
 					}
 				}
@@ -212,9 +221,7 @@ export function useSyncPermit() {
 							ok: false,
 							error: retryNeedsLogin
 								? "Tu sesión terminó. Inicia sesión y vuelve a intentar el envío."
-								: getMobileSyncError(
-										mobilePermitSyncErrors.resultUnknown,
-									),
+								: getPendingSyncError(caught),
 							reason: "pending",
 						}
 					}
@@ -389,7 +396,7 @@ function getRejectedSyncResult(error: unknown): SyncPermitResult {
 	}
 
 	if (error instanceof BackendRequestError) {
-		return { ok: false, error: `${message} (${error.code})` }
+		return { ok: false, error: message }
 	}
 
 	return { ok: false, error: message }
@@ -414,12 +421,28 @@ function getErrorMessage(
 		error instanceof MobileOperationError ||
 		error instanceof BackendRequestError
 	) {
-		return `${error.message} (${error.code})`
+		return error.message
 	}
 
 	return getMobileSyncError(fallback)
 }
 
 function getMobileSyncError(error: MobileErrorDefinition): string {
-	return `${error.message} (${error.code})`
+	return error.message
+}
+
+function getPendingSyncError(error: unknown): string {
+	if (error instanceof BackendRequestError) {
+		switch (error.code) {
+			case mobileRequestErrors.offline.code:
+			case mobileRequestErrors.unreachable.code:
+				return "No hay conexión. Tus datos están guardados. Conéctate a internet y pulsa Reintentar envío."
+			case mobileRequestErrors.timeout.code:
+				return "No llegó la confirmación del envío. Tus datos están guardados. Pulsa Reintentar envío."
+			case mobileRequestErrors.serverError.code:
+				return "El servidor tuvo un problema. Tus datos están guardados. Pulsa Reintentar envío."
+		}
+	}
+
+	return mobilePermitSyncErrors.resultUnknown.message
 }

@@ -27,13 +27,13 @@ export function ReadOnlyNotice({
 			<Icon
 				source="lock-outline"
 				size={18}
-				color={theme.colors.onSurface}
+				color={theme.colors.onTertiary}
 			/>
 			<Text
 				style={{
 					flex: 1,
 					fontSize: 13,
-					color: theme.colors.onSurface,
+					color: theme.colors.onTertiary,
 				}}
 			>
 				{message}
