@@ -53,7 +53,6 @@ export default function NativePermitScreen() {
 		discardAndDownload,
 		syncingPermit,
 		syncOperation,
-		clearError: clearSyncError,
 	} = useSyncPermit()
 	const participantsStatus = permit?.participantsStatus ?? "ready"
 	const shearingStatus = permit?.shearingStatus ?? "disabled"
@@ -114,7 +113,6 @@ export default function NativePermitScreen() {
 
 	const onOpenStep = (route: Parameters<typeof router.push>[0]) => {
 		hideSnackbar()
-		clearSyncError()
 		if (hasPendingSync) {
 			showSnackbar(
 				"Reintente el envío antes de abrir los datos del permiso.",

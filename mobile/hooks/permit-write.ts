@@ -6,6 +6,13 @@ import {
 	savePermits,
 	startPermitSyncAttempt,
 } from "@database"
+import {
+	backendPermitSyncCodes,
+	type MobileErrorDefinition,
+	MobileOperationError,
+	mobilePermitSyncErrors,
+	mobileRequestErrors,
+} from "@definitions/errors"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { useCallback, useRef, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
@@ -66,7 +73,6 @@ export function useSyncPermit() {
 	const [syncOperation, setSyncOperation] = useState<
 		"upload" | "download" | null
 	>(null)
-	const [error, setError] = useState<string | null>(null)
 	const operationRunning = useRef(false)
 	const { token, userId } = useMobileAuthStore(
 		useShallow((state) => ({
@@ -83,55 +89,72 @@ export function useSyncPermit() {
 
 			if (!token || !userId) {
 				const message = "Debes iniciar sesión para enviar este permiso"
-				setError(message)
 				return { ok: false, error: message }
 			}
 
 			operationRunning.current = true
 			setSyncOperation("upload")
-			setError(null)
-			let responseReceived = false
-			let attemptStarted = false
 
 			try {
 				await startPermitSyncAttempt(permitId, userId)
-				attemptStarted = true
 				const payload = await getFieldSyncData(permitId, userId)
 				const result = await submitSyncFieldData(token, payload)
-				responseReceived = true
 				await completePermitSyncAttempt(result, userId)
+
 				return { ok: true }
 			} catch (caught) {
-				let mustKeepAttempt =
-					responseReceived || isUncertainRequestFailure(caught)
+				switch (getErrorCode(caught)) {
+					case mobilePermitSyncErrors.startAttempt.code:
+						return {
+							ok: false,
+							error: getErrorMessage(
+								caught,
+								mobilePermitSyncErrors.startAttempt,
+							),
+						}
+					case mobilePermitSyncErrors.readData.code: {
+						const clearFailure = await clearSyncAttemptAfterFailure(
+							permitId,
+							userId,
+						)
+						if (clearFailure) return clearFailure
 
-				if (!mustKeepAttempt && attemptStarted) {
-					try {
-						await clearPermitSyncAttempt(permitId, userId)
-					} catch {
-						mustKeepAttempt = true
+						return {
+							ok: false,
+							error: getErrorMessage(
+								caught,
+								mobilePermitSyncErrors.readData,
+							),
+						}
+					}
+					case mobilePermitSyncErrors.completeAttempt.code:
+						return {
+							ok: false,
+							error: getErrorMessage(
+								caught,
+								mobilePermitSyncErrors.completeAttempt,
+							),
+							reason: "pending",
+						}
+				}
+
+				if (isUncertainRequestFailure(caught)) {
+					return {
+						ok: false,
+						error: getMobileSyncError(
+							mobilePermitSyncErrors.resultUnknown,
+						),
+						reason: "pending",
 					}
 				}
 
-				const message =
-					caught instanceof Error
-						? caught.message
-						: "No se pudo enviar el permiso"
-				const syncError = mustKeepAttempt
-					? {
-							error: "No se pudo confirmar el envío. Reintente para conocer el resultado.",
-							reason: "pending" as const,
-						}
-					: caught instanceof BackendRequestError &&
-							caught.code === "SYNC_VERSION_CONFLICT"
-						? { error: message, reason: "outdated" as const }
-						: caught instanceof BackendRequestError && caught.code
-							? {
-									error: `${message} (${caught.code})`,
-								}
-							: { error: message }
-				setError(syncError.error)
-				return { ok: false, ...syncError }
+				const clearFailure = await clearSyncAttemptAfterFailure(
+					permitId,
+					userId,
+				)
+				if (clearFailure) return clearFailure
+
+				return getRejectedSyncResult(caught)
 			} finally {
 				operationRunning.current = false
 				setSyncOperation(null)
@@ -148,18 +171,62 @@ export function useSyncPermit() {
 
 			if (!token || !userId) {
 				const message = "Debes iniciar sesión para enviar este permiso"
-				setError(message)
 				return { ok: false, error: message }
 			}
 
 			operationRunning.current = true
 			setSyncOperation("upload")
-			setError(null)
 
 			try {
-				const payload = await getFieldSyncData(permitId, userId)
-				const result = await submitSyncFieldData(token, payload)
-				await completePermitSyncAttempt(result, userId)
+				try {
+					const payload = await getFieldSyncData(permitId, userId)
+					const result = await submitSyncFieldData(token, payload)
+					await completePermitSyncAttempt(result, userId)
+				} catch (caught) {
+					switch (getErrorCode(caught)) {
+						case mobilePermitSyncErrors.readData.code:
+							return {
+								ok: false,
+								error: getErrorMessage(
+									caught,
+									mobilePermitSyncErrors.readData,
+								),
+								reason: "pending",
+							}
+						case mobilePermitSyncErrors.completeAttempt.code:
+							return {
+								ok: false,
+								error: getErrorMessage(
+									caught,
+									mobilePermitSyncErrors.completeAttempt,
+								),
+								reason: "pending",
+							}
+					}
+
+					if (!isSafeToClearSyncAttemptAfterRetry(caught)) {
+						const retryNeedsLogin =
+							caught instanceof BackendRequestError &&
+							caught.status === 401
+						return {
+							ok: false,
+							error: retryNeedsLogin
+								? "Tu sesión terminó. Inicia sesión y vuelve a intentar el envío."
+								: getMobileSyncError(
+										mobilePermitSyncErrors.resultUnknown,
+									),
+							reason: "pending",
+						}
+					}
+
+					const clearFailure = await clearSyncAttemptAfterFailure(
+						permitId,
+						userId,
+					)
+					if (clearFailure) return clearFailure
+
+					return getRejectedSyncResult(caught)
+				}
 
 				try {
 					const downloads = await fetchPermits(token)
@@ -179,47 +246,6 @@ export function useSyncPermit() {
 				}
 
 				return { ok: true }
-			} catch (caught) {
-				const retryNeedsLogin =
-					caught instanceof BackendRequestError &&
-					caught.status === 401
-				const unresolvedAttempt = retryNeedsLogin
-					? {
-							error: "Tu sesión terminó. Inicia sesión y vuelve a intentar el envío.",
-							reason: "pending" as const,
-						}
-					: {
-							error: "No se pudo confirmar el envío. Reintente para conocer el resultado.",
-							reason: "pending" as const,
-						}
-
-				if (!isSafeToClearSyncAttemptAfterRetry(caught)) {
-					setError(unresolvedAttempt.error)
-					return { ok: false, ...unresolvedAttempt }
-				}
-
-				try {
-					await clearPermitSyncAttempt(permitId, userId)
-				} catch {
-					setError(unresolvedAttempt.error)
-					return { ok: false, ...unresolvedAttempt }
-				}
-
-				const message =
-					caught instanceof Error
-						? caught.message
-						: "No se pudo enviar el permiso"
-				const syncError =
-					caught instanceof BackendRequestError &&
-					caught.code === "SYNC_VERSION_CONFLICT"
-						? { error: message, reason: "outdated" as const }
-						: caught instanceof BackendRequestError && caught.code
-							? {
-									error: `${message} (${caught.code})`,
-								}
-							: { error: message }
-				setError(syncError.error)
-				return { ok: false, ...syncError }
 			} finally {
 				operationRunning.current = false
 				setSyncOperation(null)
@@ -268,76 +294,132 @@ export function useSyncPermit() {
 		[token, userId],
 	)
 
-	const clearError = useCallback(() => setError(null), [])
-
 	return {
 		syncPermit,
 		retrySyncPermit,
 		discardAndDownload,
 		syncingPermit: syncOperation !== null,
 		syncOperation,
-		error,
-		clearError,
 	}
 }
 
 function isUncertainRequestFailure(error: unknown): boolean {
-	return (
-		error instanceof BackendRequestError &&
-		[
-			"timeout",
-			"unreachable",
-			"invalid_response",
-			"server_error",
-			"unexpected",
-		].includes(error.failure)
-	)
-}
-
-function isSafeToClearSyncAttemptAfterRetry(error: unknown): boolean {
-	if (
-		!(error instanceof BackendRequestError) ||
-		error.failure !== "rejected"
-	) {
-		return false
-	}
+	if (!(error instanceof BackendRequestError)) return false
 
 	switch (error.code) {
-		case "PERMIT_NOT_FOUND":
-		case "PERMIT_SYNC_FORBIDDEN":
-		case "PERMIT_SYNC_UNAVAILABLE":
-		case "SYNC_VERSION_CONFLICT":
-		case "VPRM_2":
-		case "VPRT_1":
-		case "VPRT_2":
-		case "VPRT_3":
-		case "VSHE_1":
-		case "VSHE_2":
-		case "VSHE_3":
-		case "VSHE_4":
-		case "VSHE_5":
-		case "VSHE_6":
-		case "VSHE_7":
-		case "VCLG_1":
-		case "VCLG_2":
-		case "VCLG_3":
-		case "VCLG_4":
-		case "VCLG_5":
-		case "VCLG_6":
-		case "VCLG_7":
-		case "VCLG_8":
-		case "VCLG_9":
-		case "VCLG_11":
-		case "VCLG_12":
-		case "VCLG_13":
-		case "VCLG_14":
-		case "VCLG_15":
-		case "VCLG_16":
-		case "VCLG_17":
-		case "VCLG_18":
-		case "VCLG_19":
+		case mobileRequestErrors.timeout.code:
+		case mobileRequestErrors.unreachable.code:
+		case mobileRequestErrors.invalidResponse.code:
+		case mobileRequestErrors.serverError.code:
+		case mobileRequestErrors.unexpected.code:
 			return true
 		default:
 			return false
 	}
+}
+
+function isSafeToClearSyncAttemptAfterRetry(error: unknown): boolean {
+	if (!(error instanceof BackendRequestError)) return false
+
+	switch (error.code) {
+		case backendPermitSyncCodes.permitNotFound:
+		case backendPermitSyncCodes.permitForbidden:
+		case backendPermitSyncCodes.permitUnavailable:
+		case backendPermitSyncCodes.versionConflict:
+		case backendPermitSyncCodes.permitVersion:
+		case backendPermitSyncCodes.participantsMissing:
+		case backendPermitSyncCodes.participantPermit:
+		case backendPermitSyncCodes.participantDuplicate:
+		case backendPermitSyncCodes.shearingIncomplete:
+		case backendPermitSyncCodes.shearingHeaderPermit:
+		case backendPermitSyncCodes.shearingRecordsMissing:
+		case backendPermitSyncCodes.shearingRecordPermit:
+		case backendPermitSyncCodes.gestation:
+		case backendPermitSyncCodes.sheared:
+		case backendPermitSyncCodes.shearingRecordDuplicate:
+		case backendPermitSyncCodes.cleaningHeaderIncomplete:
+		case backendPermitSyncCodes.cleaningHeaderPermit:
+		case backendPermitSyncCodes.cleaningRecordsMissing:
+		case backendPermitSyncCodes.cleaningDetailCount:
+		case backendPermitSyncCodes.cleaningRecordPermit:
+		case backendPermitSyncCodes.cleaningDetailIncomplete:
+		case backendPermitSyncCodes.groomingPermit:
+		case backendPermitSyncCodes.dehearingPermit:
+		case backendPermitSyncCodes.bothDetails:
+		case backendPermitSyncCodes.cleanWeight:
+		case backendPermitSyncCodes.dirtyWeight:
+		case backendPermitSyncCodes.totalWeight:
+		case backendPermitSyncCodes.calculatedWeight:
+		case backendPermitSyncCodes.cleaningRecordDuplicate:
+		case backendPermitSyncCodes.groomingRelationDuplicate:
+		case backendPermitSyncCodes.groomingDetailDuplicate:
+		case backendPermitSyncCodes.dehearingRelationDuplicate:
+		case backendPermitSyncCodes.dehearingDetailDuplicate:
+			return true
+		default:
+			return false
+	}
+}
+
+async function clearSyncAttemptAfterFailure(
+	permitId: string,
+	userId: string,
+): Promise<SyncPermitResult | null> {
+	try {
+		await clearPermitSyncAttempt(permitId, userId)
+		return null
+	} catch (caught) {
+		return {
+			ok: false,
+			error: getErrorMessage(caught, mobilePermitSyncErrors.clearAttempt),
+			reason: "pending",
+		}
+	}
+}
+
+function getRejectedSyncResult(error: unknown): SyncPermitResult {
+	const message =
+		error instanceof Error ? error.message : "No se pudo enviar el permiso"
+
+	if (
+		error instanceof BackendRequestError &&
+		error.code === backendPermitSyncCodes.versionConflict
+	) {
+		return { ok: false, error: message, reason: "outdated" }
+	}
+
+	if (error instanceof BackendRequestError) {
+		return { ok: false, error: `${message} (${error.code})` }
+	}
+
+	return { ok: false, error: message }
+}
+
+function getErrorCode(error: unknown): string | null {
+	if (
+		error instanceof MobileOperationError ||
+		error instanceof BackendRequestError
+	) {
+		return error.code
+	}
+
+	return null
+}
+
+function getErrorMessage(
+	error: unknown,
+	fallback: MobileErrorDefinition,
+): string {
+	if (
+		error instanceof MobileOperationError ||
+		error instanceof BackendRequestError
+	) {
+		return `${error.message} (${error.code})`
+	}
+
+	return getMobileSyncError(fallback)
+}
+
+function getMobileSyncError(error: MobileErrorDefinition): string {
+	return `${error.message} (${error.code})`
 }

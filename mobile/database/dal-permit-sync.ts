@@ -1,3 +1,7 @@
+import {
+	MobileOperationError,
+	mobilePermitSyncErrors,
+} from "@definitions/errors"
 import type {
 	MobilePermitData,
 	PermitFieldData,
@@ -48,76 +52,91 @@ export async function getFieldSyncData(
 	permitId: string,
 	accountId: string,
 ): Promise<SyncFieldData> {
-	const permitRecord = await database
-		.get<PermitModel>("permits")
-		.find(permitId)
-	assertPermitOwner(permitRecord.userId, accountId)
-	if (!permitRecord.syncAttemptId) {
-		throw new Error("Este permiso no tiene un envío pendiente")
-	}
-	const participants = await database
-		.get<ParticipantModel>("participants")
-		.query(Q.where("permitId", permitId))
-		.fetch()
-	const shearingHeaders = await database
-		.get<ShearingHeaderModel>("shearingHeader")
-		.query(Q.where("permitId", permitId))
-		.fetch()
-	const shearingRecords = await database
-		.get<ShearingRecordModel>("shearingRecord")
-		.query(Q.where("permitId", permitId))
-		.fetch()
-	const cleaningHeaders = await database
-		.get<CleaningHeaderModel>("cleaningHeader")
-		.query(Q.where("permitId", permitId))
-		.fetch()
-	const cleaningCommonRecords = await database
-		.get<CleaningCommonModel>("cleaningCommon")
-		.query(Q.where("permitId", permitId))
-		.fetch()
+	try {
+		const permitRecord = await database
+			.get<PermitModel>("permits")
+			.find(permitId)
+		assertPermitOwner(permitRecord.userId, accountId)
+		if (!permitRecord.syncAttemptId) {
+			throw new Error("Este permiso no tiene un envío pendiente")
+		}
+		const participants = await database
+			.get<ParticipantModel>("participants")
+			.query(Q.where("permitId", permitId))
+			.fetch()
+		const shearingHeaders = await database
+			.get<ShearingHeaderModel>("shearingHeader")
+			.query(Q.where("permitId", permitId))
+			.fetch()
+		const shearingRecords = await database
+			.get<ShearingRecordModel>("shearingRecord")
+			.query(Q.where("permitId", permitId))
+			.fetch()
+		const cleaningHeaders = await database
+			.get<CleaningHeaderModel>("cleaningHeader")
+			.query(Q.where("permitId", permitId))
+			.fetch()
+		const cleaningCommonRecords = await database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.query(Q.where("permitId", permitId))
+			.fetch()
 
-	const cleaningCommonIds = cleaningCommonRecords.map((record) => record.id)
-	const groomingDetails =
-		cleaningCommonIds.length > 0
-			? await database
-					.get<GroomingModel>("grooming")
-					.query(
-						Q.where("cleaningCommonId", Q.oneOf(cleaningCommonIds)),
-					)
-					.fetch()
-			: []
-	const dehearingDetails =
-		cleaningCommonIds.length > 0
-			? await database
-					.get<DehearingModel>("dehearing")
-					.query(
-						Q.where("cleaningCommonId", Q.oneOf(cleaningCommonIds)),
-					)
-					.fetch()
-			: []
+		const cleaningCommonIds = cleaningCommonRecords.map(
+			(record) => record.id,
+		)
+		const groomingDetails =
+			cleaningCommonIds.length > 0
+				? await database
+						.get<GroomingModel>("grooming")
+						.query(
+							Q.where(
+								"cleaningCommonId",
+								Q.oneOf(cleaningCommonIds),
+							),
+						)
+						.fetch()
+				: []
+		const dehearingDetails =
+			cleaningCommonIds.length > 0
+				? await database
+						.get<DehearingModel>("dehearing")
+						.query(
+							Q.where(
+								"cleaningCommonId",
+								Q.oneOf(cleaningCommonIds),
+							),
+						)
+						.fetch()
+				: []
 
-	const shearingHeader = shearingHeaders[0]
-	const cleaningHeader = cleaningHeaders[0]
+		const shearingHeader = shearingHeaders[0]
+		const cleaningHeader = cleaningHeaders[0]
 
-	if (!shearingHeader) {
-		throw new Error("Falta la cabecera de esquila")
-	}
+		if (!shearingHeader) {
+			throw new Error("Falta la cabecera de esquila")
+		}
 
-	if (!cleaningHeader) {
-		throw new Error("Falta la información general del registro de fibra")
-	}
+		if (!cleaningHeader) {
+			throw new Error(
+				"Falta la información general del registro de fibra",
+			)
+		}
 
-	return {
-		syncAttemptId: permitRecord.syncAttemptId,
-		expectedSyncVersion: permitRecord.syncVersion || null,
-		permit: mapToSyncPermit(permitRecord),
-		participants: participants.map(mapToParticipant),
-		shearingHeader: mapToShearingHeader(shearingHeader),
-		shearingRecords: shearingRecords.map(mapToShearingRecord),
-		cleaningHeader: mapToCleaningHeader(cleaningHeader),
-		cleaningCommonRecords: cleaningCommonRecords.map(mapToCleaningCommon),
-		groomingDetails: groomingDetails.map(mapToGrooming),
-		dehearingDetails: dehearingDetails.map(mapToDehearing),
+		return {
+			syncAttemptId: permitRecord.syncAttemptId,
+			expectedSyncVersion: permitRecord.syncVersion || null,
+			permit: mapToSyncPermit(permitRecord),
+			participants: participants.map(mapToParticipant),
+			shearingHeader: mapToShearingHeader(shearingHeader),
+			shearingRecords: shearingRecords.map(mapToShearingRecord),
+			cleaningHeader: mapToCleaningHeader(cleaningHeader),
+			cleaningCommonRecords:
+				cleaningCommonRecords.map(mapToCleaningCommon),
+			groomingDetails: groomingDetails.map(mapToGrooming),
+			dehearingDetails: dehearingDetails.map(mapToDehearing),
+		}
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.readData)
 	}
 }
 
@@ -129,35 +148,47 @@ export async function startPermitSyncAttempt(
 	permitId: string,
 	accountId: string,
 ): Promise<void> {
-	const syncAttemptId = randomId()
+	try {
+		const syncAttemptId = randomId()
 
-	await updateOwnedPermit(permitId, accountId, (permit) => {
-		if (permit.syncAttemptId) {
-			throw new Error("Este permiso ya tiene un envío pendiente")
-		}
-		permit.syncAttemptId = syncAttemptId
-	})
+		await updateOwnedPermit(permitId, accountId, (permit) => {
+			if (permit.syncAttemptId) {
+				throw new Error("Este permiso ya tiene un envío pendiente")
+			}
+			permit.syncAttemptId = syncAttemptId
+		})
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.startAttempt)
+	}
 }
 
 export async function clearPermitSyncAttempt(
 	permitId: string,
 	accountId: string,
 ): Promise<void> {
-	await updateOwnedPermit(permitId, accountId, (permit) => {
-		permit.syncAttemptId = null
-	})
+	try {
+		await updateOwnedPermit(permitId, accountId, (permit) => {
+			permit.syncAttemptId = null
+		})
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.clearAttempt)
+	}
 }
 
 export async function completePermitSyncAttempt(
 	result: PermitSyncResult,
 	accountId: string,
 ): Promise<void> {
-	await updateOwnedPermit(result.permitId, accountId, (permit) => {
-		permit.syncedAt = result.syncedAt
-		permit.syncVersion = result.syncVersion
-		permit.permitSyncStatus = result.syncStatus
-		permit.syncAttemptId = null
-	})
+	try {
+		await updateOwnedPermit(result.permitId, accountId, (permit) => {
+			permit.syncedAt = result.syncedAt
+			permit.syncVersion = result.syncVersion
+			permit.permitSyncStatus = result.syncStatus
+			permit.syncAttemptId = null
+		})
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.completeAttempt)
+	}
 }
 
 export async function savePermits(

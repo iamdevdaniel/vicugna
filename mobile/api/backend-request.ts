@@ -1,5 +1,6 @@
 // Handles failures while the mobile app communicates with the backend.
 
+import { mobileRequestErrors } from "@definitions/errors"
 import { getNetworkStateAsync } from "expo-network"
 
 type ServerResponse<T> = {
@@ -9,20 +10,10 @@ type ServerResponse<T> = {
 	code?: string
 }
 
-export type BackendRequestFailure =
-	| "offline"
-	| "timeout"
-	| "unreachable"
-	| "invalid_response"
-	| "rejected"
-	| "server_error"
-	| "unexpected"
-
 export class BackendRequestError extends Error {
 	constructor(
-		readonly failure: BackendRequestFailure,
+		readonly code: string,
 		message: string,
-		readonly code?: string,
 		readonly status?: number,
 	) {
 		super(message)
@@ -44,8 +35,8 @@ export async function requestBackend<T>(
 ): Promise<T> {
 	if (await isOffline()) {
 		throw new BackendRequestError(
-			"offline",
-			"Sin conexión a internet. Intente nuevamente cuando recupere la conexión.",
+			mobileRequestErrors.offline.code,
+			mobileRequestErrors.offline.message,
 		)
 	}
 
@@ -61,21 +52,21 @@ export async function requestBackend<T>(
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") {
 			throw new BackendRequestError(
-				"timeout",
-				"El servidor tardó demasiado en responder. Intente nuevamente.",
+				mobileRequestErrors.timeout.code,
+				mobileRequestErrors.timeout.message,
 			)
 		}
 
 		if (error instanceof TypeError) {
 			throw new BackendRequestError(
-				"unreachable",
-				"No se pudo conectar con el servidor. Intente más tarde.",
+				mobileRequestErrors.unreachable.code,
+				mobileRequestErrors.unreachable.message,
 			)
 		}
 
 		throw new BackendRequestError(
-			"unexpected",
-			"Ocurrió un error al comunicarse con el servidor.",
+			mobileRequestErrors.unexpected.code,
+			mobileRequestErrors.unexpected.message,
 		)
 	} finally {
 		clearTimeout(timeout)
@@ -87,8 +78,8 @@ export async function requestBackend<T>(
 		payload = (await response.json()) as ServerResponse<T>
 	} catch {
 		throw new BackendRequestError(
-			"invalid_response",
-			"El servidor devolvió una respuesta inválida. Intente nuevamente.",
+			mobileRequestErrors.invalidResponse.code,
+			mobileRequestErrors.invalidResponse.message,
 		)
 	}
 	if (
@@ -97,25 +88,28 @@ export async function requestBackend<T>(
 		typeof payload.ok !== "boolean"
 	) {
 		throw new BackendRequestError(
-			"invalid_response",
-			"El servidor devolvió una respuesta inválida. Intente nuevamente.",
+			mobileRequestErrors.invalidResponse.code,
+			mobileRequestErrors.invalidResponse.message,
 		)
 	}
 
 	if (!response.ok || !payload.ok) {
-		const message = response.status >= 500 ? fallbackError : payload.error
+		const isServerError = response.status >= 500
+		const message = isServerError ? fallbackError : payload.error
+		const code = isServerError
+			? mobileRequestErrors.serverError.code
+			: (payload.code ?? mobileRequestErrors.rejected.code)
 		throw new BackendRequestError(
-			response.status >= 500 ? "server_error" : "rejected",
-			message ?? fallbackError,
-			payload.code,
+			code,
+			message ?? mobileRequestErrors.rejected.message,
 			response.status,
 		)
 	}
 
 	if (payload.data === undefined) {
 		throw new BackendRequestError(
-			"invalid_response",
-			"El servidor devolvió una respuesta inválida. Intente nuevamente.",
+			mobileRequestErrors.invalidResponse.code,
+			mobileRequestErrors.invalidResponse.message,
 		)
 	}
 

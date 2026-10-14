@@ -1,3 +1,4 @@
+import { mobileRequestErrors } from "@definitions/errors"
 import type { PermitSyncResult, SyncFieldData } from "@definitions/types"
 import { BackendRequestError, requestBackend } from "./backend-request"
 
@@ -34,8 +35,8 @@ export async function submitSyncFieldData(token: string, data: SyncFieldData) {
 		!hasValidSyncTime
 	) {
 		throw new BackendRequestError(
-			"invalid_response",
-			"El servidor devolvió una respuesta inválida. Intente nuevamente.",
+			mobileRequestErrors.invalidResponse.code,
+			mobileRequestErrors.invalidResponse.message,
 		)
 	}
 
