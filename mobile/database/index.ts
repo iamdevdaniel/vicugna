@@ -28,8 +28,8 @@ export {
 	clearPermitSyncAttempt,
 	completePermitSyncAttempt,
 	getFieldSyncData,
+	preparePermitSyncAttempt,
 	savePermits,
-	startPermitSyncAttempt,
 } from "./dal-permit-sync"
 export {
 	createSingleShearingRecord,

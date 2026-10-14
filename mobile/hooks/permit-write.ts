@@ -8,8 +8,8 @@ import {
 	clearPermitSyncAttempt,
 	completePermitSyncAttempt,
 	getFieldSyncData,
+	preparePermitSyncAttempt,
 	savePermits,
-	startPermitSyncAttempt,
 } from "@database"
 import {
 	backendPermitSyncCodes,
@@ -107,8 +107,7 @@ export function useSyncPermit() {
 					}
 				}
 
-				await startPermitSyncAttempt(permitId, userId)
-				const payload = await getFieldSyncData(permitId, userId)
+				const payload = await preparePermitSyncAttempt(permitId, userId)
 				const result = await submitSyncFieldData(token, payload)
 				await completePermitSyncAttempt(result, userId)
 
@@ -123,21 +122,6 @@ export function useSyncPermit() {
 								mobilePermitSyncErrors.startAttempt,
 							),
 						}
-					case mobilePermitSyncErrors.readData.code: {
-						const clearFailure = await clearSyncAttemptAfterFailure(
-							permitId,
-							userId,
-						)
-						if (clearFailure) return clearFailure
-
-						return {
-							ok: false,
-							error: getErrorMessage(
-								caught,
-								mobilePermitSyncErrors.readData,
-							),
-						}
-					}
 					case mobilePermitSyncErrors.completeAttempt.code:
 						return {
 							ok: false,
