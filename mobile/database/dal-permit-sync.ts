@@ -1,9 +1,15 @@
+import {
+	MobileOperationError,
+	mobilePermitSyncErrors,
+} from "@definitions/errors"
 import type {
 	MobilePermitData,
 	PermitFieldData,
+	PermitSyncResult,
 	SyncFieldData,
 } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
+import { randomId } from "@nozbe/watermelondb/utils/common"
 import { getPermitStatuses } from "@utils/permit-status-rules"
 import { assertPermitOwner } from "./dal-permit"
 import {
@@ -46,10 +52,226 @@ export async function getFieldSyncData(
 	permitId: string,
 	accountId: string,
 ): Promise<SyncFieldData> {
-	const permitRecord = await database
-		.get<PermitModel>("permits")
-		.find(permitId)
-	assertPermitOwner(permitRecord.userId, accountId)
+	try {
+		const permitRecord = await database
+			.get<PermitModel>("permits")
+			.find(permitId)
+		assertPermitOwner(permitRecord.userId, accountId)
+		const syncAttemptId = permitRecord.syncAttemptId
+		if (!syncAttemptId) {
+			throw new Error("Este permiso no tiene un envío pendiente")
+		}
+
+		return await buildFieldSyncData(permitRecord, syncAttemptId)
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.readData)
+	}
+}
+
+// ==========================================
+// WRITE
+// ==========================================
+
+export async function preparePermitSyncAttempt(
+	permitId: string,
+	accountId: string,
+): Promise<SyncFieldData> {
+	try {
+		return await database.write(async () => {
+			const permitRecord = await database
+				.get<PermitModel>("permits")
+				.find(permitId)
+			assertPermitOwner(permitRecord.userId, accountId)
+			if (permitRecord.syncAttemptId) {
+				throw new Error("Este permiso ya tiene un envío pendiente")
+			}
+
+			const syncAttemptId = randomId()
+			const payload = await buildFieldSyncData(
+				permitRecord,
+				syncAttemptId,
+			)
+
+			await permitRecord.update((permit) => {
+				permit.syncAttemptId = syncAttemptId
+			})
+
+			return payload
+		})
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.startAttempt)
+	}
+}
+
+export async function clearPermitSyncAttempt(
+	permitId: string,
+	accountId: string,
+): Promise<void> {
+	try {
+		await updateOwnedPermit(permitId, accountId, (permit) => {
+			permit.syncAttemptId = null
+		})
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.clearAttempt)
+	}
+}
+
+export async function completePermitSyncAttempt(
+	result: PermitSyncResult,
+	accountId: string,
+): Promise<void> {
+	try {
+		await updateOwnedPermit(result.permitId, accountId, (permit) => {
+			permit.syncedAt = result.syncedAt
+			permit.syncVersion = result.syncVersion
+			permit.permitSyncStatus = result.syncStatus
+			permit.syncAttemptId = null
+		})
+	} catch {
+		throw new MobileOperationError(mobilePermitSyncErrors.completeAttempt)
+	}
+}
+
+export async function savePermits(
+	accountId: string,
+	downloads: MobilePermitData[],
+	options: { confirmedReplacementId?: string } = {},
+): Promise<void> {
+	if (downloads.length === 0) return
+	for (const { permit } of downloads) {
+		assertPermitOwner(permit.userId, accountId)
+	}
+
+	await database.write(async () => {
+		const permitIds = downloads.map(({ permit }) => permit.id)
+		const existingPermits = await database
+			.get<PermitModel>("permits")
+			.query(Q.where("id", Q.oneOf(permitIds)))
+			.fetch()
+		const permitsById = new Map(
+			existingPermits.map((permit) => [permit.id, permit]),
+		)
+		const downloadsToSave = downloads.filter(({ permit, syncVersion }) => {
+			const existingPermit = permitsById.get(permit.id)
+			if (existingPermit?.syncAttemptId) return false
+
+			const localVersion = existingPermit?.syncVersion ?? 0
+			const backendVersion = syncVersion ?? 0
+
+			if (backendVersion < localVersion) return false
+			if (permit.id === options.confirmedReplacementId) return true
+
+			return !(
+				existingPermit &&
+				existingPermit.permitSyncStatus !== "synced" &&
+				backendVersion > localVersion
+			)
+		})
+		if (downloadsToSave.length === 0) return
+
+		const permitIdsToSave = downloadsToSave.map(({ permit }) => permit.id)
+		const [shearingHeaders, cleaningHeaders] = await Promise.all([
+			database
+				.get<ShearingHeaderModel>("shearingHeader")
+				.query(Q.where("permitId", Q.oneOf(permitIdsToSave)))
+				.fetch(),
+			database
+				.get<CleaningHeaderModel>("cleaningHeader")
+				.query(Q.where("permitId", Q.oneOf(permitIdsToSave)))
+				.fetch(),
+		])
+		const shearingHeadersByPermitId = new Map(
+			shearingHeaders.map((header) => [header.permitId, header]),
+		)
+		const cleaningHeadersByPermitId = new Map(
+			cleaningHeaders.map((header) => [header.permitId, header]),
+		)
+		const downloadsReplacingLocalData = downloadsToSave.filter(
+			({ permit, syncVersion, fieldData }) =>
+				fieldData !== null &&
+				syncVersion !== null &&
+				syncVersion > (permitsById.get(permit.id)?.syncVersion ?? 0),
+		)
+		const replacementPermitIds = downloadsReplacingLocalData.map(
+			({ permit }) => permit.id,
+		)
+		const replacementsByPermitId = new Map(
+			downloadsReplacingLocalData.map((download) => [
+				download.permit.id,
+				download,
+			]),
+		)
+		const oldFieldData = await readFieldData(replacementPermitIds)
+		const batchOps: Model[] = []
+		prepareFieldDataDeletion(
+			batchOps,
+			new Set(replacementPermitIds),
+			oldFieldData,
+		)
+
+		for (const download of downloadsToSave) {
+			const { permit, syncVersion } = download
+			const existingPermit = permitsById.get(permit.id)
+			const replacement = replacementsByPermitId.get(permit.id)
+			const statuses = replacement?.fieldData
+				? getSnapshotStatuses(replacement.fieldData)
+				: null
+
+			if (existingPermit) {
+				batchOps.push(
+					existingPermit.prepareUpdate((model) => {
+						applySyncPermitToModel(model, permit)
+						model.syncVersion = syncVersion ?? 0
+						if (statuses)
+							applyPermitStatusesToModel(model, statuses)
+					}),
+				)
+			} else {
+				batchOps.push(
+					database
+						.get<PermitModel>("permits")
+						.prepareCreate((model) => {
+							model._raw.id = permit.id
+							applyPermitToModel(model, {
+								...permit,
+								...(statuses ?? defaultStatuses),
+							})
+							model.syncVersion = syncVersion ?? 0
+						}),
+				)
+			}
+
+			if (replacement?.fieldData) {
+				prepareSnapshotReplacement(
+					batchOps,
+					replacement.fieldData,
+					shearingHeadersByPermitId.get(permit.id),
+					cleaningHeadersByPermitId.get(permit.id),
+				)
+				continue
+			}
+
+			if (!existingPermit) {
+				batchOps.push(
+					prepareEmptyShearingHeader(permit.id),
+					prepareEmptyCleaningHeader(permit.id),
+				)
+			}
+		}
+
+		if (batchOps.length > 0) await database.batch(batchOps)
+	})
+}
+
+// ==========================================
+// HELPERS
+// ==========================================
+
+async function buildFieldSyncData(
+	permitRecord: PermitModel,
+	syncAttemptId: string,
+): Promise<SyncFieldData> {
+	const permitId = permitRecord.id
 	const participants = await database
 		.get<ParticipantModel>("participants")
 		.query(Q.where("permitId", permitId))
@@ -103,6 +325,7 @@ export async function getFieldSyncData(
 	}
 
 	return {
+		syncAttemptId,
 		expectedSyncVersion: permitRecord.syncVersion || null,
 		permit: mapToSyncPermit(permitRecord),
 		participants: participants.map(mapToParticipant),
@@ -115,136 +338,17 @@ export async function getFieldSyncData(
 	}
 }
 
-// ==========================================
-// WRITE
-// ==========================================
-
-export async function savePermits(
+async function updateOwnedPermit(
+	permitId: string,
 	accountId: string,
-	downloads: MobilePermitData[],
-	options: { confirmedReplacementId?: string } = {},
+	change: (permit: PermitModel) => void,
 ): Promise<void> {
-	if (downloads.length === 0) return
-	for (const { permit } of downloads) {
-		assertPermitOwner(permit.userId, accountId)
-	}
-
 	await database.write(async () => {
-		const permitIds = downloads.map(({ permit }) => permit.id)
-		const existingPermits = await database
-			.get<PermitModel>("permits")
-			.query(Q.where("id", Q.oneOf(permitIds)))
-			.fetch()
-		const permitsById = new Map(
-			existingPermits.map((permit) => [permit.id, permit]),
-		)
-		const currentDownloads = downloads.filter(({ permit, syncVersion }) => {
-			const existingPermit = permitsById.get(permit.id)
-			const localVersion = existingPermit?.syncVersion ?? 0
-			const backendVersion = syncVersion ?? 0
-
-			if (backendVersion < localVersion) return false
-			if (permit.id === options.confirmedReplacementId) return true
-
-			return !(
-				existingPermit &&
-				existingPermit.permitSyncStatus !== "synced" &&
-				backendVersion > localVersion
-			)
-		})
-		if (currentDownloads.length === 0) return
-
-		const currentPermitIds = currentDownloads.map(({ permit }) => permit.id)
-		const [shearingHeaders, cleaningHeaders] = await Promise.all([
-			database
-				.get<ShearingHeaderModel>("shearingHeader")
-				.query(Q.where("permitId", Q.oneOf(currentPermitIds)))
-				.fetch(),
-			database
-				.get<CleaningHeaderModel>("cleaningHeader")
-				.query(Q.where("permitId", Q.oneOf(currentPermitIds)))
-				.fetch(),
-		])
-		const shearingHeadersByPermitId = new Map(
-			shearingHeaders.map((header) => [header.permitId, header]),
-		)
-		const cleaningHeadersByPermitId = new Map(
-			cleaningHeaders.map((header) => [header.permitId, header]),
-		)
-		const hydrationDownloads = currentDownloads.filter(
-			({ permit, syncVersion, fieldData }) =>
-				fieldData !== null &&
-				syncVersion !== null &&
-				syncVersion > (permitsById.get(permit.id)?.syncVersion ?? 0),
-		)
-		const hydrationIds = hydrationDownloads.map(({ permit }) => permit.id)
-		const hydrationByPermitId = new Map(
-			hydrationDownloads.map((download) => [
-				download.permit.id,
-				download,
-			]),
-		)
-		const oldFieldData = await readFieldData(hydrationIds)
-		const batchOps: Model[] = []
-		prepareFieldDataDeletion(batchOps, new Set(hydrationIds), oldFieldData)
-
-		for (const download of currentDownloads) {
-			const { permit, syncVersion } = download
-			const existingPermit = permitsById.get(permit.id)
-			const hydration = hydrationByPermitId.get(permit.id)
-			const statuses = hydration?.fieldData
-				? getSnapshotStatuses(hydration.fieldData)
-				: null
-
-			if (existingPermit) {
-				batchOps.push(
-					existingPermit.prepareUpdate((model) => {
-						applySyncPermitToModel(model, permit)
-						model.syncVersion = syncVersion ?? 0
-						if (statuses)
-							applyPermitStatusesToModel(model, statuses)
-					}),
-				)
-			} else {
-				batchOps.push(
-					database
-						.get<PermitModel>("permits")
-						.prepareCreate((model) => {
-							model._raw.id = permit.id
-							applyPermitToModel(model, {
-								...permit,
-								...(statuses ?? defaultStatuses),
-							})
-							model.syncVersion = syncVersion ?? 0
-						}),
-				)
-			}
-
-			if (hydration?.fieldData) {
-				prepareSnapshotReplacement(
-					batchOps,
-					hydration.fieldData,
-					shearingHeadersByPermitId.get(permit.id),
-					cleaningHeadersByPermitId.get(permit.id),
-				)
-				continue
-			}
-
-			if (!existingPermit) {
-				batchOps.push(
-					prepareEmptyShearingHeader(permit.id),
-					prepareEmptyCleaningHeader(permit.id),
-				)
-			}
-		}
-
-		if (batchOps.length > 0) await database.batch(batchOps)
+		const permit = await database.get<PermitModel>("permits").find(permitId)
+		assertPermitOwner(permit.userId, accountId)
+		await permit.update(change)
 	})
 }
-
-// ==========================================
-// HELPERS
-// ==========================================
 
 async function readFieldData(permitIds: string[]) {
 	if (permitIds.length === 0) {

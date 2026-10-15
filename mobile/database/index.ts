@@ -24,7 +24,13 @@ export {
 	subscribeSinglePermit,
 	updatePermitSyncStatus,
 } from "./dal-permit"
-export { getFieldSyncData, savePermits } from "./dal-permit-sync"
+export {
+	clearPermitSyncAttempt,
+	completePermitSyncAttempt,
+	getFieldSyncData,
+	preparePermitSyncAttempt,
+	savePermits,
+} from "./dal-permit-sync"
 export {
 	createSingleShearingRecord,
 	deleteSingleShearingRecord,

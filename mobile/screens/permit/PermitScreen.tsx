@@ -49,10 +49,10 @@ export default function NativePermitScreen() {
 	const { data: cleaningRecords } = useReadBulkCleaningCommon(permitId)
 	const {
 		syncPermit,
+		retrySyncPermit,
 		discardAndDownload,
 		syncingPermit,
 		syncOperation,
-		clearError: clearSyncError,
 	} = useSyncPermit()
 	const participantsStatus = permit?.participantsStatus ?? "ready"
 	const shearingStatus = permit?.shearingStatus ?? "disabled"
@@ -62,6 +62,8 @@ export default function NativePermitScreen() {
 		shearingStatus === "done" &&
 		cleaningStatus === "done"
 	const isPermitSynced = permit?.syncStatus === "synced"
+	const hasPendingSync = Boolean(permit?.syncAttemptId)
+	const isPermitReadOnly = isPermitSynced || hasPendingSync
 	const communityName = permit
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
@@ -111,7 +113,13 @@ export default function NativePermitScreen() {
 
 	const onOpenStep = (route: Parameters<typeof router.push>[0]) => {
 		hideSnackbar()
-		clearSyncError()
+		if (hasPendingSync) {
+			showSnackbar(
+				"Reintente el envío antes de abrir los datos del permiso.",
+				"error",
+			)
+			return
+		}
 		router.push(route)
 	}
 
@@ -185,6 +193,24 @@ export default function NativePermitScreen() {
 		)
 	}
 
+	const onPressRetry = async () => {
+		const result = await retrySyncPermit(permitId)
+
+		if (result.ok) {
+			showSnackbar(
+				result.warning ?? "El permiso se envió correctamente",
+				result.warning ? "error" : "success",
+			)
+			return
+		}
+		if (result.reason === "outdated") {
+			showOutdatedDataChoice(result.error)
+			return
+		}
+
+		showSnackbar(result.error, "error")
+	}
+
 	return (
 		<SafeAreaView
 			edges={["bottom"]}
@@ -208,7 +234,15 @@ export default function NativePermitScreen() {
 				}}
 				style={{ flex: 1 }}
 			>
-				{isPermitSynced && <ReadOnlyNotice />}
+				{isPermitReadOnly && (
+					<ReadOnlyNotice
+						message={
+							hasPendingSync
+								? "Este permiso no se puede modificar hasta confirmar el envío."
+								: undefined
+						}
+					/>
+				)}
 				<View
 					style={{
 						marginBottom: 16,
@@ -314,23 +348,41 @@ export default function NativePermitScreen() {
 						textAlign: "center",
 					}}
 				>
-					{isPermitSynced
-						? "Pide permiso al admin para editar."
-						: canSendPermit
-							? "Finaliza este permiso cuando ya no queden cambios por hacer."
-							: "Completa los pasos de arriba para poder enviar este permiso."}
+					{hasPendingSync
+						? "Reintenta para confirmar si el permiso se envió."
+						: isPermitSynced
+							? "Pide permiso al admin para editar."
+							: canSendPermit
+								? "Finaliza este permiso cuando ya no queden cambios por hacer."
+								: "Completa los pasos de arriba para poder enviar este permiso."}
 				</Text>
 				<Button
-					accessibilityLabel="Finalizar y enviar"
+					accessibilityLabel={
+						hasPendingSync
+							? "Reintentar envío"
+							: "Finalizar y enviar"
+					}
 					mode="contained"
-					icon={isPermitSynced ? "lock" : "cloud-upload"}
+					icon={
+						hasPendingSync
+							? "refresh"
+							: isPermitSynced
+								? "lock"
+								: "cloud-upload"
+					}
 					contentStyle={{ height: 48 }}
 					buttonColor={theme.colors.custom.green}
 					textColor={theme.colors.custom.white}
-					disabled={!canSendPermit || isPermitSynced}
-					onPress={onPressSend}
+					disabled={
+						isPermitSynced || (!hasPendingSync && !canSendPermit)
+					}
+					onPress={hasPendingSync ? onPressRetry : onPressSend}
 				>
-					{isPermitSynced ? "Envío bloqueado" : "Finalizar y enviar"}
+					{hasPendingSync
+						? "Reintentar envío"
+						: isPermitSynced
+							? "Envío bloqueado"
+							: "Finalizar y enviar"}
 				</Button>
 			</View>
 			<Animated.View

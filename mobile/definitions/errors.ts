@@ -1,0 +1,113 @@
+export type MobileErrorDefinition = {
+	code: string
+	message: string
+}
+
+export class MobileOperationError extends Error {
+	readonly code: string
+
+	constructor(definition: MobileErrorDefinition) {
+		super(definition.message)
+		this.name = "MobileOperationError"
+		this.code = definition.code
+	}
+}
+
+export const mobileRequestErrors = {
+	offline: {
+		code: "MOBILE_OFFLINE",
+		message:
+			"Sin conexión a internet. Intente nuevamente cuando recupere la conexión.",
+	},
+	timeout: {
+		code: "MOBILE_REQUEST_TIMEOUT",
+		message:
+			"El servidor tardó demasiado en responder. Intente nuevamente.",
+	},
+	unreachable: {
+		code: "MOBILE_SERVER_UNREACHABLE",
+		message: "No se pudo conectar con el servidor. Intente más tarde.",
+	},
+	invalidResponse: {
+		code: "MOBILE_INVALID_RESPONSE",
+		message:
+			"El servidor devolvió una respuesta inválida. Intente nuevamente.",
+	},
+	serverError: {
+		code: "MOBILE_SERVER_ERROR",
+		message: "El servidor no pudo completar la solicitud.",
+	},
+	rejected: {
+		code: "MOBILE_REQUEST_REJECTED",
+		message: "El servidor rechazó la solicitud.",
+	},
+	unexpected: {
+		code: "MOBILE_REQUEST_FAILED",
+		message: "Ocurrió un error al comunicarse con el servidor.",
+	},
+} as const satisfies Record<string, MobileErrorDefinition>
+
+export const mobilePermitSyncErrors = {
+	startAttempt: {
+		code: "MOBILE_SYNC_START_FAILED",
+		message: "No se pudo iniciar el envío. Intente nuevamente.",
+	},
+	readData: {
+		code: "MOBILE_SYNC_DATA_READ_FAILED",
+		message: "No se pudieron leer los datos guardados. Intente nuevamente.",
+	},
+	clearAttempt: {
+		code: "MOBILE_SYNC_CLEAR_FAILED",
+		message:
+			"El permiso sigue bloqueado. Sus datos están guardados. Pulse Reintentar envío.",
+	},
+	completeAttempt: {
+		code: "MOBILE_SYNC_COMPLETE_FAILED",
+		message:
+			"El permiso se envió, pero el teléfono no guardó la confirmación. Pulse Reintentar envío.",
+	},
+	resultUnknown: {
+		code: "MOBILE_SYNC_RESULT_UNKNOWN",
+		message:
+			"No se pudo confirmar si el permiso se envió. Sus datos están guardados. Pulse Reintentar envío.",
+	},
+} as const satisfies Record<string, MobileErrorDefinition>
+
+// These codes are duplicated from the backend until the error contract is stable.
+export const backendPermitSyncCodes = {
+	invalidPayload: "PYLD",
+	permitVersion: "VPRM_2",
+	participantsMissing: "VPRT_1",
+	participantPermit: "VPRT_2",
+	participantDuplicate: "VPRT_3",
+	shearingIncomplete: "VSHE_1",
+	shearingHeaderPermit: "VSHE_2",
+	shearingRecordsMissing: "VSHE_3",
+	shearingRecordPermit: "VSHE_4",
+	gestation: "VSHE_5",
+	sheared: "VSHE_6",
+	shearingRecordDuplicate: "VSHE_7",
+	cleaningHeaderIncomplete: "VCLG_1",
+	cleaningHeaderPermit: "VCLG_2",
+	cleaningRecordsMissing: "VCLG_3",
+	cleaningDetailCount: "VCLG_4",
+	cleaningRecordPermit: "VCLG_5",
+	cleaningDetailIncomplete: "VCLG_6",
+	groomingPermit: "VCLG_7",
+	dehearingPermit: "VCLG_8",
+	bothDetails: "VCLG_9",
+	cleanWeight: "VCLG_11",
+	dirtyWeight: "VCLG_12",
+	totalWeight: "VCLG_13",
+	calculatedWeight: "VCLG_14",
+	cleaningRecordDuplicate: "VCLG_15",
+	groomingRelationDuplicate: "VCLG_16",
+	groomingDetailDuplicate: "VCLG_17",
+	dehearingRelationDuplicate: "VCLG_18",
+	dehearingDetailDuplicate: "VCLG_19",
+	permitNotFound: "PERMIT_NOT_FOUND",
+	permitForbidden: "PERMIT_SYNC_FORBIDDEN",
+	permitUnavailable: "PERMIT_SYNC_UNAVAILABLE",
+	attemptMismatch: "SYNC_ATTEMPT_MISMATCH",
+	versionConflict: "SYNC_VERSION_CONFLICT",
+} as const

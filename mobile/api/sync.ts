@@ -1,8 +1,9 @@
+import { mobileRequestErrors } from "@definitions/errors"
 import type { PermitSyncResult, SyncFieldData } from "@definitions/types"
-import { requestBackend } from "./backend-request"
+import { BackendRequestError, requestBackend } from "./backend-request"
 
 export async function submitSyncFieldData(token: string, data: SyncFieldData) {
-	return requestBackend<PermitSyncResult>(
+	const result = await requestBackend<PermitSyncResult>(
 		"/permits/sync",
 		{
 			method: "POST",
@@ -14,4 +15,35 @@ export async function submitSyncFieldData(token: string, data: SyncFieldData) {
 		},
 		"No se pudo enviar el permiso",
 	)
+	const expectedResponseVersion = getExpectedResponseVersion(
+		data.expectedSyncVersion,
+	)
+
+	const hasExpectedVersion =
+		Number.isSafeInteger(result?.syncVersion) &&
+		result.syncVersion === expectedResponseVersion
+	const hasValidSyncTime =
+		typeof result?.syncedAt === "string" &&
+		!Number.isNaN(Date.parse(result.syncedAt))
+
+	if (
+		!result ||
+		typeof result !== "object" ||
+		result.permitId !== data.permit.id ||
+		result.syncStatus !== "synced" ||
+		!hasExpectedVersion ||
+		!hasValidSyncTime
+	) {
+		throw new BackendRequestError(
+			mobileRequestErrors.invalidResponse.code,
+			mobileRequestErrors.invalidResponse.message,
+		)
+	}
+
+	return result
+}
+
+function getExpectedResponseVersion(expectedSyncVersion: number | null) {
+	if (expectedSyncVersion === null) return 1
+	return expectedSyncVersion + 1
 }

@@ -17,6 +17,11 @@ export const appDbSchema = appSchema({
 				{ name: "syncStatus", type: "string" },
 				{ name: "syncedAt", type: "string", isOptional: true },
 				{ name: "syncVersion", type: "number", isOptional: true },
+				{
+					name: "syncAttemptId",
+					type: "string",
+					isOptional: true,
+				},
 				{ name: "participantsStatus", type: "string" },
 				{ name: "shearingStatus", type: "string" },
 				{ name: "cleaningStatus", type: "string" },

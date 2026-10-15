@@ -1,14 +1,14 @@
 import { subscribePermits, subscribeSinglePermit } from "@database"
-import type { PermitData } from "@definitions/types"
+import type { NativePermitData } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
 import { useEffect, useReducer } from "react"
 import { type DbState, makeReadInitial, readReducer } from "./utils"
 
-export function useReadPermits(): DbState<PermitData[]> {
+export function useReadPermits(): DbState<NativePermitData[]> {
 	const accountId = useMobileAuthStore((state) => state.localDataUserId)
 	const [state, dispatch] = useReducer(
-		readReducer<PermitData[]>,
-		makeReadInitial<PermitData[]>([]),
+		readReducer<NativePermitData[]>,
+		makeReadInitial<NativePermitData[]>([]),
 	)
 
 	useEffect(() => {
@@ -28,11 +28,11 @@ export function useReadPermits(): DbState<PermitData[]> {
 
 export function useReadSinglePermit(
 	permitId?: string,
-): DbState<PermitData | null> {
+): DbState<NativePermitData | null> {
 	const accountId = useMobileAuthStore((state) => state.localDataUserId)
 	const [state, dispatch] = useReducer(
-		readReducer<PermitData | null>,
-		makeReadInitial<PermitData | null>(null),
+		readReducer<NativePermitData | null>,
+		makeReadInitial<NativePermitData | null>(null),
 	)
 
 	useEffect(() => {

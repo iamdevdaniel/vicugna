@@ -3,102 +3,62 @@
 This document covers the JSON API used by Android and the PWA. Admin pages use
 React Router responses and are not covered here.
 
-## Response format
+Success uses `{ "ok": true, "data": ... }`. An expected error uses
+`{ "ok": false, "error": "Mensaje en español", "code": "STABLE_CODE" }`.
+An unexpected error uses `{ "ok": false, "error": "Error interno del servidor" }`.
+The app uses `code`, never the message text, to choose an action. Technical
+details stay in backend logs.
 
-Success:
+## 1. Failures before submission
 
-```json
-{
-  "ok": true,
-  "data": {}
-}
-```
+These failures prove that no upload reached the backend. The app does not save
+a sync-attempt ID, and the permit remains editable.
 
-Expected error:
+| Failure | User action |
+| --- | --- |
+| No active login | Log in and send again. |
+| The device confirms it has no connection | Connect to the internet and send again. |
+| Android cannot prepare the local payload (`MOBILE_SYNC_START_FAILED`) | Try again. If it continues, report the problem without losing the collected data. |
 
-```json
-{
-  "ok": false,
-  "error": "Mensaje claro en español",
-  "code": "OPTIONAL_STABLE_CODE"
-}
-```
+## 2. Confirmed backend responses
 
-- `error`: Spanish message that is safe to show to the user.
-- `code`: Optional stable value used when the app needs a specific action.
-- Client code must use `code`, never message text, to choose an action.
+The backend clearly accepted or rejected the current upload.
 
-## Error codes
+| Response | Codes | App behavior |
+| --- | --- | --- |
+| Upload accepted | Successful `200` response | Save the returned status and version, clear the attempt ID, and show success. |
+| Login or ownership rejected | `401`, `PERMIT_SYNC_FORBIDDEN` | Show the backend message. A new rejected attempt may be cleared. |
+| Permit missing or unavailable | `PERMIT_NOT_FOUND`, `PERMIT_SYNC_UNAVAILABLE` | Stop the upload, show the backend message, and refresh the permit list. |
+| Collected data rejected | `PYLD`, `VPRM_2`, `VPRT_*`, `VSHE_*`, `VCLG_*` | Keep the collected data editable and show what must be corrected. |
+| Newer server data exists | `SYNC_VERSION_CONFLICT` | Keep the local data and offer the existing choice to preserve it or replace it with the server data. |
+| Too many requests | `429` | Ask the user to wait before sending again. |
 
-- `PYLD`: The request body does not match the required permit structure.
-- `VPRM_2`: The submitted permit version is invalid.
-- `VPRT_1`: The permit has no participants.
-- `VPRT_2`: A participant belongs to another permit.
-- `VPRT_3`: The request contains a duplicated participant.
-- `VSHE_1`: The shearing record is incomplete.
-- `VSHE_2`: The shearing header belongs to another permit.
-- `VSHE_3`: The permit has no shearing records.
-- `VSHE_4`: A shearing record belongs to another permit.
-- `VSHE_5`: Gestation is invalid for the animal's sex or age.
-- `VSHE_6`: The shearing state is invalid for the animal's age or gestation.
-- `VSHE_7`: The request contains a duplicated shearing record.
-- `VCLG_1`: The general fiber-record information is incomplete.
-- `VCLG_2`: The fiber-record header belongs to another permit.
-- `VCLG_3`: The permit has no fiber records.
-- `VCLG_4`: A fiber record does not have exactly one detail.
-- `VCLG_5`: A fiber record belongs to another permit.
-- `VCLG_6`: A fiber record is incomplete.
-- `VCLG_7`: A cleaning detail belongs to another fiber record.
-- `VCLG_8`: A dehairing detail belongs to another fiber record.
-- `VCLG_9`: A fiber record has both cleaning and dehairing details.
-- `VCLG_11`: Clean weight is greater than gross weight.
-- `VCLG_12`: Dirty weight is greater than gross weight.
-- `VCLG_13`: The cleaning weights together are greater than gross weight.
-- `VCLG_14`: Stored total weight does not equal the cleaning weights.
-- `VCLG_15`: The request contains a duplicated fiber record.
-- `VCLG_16`: More than one cleaning detail points to the same fiber record.
-- `VCLG_17`: The request contains a duplicated cleaning detail.
-- `VCLG_18`: More than one dehairing detail points to the same fiber record.
-- `VCLG_19`: The request contains a duplicated dehairing detail.
-- `PERMIT_NOT_FOUND`: The requested permit does not exist.
-- `PERMIT_SYNC_FORBIDDEN`: The user is not allowed to upload the permit.
-- `PERMIT_SYNC_UNAVAILABLE`: The permit is not currently available for upload.
-- `SYNC_VERSION_CONFLICT`: The server has a newer version of the permit.
-- `SYNC_ATTEMPT_MISMATCH`: The same attempt ID was reused with different details.
-- `SYNC_ATTEMPT_READ_FAILED`: The backend could not read a reserved sync attempt.
+A rejection clears the attempt ID only when it proves that the current upload
+was not saved. A response received while retrying may not resolve the earlier
+upload and can belong to section 3 instead.
 
-## HTTP status
+## 3. Unconfirmed upload results
 
-- `400`: The request body or collected data is invalid.
-- `401`: Login is required or the token is invalid.
-- `403`: The user is logged in but does not own the permit.
-- `404`: The route or requested record does not exist.
-- `409`: The request conflicts with the current permit state or version.
-- `429`: Too many requests were sent.
-- `500`: An unexpected backend error occurred.
-- `503`: The database is temporarily unavailable.
+These failures do not prove whether the backend saved the upload. The app keeps
+the same sync-attempt ID and collected data, locks that permit, and shows
+`Reintentar envío`. Retrying sends the same ID and data.
 
-The backend logs technical details. Responses must not expose stack traces,
-database messages, credentials, or internal paths. Unexpected errors return a
-general message.
+| Failure | Codes or examples |
+| --- | --- |
+| The request started but no reliable response arrived | `MOBILE_REQUEST_TIMEOUT`, `MOBILE_SERVER_UNREACHABLE`, `MOBILE_REQUEST_FAILED` |
+| The response cannot be trusted | `MOBILE_INVALID_RESPONSE`, `MOBILE_SERVER_ERROR` |
+| Android received success but could not save it locally | `MOBILE_SYNC_COMPLETE_FAILED` |
+| Android cannot read a saved attempt for retry | `MOBILE_SYNC_DATA_READ_FAILED` |
+| The saved ID does not match the backend attempt | `SYNC_ATTEMPT_MISMATCH` |
+| The backend cannot read the saved attempt | `SYNC_ATTEMPT_READ_FAILED` |
+| A retry is blocked before the backend checks its saved attempt | Offline status, expired login, rate limiting, or `PYLD` during retry |
 
-## Mobile handling
+The app does not cancel an unconfirmed attempt or create a new ID. The user may
+need to log in or restore connectivity before retrying.
 
-`mobile/api/backend-request.ts` converts request failures into these groups:
+## 4. Known API inconsistencies
 
-- `offline`: The device knows it has no internet connection.
-- `timeout`: The server did not answer before the request limit.
-- `unreachable`: The device could not reach the server.
-- `invalid_response`: The server response was not valid JSON or lacked data.
-- `rejected`: The backend clearly rejected the request.
-- `unexpected`: Another communication error occurred.
-
-- Expected `4xx` errors show the backend message.
-- Unexpected `5xx` errors show a safe message from the app.
-- A stable `code` may activate a specific recovery action.
-- A timeout, lost connection, invalid response, or `5xx` may leave a write's result unknown.
-
-## Known mismatch
-
-- Global `404`, `429`, and `503` handlers return `{ "message": "..." }` instead of the standard error format.
-- The mobile app safely replaces those responses, but the handlers should eventually use the standard format.
+- Global `404`, `429`, and `503` handlers return `{ "message": "..." }`
+  instead of the standard error format.
+- An unexpected mobile-login failure can return its raw error message instead
+  of the safe unexpected-error response.

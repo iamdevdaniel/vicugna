@@ -29,6 +29,7 @@ export class PermitModel extends Model {
 	@text("syncStatus") permitSyncStatus!: PermitSyncStatus
 	@text("syncedAt") syncedAt!: string | null
 	@field("syncVersion") syncVersion!: number | null
+	@text("syncAttemptId") syncAttemptId!: string | null
 	@text("participantsStatus") participantsStatus!: PermitStepStatus
 	@text("shearingStatus") shearingStatus!: PermitStepStatus
 	@text("cleaningStatus") cleaningStatus!: PermitStepStatus
