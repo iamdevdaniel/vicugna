@@ -22,6 +22,7 @@ npm install
 ```
 
 Project guides are listed in [docs/README.md](docs/README.md).
+API error handling is documented in [docs/API_ERRORS.md](docs/API_ERRORS.md).
 
 Section-title comments always use this format:
 
