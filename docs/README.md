@@ -8,5 +8,5 @@ short project introduction. Local plans and unfinished decisions remain under
 - [Backend](backend.md)
 - [Mobile](mobile.md)
 - [Mobile authentication](mobile-auth-spec.md)
-- [Testing](testing.md)
+- [Testing](../TESTING.md)
 - [Android E2E tests](android-e2e.md)

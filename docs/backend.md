@@ -1,5 +1,8 @@
 # Backend
 
+Backend unit, API, and admin browser tests are documented in
+[TESTING.md](../TESTING.md).
+
 ## Database Commands
 
 - `npm run db -- start`: Starts the local Postgres container and waits until it is ready.
