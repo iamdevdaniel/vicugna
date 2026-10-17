@@ -15,23 +15,28 @@ export async function submitSyncFieldData(token: string, data: SyncFieldData) {
 		},
 		"No se pudo enviar el permiso",
 	)
-	const expectedResponseVersion = getExpectedResponseVersion(
-		data.expectedSyncVersion,
-	)
-
-	const hasExpectedVersion =
-		Number.isSafeInteger(result?.syncVersion) &&
-		result.syncVersion === expectedResponseVersion
+	const hasValidHash =
+		typeof result?.serverHash === "string" &&
+		/^[0-9a-f]{64}$/.test(result.serverHash)
+	const hasExpectedHashVersion =
+		Number.isSafeInteger(result?.hashVersion) &&
+		result.hashVersion === data.hashVersion
 	const hasValidSyncTime =
-		typeof result?.syncedAt === "string" &&
-		!Number.isNaN(Date.parse(result.syncedAt))
+		result?.syncedAt === null ||
+		(typeof result?.syncedAt === "string" &&
+			!Number.isNaN(Date.parse(result.syncedAt)))
+	const hasValidSyncStatus =
+		result?.syncStatus === "in_progress" ||
+		result?.syncStatus === "synced" ||
+		result?.syncStatus === "reopened"
 
 	if (
 		!result ||
 		typeof result !== "object" ||
-		result.permitId !== data.permit.id ||
-		result.syncStatus !== "synced" ||
-		!hasExpectedVersion ||
+		result.permitId !== data.permitId ||
+		!hasValidSyncStatus ||
+		!hasValidHash ||
+		!hasExpectedHashVersion ||
 		!hasValidSyncTime
 	) {
 		throw new BackendRequestError(
@@ -41,9 +46,4 @@ export async function submitSyncFieldData(token: string, data: SyncFieldData) {
 	}
 
 	return result
-}
-
-function getExpectedResponseVersion(expectedSyncVersion: number | null) {
-	if (expectedSyncVersion === null) return 1
-	return expectedSyncVersion + 1
 }

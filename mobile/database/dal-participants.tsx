@@ -1,9 +1,6 @@
 import type { ParticipantData, ParticipantFormData } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import {
-	assertStoredPermitOwner,
-	batchWithPermitStatusUpdate,
-} from "./dal-permit"
+import { batchWithPermitStatusUpdate } from "./dal-permit"
 import { applyParticipantToModel, mapToParticipant } from "./model-mapping"
 import type { ParticipantModel } from "./models"
 import { database } from "./setup"
@@ -101,10 +98,14 @@ export async function updateSingleParticipant(
 		const record = await database
 			.get<ParticipantModel>("participants")
 			.find(participantId)
-		await assertStoredPermitOwner(record.permitId, accountId)
-		await record.update((model) => {
-			applyParticipantToModel(model, data)
-		})
+		await batchWithPermitStatusUpdate(record.permitId, accountId, () => ({
+			operations: [
+				record.prepareUpdate((model) => {
+					applyParticipantToModel(model, data)
+				}),
+			],
+			statusChange: {},
+		}))
 	})
 }
 

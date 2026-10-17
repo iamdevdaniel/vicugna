@@ -5,10 +5,10 @@ import {
 	submitSyncFieldData,
 } from "@api"
 import {
-	clearPermitSyncAttempt,
-	completePermitSyncAttempt,
-	getFieldSyncData,
-	preparePermitSyncAttempt,
+	clearPermitSyncPending,
+	confirmPermitSync,
+	getPendingPermitSyncData,
+	preparePermitSync,
 	savePermits,
 } from "@database"
 import {
@@ -19,7 +19,11 @@ import {
 	mobileRequestErrors,
 } from "@definitions/errors"
 import { useMobileAuthStore } from "@utils/auth-store"
-import { useCallback, useRef, useState } from "react"
+import {
+	finishDataOperation,
+	tryStartDataOperation,
+} from "@utils/data-operation-guard"
+import { useCallback, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
 
 type PermitLoadResult = { ok: true } | { ok: false; error: string }
@@ -29,7 +33,6 @@ type SyncPermitResult =
 
 export function useLoadPermits() {
 	const [loadingPermits, setLoadingPermits] = useState(false)
-	const isLoadRunning = useRef(false)
 	const { token, userId } = useMobileAuthStore(
 		useShallow((state) => ({
 			token: state.token,
@@ -38,18 +41,13 @@ export function useLoadPermits() {
 	)
 
 	const loadPermits = useCallback(async (): Promise<PermitLoadResult> => {
-		if (isLoadRunning.current) {
-			return {
-				ok: false,
-				error: "La actualización de permisos ya está en curso",
-			}
-		}
-
 		if (!token || !userId) {
 			return { ok: false, error: "Sesión no disponible" }
 		}
+		if (!tryStartDataOperation("overview-only")) {
+			return { ok: false, error: "Ya hay una operación en curso" }
+		}
 
-		isLoadRunning.current = true
 		setLoadingPermits(true)
 
 		try {
@@ -65,7 +63,7 @@ export function useLoadPermits() {
 						: "No se pudieron cargar los permisos",
 			}
 		} finally {
-			isLoadRunning.current = false
+			finishDataOperation()
 			setLoadingPermits(false)
 		}
 	}, [token, userId])
@@ -77,7 +75,6 @@ export function useSyncPermit() {
 	const [syncOperation, setSyncOperation] = useState<
 		"upload" | "download" | null
 	>(null)
-	const operationRunning = useRef(false)
 	const { token, userId } = useMobileAuthStore(
 		useShallow((state) => ({
 			token: state.token,
@@ -87,16 +84,14 @@ export function useSyncPermit() {
 
 	const syncPermit = useCallback(
 		async (permitId: string): Promise<SyncPermitResult> => {
-			if (operationRunning.current) {
-				return { ok: false, error: "Ya hay una operación en curso" }
-			}
-
 			if (!token || !userId) {
 				const message = "Debes iniciar sesión para enviar este permiso"
 				return { ok: false, error: message }
 			}
+			if (!tryStartDataOperation("overview-only")) {
+				return { ok: false, error: "Ya hay una operación en curso" }
+			}
 
-			operationRunning.current = true
 			setSyncOperation("upload")
 
 			try {
@@ -107,27 +102,27 @@ export function useSyncPermit() {
 					}
 				}
 
-				const payload = await preparePermitSyncAttempt(permitId, userId)
+				const payload = await preparePermitSync(permitId, userId)
 				const result = await submitSyncFieldData(token, payload)
-				await completePermitSyncAttempt(result, userId)
+				await confirmPermitSync(result, userId)
 
 				return { ok: true }
 			} catch (caught) {
 				switch (getErrorCode(caught)) {
-					case mobilePermitSyncErrors.startAttempt.code:
+					case mobilePermitSyncErrors.prepareSync.code:
 						return {
 							ok: false,
 							error: getErrorMessage(
 								caught,
-								mobilePermitSyncErrors.startAttempt,
+								mobilePermitSyncErrors.prepareSync,
 							),
 						}
-					case mobilePermitSyncErrors.completeAttempt.code:
+					case mobilePermitSyncErrors.confirmUpload.code:
 						return {
 							ok: false,
 							error: getErrorMessage(
 								caught,
-								mobilePermitSyncErrors.completeAttempt,
+								mobilePermitSyncErrors.confirmUpload,
 							),
 							reason: "pending",
 						}
@@ -141,7 +136,7 @@ export function useSyncPermit() {
 					}
 				}
 
-				const clearFailure = await clearSyncAttemptAfterFailure(
+				const clearFailure = await clearSyncPendingAfterFailure(
 					permitId,
 					userId,
 				)
@@ -149,7 +144,7 @@ export function useSyncPermit() {
 
 				return getRejectedSyncResult(caught)
 			} finally {
-				operationRunning.current = false
+				finishDataOperation()
 				setSyncOperation(null)
 			}
 		},
@@ -158,23 +153,24 @@ export function useSyncPermit() {
 
 	const retrySyncPermit = useCallback(
 		async (permitId: string): Promise<SyncPermitResult> => {
-			if (operationRunning.current) {
-				return { ok: false, error: "Ya hay una operación en curso" }
-			}
-
 			if (!token || !userId) {
 				const message = "Debes iniciar sesión para enviar este permiso"
 				return { ok: false, error: message }
 			}
+			if (!tryStartDataOperation("overview-only")) {
+				return { ok: false, error: "Ya hay una operación en curso" }
+			}
 
-			operationRunning.current = true
 			setSyncOperation("upload")
 
 			try {
 				try {
-					const payload = await getFieldSyncData(permitId, userId)
+					const payload = await getPendingPermitSyncData(
+						permitId,
+						userId,
+					)
 					const result = await submitSyncFieldData(token, payload)
-					await completePermitSyncAttempt(result, userId)
+					await confirmPermitSync(result, userId)
 				} catch (caught) {
 					switch (getErrorCode(caught)) {
 						case mobilePermitSyncErrors.readData.code:
@@ -186,18 +182,18 @@ export function useSyncPermit() {
 								),
 								reason: "pending",
 							}
-						case mobilePermitSyncErrors.completeAttempt.code:
+						case mobilePermitSyncErrors.confirmUpload.code:
 							return {
 								ok: false,
 								error: getErrorMessage(
 									caught,
-									mobilePermitSyncErrors.completeAttempt,
+									mobilePermitSyncErrors.confirmUpload,
 								),
 								reason: "pending",
 							}
 					}
 
-					if (!isSafeToClearSyncAttemptAfterRetry(caught)) {
+					if (!isSafeToClearSyncPendingAfterRetry(caught)) {
 						const retryNeedsLogin =
 							caught instanceof BackendRequestError &&
 							caught.status === 401
@@ -210,7 +206,7 @@ export function useSyncPermit() {
 						}
 					}
 
-					const clearFailure = await clearSyncAttemptAfterFailure(
+					const clearFailure = await clearSyncPendingAfterFailure(
 						permitId,
 						userId,
 					)
@@ -218,27 +214,9 @@ export function useSyncPermit() {
 
 					return getRejectedSyncResult(caught)
 				}
-
-				try {
-					const downloads = await fetchPermits(token)
-					const permitWasDownloaded = downloads.some(
-						({ permit }) => permit.id === permitId,
-					)
-					if (!permitWasDownloaded) {
-						throw new Error("El permiso ya no está disponible")
-					}
-					await savePermits(userId, downloads)
-				} catch {
-					return {
-						ok: true,
-						warning:
-							"El envío se confirmó, pero no se pudieron descargar los datos actuales.",
-					}
-				}
-
 				return { ok: true }
 			} finally {
-				operationRunning.current = false
+				finishDataOperation()
 				setSyncOperation(null)
 			}
 		},
@@ -247,14 +225,13 @@ export function useSyncPermit() {
 
 	const discardAndDownload = useCallback(
 		async (permitId: string): Promise<PermitLoadResult> => {
-			if (operationRunning.current) {
-				return { ok: false, error: "Ya hay una operación en curso" }
-			}
 			if (!token || !userId) {
 				return { ok: false, error: "Sesión no disponible" }
 			}
+			if (!tryStartDataOperation("overview-only")) {
+				return { ok: false, error: "Ya hay una operación en curso" }
+			}
 
-			operationRunning.current = true
 			setSyncOperation("download")
 			try {
 				const downloads = await fetchPermits(token)
@@ -265,9 +242,7 @@ export function useSyncPermit() {
 					throw new Error("El permiso ya no está disponible")
 				}
 
-				await savePermits(userId, downloads, {
-					confirmedReplacementId: download.permit.id,
-				})
+				await savePermits(userId, [download])
 				return { ok: true }
 			} catch (error) {
 				return {
@@ -278,7 +253,7 @@ export function useSyncPermit() {
 							: "No se pudieron descargar los datos actuales",
 				}
 			} finally {
-				operationRunning.current = false
+				finishDataOperation()
 				setSyncOperation(null)
 			}
 		},
@@ -309,15 +284,15 @@ function isUncertainRequestFailure(error: unknown): boolean {
 	}
 }
 
-function isSafeToClearSyncAttemptAfterRetry(error: unknown): boolean {
+function isSafeToClearSyncPendingAfterRetry(error: unknown): boolean {
 	if (!(error instanceof BackendRequestError)) return false
 
 	switch (error.code) {
 		case backendPermitSyncCodes.permitNotFound:
 		case backendPermitSyncCodes.permitForbidden:
 		case backendPermitSyncCodes.permitUnavailable:
-		case backendPermitSyncCodes.versionConflict:
-		case backendPermitSyncCodes.permitVersion:
+		case backendPermitSyncCodes.dataConflict:
+		case backendPermitSyncCodes.unsupportedHashVersion:
 		case backendPermitSyncCodes.participantsMissing:
 		case backendPermitSyncCodes.participantPermit:
 		case backendPermitSyncCodes.participantDuplicate:
@@ -352,17 +327,17 @@ function isSafeToClearSyncAttemptAfterRetry(error: unknown): boolean {
 	}
 }
 
-async function clearSyncAttemptAfterFailure(
+async function clearSyncPendingAfterFailure(
 	permitId: string,
 	userId: string,
 ): Promise<SyncPermitResult | null> {
 	try {
-		await clearPermitSyncAttempt(permitId, userId)
+		await clearPermitSyncPending(permitId, userId)
 		return null
 	} catch (caught) {
 		return {
 			ok: false,
-			error: getErrorMessage(caught, mobilePermitSyncErrors.clearAttempt),
+			error: getErrorMessage(caught, mobilePermitSyncErrors.clearPending),
 			reason: "pending",
 		}
 	}
@@ -374,7 +349,7 @@ function getRejectedSyncResult(error: unknown): SyncPermitResult {
 
 	if (
 		error instanceof BackendRequestError &&
-		error.code === backendPermitSyncCodes.versionConflict
+		error.code === backendPermitSyncCodes.dataConflict
 	) {
 		return { ok: false, error: message, reason: "outdated" }
 	}

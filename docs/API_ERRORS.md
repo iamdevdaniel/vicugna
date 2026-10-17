@@ -19,7 +19,7 @@ the permit as pending, and the permit remains editable.
 | --- | --- |
 | No active login (local check without an error code) | Log in and send again. |
 | The device confirms it has no connection (`MOBILE_OFFLINE`) | Connect to the internet and send again. |
-| Android cannot prepare the local payload (`MOBILE_SYNC_START_FAILED`) | Try again. If it continues, report the problem without losing the collected data. |
+| Android cannot prepare the local payload (`MOBILE_SYNC_PREPARE_FAILED`) | Try again. If it continues, report the problem without losing the collected data. |
 
 ## 2. Confirmed backend responses
 
@@ -47,7 +47,7 @@ Retrying sends the same collected data and `baseHash`.
 | Another unexpected communication failure occurred | `MOBILE_REQUEST_FAILED` |
 | The response was not valid API JSON | `MOBILE_INVALID_RESPONSE` |
 | The backend returned a server error | `MOBILE_SERVER_ERROR` |
-| Android received success but could not save it locally | `MOBILE_SYNC_COMPLETE_FAILED` |
+| Android received success but could not record the upload confirmation | `MOBILE_SYNC_CONFIRMATION_FAILED` |
 | Android cannot read the pending local data for retry | `MOBILE_SYNC_DATA_READ_FAILED` |
 | A retry is blocked before the backend compares the data | Offline status, expired login, rate limiting, or `PYLD` during retry |
 

@@ -7,6 +7,7 @@ import {
 	useSyncPermit,
 } from "@hooks"
 import { ROUTES } from "@utils/constants"
+import { useDataOperationGuard } from "@utils/data-operation-guard"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router"
@@ -47,6 +48,10 @@ export default function NativePermitScreen() {
 	const { data: participants } = useReadBulkParticipants(permitId)
 	const { data: records } = useReadBulkShearingRecords(permitId)
 	const { data: cleaningRecords } = useReadBulkCleaningCommon(permitId)
+	const navigationMode = useDataOperationGuard(
+		(state) => state.navigationMode,
+	)
+	const blocksForms = navigationMode === "overview-only"
 	const {
 		syncPermit,
 		retrySyncPermit,
@@ -62,8 +67,8 @@ export default function NativePermitScreen() {
 		shearingStatus === "done" &&
 		cleaningStatus === "done"
 	const isPermitSynced = permit?.syncStatus === "synced"
-	const hasPendingSync = Boolean(permit?.syncAttemptId)
-	const isPermitReadOnly = isPermitSynced || hasPendingSync
+	const hasPendingSync = Boolean(permit?.syncPending)
+	const isPermitReadOnly = isPermitSynced || hasPendingSync || blocksForms
 	const communityName = permit
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
@@ -113,6 +118,13 @@ export default function NativePermitScreen() {
 
 	const onOpenStep = (route: Parameters<typeof router.push>[0]) => {
 		hideSnackbar()
+		if (blocksForms) {
+			showSnackbar(
+				"Actualizando permisos. Espera para ingresar datos.",
+				"error",
+			)
+			return
+		}
 		if (hasPendingSync) {
 			showSnackbar(
 				"Reintente el envío antes de abrir los datos del permiso.",
@@ -237,9 +249,11 @@ export default function NativePermitScreen() {
 				{isPermitReadOnly && (
 					<ReadOnlyNotice
 						message={
-							hasPendingSync
-								? "Este permiso no se puede modificar hasta confirmar el envío."
-								: undefined
+							blocksForms
+								? "Actualizando permisos. Espera para ingresar datos."
+								: hasPendingSync
+									? "Este permiso no se puede modificar hasta confirmar el envío."
+									: undefined
 						}
 					/>
 				)}
@@ -275,16 +289,18 @@ export default function NativePermitScreen() {
 						{
 							title: "Participantes",
 							state: participantsStatus,
-							action: {
-								icon: "chevron-right",
-								onPress: () =>
-									onOpenStep(
-										ROUTES.PARTICIPANTS.OVERVIEW({
-											permitId,
-											permitNumber,
-										}),
-									),
-							},
+							action: blocksForms
+								? undefined
+								: {
+										icon: "chevron-right",
+										onPress: () =>
+											onOpenStep(
+												ROUTES.PARTICIPANTS.OVERVIEW({
+													permitId,
+													permitNumber,
+												}),
+											),
+									},
 							content: participantsStatus === "done" && (
 								<TotalChip total={participants.length} />
 							),
@@ -292,16 +308,18 @@ export default function NativePermitScreen() {
 						{
 							title: "Esquila",
 							state: shearingStatus,
-							action: {
-								icon: "chevron-right",
-								onPress: () =>
-									onOpenStep(
-										ROUTES.SHEARING.OVERVIEW({
-											permitId,
-											permitNumber,
-										}),
-									),
-							},
+							action: blocksForms
+								? undefined
+								: {
+										icon: "chevron-right",
+										onPress: () =>
+											onOpenStep(
+												ROUTES.SHEARING.OVERVIEW({
+													permitId,
+													permitNumber,
+												}),
+											),
+									},
 							content: shearingStatus === "done" && (
 								<TotalChip total={records.length} />
 							),
@@ -309,16 +327,18 @@ export default function NativePermitScreen() {
 						{
 							title: "Registro de fibra",
 							state: cleaningStatus,
-							action: {
-								icon: "chevron-right",
-								onPress: () =>
-									onOpenStep(
-										ROUTES.CLEANUP.OVERVIEW({
-											permitId,
-											permitNumber,
-										}),
-									),
-							},
+							action: blocksForms
+								? undefined
+								: {
+										icon: "chevron-right",
+										onPress: () =>
+											onOpenStep(
+												ROUTES.CLEANUP.OVERVIEW({
+													permitId,
+													permitNumber,
+												}),
+											),
+									},
 							content: cleaningStatus === "done" && (
 								<TotalChip total={cleaningRecords.length} />
 							),

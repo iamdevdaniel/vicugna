@@ -5,6 +5,10 @@ import {
 } from "@database"
 import type { ParticipantFormData } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
+import {
+	finishDataOperation,
+	tryStartDataOperation,
+} from "@utils/data-operation-guard"
 import { useCallback, useState } from "react"
 
 export function useSingleParticipantActions() {
@@ -16,6 +20,7 @@ export function useSingleParticipantActions() {
 	const createSingleParticipant = useCallback(
 		async (permitId: string, data: ParticipantFormData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -25,6 +30,7 @@ export function useSingleParticipantActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},
@@ -34,6 +40,7 @@ export function useSingleParticipantActions() {
 	const updateSingleParticipant = useCallback(
 		async (participantId: string, data: ParticipantFormData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -47,6 +54,7 @@ export function useSingleParticipantActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},
@@ -56,6 +64,7 @@ export function useSingleParticipantActions() {
 	const deleteSingleParticipant = useCallback(
 		async (participantId: string) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setDeleting(true)
 			setError(null)
 			try {
@@ -65,6 +74,7 @@ export function useSingleParticipantActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setDeleting(false)
 			}
 		},

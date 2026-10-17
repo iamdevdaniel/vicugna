@@ -1,7 +1,4 @@
-export type SyncFieldData = {
-	syncAttemptId: string
-	expectedSyncVersion: number | null
-	permit: PermitData
+export type PermitFieldData = {
 	participants: ParticipantData[]
 	shearingHeader: ShearingHeaderData
 	shearingRecords: ShearingRecordData[]
@@ -11,21 +8,24 @@ export type SyncFieldData = {
 	dehearingDetails: DehearingData[]
 }
 
-export type PermitFieldData = Omit<
-	SyncFieldData,
-	"permit" | "syncAttemptId" | "expectedSyncVersion"
->
+export type SyncFieldData = PermitFieldData & {
+	permitId: string
+	baseHash: string
+	hashVersion: number
+}
 
 export type PermitSyncResult = {
 	permitId: string
-	syncStatus: "synced"
-	syncVersion: number
-	syncedAt: string
+	syncStatus: PermitSyncStatus
+	serverHash: string
+	hashVersion: number
+	syncedAt: string | null
 }
 
 export type MobilePermitData = {
 	permit: PermitData
-	syncVersion: number | null
+	serverHash: string
+	hashVersion: number
 	fieldData: PermitFieldData | null
 }
 

@@ -1,4 +1,4 @@
-import type { MobilePermitData, PermitData } from "@definitions/types"
+import type { PermitData } from "@definitions/types"
 import { markBackupPending } from "./dal-backup"
 import { getWebDatabase, type WebPermitRecord } from "./setup"
 
@@ -9,6 +9,12 @@ const syncStatuses = new Set<PermitData["syncStatus"]>([
 	"synced",
 	"reopened",
 ])
+
+type LegacyMobilePermitData = {
+	permit: PermitData
+	syncVersion: number | null
+	fieldData: null
+}
 
 export async function savePermitDownloads(
 	accountId: string,
@@ -50,7 +56,10 @@ export async function savePermitDownloads(
 	)
 }
 
-function parseDownloads(accountId: string, value: unknown): MobilePermitData[] {
+function parseDownloads(
+	accountId: string,
+	value: unknown,
+): LegacyMobilePermitData[] {
 	if (!Array.isArray(value)) throwInvalidDownload()
 
 	return value.map((download) => {
@@ -65,7 +74,7 @@ function parseDownloads(accountId: string, value: unknown): MobilePermitData[] {
 		}
 
 		assertValidDownload(accountId, download, permit)
-		return download as MobilePermitData
+		return download as LegacyMobilePermitData
 	})
 }
 

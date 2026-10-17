@@ -1,5 +1,9 @@
 import { clearPermitFieldData, seedPermitFieldData } from "@database"
 import type { PermitData } from "@definitions/types"
+import {
+	finishDataOperation,
+	tryStartDataOperation,
+} from "@utils/data-operation-guard"
 import { useAppTheme } from "@utils/useAppTheme"
 import { useState } from "react"
 import { FlatList, Modal, Pressable, Text, View } from "react-native"
@@ -17,21 +21,25 @@ export function DevSeedFab({ permits }: { permits: PermitData[] }) {
 	}
 
 	const onSeedPermit = async (permit: PermitData) => {
+		if (!tryStartDataOperation()) return
 		try {
 			setBusyPermitId(permit.id)
 			await seedPermitFieldData(permit.id)
 			setIsOpen(false)
 		} finally {
+			finishDataOperation()
 			setBusyPermitId(null)
 		}
 	}
 
 	const onClearPermit = async (permit: PermitData) => {
+		if (!tryStartDataOperation()) return
 		try {
 			setBusyPermitId(permit.id)
 			await clearPermitFieldData(permit.id)
 			setIsOpen(false)
 		} finally {
+			finishDataOperation()
 			setBusyPermitId(null)
 		}
 	}

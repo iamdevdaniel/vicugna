@@ -48,21 +48,21 @@ export const mobileRequestErrors = {
 } as const satisfies Record<string, MobileErrorDefinition>
 
 export const mobilePermitSyncErrors = {
-	startAttempt: {
-		code: "MOBILE_SYNC_START_FAILED",
+	prepareSync: {
+		code: "MOBILE_SYNC_PREPARE_FAILED",
 		message: "No se pudo iniciar el envío. Intente nuevamente.",
 	},
 	readData: {
 		code: "MOBILE_SYNC_DATA_READ_FAILED",
 		message: "No se pudieron leer los datos guardados. Intente nuevamente.",
 	},
-	clearAttempt: {
-		code: "MOBILE_SYNC_CLEAR_FAILED",
+	clearPending: {
+		code: "MOBILE_SYNC_CLEAR_PENDING_FAILED",
 		message:
 			"El permiso sigue bloqueado. Sus datos están guardados. Pulse Reintentar envío.",
 	},
-	completeAttempt: {
-		code: "MOBILE_SYNC_COMPLETE_FAILED",
+	confirmUpload: {
+		code: "MOBILE_SYNC_CONFIRMATION_FAILED",
 		message:
 			"El permiso se envió, pero el teléfono no guardó la confirmación. Pulse Reintentar envío.",
 	},
@@ -76,7 +76,6 @@ export const mobilePermitSyncErrors = {
 // These codes are duplicated from the backend until the error contract is stable.
 export const backendPermitSyncCodes = {
 	invalidPayload: "PYLD",
-	permitVersion: "VPRM_2",
 	participantsMissing: "VPRT_1",
 	participantPermit: "VPRT_2",
 	participantDuplicate: "VPRT_3",
@@ -108,6 +107,6 @@ export const backendPermitSyncCodes = {
 	permitNotFound: "PERMIT_NOT_FOUND",
 	permitForbidden: "PERMIT_SYNC_FORBIDDEN",
 	permitUnavailable: "PERMIT_SYNC_UNAVAILABLE",
-	attemptMismatch: "SYNC_ATTEMPT_MISMATCH",
-	versionConflict: "SYNC_VERSION_CONFLICT",
+	dataConflict: "SYNC_DATA_CONFLICT",
+	unsupportedHashVersion: "SYNC_HASH_VERSION_UNSUPPORTED",
 } as const

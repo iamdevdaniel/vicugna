@@ -1,12 +1,8 @@
 import { db } from "@db"
 import { type APIRequestContext, expect, test } from "@playwright/test"
+import type { MobilePermitData, PermitSyncResult, SyncFieldData } from "@shared"
 import { eq } from "drizzle-orm"
 import { assignments, permits } from "../../src/db/schema"
-import type {
-	PermitSyncResult,
-	SyncFieldData,
-} from "../../src/modules/mobile_in/mobile_in.types"
-import type { MobilePermitData } from "../../src/modules/mobile_out/mobile_out.types"
 import {
 	getPermitDataHash,
 	PERMIT_DATA_HASH_VERSION,

@@ -28,8 +28,10 @@ export class PermitModel extends Model {
 	@text("userFullName") userFullName!: string
 	@text("syncStatus") permitSyncStatus!: PermitSyncStatus
 	@text("syncedAt") syncedAt!: string | null
-	@field("syncVersion") syncVersion!: number | null
-	@text("syncAttemptId") syncAttemptId!: string | null
+	@text("baseHash") baseHash!: string
+	@field("hashVersion") hashVersion!: number
+	@field("hasLocalChanges") hasLocalChanges!: boolean
+	@field("syncPending") syncPending!: boolean
 	@text("participantsStatus") participantsStatus!: PermitStepStatus
 	@text("shearingStatus") shearingStatus!: PermitStepStatus
 	@text("cleaningStatus") cleaningStatus!: PermitStepStatus

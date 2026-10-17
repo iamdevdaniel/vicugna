@@ -1,8 +1,4 @@
-import type {
-	NativePermitData,
-	PermitData,
-	PermitSyncResult,
-} from "@definitions/types"
+import type { NativePermitData } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import {
 	applyPermitStatusChange,
@@ -49,7 +45,10 @@ export function subscribePermits(
 			"communityId",
 			"syncStatus",
 			"syncedAt",
-			"syncAttemptId",
+			"baseHash",
+			"hashVersion",
+			"hasLocalChanges",
+			"syncPending",
 			"participantsStatus",
 			"shearingStatus",
 			"cleaningStatus",
@@ -78,7 +77,10 @@ export function subscribeSinglePermit(
 			"communityId",
 			"syncStatus",
 			"syncedAt",
-			"syncAttemptId",
+			"baseHash",
+			"hashVersion",
+			"hasLocalChanges",
+			"syncPending",
 			"participantsStatus",
 			"shearingStatus",
 			"cleaningStatus",
@@ -92,41 +94,9 @@ export function subscribeSinglePermit(
 	return () => sub.unsubscribe()
 }
 
-export async function assertStoredPermitOwner(
-	permitId: string,
-	accountId: string,
-): Promise<void> {
-	const permit = await database.get<PermitModel>("permits").find(permitId)
-	assertPermitOwner(permit.userId, accountId)
-	assertPermitHasNoPendingSync(permit)
-}
-
 // ==========================================
 // WRITE
 // ==========================================
-
-export async function updatePermitSyncStatus(
-	data:
-		| PermitSyncResult
-		| {
-				permitId: string
-				syncStatus: PermitData["syncStatus"]
-				syncedAt: string | null
-				syncVersion: number | null
-		  },
-): Promise<void> {
-	const permit = await database
-		.get<PermitModel>("permits")
-		.find(data.permitId)
-
-	await database.write(async () => {
-		await permit.update((model) => {
-			model.permitSyncStatus = data.syncStatus
-			model.syncedAt = data.syncedAt
-			model.syncVersion = data.syncVersion
-		})
-	})
-}
 
 export async function batchWithPermitStatusUpdate(
 	permitId: string,
@@ -138,15 +108,9 @@ export async function batchWithPermitStatusUpdate(
 	const statuses = getPermitStatuses(
 		applyPermitStatusChange(currentState, statusChange),
 	)
-	const statusUpdate = preparePermitStatusUpdate(
-		currentState.permit,
-		statuses,
-	)
+	const permitUpdate = preparePermitLocalSave(currentState.permit, statuses)
 
-	await database.batch([
-		...operations,
-		...(statusUpdate ? [statusUpdate] : []),
-	])
+	await database.batch([...operations, permitUpdate])
 }
 
 // ==========================================
@@ -163,7 +127,7 @@ export function assertPermitOwner(
 }
 
 function assertPermitHasNoPendingSync(permit: PermitModel): void {
-	if (permit.syncAttemptId) {
+	if (permit.syncPending) {
 		throw new Error(
 			"Este permiso tiene un envío pendiente. Reintente el envío antes de modificarlo.",
 		)
@@ -243,21 +207,14 @@ async function readPermitStatusState(permitId: string, accountId: string) {
 	}
 }
 
-function preparePermitStatusUpdate(
+function preparePermitLocalSave(
 	permit: PermitModel,
 	statuses: PermitStatuses,
-): PermitModel | null {
-	if (
-		permit.participantsStatus === statuses.participantsStatus &&
-		permit.shearingStatus === statuses.shearingStatus &&
-		permit.cleaningStatus === statuses.cleaningStatus
-	) {
-		return null
-	}
-
+): PermitModel {
 	return permit.prepareUpdate((model) => {
 		model.participantsStatus = statuses.participantsStatus
 		model.shearingStatus = statuses.shearingStatus
 		model.cleaningStatus = statuses.cleaningStatus
+		model.hasLocalChanges = true
 	})
 }

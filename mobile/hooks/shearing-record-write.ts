@@ -5,6 +5,10 @@ import {
 } from "@database"
 import type { ShearingRecordFormData } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
+import {
+	finishDataOperation,
+	tryStartDataOperation,
+} from "@utils/data-operation-guard"
 import { useCallback, useState } from "react"
 
 export function useSingleShearingRecordActions() {
@@ -16,6 +20,7 @@ export function useSingleShearingRecordActions() {
 	const createSingleShearingRecord = useCallback(
 		async (permitId: string, data: ShearingRecordFormData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -25,6 +30,7 @@ export function useSingleShearingRecordActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},
@@ -34,6 +40,7 @@ export function useSingleShearingRecordActions() {
 	const updateSingleShearingRecord = useCallback(
 		async (recordId: string, data: ShearingRecordFormData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -43,6 +50,7 @@ export function useSingleShearingRecordActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},
@@ -52,6 +60,7 @@ export function useSingleShearingRecordActions() {
 	const deleteSingleShearingRecord = useCallback(
 		async (recordId: string) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setDeleting(true)
 			setError(null)
 			try {
@@ -61,6 +70,7 @@ export function useSingleShearingRecordActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setDeleting(false)
 			}
 		},

@@ -1,6 +1,10 @@
 import { updateSingleCleaningHeader as updateSingleCleaningHeaderData } from "@database"
 import type { CleaningHeaderFormData } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
+import {
+	finishDataOperation,
+	tryStartDataOperation,
+} from "@utils/data-operation-guard"
 import { useCallback, useState } from "react"
 
 export function useSingleCleaningHeaderActions() {
@@ -11,6 +15,7 @@ export function useSingleCleaningHeaderActions() {
 	const updateSingleCleaningHeader = useCallback(
 		async (headerId: string, data: CleaningHeaderFormData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -20,6 +25,7 @@ export function useSingleCleaningHeaderActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},

@@ -8,6 +8,10 @@ import type {
 	CleaningRecordSaveData,
 } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
+import {
+	finishDataOperation,
+	tryStartDataOperation,
+} from "@utils/data-operation-guard"
 import { useCallback, useState } from "react"
 
 export function useSingleCleaningRecordActions() {
@@ -19,6 +23,7 @@ export function useSingleCleaningRecordActions() {
 	const createSingleCleaningRecord = useCallback(
 		async (permitId: string, data: CleaningCommonFormData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -28,6 +33,7 @@ export function useSingleCleaningRecordActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},
@@ -37,6 +43,7 @@ export function useSingleCleaningRecordActions() {
 	const updateSingleCleaningRecord = useCallback(
 		async (cleaningCommonId: string, data: CleaningRecordSaveData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -50,6 +57,7 @@ export function useSingleCleaningRecordActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},
@@ -59,6 +67,7 @@ export function useSingleCleaningRecordActions() {
 	const deleteSingleCleaningRecord = useCallback(
 		async (cleaningCommonId: string) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setDeleting(true)
 			setError(null)
 			try {
@@ -71,6 +80,7 @@ export function useSingleCleaningRecordActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setDeleting(false)
 			}
 		},

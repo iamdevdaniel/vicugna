@@ -1,4 +1,5 @@
 import { HeaderBreadcrumb } from "@components"
+import { useDataOperationGuard } from "@utils/data-operation-guard"
 import { useActiveThemeMode } from "@utils/settings-store"
 import { appThemes } from "@utils/themes"
 import { Stack } from "expo-router"
@@ -21,6 +22,15 @@ export default function NativePermitLayout() {
 	return (
 		<PermitRouteGuard>
 			<Stack
+				screenListeners={{
+					beforeRemove: (event) => {
+						const { navigationMode } =
+							useDataOperationGuard.getState()
+						if (navigationMode === "current-screen") {
+							event.preventDefault()
+						}
+					},
+				}}
 				screenOptions={{
 					statusBarStyle: theme.statusBarStyle,
 					headerTitleStyle: { fontSize: 15 },

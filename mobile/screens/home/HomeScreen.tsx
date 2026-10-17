@@ -180,7 +180,7 @@ export default function NativeHomeScreen() {
 				}
 				renderItem={({ item: permit }) => (
 					<AccentCard
-						accessibilityLabel={`Permiso ${permit.permitNumber}, comunidad ${getCommunityName(permit.communityId)}. Participantes: ${permitStepLabel[permit.participantsStatus]}. Esquila: ${permitStepLabel[permit.shearingStatus]}. Registro de fibra: ${permitStepLabel[permit.cleaningStatus]}.${permit.syncAttemptId ? " Envío pendiente." : ""} Abrir permiso`}
+						accessibilityLabel={`Permiso ${permit.permitNumber}, comunidad ${getCommunityName(permit.communityId)}. Participantes: ${permitStepLabel[permit.participantsStatus]}. Esquila: ${permitStepLabel[permit.shearingStatus]}. Registro de fibra: ${permitStepLabel[permit.cleaningStatus]}.${permit.syncPending ? " Envío pendiente." : ""} Abrir permiso`}
 						accent={
 							permit.syncStatus === "synced"
 								? theme.colors.custom.green
@@ -255,7 +255,7 @@ export default function NativeHomeScreen() {
 									justifyContent: "center",
 								}}
 							>
-								{permit.syncAttemptId ? (
+								{permit.syncPending ? (
 									<Icon
 										source="cloud-alert-outline"
 										size={26}

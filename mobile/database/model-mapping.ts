@@ -43,7 +43,10 @@ import type {
 export function mapToPermit(model: PermitModel): NativePermitData {
 	return {
 		...mapToSyncPermit(model),
-		syncAttemptId: model.syncAttemptId,
+		baseHash: model.baseHash,
+		hashVersion: model.hashVersion,
+		hasLocalChanges: model.hasLocalChanges,
+		syncPending: model.syncPending,
 		participantsStatus: model.participantsStatus,
 		shearingStatus: model.shearingStatus,
 		cleaningStatus: model.cleaningStatus,
@@ -68,7 +71,6 @@ export function mapToSyncPermit(model: PermitModel): SyncPermitData {
 
 export function applyPermitToModel(model: PermitModel, data: PermitData): void {
 	applySyncPermitToModel(model, data)
-	model.syncAttemptId = null
 	model.participantsStatus = data.participantsStatus
 	model.shearingStatus = data.shearingStatus
 	model.cleaningStatus = data.cleaningStatus

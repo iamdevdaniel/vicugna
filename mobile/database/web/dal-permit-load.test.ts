@@ -1,6 +1,5 @@
 import assert from "node:assert/strict"
 import { test } from "node:test"
-import type { MobilePermitData } from "@definitions/types"
 import "fake-indexeddb/auto"
 import { savePermitDownloads } from "./dal-permit-load"
 import { closeWebDatabase, getWebDatabase, type WebPermitRecord } from "./setup"
@@ -9,7 +8,7 @@ function makeDownload(
 	accountId: string,
 	permitId: string,
 	syncVersion: number | null = null,
-): MobilePermitData {
+) {
 	return {
 		permit: {
 			id: permitId,
@@ -21,7 +20,7 @@ function makeDownload(
 			departmentId: "la-paz",
 			userId: accountId,
 			userFullName: "Usuario PWA",
-			syncStatus: "in_progress",
+			syncStatus: "in_progress" as const,
 			syncedAt: null,
 		},
 		syncVersion,
@@ -109,8 +108,10 @@ test("a newer server version does not overwrite unsynchronized local work", asyn
 test("unsupported complete snapshots are rejected before writing", async () => {
 	const accountId = crypto.randomUUID()
 	const database = getWebDatabase(accountId)
-	const download = makeDownload(accountId, crypto.randomUUID())
-	download.fieldData = {} as MobilePermitData["fieldData"]
+	const download = {
+		...makeDownload(accountId, crypto.randomUUID()),
+		fieldData: {},
+	}
 
 	try {
 		await assert.rejects(
