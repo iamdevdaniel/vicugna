@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto"
 import { z } from "zod"
 import {
 	PermitValidationError,
@@ -8,28 +7,6 @@ import type { SyncFieldData } from "./mobile_in.types"
 
 const UUID_PATTERN =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-const permitSchema = z
-	.object({
-		id: z.string(),
-		permitNumber: z.string(),
-		seasonId: z.string(),
-		seasonName: z.string(),
-		communityId: z.string(),
-		regionalId: z.string(),
-		departmentId: z.string(),
-		userId: z.string(),
-		userFullName: z.string(),
-		syncStatus: z.enum([
-			"created",
-			"assigned",
-			"in_progress",
-			"synced",
-			"reopened",
-		]),
-		syncedAt: z.string().nullable(),
-	})
-	.strict()
-
 const participantSchema = z
 	.object({
 		id: z.string(),
@@ -125,9 +102,9 @@ const dehearingSchema = z
 
 const syncPayloadSchema = z
 	.object({
-		syncAttemptId: z.string().min(16).max(128),
-		expectedSyncVersion: z.number().nullable(),
-		permit: permitSchema,
+		permitId: z.string(),
+		baseHash: z.string().regex(/^[0-9a-f]{64}$/),
+		hashVersion: z.number().int().positive(),
 		participants: z.array(participantSchema),
 		shearingHeader: shearingHeaderSchema,
 		shearingRecords: z.array(shearingRecordSchema),
@@ -150,41 +127,10 @@ export function parseSyncPayload(payload: unknown): SyncFieldData {
 
 	return result.data
 }
-
-export function getSyncPayloadHash(data: SyncFieldData): string {
-	const { syncAttemptId: _syncAttemptId, ...payload } = data
-	const payloadWithStableRecordOrder = {
-		...payload,
-		participants: [...payload.participants].sort((left, right) =>
-			left.id.localeCompare(right.id),
-		),
-		shearingRecords: [...payload.shearingRecords].sort((left, right) =>
-			left.id.localeCompare(right.id),
-		),
-		cleaningCommonRecords: [...payload.cleaningCommonRecords].sort(
-			(left, right) => left.id.localeCompare(right.id),
-		),
-		groomingDetails: [...payload.groomingDetails].sort((left, right) =>
-			left.id.localeCompare(right.id),
-		),
-		dehearingDetails: [...payload.dehearingDetails].sort((left, right) =>
-			left.id.localeCompare(right.id),
-		),
-	}
-
-	return createHash("sha256")
-		.update(JSON.stringify(payloadWithStableRecordOrder))
-		.digest("hex")
-}
-
 export function getPayloadPermitIdForLog(payload: unknown): string | null {
 	if (!payload || typeof payload !== "object") return null
 
-	const permit = (payload as { permit?: unknown }).permit
-
-	if (!permit || typeof permit !== "object") return null
-
-	const id = (permit as { id?: unknown }).id
+	const id = (payload as { permitId?: unknown }).permitId
 
 	return typeof id === "string" && UUID_PATTERN.test(id) ? id : null
 }

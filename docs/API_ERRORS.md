@@ -12,8 +12,8 @@ message text to choose an action. Technical details stay in backend logs.
 
 ## 1. Failures before submission
 
-These failures prove that no upload reached the backend. The app does not save
-a sync-attempt ID, and the permit remains editable.
+These failures prove that no upload reached the backend. The app does not mark
+the permit as pending, and the permit remains editable.
 
 | Failure | User action |
 | --- | --- |
@@ -27,25 +27,18 @@ The backend clearly accepted or rejected the current upload.
 
 | Response | Codes | App behavior |
 | --- | --- | --- |
-| Upload accepted | Successful `200` response | Save the returned status and version, clear the attempt ID, and show success. |
-| Login or ownership rejected | `401`, `PERMIT_SYNC_FORBIDDEN` | Show the backend message. A new rejected attempt may be cleared. |
+| Upload accepted | Successful `200` response | Save the returned status, `serverHash`, and `hashVersion`, then show success. |
+| Login or ownership rejected | `401`, `PERMIT_SYNC_FORBIDDEN` | Show the backend message. |
 | Permit missing or unavailable | `PERMIT_NOT_FOUND`, `PERMIT_SYNC_UNAVAILABLE` | Stop the upload and show the backend message. |
-| Collected data rejected | `PYLD`, `VPRM_2`, `VPRT_*`, `VSHE_*`, `VCLG_*` | Keep the collected data editable and show the backend rejection message. |
-| Newer server data exists | `SYNC_VERSION_CONFLICT` | Keep the local data and offer the existing choice to preserve it or replace it with the server data. |
-
-A rejection clears the attempt ID only when it proves that the current upload
-was not saved. A response received while retrying may not resolve the earlier
-upload and can belong to section 3 instead.
-
-If Android cannot remove the saved attempt after a clear rejection,
-`MOBILE_SYNC_CLEAR_FAILED` keeps the permit locked and shows
-`Reintentar envío`.
+| Collected data rejected | `PYLD`, `VPRT_*`, `VSHE_*`, `VCLG_*` | Keep the collected data editable and show the backend rejection message. |
+| Server and device data both changed | `SYNC_DATA_CONFLICT` | Keep the local data and offer the choice to preserve it or replace it with the server data. |
+| Hash rules are not supported | `SYNC_HASH_VERSION_UNSUPPORTED` | Keep all data unchanged and require an app update. |
 
 ## 3. Unconfirmed upload results
 
 These failures do not prove whether the backend saved the upload. The app keeps
-the same sync-attempt ID and collected data, locks that permit, and shows
-`Reintentar envío`. Retrying sends the same ID and data.
+the collected data, marks that permit as pending, and shows `Reintentar envío`.
+Retrying sends the same collected data and `baseHash`.
 
 | Failure | Codes or examples |
 | --- | --- |
@@ -53,14 +46,13 @@ the same sync-attempt ID and collected data, locks that permit, and shows
 | Android could not reach or stay connected to the server | `MOBILE_SERVER_UNREACHABLE` |
 | Another unexpected communication failure occurred | `MOBILE_REQUEST_FAILED` |
 | The response was not valid API JSON | `MOBILE_INVALID_RESPONSE` |
-| The backend returned a server error | `MOBILE_SERVER_ERROR`. Android currently replaces the backend's `SYNC_ATTEMPT_READ_FAILED` code with this code. |
+| The backend returned a server error | `MOBILE_SERVER_ERROR` |
 | Android received success but could not save it locally | `MOBILE_SYNC_COMPLETE_FAILED` |
-| Android cannot read a saved attempt for retry | `MOBILE_SYNC_DATA_READ_FAILED` |
-| The saved ID does not match the backend attempt | `SYNC_ATTEMPT_MISMATCH` |
-| A retry is blocked before the backend checks its saved attempt | Offline status, expired login, rate limiting, or `PYLD` during retry |
+| Android cannot read the pending local data for retry | `MOBILE_SYNC_DATA_READ_FAILED` |
+| A retry is blocked before the backend compares the data | Offline status, expired login, rate limiting, or `PYLD` during retry |
 
-The app does not cancel an unconfirmed attempt or create a new ID. The user may
-need to log in or restore connectivity before retrying.
+The app does not clear an unconfirmed pending state. The user may need to log
+in or restore connectivity before retrying.
 
 ## 4. Known API inconsistencies
 

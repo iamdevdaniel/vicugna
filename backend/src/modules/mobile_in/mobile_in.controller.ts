@@ -33,9 +33,6 @@ export async function syncPermit(
 		}
 
 		if (error instanceof PermitSyncError) {
-			if (error.status === 500) {
-				console.error("Failed to sync mobile permit", error)
-			}
 			res.status(error.status).json({
 				ok: false,
 				error: error.message,

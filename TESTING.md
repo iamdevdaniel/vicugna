@@ -76,7 +76,8 @@ The admin tests live in `backend/e2e`. The test runner recreates the isolated E2
 
 Backend unit tests live beside the code they verify under
 `backend/src/modules`. They run without PostgreSQL, the backend server, or a
-browser. There are no backend integration tests yet.
+browser. Mobile API integration tests live under `backend/e2e/mobile`; they
+call the running backend and verify the result in isolated PostgreSQL.
 
 ## Test suites
 
@@ -108,7 +109,14 @@ Run the API and admin browser tests with:
 npm run test:e2e
 ```
 
-The login suite checks the visible form, password visibility toggle, horizontal overflow, rejected credentials, and a successful administrator login. The authenticated home suite checks its desktop and mobile-sized layout and opens Users, Assignments, and Monitoring from their cards. The users suite checks its responsive layout, tabs, creation modal, required fields, password suggestion, successful creation, and duplicate-email rejection. The assignments suite checks season and permit selection, unsaved-change protection, duplicate rejection, permit creation and renaming, assignment order, and the principal user. The monitoring suite checks searching, synchronized filtering, permit details, report downloads, reopening, empty seasons, and its mobile-sized layout.
+The backend suites cover:
+
+- **Login:** rejected and accepted credentials, password visibility, and layout.
+- **Home:** desktop and mobile layout and navigation.
+- **Users:** creation, validation, password suggestions, and duplicate emails.
+- **Assignments:** permit creation, renaming, responsible users, validation, and unsaved changes.
+- **Monitoring:** filters, permit details, reports, reopening, and cancelling a reopening.
+- **Mobile API:** bulk and single-permit downloads, hash-based uploads, retries, conflicts, ownership, status rules, and unsupported hash versions.
 
 The happy path does not continue app actions after a failed stage because each later stage needs the previous data. The validation tests report each rule separately. If a required setup step fails, its dependent section reports the missing prerequisite. Failures save screenshots and device logs in `mobile/e2e/artifacts`. Git ignores that directory.
 
@@ -118,4 +126,5 @@ The mobile tests check that a user can enter and keep valid data on an Android d
 
 The React admin does not have a separate component unit-test suite. Playwright
 covers its user-facing behavior. Backend unit tests are reserved for important
-pure business rules. Database integration tests have not been added yet.
+pure business rules. Mobile API integration tests use the same isolated E2E
+database as the admin browser tests.

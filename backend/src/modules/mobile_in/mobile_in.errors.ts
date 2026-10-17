@@ -41,24 +41,19 @@ type PermitSyncErrorCode =
 	| "PERMIT_NOT_FOUND"
 	| "PERMIT_SYNC_FORBIDDEN"
 	| "PERMIT_SYNC_UNAVAILABLE"
-	| "SYNC_ATTEMPT_MISMATCH"
-	| "SYNC_ATTEMPT_READ_FAILED"
-	| "SYNC_VERSION_CONFLICT"
+	| "SYNC_DATA_CONFLICT"
+	| "SYNC_HASH_VERSION_UNSUPPORTED"
 
 type PermitSyncErrorDefinition = {
 	code: PermitSyncErrorCode
 	message: string
-	status: 403 | 404 | 409 | 500
+	status: 400 | 403 | 404 | 409
 }
 
 export const permitValidationErrors = {
 	invalidPayload: {
 		code: "PYLD",
 		message: "El contenido del permiso no es válido",
-	},
-	permitVersion: {
-		code: "VPRM_2",
-		message: "La versión del permiso no es válida",
 	},
 	participantsMissing: { code: "VPRT_1", message: "No hay participantes" },
 	participantPermit: {
@@ -192,8 +187,8 @@ export const permitSyncErrors = {
 		message: "No tienes autorización para enviar este permiso",
 		status: 403,
 	},
-	versionConflict: {
-		code: "SYNC_VERSION_CONFLICT",
+	dataConflict: {
+		code: "SYNC_DATA_CONFLICT",
 		message: "Hay datos más nuevos de este permiso. ¿Qué quieres hacer?",
 		status: 409,
 	},
@@ -202,16 +197,10 @@ export const permitSyncErrors = {
 		message: "El permiso no está disponible para sincronizar",
 		status: 409,
 	},
-	attemptMismatch: {
-		code: "SYNC_ATTEMPT_MISMATCH",
-		message:
-			"No se pudo confirmar el envío. Sus datos siguen guardados. No los borre y pida ayuda.",
-		status: 409,
-	},
-	attemptReadFailed: {
-		code: "SYNC_ATTEMPT_READ_FAILED",
-		message: "Error interno del servidor",
-		status: 500,
+	unsupportedHashVersion: {
+		code: "SYNC_HASH_VERSION_UNSUPPORTED",
+		message: "Esta versión de la aplicación necesita actualizarse",
+		status: 400,
 	},
 } as const satisfies Record<string, PermitSyncErrorDefinition>
 

@@ -1,6 +1,7 @@
 import { data, useActionData, useLoaderData } from "react-router"
 import { MonitoringError } from "../../modules/monitoring/monitoring.errors"
 import {
+	cancelPermitReopening,
 	getMonitoringPageState,
 	reopenPermit,
 } from "../../modules/monitoring/monitoring.service"
@@ -33,24 +34,32 @@ export async function action({ request, context }: Route.ActionArgs) {
 		return monitoringError("El formulario enviado no es válido")
 	}
 
-	if (getTextField(formData, "intent") !== "reopen-permit") {
+	const intent = getTextField(formData, "intent")
+	if (intent !== "reopen-permit" && intent !== "cancel-reopening") {
 		return monitoringError("La operación solicitada no es válida")
 	}
 
 	try {
-		await reopenPermit(getTextField(formData, "permitId"))
+		if (intent === "reopen-permit") {
+			await reopenPermit(getTextField(formData, "permitId"))
+		} else {
+			await cancelPermitReopening(getTextField(formData, "permitId"))
+		}
 		return data<MonitoringActionData>({
 			ok: true,
-			message: "Permiso reabierto",
+			message:
+				intent === "reopen-permit"
+					? "Permiso reabierto"
+					: "Reapertura cancelada",
 		})
 	} catch (error) {
 		if (!(error instanceof MonitoringError)) {
-			console.error("Admin permit reopen failed", error)
+			console.error("Admin permit status change failed", error)
 		}
 		return monitoringError(
 			error instanceof MonitoringError
 				? error.message
-				: "No se pudo reabrir el permiso",
+				: "No se pudo cambiar el estado del permiso",
 			error instanceof MonitoringError ? 400 : 500,
 		)
 	}

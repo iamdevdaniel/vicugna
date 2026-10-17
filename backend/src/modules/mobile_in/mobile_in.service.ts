@@ -1,18 +1,14 @@
 import Decimal from "decimal.js"
 import { getMobileUserFromAuthorization } from "../mobile-auth/mobile_auth.service"
+import { PERMIT_DATA_HASH_VERSION } from "../permit-sync/permit-data-hash"
 import {
+	PermitSyncError,
 	PermitValidationError,
+	permitSyncErrors,
 	permitValidationErrors,
 } from "./mobile_in.errors"
-import {
-	getPayloadPermitIdForLog,
-	getSyncPayloadHash,
-	parseSyncPayload,
-} from "./mobile_in.payload"
-import {
-	getPreviousSyncResponse,
-	saveSyncFieldData,
-} from "./mobile_in.repository"
+import { getPayloadPermitIdForLog, parseSyncPayload } from "./mobile_in.payload"
+import { saveSyncFieldData } from "./mobile_in.repository"
 import type {
 	CleaningCommonData,
 	GroomingData,
@@ -23,7 +19,6 @@ import {
 	getTimeInMinutes,
 	throwInvalidField,
 	validateCalendarDate,
-	validateDateTimeWithOffset,
 	validateNonBlankText,
 	validateNumberInRange,
 	validatePositiveInteger,
@@ -46,20 +41,16 @@ export async function submitSyncFieldData(
 
 	try {
 		const data = parseSyncPayload(payload)
-		const payloadHash = getSyncPayloadHash(data)
-		const previousResponse = await getPreviousSyncResponse(
-			data,
-			user.id,
-			payloadHash,
-		)
-		if (previousResponse) return previousResponse
+		if (data.hashVersion !== PERMIT_DATA_HASH_VERSION) {
+			throw new PermitSyncError(permitSyncErrors.unsupportedHashVersion)
+		}
 
-		validatePermit(data)
+		validateNonBlankText(data.permitId, "permitId")
 		validateParticipants(data)
 		validateShearing(data)
 		validateCleaning(data)
 
-		return saveSyncFieldData(data, user.id, payloadHash)
+		return saveSyncFieldData(data, user.id)
 	} catch (error) {
 		if (error instanceof PermitValidationError) {
 			console.error("Mobile sync payload validation failed", {
@@ -73,30 +64,6 @@ export async function submitSyncFieldData(
 		}
 
 		throw error
-	}
-}
-
-function validatePermit(data: SyncFieldData): void {
-	validateNonBlankText(data.permit.id, "permit.id")
-	validateNonBlankText(data.permit.permitNumber, "permit.permitNumber")
-	validateNonBlankText(data.permit.seasonId, "permit.seasonId")
-	validateNonBlankText(data.permit.seasonName, "permit.seasonName")
-	validateNonBlankText(data.permit.communityId, "permit.communityId")
-	validateNonBlankText(data.permit.regionalId, "permit.regionalId")
-	validateNonBlankText(data.permit.departmentId, "permit.departmentId")
-	validateNonBlankText(data.permit.userId, "permit.userId")
-	validateNonBlankText(data.permit.userFullName, "permit.userFullName")
-
-	if (
-		data.expectedSyncVersion !== null &&
-		(!Number.isSafeInteger(data.expectedSyncVersion) ||
-			data.expectedSyncVersion < 1)
-	) {
-		throw new PermitValidationError(permitValidationErrors.permitVersion)
-	}
-
-	if (data.permit.syncedAt !== null) {
-		validateDateTimeWithOffset(data.permit.syncedAt, "permit.syncedAt")
 	}
 }
 
@@ -119,7 +86,7 @@ function validateParticipants(data: SyncFieldData): void {
 		)
 		validateNonBlankText(participant.signature, `${path}.signature`)
 
-		if (participant.permitId !== data.permit.id) {
+		if (participant.permitId !== data.permitId) {
 			throw new PermitValidationError(
 				permitValidationErrors.participantPermit,
 			)
@@ -173,7 +140,7 @@ function validateShearing(data: SyncFieldData): void {
 		)
 	}
 
-	if (data.shearingHeader.permitId !== data.permit.id) {
+	if (data.shearingHeader.permitId !== data.permitId) {
 		throw new PermitValidationError(
 			permitValidationErrors.shearingHeaderPermit,
 		)
@@ -220,7 +187,7 @@ function validateShearing(data: SyncFieldData): void {
 			throwInvalidField(`${path}.externalParasites`, "unique_items")
 		}
 
-		if (record.permitId !== data.permit.id) {
+		if (record.permitId !== data.permitId) {
 			throw new PermitValidationError(
 				permitValidationErrors.shearingRecordPermit,
 			)
@@ -266,7 +233,7 @@ function validateCleaning(data: SyncFieldData): void {
 		"cleaningHeader.supervisors",
 	)
 
-	if (data.cleaningHeader.permitId !== data.permit.id) {
+	if (data.cleaningHeader.permitId !== data.permitId) {
 		throw new PermitValidationError(
 			permitValidationErrors.cleaningHeaderPermit,
 		)
@@ -311,7 +278,7 @@ function validateCleaning(data: SyncFieldData): void {
 			`${path}.grossWeight`,
 		)
 
-		if (record.permitId !== data.permit.id) {
+		if (record.permitId !== data.permitId) {
 			throw new PermitValidationError(
 				permitValidationErrors.cleaningRecordPermit,
 			)
