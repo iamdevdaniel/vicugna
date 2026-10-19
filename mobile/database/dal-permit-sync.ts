@@ -17,6 +17,7 @@ import {
 	applyDehearingSnapshotToModel,
 	applyGroomingSnapshotToModel,
 	applyParticipantSnapshotToModel,
+	applyPermitStatusesToModel,
 	applyPermitToModel,
 	applyShearingHeaderSnapshotToModel,
 	applyShearingRecordSnapshotToModel,
@@ -123,6 +124,80 @@ export async function confirmPermitSync(
 		})
 	} catch {
 		throw new MobileOperationError(mobilePermitSyncErrors.confirmUpload)
+	}
+}
+
+export async function replacePermitWithServerCopy(
+	accountId: string,
+	download: MobilePermitData,
+): Promise<void> {
+	try {
+		assertPermitOwner(download.permit.userId, accountId)
+
+		await database.write(async () => {
+			const permitRecord = await database
+				.get<PermitModel>("permits")
+				.find(download.permit.id)
+			assertPermitOwner(permitRecord.userId, accountId)
+
+			if (permitRecord.hashVersion !== download.hashVersion) {
+				throw new Error(
+					"La versión de datos del permiso no es compatible",
+				)
+			}
+
+			const storedData = await readStoredPermitFieldData(permitRecord.id)
+			const statuses = download.fieldData
+				? getSnapshotStatuses(download.fieldData)
+				: defaultStatuses
+			const batchOps: Model[] = []
+
+			batchOps.push(
+				permitRecord.prepareUpdate((model) => {
+					applySyncPermitToModel(model, download.permit)
+					applyPermitStatusesToModel(model, statuses)
+					model.baseHash = download.serverHash
+					model.hashVersion = download.hashVersion
+					model.hasLocalChanges = false
+					model.syncPending = false
+				}),
+			)
+			prepareStoredFieldDataDeletion(batchOps, storedData)
+
+			if (download.fieldData) {
+				batchOps.push(
+					...storedData.shearingHeaders
+						.slice(1)
+						.map((header) => header.prepareDestroyPermanently()),
+					...storedData.cleaningHeaders
+						.slice(1)
+						.map((header) => header.prepareDestroyPermanently()),
+				)
+				prepareSnapshotReplacement(
+					batchOps,
+					download.fieldData,
+					storedData.shearingHeaders[0],
+					storedData.cleaningHeaders[0],
+				)
+			} else {
+				batchOps.push(
+					...storedData.shearingHeaders.map((header) =>
+						header.prepareDestroyPermanently(),
+					),
+					...storedData.cleaningHeaders.map((header) =>
+						header.prepareDestroyPermanently(),
+					),
+					prepareEmptyShearingHeader(permitRecord.id),
+					prepareEmptyCleaningHeader(permitRecord.id),
+				)
+			}
+
+			await database.batch(batchOps)
+		})
+	} catch {
+		throw new MobileOperationError(
+			mobilePermitSyncErrors.replaceWithServerCopy,
+		)
 	}
 }
 
@@ -313,6 +388,90 @@ async function updateOwnedPermit(
 	})
 }
 
+async function readStoredPermitFieldData(permitId: string) {
+	const [
+		participants,
+		shearingHeaders,
+		shearingRecords,
+		cleaningHeaders,
+		cleaningCommonRecords,
+	] = await Promise.all([
+		database
+			.get<ParticipantModel>("participants")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+		database
+			.get<ShearingHeaderModel>("shearingHeader")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+		database
+			.get<ShearingRecordModel>("shearingRecord")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+		database
+			.get<CleaningHeaderModel>("cleaningHeader")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+		database
+			.get<CleaningCommonModel>("cleaningCommon")
+			.query(Q.where("permitId", permitId))
+			.fetch(),
+	])
+	const cleaningCommonIds = cleaningCommonRecords.map((record) => record.id)
+	const [groomingDetails, dehearingDetails] = cleaningCommonIds.length
+		? await Promise.all([
+				database
+					.get<GroomingModel>("grooming")
+					.query(
+						Q.where("cleaningCommonId", Q.oneOf(cleaningCommonIds)),
+					)
+					.fetch(),
+				database
+					.get<DehearingModel>("dehearing")
+					.query(
+						Q.where("cleaningCommonId", Q.oneOf(cleaningCommonIds)),
+					)
+					.fetch(),
+			])
+		: [[], []]
+
+	return {
+		participants,
+		shearingHeaders,
+		shearingRecords,
+		cleaningHeaders,
+		cleaningCommonRecords,
+		groomingDetails,
+		dehearingDetails,
+	}
+}
+
+type StoredPermitFieldData = Awaited<
+	ReturnType<typeof readStoredPermitFieldData>
+>
+
+function prepareStoredFieldDataDeletion(
+	batchOps: Model[],
+	storedData: StoredPermitFieldData,
+) {
+	batchOps.push(
+		...storedData.participants.map((record) =>
+			record.prepareDestroyPermanently(),
+		),
+		...storedData.shearingRecords.map((record) =>
+			record.prepareDestroyPermanently(),
+		),
+		...storedData.groomingDetails.map((record) =>
+			record.prepareDestroyPermanently(),
+		),
+		...storedData.dehearingDetails.map((record) =>
+			record.prepareDestroyPermanently(),
+		),
+		...storedData.cleaningCommonRecords.map((record) =>
+			record.prepareDestroyPermanently(),
+		),
+	)
+}
 function prepareSnapshotReplacement(
 	batchOps: Model[],
 	data: PermitFieldData,

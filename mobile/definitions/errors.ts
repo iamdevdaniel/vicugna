@@ -66,6 +66,16 @@ export const mobilePermitSyncErrors = {
 		message:
 			"El permiso se envió, pero el teléfono no guardó la confirmación. Pulse Reintentar envío.",
 	},
+	replaceWithServerCopy: {
+		code: "MOBILE_SYNC_SERVER_REPLACE_FAILED",
+		message:
+			"No se pudieron guardar los datos del servidor. Sus datos siguen guardados en este dispositivo.",
+	},
+	unsupportedHashVersion: {
+		code: "SYNC_HASH_VERSION_UNSUPPORTED",
+		message:
+			"Esta versión de la aplicación ya no puede recibir estos datos. Actualice la aplicación.",
+	},
 	resultUnknown: {
 		code: "MOBILE_SYNC_RESULT_UNKNOWN",
 		message:
@@ -108,5 +118,5 @@ export const backendPermitSyncCodes = {
 	permitForbidden: "PERMIT_SYNC_FORBIDDEN",
 	permitUnavailable: "PERMIT_SYNC_UNAVAILABLE",
 	dataConflict: "SYNC_DATA_CONFLICT",
-	unsupportedHashVersion: "SYNC_HASH_VERSION_UNSUPPORTED",
+	unsupportedHashVersion: mobilePermitSyncErrors.unsupportedHashVersion.code,
 } as const

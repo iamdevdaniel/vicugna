@@ -55,7 +55,7 @@ export default function NativePermitScreen() {
 	const {
 		syncPermit,
 		retrySyncPermit,
-		discardAndDownload,
+		replaceWithServerCopy,
 		syncingPermit,
 		syncOperation,
 	} = useSyncPermit()
@@ -135,19 +135,19 @@ export default function NativePermitScreen() {
 		router.push(route)
 	}
 
-	const confirmDiscardAndDownload = () => {
+	const showConflictChoice = (message: string) => {
 		Alert.alert(
-			"Descartar datos de este dispositivo",
-			"Los datos guardados en este dispositivo serán reemplazados por los datos actuales del servidor.",
+			"Hay datos guardados en el servidor",
+			`${message}\n\nSi reemplazas, se borrarán los datos guardados en este dispositivo.`,
 			[
-				{ text: "Cancelar", style: "cancel" },
+				{ text: "Conservar por ahora", style: "cancel" },
 				{
-					text: "Descartar y descargar",
+					text: "Reemplazar con datos del servidor",
 					style: "destructive",
 					onPress: async () => {
-						const result = await discardAndDownload(permitId)
+						const result = await replaceWithServerCopy(permitId)
 						if (result.ok) {
-							showSnackbar("Se descargaron los datos actuales")
+							showSnackbar("Se guardaron los datos del servidor")
 							return
 						}
 
@@ -156,17 +156,6 @@ export default function NativePermitScreen() {
 				},
 			],
 		)
-	}
-
-	const showOutdatedDataChoice = (message: string) => {
-		Alert.alert("Hay datos más recientes", message, [
-			{ text: "Conservar mis datos", style: "cancel" },
-			{
-				text: "Descartar estos datos y descargar los actuales",
-				style: "destructive",
-				onPress: confirmDiscardAndDownload,
-			},
-		])
 	}
 
 	const onPressSend = () => {
@@ -190,8 +179,8 @@ export default function NativePermitScreen() {
 							)
 							return
 						}
-						if (result.reason === "outdated") {
-							showOutdatedDataChoice(result.error)
+						if (result.reason === "conflict") {
+							showConflictChoice(result.error)
 							return
 						}
 
@@ -209,14 +198,11 @@ export default function NativePermitScreen() {
 		const result = await retrySyncPermit(permitId)
 
 		if (result.ok) {
-			showSnackbar(
-				result.warning ?? "El permiso se envió correctamente",
-				result.warning ? "error" : "success",
-			)
+			showSnackbar("El permiso se envió correctamente", "success")
 			return
 		}
-		if (result.reason === "outdated") {
-			showOutdatedDataChoice(result.error)
+		if (result.reason === "conflict") {
+			showConflictChoice(result.error)
 			return
 		}
 

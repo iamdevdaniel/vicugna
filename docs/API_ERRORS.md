@@ -23,7 +23,7 @@ the permit as pending, and the permit remains editable.
 
 ## 2. Confirmed backend responses
 
-The backend clearly accepted or rejected the current upload.
+For a new send, the backend clearly accepted or rejected the request.
 
 | Response | Codes | App behavior |
 | --- | --- | --- |
@@ -31,8 +31,12 @@ The backend clearly accepted or rejected the current upload.
 | Login or ownership rejected | `401`, `PERMIT_SYNC_FORBIDDEN` | Show the backend message. |
 | Permit missing or unavailable | `PERMIT_NOT_FOUND`, `PERMIT_SYNC_UNAVAILABLE` | Stop the upload and show the backend message. |
 | Collected data rejected | `PYLD`, `VPRT_*`, `VSHE_*`, `VCLG_*` | Keep the collected data editable and show the backend rejection message. |
-| Server and device data both changed | `SYNC_DATA_CONFLICT` | Keep the local data and offer the choice to preserve it or replace it with the server data. |
+| Server and device data both changed | `SYNC_DATA_CONFLICT` | Clear the pending state, keep the local data, and offer the choice to preserve it or replace it with the server data. |
 | Hash rules are not supported | `SYNC_HASH_VERSION_UNSUPPORTED` | Keep all data unchanged and require an app update. |
+
+When the user accepts the server copy after a conflict, Android downloads only
+that permit. If `MOBILE_SYNC_SERVER_REPLACE_FAILED` occurs, the local data remain
+unchanged and the user can try the send-and-replace flow again.
 
 ## 3. Unconfirmed upload results
 
@@ -49,7 +53,7 @@ Retrying sends the same collected data and `baseHash`.
 | The backend returned a server error | `MOBILE_SERVER_ERROR` |
 | Android received success but could not record the upload confirmation | `MOBILE_SYNC_CONFIRMATION_FAILED` |
 | Android cannot read the pending local data for retry | `MOBILE_SYNC_DATA_READ_FAILED` |
-| A retry is blocked before the backend compares the data | Offline status, expired login, rate limiting, or `PYLD` during retry |
+| A retry is blocked before the backend compares the data | Offline status, expired login, rate limiting, `PERMIT_NOT_FOUND`, `PERMIT_SYNC_FORBIDDEN`, `SYNC_HASH_VERSION_UNSUPPORTED`, `PYLD`, `VPRT_*`, `VSHE_*`, or `VCLG_*` |
 
 The app does not clear an unconfirmed pending state. The user may need to log
 in or restore connectivity before retrying.

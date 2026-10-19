@@ -1,5 +1,6 @@
 import {
 	BackendRequestError,
+	fetchPermit,
 	fetchPermits,
 	isDeviceOffline,
 	submitSyncFieldData,
@@ -9,6 +10,7 @@ import {
 	confirmPermitSync,
 	getPendingPermitSyncData,
 	preparePermitSync,
+	replacePermitWithServerCopy,
 	savePermits,
 } from "@database"
 import {
@@ -28,8 +30,8 @@ import { useShallow } from "zustand/react/shallow"
 
 type PermitLoadResult = { ok: true } | { ok: false; error: string }
 type SyncPermitResult =
-	| { ok: true; warning?: string }
-	| { ok: false; error: string; reason?: "outdated" | "pending" }
+	| { ok: true }
+	| { ok: false; error: string; reason?: "conflict" | "pending" }
 
 export function useLoadPermits() {
 	const [loadingPermits, setLoadingPermits] = useState(false)
@@ -193,7 +195,7 @@ export function useSyncPermit() {
 							}
 					}
 
-					if (!isSafeToClearSyncPendingAfterRetry(caught)) {
+					if (!isConfirmedRetryRejection(caught)) {
 						const retryNeedsLogin =
 							caught instanceof BackendRequestError &&
 							caught.status === 401
@@ -223,7 +225,7 @@ export function useSyncPermit() {
 		[token, userId],
 	)
 
-	const discardAndDownload = useCallback(
+	const replaceWithServerCopy = useCallback(
 		async (permitId: string): Promise<PermitLoadResult> => {
 			if (!token || !userId) {
 				return { ok: false, error: "Sesión no disponible" }
@@ -234,15 +236,8 @@ export function useSyncPermit() {
 
 			setSyncOperation("download")
 			try {
-				const downloads = await fetchPermits(token)
-				const download = downloads.find(
-					({ permit }) => permit.id === permitId,
-				)
-				if (!download) {
-					throw new Error("El permiso ya no está disponible")
-				}
-
-				await savePermits(userId, [download])
+				const download = await fetchPermit(token, permitId)
+				await replacePermitWithServerCopy(userId, download)
 				return { ok: true }
 			} catch (error) {
 				return {
@@ -263,7 +258,7 @@ export function useSyncPermit() {
 	return {
 		syncPermit,
 		retrySyncPermit,
-		discardAndDownload,
+		replaceWithServerCopy,
 		syncingPermit: syncOperation !== null,
 		syncOperation,
 	}
@@ -284,43 +279,12 @@ function isUncertainRequestFailure(error: unknown): boolean {
 	}
 }
 
-function isSafeToClearSyncPendingAfterRetry(error: unknown): boolean {
+function isConfirmedRetryRejection(error: unknown): boolean {
 	if (!(error instanceof BackendRequestError)) return false
 
 	switch (error.code) {
-		case backendPermitSyncCodes.permitNotFound:
-		case backendPermitSyncCodes.permitForbidden:
 		case backendPermitSyncCodes.permitUnavailable:
 		case backendPermitSyncCodes.dataConflict:
-		case backendPermitSyncCodes.unsupportedHashVersion:
-		case backendPermitSyncCodes.participantsMissing:
-		case backendPermitSyncCodes.participantPermit:
-		case backendPermitSyncCodes.participantDuplicate:
-		case backendPermitSyncCodes.shearingIncomplete:
-		case backendPermitSyncCodes.shearingHeaderPermit:
-		case backendPermitSyncCodes.shearingRecordsMissing:
-		case backendPermitSyncCodes.shearingRecordPermit:
-		case backendPermitSyncCodes.gestation:
-		case backendPermitSyncCodes.sheared:
-		case backendPermitSyncCodes.shearingRecordDuplicate:
-		case backendPermitSyncCodes.cleaningHeaderIncomplete:
-		case backendPermitSyncCodes.cleaningHeaderPermit:
-		case backendPermitSyncCodes.cleaningRecordsMissing:
-		case backendPermitSyncCodes.cleaningDetailCount:
-		case backendPermitSyncCodes.cleaningRecordPermit:
-		case backendPermitSyncCodes.cleaningDetailIncomplete:
-		case backendPermitSyncCodes.groomingPermit:
-		case backendPermitSyncCodes.dehearingPermit:
-		case backendPermitSyncCodes.bothDetails:
-		case backendPermitSyncCodes.cleanWeight:
-		case backendPermitSyncCodes.dirtyWeight:
-		case backendPermitSyncCodes.totalWeight:
-		case backendPermitSyncCodes.calculatedWeight:
-		case backendPermitSyncCodes.cleaningRecordDuplicate:
-		case backendPermitSyncCodes.groomingRelationDuplicate:
-		case backendPermitSyncCodes.groomingDetailDuplicate:
-		case backendPermitSyncCodes.dehearingRelationDuplicate:
-		case backendPermitSyncCodes.dehearingDetailDuplicate:
 			return true
 		default:
 			return false
@@ -351,7 +315,7 @@ function getRejectedSyncResult(error: unknown): SyncPermitResult {
 		error instanceof BackendRequestError &&
 		error.code === backendPermitSyncCodes.dataConflict
 	) {
-		return { ok: false, error: message, reason: "outdated" }
+		return { ok: false, error: message, reason: "conflict" }
 	}
 
 	if (error instanceof BackendRequestError) {
@@ -400,6 +364,11 @@ function getPendingSyncError(error: unknown): string {
 				return "No llegó la confirmación del envío. Tus datos están guardados. Pulsa Reintentar envío."
 			case mobileRequestErrors.serverError.code:
 				return "El servidor tuvo un problema. Tus datos están guardados. Pulsa Reintentar envío."
+			case mobileRequestErrors.invalidResponse.code:
+			case mobileRequestErrors.unexpected.code:
+				return mobilePermitSyncErrors.resultUnknown.message
+			default:
+				return error.message
 		}
 	}
 

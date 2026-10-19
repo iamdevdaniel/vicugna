@@ -28,6 +28,7 @@ export {
 	confirmPermitSync,
 	getPendingPermitSyncData,
 	preparePermitSync,
+	replacePermitWithServerCopy,
 	savePermits,
 } from "./dal-permit-sync"
 export {
