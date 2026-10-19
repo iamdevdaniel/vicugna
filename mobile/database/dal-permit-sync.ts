@@ -10,6 +10,10 @@ import type {
 } from "@definitions/types"
 import { type Model, Q } from "@nozbe/watermelondb"
 import { getPermitStatuses } from "@utils/permit-status-rules"
+import {
+	PermitDataValidationError,
+	parseCompletePermitData,
+} from "@vicugna/shared/permit-data-validation"
 import { assertPermitOwner } from "./dal-permit"
 import {
 	applyCleaningCommonSnapshotToModel,
@@ -60,8 +64,14 @@ export async function getPendingPermitSyncData(
 		}
 
 		return await buildFieldSyncData(permitRecord)
-	} catch {
-		throw new MobileOperationError(mobilePermitSyncErrors.readData)
+	} catch (error) {
+		throw new MobileOperationError({
+			code: mobilePermitSyncErrors.readData.code,
+			message:
+				error instanceof PermitDataValidationError
+					? error.message
+					: mobilePermitSyncErrors.readData.message,
+		})
 	}
 }
 
@@ -91,8 +101,14 @@ export async function preparePermitSync(
 
 			return payload
 		})
-	} catch {
-		throw new MobileOperationError(mobilePermitSyncErrors.prepareSync)
+	} catch (error) {
+		throw new MobileOperationError({
+			code: mobilePermitSyncErrors.prepareSync.code,
+			message:
+				error instanceof PermitDataValidationError
+					? error.message
+					: mobilePermitSyncErrors.prepareSync.message,
+		})
 	}
 }
 
@@ -362,10 +378,7 @@ async function buildFieldSyncData(
 		throw new Error("Falta la información general del registro de fibra")
 	}
 
-	return {
-		permitId,
-		baseHash: permitRecord.baseHash,
-		hashVersion: permitRecord.hashVersion,
+	const fieldData = {
 		participants: participants.map(mapToParticipant),
 		shearingHeader: mapToShearingHeader(shearingHeader),
 		shearingRecords: shearingRecords.map(mapToShearingRecord),
@@ -373,6 +386,18 @@ async function buildFieldSyncData(
 		cleaningCommonRecords: cleaningCommonRecords.map(mapToCleaningCommon),
 		groomingDetails: groomingDetails.map(mapToGrooming),
 		dehearingDetails: dehearingDetails.map(mapToDehearing),
+	}
+
+	const validatedFieldData: PermitFieldData = parseCompletePermitData(
+		fieldData,
+		permitId,
+	)
+
+	return {
+		permitId,
+		baseHash: permitRecord.baseHash,
+		hashVersion: permitRecord.hashVersion,
+		...validatedFieldData,
 	}
 }
 

@@ -1,6 +1,8 @@
 import type { PermitFieldData } from "@shared"
+import { parseCompletePermitData } from "@shared/permit-data-validation"
 
 type StoredPermitData = {
+	id: string
 	participants: PermitFieldData["participants"]
 	shearingHeader: PermitFieldData["shearingHeader"] | null
 	shearingRecords: PermitFieldData["shearingRecords"]
@@ -29,7 +31,7 @@ export function getPermitFieldData(
 		throw new Error("Los datos sincronizados del permiso están incompletos")
 	}
 
-	return {
+	const fieldData = {
 		participants: permit.participants,
 		shearingHeader: permit.shearingHeader,
 		shearingRecords: permit.shearingRecords,
@@ -45,4 +47,6 @@ export function getPermitFieldData(
 			record.dehearing ? [record.dehearing] : [],
 		),
 	}
+
+	return parseCompletePermitData(fieldData, permit.id)
 }

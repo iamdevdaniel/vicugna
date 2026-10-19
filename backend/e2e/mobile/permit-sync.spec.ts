@@ -247,10 +247,13 @@ test("rejects an unsupported hash version without changing data", async ({
 		"No debe guardarse",
 	)
 
-	const response = await sendPermit(request, token, {
+	const futurePayload = {
 		...payload,
 		hashVersion: PERMIT_DATA_HASH_VERSION + 1,
-	})
+		participants: [],
+		futureSection: { value: "future-data" },
+	}
+	const response = await sendPermit(request, token, futurePayload)
 	expect(response.status()).toBe(400)
 	await expect(response.json()).resolves.toMatchObject({
 		ok: false,

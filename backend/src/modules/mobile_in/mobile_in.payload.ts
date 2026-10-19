@@ -1,132 +1,88 @@
-import { z } from "zod"
 import {
+	PermitDataValidationError,
+	parseCompletePermitData,
+} from "@shared/permit-data-validation"
+import { z } from "zod"
+import { PERMIT_DATA_HASH_VERSION } from "../permit-sync/permit-data-hash"
+import {
+	PermitSyncError,
 	PermitValidationError,
+	permitSyncErrors,
 	permitValidationErrors,
 } from "./mobile_in.errors"
 import type { SyncFieldData } from "./mobile_in.types"
 
 const UUID_PATTERN =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-const participantSchema = z
-	.object({
-		id: z.string(),
-		permitId: z.string(),
-		name: z.string(),
-		lastNames: z.string(),
-		gender: z.enum(["M", "F"]),
-		identityNumber: z.string(),
-		signature: z.string(),
-		notes: z.string(),
-	})
-	.strict()
-
-const shearingHeaderSchema = z
-	.object({
-		id: z.string(),
-		permitId: z.string(),
-		site: z.string(),
-		latitude: z.number(),
-		longitude: z.number(),
-		roundupCount: z.number(),
-		eventDate: z.string(),
-		startTime: z.string(),
-		endTime: z.string(),
-		isCompleted: z.boolean(),
-	})
-	.strict()
-
-const shearingRecordSchema = z
-	.object({
-		id: z.string(),
-		permitId: z.string(),
-		tagNumber: z.number(),
-		sex: z.enum(["F", "M"]),
-		ageCategory: z.enum(["Cria", "Juvenil", "Adulto"]),
-		liveWeight: z.number(),
-		fiberLength: z.number(),
-		bodyCondition: z.enum(["Malo", "Regular", "Bueno"]),
-		gestationStatus: z.enum(["No", "Si", "Si ultimo tercio"]),
-		externalParasites: z.array(z.enum(["Garrapata", "Piojos"])),
-		mangeSeverity: z.enum(["Ninguna", "Leve", "Moderado", "Severo"]),
-		hasDandruff: z.boolean(),
-		isSheared: z.boolean(),
-		isDead: z.boolean(),
-		observations: z.string(),
-	})
-	.strict()
-
-const cleaningHeaderSchema = z
-	.object({
-		id: z.string(),
-		permitId: z.string(),
-		startDate: z.string(),
-		endDate: z.string(),
-		site: z.string(),
-		supervisors: z.string(),
-		isCompleted: z.boolean(),
-	})
-	.strict()
-
-const cleaningCommonSchema = z
-	.object({
-		id: z.string(),
-		permitId: z.string(),
-		fleeceNumber: z.string(),
-		grossWeight: z.number(),
-	})
-	.strict()
-
-const groomingSchema = z
-	.object({
-		id: z.string(),
-		cleaningCommonId: z.string(),
-		cleanWeight: z.number(),
-		dirtyWeight: z.number(),
-		totalWeight: z.number(),
-		isCompleted: z.boolean(),
-	})
-	.strict()
-
-const dehearingSchema = z
-	.object({
-		id: z.string(),
-		cleaningCommonId: z.string(),
-		dehairedWeight: z.number(),
-		bristleWeight: z.number(),
-		hasDandruff: z.boolean(),
-		dehairerName: z.string(),
-		signature: z.string(),
-		isCompleted: z.boolean(),
-	})
-	.strict()
-
+const syncPayloadMetadataSchema = z
+	.object({ hashVersion: z.number().int().positive() })
+	.passthrough()
 const syncPayloadSchema = z
 	.object({
 		permitId: z.string(),
 		baseHash: z.string().regex(/^[0-9a-f]{64}$/),
 		hashVersion: z.number().int().positive(),
-		participants: z.array(participantSchema),
-		shearingHeader: shearingHeaderSchema,
-		shearingRecords: z.array(shearingRecordSchema),
-		cleaningHeader: cleaningHeaderSchema,
-		cleaningCommonRecords: z.array(cleaningCommonSchema),
-		groomingDetails: z.array(groomingSchema),
-		dehearingDetails: z.array(dehearingSchema),
+		participants: z.unknown(),
+		shearingHeader: z.unknown(),
+		shearingRecords: z.unknown(),
+		cleaningHeader: z.unknown(),
+		cleaningCommonRecords: z.unknown(),
+		groomingDetails: z.unknown(),
+		dehearingDetails: z.unknown(),
 	})
 	.strict()
 
 export function parseSyncPayload(payload: unknown): SyncFieldData {
-	const result = syncPayloadSchema.safeParse(payload)
-
-	if (!result.success) {
-		throw new PermitValidationError(permitValidationErrors.invalidPayload, {
-			source: "zod",
-			issues: result.error.issues,
-		})
+	const metadataResult = syncPayloadMetadataSchema.safeParse(payload)
+	if (!metadataResult.success) {
+		throwInvalidPayload(metadataResult.error.issues)
+	}
+	if (metadataResult.data.hashVersion !== PERMIT_DATA_HASH_VERSION) {
+		throw new PermitSyncError(permitSyncErrors.unsupportedHashVersion)
 	}
 
-	return result.data
+	const result = syncPayloadSchema.safeParse(payload)
+	if (!result.success) {
+		throwInvalidPayload(result.error.issues)
+	}
+
+	try {
+		const fieldData = parseCompletePermitData(
+			{
+				participants: result.data.participants,
+				shearingHeader: result.data.shearingHeader,
+				shearingRecords: result.data.shearingRecords,
+				cleaningHeader: result.data.cleaningHeader,
+				cleaningCommonRecords: result.data.cleaningCommonRecords,
+				groomingDetails: result.data.groomingDetails,
+				dehearingDetails: result.data.dehearingDetails,
+			},
+			result.data.permitId,
+		)
+		return {
+			permitId: result.data.permitId,
+			baseHash: result.data.baseHash,
+			hashVersion: result.data.hashVersion,
+			...fieldData,
+		}
+	} catch (error) {
+		if (error instanceof PermitDataValidationError) {
+			throw new PermitValidationError(
+				{ code: error.code, message: error.message },
+				error.details,
+			)
+		}
+		throw error
+	}
 }
+
+function throwInvalidPayload(issues: z.ZodIssue[]): never {
+	throw new PermitValidationError(permitValidationErrors.invalidPayload, {
+		source: "zod",
+		issues,
+	})
+}
+
 export function getPayloadPermitIdForLog(payload: unknown): string | null {
 	if (!payload || typeof payload !== "object") return null
 

@@ -1,13 +1,24 @@
 {
-  "name": "@vicugna/shared",
-  "version": "1.0.0",
-  "private": true,
-  "types": "types.d.ts",
-  "exports": {
-    ".": {
-      "types": "./types.d.ts"
-    },
-    "./errors.json": "./errors.json",
-    "./regionals.json": "./regionals.json"
-  }
+	"name": "@vicugna/shared",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"test": "node --test permit-data-*.test.js"
+	},
+	"types": "types.d.ts",
+	"exports": {
+		".": {
+			"types": "./types.d.ts"
+		},
+		"./errors.json": "./errors.json",
+		"./permit-data-validation": {
+			"types": "./permit-data-validation.d.ts",
+			"default": "./permit-data-validation.js"
+		},
+		"./regionals.json": "./regionals.json"
+	},
+	"dependencies": {
+		"decimal.js": "^10.6.0",
+		"zod": "^3.25.76"
+	}
 }

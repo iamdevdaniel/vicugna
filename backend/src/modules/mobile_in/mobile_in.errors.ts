@@ -1,35 +1,9 @@
 import sharedErrors from "@shared/errors.json"
-import type { ZodIssue } from "zod"
-
-export type ServiceValidationRule =
-	| "after"
-	| "date_format"
-	| "finite_number"
-	| "maximum"
-	| "maximum_items"
-	| "non_blank"
-	| "positive"
-	| "positive_integer"
-	| "range"
-	| "time_format"
-	| "unique_items"
-	| "valid_date"
-	| "valid_time"
-
-export type ServiceValidationIssue = {
-	path: string
-	rule: ServiceValidationRule
-	expected?: number | string | { min: number; max: number }
-}
-
-export type PermitValidationLogDetails =
-	| { source: "zod"; issues: ZodIssue[] }
-	| { source: "service"; issue: ServiceValidationIssue }
+import type { PermitDataValidationDetails } from "@shared/permit-data-validation"
 
 export const { permitSyncErrors, permitValidationErrors } = sharedErrors
 
-type PermitValidationDefinition =
-	(typeof permitValidationErrors)[keyof typeof permitValidationErrors]
+type PermitValidationDefinition = { code: string; message: string }
 
 type PermitSyncErrorDefinition =
 	(typeof permitSyncErrors)[keyof typeof permitSyncErrors]
@@ -37,7 +11,7 @@ type PermitSyncErrorDefinition =
 export class PermitValidationError extends Error {
 	constructor(
 		readonly definition: PermitValidationDefinition,
-		readonly logDetails?: PermitValidationLogDetails,
+		readonly logDetails?: PermitDataValidationDetails,
 	) {
 		super(definition.message)
 		this.name = "PermitValidationError"

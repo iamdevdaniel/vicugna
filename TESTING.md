@@ -78,6 +78,8 @@ Backend unit tests live beside the code they verify under
 `backend/src/modules`. They run without PostgreSQL, the backend server, or a
 browser. Mobile API integration tests live under `backend/e2e/mobile`; they
 call the running backend and verify the result in isolated PostgreSQL.
+Shared validation tests live in `shared/permit-data-*.test.js` and run without
+the backend, PostgreSQL, or Android.
 
 ## Test suites
 
@@ -97,6 +99,12 @@ From `backend`, run the unit tests with:
 
 ```sh
 npm run test:unit
+```
+
+From `shared`, run the complete permit-data validation tests with:
+
+```sh
+npm test
 ```
 
 The permit-data hash suite checks the empty and complete hashes, property and
