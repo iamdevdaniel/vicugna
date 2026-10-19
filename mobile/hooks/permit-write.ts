@@ -14,7 +14,7 @@ import {
 	savePermits,
 } from "@database"
 import {
-	backendPermitSyncCodes,
+	backendPermitSyncErrors,
 	type MobileErrorDefinition,
 	MobileOperationError,
 	mobilePermitSyncErrors,
@@ -283,8 +283,8 @@ function isConfirmedRetryRejection(error: unknown): boolean {
 	if (!(error instanceof BackendRequestError)) return false
 
 	switch (error.code) {
-		case backendPermitSyncCodes.permitUnavailable:
-		case backendPermitSyncCodes.dataConflict:
+		case backendPermitSyncErrors.unavailable.code:
+		case backendPermitSyncErrors.dataConflict.code:
 			return true
 		default:
 			return false
@@ -313,7 +313,7 @@ function getRejectedSyncResult(error: unknown): SyncPermitResult {
 
 	if (
 		error instanceof BackendRequestError &&
-		error.code === backendPermitSyncCodes.dataConflict
+		error.code === backendPermitSyncErrors.dataConflict.code
 	) {
 		return { ok: false, error: message, reason: "conflict" }
 	}
