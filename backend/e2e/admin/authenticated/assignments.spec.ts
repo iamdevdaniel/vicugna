@@ -78,7 +78,7 @@ test.describe("Administración de asignaciones", () => {
 		)
 	})
 
-	test("rechaza un formulario viejo sin cambiar el encargado", async ({
+	test("rechaza un formulario inválido sin cambiar el encargado", async ({
 		page,
 	}) => {
 		const response = await page.evaluate(async () => {
@@ -87,7 +87,6 @@ test.describe("Administración de asignaciones", () => {
 				seasonId: "season-2026",
 				communityId: "aguaquisa",
 				permitId: "permit-seed-asg-01",
-				activeUserId: "user-seed-02",
 			})
 			const result = await fetch(window.location.href, {
 				method: "POST",
@@ -98,9 +97,7 @@ test.describe("Administración de asignaciones", () => {
 		})
 
 		expect(response.status).toBe(400)
-		expect(response.text).toContain(
-			"Esta página está desactualizada. Recárgala antes de guardar",
-		)
+		expect(response.text).toContain("El formulario enviado no es válido")
 
 		await page.reload({ waitUntil: "networkidle" })
 		await waitForAdminReady(page)

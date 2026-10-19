@@ -11,7 +11,6 @@ export default [
 	route("exports/reports/:permitId", "routes/export-reports.ts"),
 	layout("routes/protected.tsx", [
 		index("routes/home.tsx"),
-		route("mission-control", "routes/mission-control.ts"),
 		route("users", "routes/users.tsx"),
 		route(
 			"users/password-suggestion",

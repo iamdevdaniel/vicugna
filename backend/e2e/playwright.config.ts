@@ -12,7 +12,8 @@ if (!databaseUrl) {
 
 export default defineConfig({
 	testDir: ".",
-	fullyParallel: true,
+	fullyParallel: false,
+	workers: 1,
 	forbidOnly: Boolean(process.env.CI),
 	retries: 0,
 	reporter: "list",
