@@ -155,6 +155,9 @@ export async function replacePermitWithServerCopy(
 				.get<PermitModel>("permits")
 				.find(download.permit.id)
 			assertPermitOwner(permitRecord.userId, accountId)
+			if (permitRecord.syncPending) {
+				throw new Error("Este permiso tiene un envío pendiente")
+			}
 
 			if (permitRecord.hashVersion !== download.hashVersion) {
 				throw new Error(
@@ -163,50 +166,13 @@ export async function replacePermitWithServerCopy(
 			}
 
 			const storedData = await readStoredPermitFieldData(permitRecord.id)
-			const statuses = download.fieldData
-				? getSnapshotStatuses(download.fieldData)
-				: defaultStatuses
 			const batchOps: Model[] = []
-
-			batchOps.push(
-				permitRecord.prepareUpdate((model) => {
-					applySyncPermitToModel(model, download.permit)
-					applyPermitStatusesToModel(model, statuses)
-					model.baseHash = download.serverHash
-					model.hashVersion = download.hashVersion
-					model.hasLocalChanges = false
-					model.syncPending = false
-				}),
+			prepareExistingPermitReplacement(
+				batchOps,
+				permitRecord,
+				download,
+				storedData,
 			)
-			prepareStoredFieldDataDeletion(batchOps, storedData)
-
-			if (download.fieldData) {
-				batchOps.push(
-					...storedData.shearingHeaders
-						.slice(1)
-						.map((header) => header.prepareDestroyPermanently()),
-					...storedData.cleaningHeaders
-						.slice(1)
-						.map((header) => header.prepareDestroyPermanently()),
-				)
-				prepareSnapshotReplacement(
-					batchOps,
-					download.fieldData,
-					storedData.shearingHeaders[0],
-					storedData.cleaningHeaders[0],
-				)
-			} else {
-				batchOps.push(
-					...storedData.shearingHeaders.map((header) =>
-						header.prepareDestroyPermanently(),
-					),
-					...storedData.cleaningHeaders.map((header) =>
-						header.prepareDestroyPermanently(),
-					),
-					prepareEmptyShearingHeader(permitRecord.id),
-					prepareEmptyCleaningHeader(permitRecord.id),
-				)
-			}
 
 			await database.batch(batchOps)
 		})
@@ -220,13 +186,11 @@ export async function replacePermitWithServerCopy(
 export async function savePermits(
 	accountId: string,
 	downloads: MobilePermitData[],
-): Promise<void> {
-	if (downloads.length === 0) return
-	for (const { permit } of downloads) {
-		assertPermitOwner(permit.userId, accountId)
-	}
+): Promise<string[]> {
+	if (downloads.length === 0) return []
+	assertDownloadOwners(downloads, accountId)
 
-	await database.write(async () => {
+	return database.write(async () => {
 		const permitIds = downloads.map(({ permit }) => permit.id)
 		const existingPermits = await database
 			.get<PermitModel>("permits")
@@ -235,86 +199,48 @@ export async function savePermits(
 		const permitsById = new Map(
 			existingPermits.map((permit) => [permit.id, permit]),
 		)
-		const downloadsToSave = downloads.filter(
-			({ permit, serverHash, hashVersion }) => {
-				const existingPermit = permitsById.get(permit.id)
-				if (!existingPermit) return true
-				if (existingPermit.syncPending) return false
-				if (existingPermit.hashVersion !== hashVersion) return false
+		validateExistingPermitDownloads(downloads, permitsById, accountId)
 
-				return existingPermit.baseHash === serverHash
-			},
-		)
-		if (downloadsToSave.length === 0) return
-
-		const permitIdsToSave = downloadsToSave.map(({ permit }) => permit.id)
-		const [shearingHeaders, cleaningHeaders] = await Promise.all([
-			database
-				.get<ShearingHeaderModel>("shearingHeader")
-				.query(Q.where("permitId", Q.oneOf(permitIdsToSave)))
-				.fetch(),
-			database
-				.get<CleaningHeaderModel>("cleaningHeader")
-				.query(Q.where("permitId", Q.oneOf(permitIdsToSave)))
-				.fetch(),
-		])
-		const shearingHeadersByPermitId = new Map(
-			shearingHeaders.map((header) => [header.permitId, header]),
-		)
-		const cleaningHeadersByPermitId = new Map(
-			cleaningHeaders.map((header) => [header.permitId, header]),
-		)
 		const batchOps: Model[] = []
+		const conflictPermitIds: string[] = []
 
-		for (const download of downloadsToSave) {
-			const { permit, serverHash, hashVersion, fieldData } = download
-			const existingPermit = permitsById.get(permit.id)
-			const statuses = fieldData ? getSnapshotStatuses(fieldData) : null
-
-			if (existingPermit) {
-				batchOps.push(
-					existingPermit.prepareUpdate((model) => {
-						applySyncPermitToModel(model, permit)
-						model.hashVersion = hashVersion
-					}),
-				)
-			} else {
-				batchOps.push(
-					database
-						.get<PermitModel>("permits")
-						.prepareCreate((model) => {
-							model._raw.id = permit.id
-							applyPermitToModel(model, {
-								...permit,
-								...(statuses ?? defaultStatuses),
-							})
-							model.baseHash = serverHash
-							model.hashVersion = hashVersion
-							model.hasLocalChanges = false
-							model.syncPending = false
-						}),
-				)
-			}
-
-			if (!existingPermit && fieldData) {
-				prepareSnapshotReplacement(
-					batchOps,
-					fieldData,
-					shearingHeadersByPermitId.get(permit.id),
-					cleaningHeadersByPermitId.get(permit.id),
-				)
+		for (const download of downloads) {
+			const existingPermit = permitsById.get(download.permit.id)
+			if (!existingPermit) {
+				prepareNewPermitDownload(batchOps, download)
 				continue
 			}
 
-			if (!existingPermit && !fieldData) {
-				batchOps.push(
-					prepareEmptyShearingHeader(permit.id),
-					prepareEmptyCleaningHeader(permit.id),
-				)
+			switch (getExistingPermitRefreshAction(existingPermit, download)) {
+				case "skip":
+					break
+				case "update-metadata":
+					preparePermitMetadataUpdate(
+						batchOps,
+						existingPermit,
+						download,
+					)
+					break
+				case "conflict":
+					conflictPermitIds.push(existingPermit.id)
+					break
+				case "replace": {
+					const storedData = await readStoredPermitFieldData(
+						existingPermit.id,
+					)
+					prepareExistingPermitReplacement(
+						batchOps,
+						existingPermit,
+						download,
+						storedData,
+					)
+					break
+				}
 			}
 		}
 
 		if (batchOps.length > 0) await database.batch(batchOps)
+		return conflictPermitIds
 	})
 }
 
@@ -475,6 +401,147 @@ type StoredPermitFieldData = Awaited<
 	ReturnType<typeof readStoredPermitFieldData>
 >
 
+type ExistingPermitRefreshAction =
+	| "skip"
+	| "update-metadata"
+	| "conflict"
+	| "replace"
+
+function assertDownloadOwners(
+	downloads: MobilePermitData[],
+	accountId: string,
+) {
+	for (const { permit } of downloads) {
+		assertPermitOwner(permit.userId, accountId)
+	}
+}
+
+function validateExistingPermitDownloads(
+	downloads: MobilePermitData[],
+	permitsById: Map<string, PermitModel>,
+	accountId: string,
+) {
+	for (const { permit, hashVersion } of downloads) {
+		const existingPermit = permitsById.get(permit.id)
+		if (!existingPermit) continue
+
+		assertPermitOwner(existingPermit.userId, accountId)
+		if (existingPermit.hashVersion !== hashVersion) {
+			throw new MobileOperationError(
+				mobilePermitSyncErrors.unsupportedHashVersion,
+			)
+		}
+	}
+}
+
+function getExistingPermitRefreshAction(
+	existingPermit: PermitModel,
+	download: MobilePermitData,
+): ExistingPermitRefreshAction {
+	if (existingPermit.syncPending) return "skip"
+	if (existingPermit.baseHash === download.serverHash) {
+		return "update-metadata"
+	}
+	if (existingPermit.hasLocalChanges) return "conflict"
+	return "replace"
+}
+
+function prepareNewPermitDownload(
+	batchOps: Model[],
+	download: MobilePermitData,
+) {
+	const { permit, serverHash, hashVersion, fieldData } = download
+	const statuses = fieldData
+		? getSnapshotStatuses(fieldData)
+		: defaultStatuses
+
+	batchOps.push(
+		database.get<PermitModel>("permits").prepareCreate((model) => {
+			model._raw.id = permit.id
+			applyPermitToModel(model, { ...permit, ...statuses })
+			model.baseHash = serverHash
+			model.hashVersion = hashVersion
+			model.hasLocalChanges = false
+			model.syncPending = false
+		}),
+	)
+
+	if (fieldData) {
+		prepareSnapshotReplacement(batchOps, fieldData)
+		return
+	}
+
+	batchOps.push(
+		prepareEmptyShearingHeader(permit.id),
+		prepareEmptyCleaningHeader(permit.id),
+	)
+}
+
+function preparePermitMetadataUpdate(
+	batchOps: Model[],
+	permitRecord: PermitModel,
+	download: MobilePermitData,
+) {
+	batchOps.push(
+		permitRecord.prepareUpdate((model) => {
+			applySyncPermitToModel(model, download.permit)
+			model.hashVersion = download.hashVersion
+		}),
+	)
+}
+
+function prepareExistingPermitReplacement(
+	batchOps: Model[],
+	permitRecord: PermitModel,
+	download: MobilePermitData,
+	storedData: StoredPermitFieldData,
+) {
+	const statuses = download.fieldData
+		? getSnapshotStatuses(download.fieldData)
+		: defaultStatuses
+
+	batchOps.push(
+		permitRecord.prepareUpdate((model) => {
+			applySyncPermitToModel(model, download.permit)
+			applyPermitStatusesToModel(model, statuses)
+			model.baseHash = download.serverHash
+			model.hashVersion = download.hashVersion
+			model.hasLocalChanges = false
+			model.syncPending = false
+		}),
+	)
+	prepareStoredFieldDataDeletion(batchOps, storedData)
+
+	if (download.fieldData) {
+		batchOps.push(
+			...storedData.shearingHeaders
+				.slice(1)
+				.map((header) => header.prepareDestroyPermanently()),
+			...storedData.cleaningHeaders
+				.slice(1)
+				.map((header) => header.prepareDestroyPermanently()),
+		)
+		prepareSnapshotReplacement(
+			batchOps,
+			download.fieldData,
+			storedData.shearingHeaders[0],
+			storedData.cleaningHeaders[0],
+		)
+		return
+	}
+
+	batchOps.push(
+		...storedData.shearingHeaders.map((header) =>
+			header.prepareDestroyPermanently(),
+		),
+		...storedData.cleaningHeaders.map((header) =>
+			header.prepareDestroyPermanently(),
+		),
+		prepareEmptyShearingHeader(permitRecord.id),
+		prepareEmptyCleaningHeader(permitRecord.id),
+	)
+}
+
 function prepareStoredFieldDataDeletion(
 	batchOps: Model[],
 	storedData: StoredPermitFieldData,
@@ -499,42 +566,60 @@ function prepareStoredFieldDataDeletion(
 }
 function prepareSnapshotReplacement(
 	batchOps: Model[],
-	data: PermitFieldData,
-	shearingHeader?: ShearingHeaderModel,
-	cleaningHeader?: CleaningHeaderModel,
+	incomingFieldData: PermitFieldData,
+	storedShearingHeader?: ShearingHeaderModel,
+	storedCleaningHeader?: CleaningHeaderModel,
 ) {
-	if (shearingHeader && shearingHeader.id === data.shearingHeader.id) {
-		const currentHeader = shearingHeader
+	if (
+		storedShearingHeader &&
+		storedShearingHeader.id === incomingFieldData.shearingHeader.id
+	) {
 		batchOps.push(
-			currentHeader.prepareUpdate((model) =>
-				applyShearingHeaderSnapshotToModel(model, data.shearingHeader),
+			storedShearingHeader.prepareUpdate((model) =>
+				applyShearingHeaderSnapshotToModel(
+					model,
+					incomingFieldData.shearingHeader,
+				),
 			),
 		)
 	} else {
-		if (shearingHeader)
-			batchOps.push(shearingHeader.prepareDestroyPermanently())
-		batchOps.push(prepareShearingHeaderSnapshot(data.shearingHeader))
+		if (storedShearingHeader) {
+			batchOps.push(storedShearingHeader.prepareDestroyPermanently())
+		}
+		batchOps.push(
+			prepareShearingHeaderSnapshot(incomingFieldData.shearingHeader),
+		)
 	}
 
-	if (cleaningHeader && cleaningHeader.id === data.cleaningHeader.id) {
-		const currentHeader = cleaningHeader
+	if (
+		storedCleaningHeader &&
+		storedCleaningHeader.id === incomingFieldData.cleaningHeader.id
+	) {
 		batchOps.push(
-			currentHeader.prepareUpdate((model) =>
-				applyCleaningHeaderSnapshotToModel(model, data.cleaningHeader),
+			storedCleaningHeader.prepareUpdate((model) =>
+				applyCleaningHeaderSnapshotToModel(
+					model,
+					incomingFieldData.cleaningHeader,
+				),
 			),
 		)
 	} else {
-		if (cleaningHeader)
-			batchOps.push(cleaningHeader.prepareDestroyPermanently())
-		batchOps.push(prepareCleaningHeaderSnapshot(data.cleaningHeader))
+		if (storedCleaningHeader) {
+			batchOps.push(storedCleaningHeader.prepareDestroyPermanently())
+		}
+		batchOps.push(
+			prepareCleaningHeaderSnapshot(incomingFieldData.cleaningHeader),
+		)
 	}
 
 	batchOps.push(
-		...data.participants.map(prepareParticipantSnapshot),
-		...data.shearingRecords.map(prepareShearingRecordSnapshot),
-		...data.cleaningCommonRecords.map(prepareCleaningCommonSnapshot),
-		...data.groomingDetails.map(prepareGroomingSnapshot),
-		...data.dehearingDetails.map(prepareDehearingSnapshot),
+		...incomingFieldData.participants.map(prepareParticipantSnapshot),
+		...incomingFieldData.shearingRecords.map(prepareShearingRecordSnapshot),
+		...incomingFieldData.cleaningCommonRecords.map(
+			prepareCleaningCommonSnapshot,
+		),
+		...incomingFieldData.groomingDetails.map(prepareGroomingSnapshot),
+		...incomingFieldData.dehearingDetails.map(prepareDehearingSnapshot),
 	)
 }
 

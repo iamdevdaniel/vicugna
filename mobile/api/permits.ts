@@ -25,7 +25,11 @@ export async function fetchPermits(token: string) {
 	)
 
 	if (!Array.isArray(result)) throwInvalidResponse()
-	return result.map((download) => parsePermitDownload(download))
+	const downloads = result.map((download) => parsePermitDownload(download))
+	const permitIds = downloads.map(({ permit }) => permit.id)
+	if (new Set(permitIds).size !== permitIds.length) throwInvalidResponse()
+
+	return downloads
 }
 
 export async function fetchPermit(token: string, permitId: string) {

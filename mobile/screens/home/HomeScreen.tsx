@@ -10,12 +10,14 @@ import { ROUTES } from "@utils/constants"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router } from "expo-router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Alert, FlatList, View } from "react-native"
 import {
 	ActivityIndicator,
 	Button,
+	Dialog,
 	Icon,
+	Portal,
 	Snackbar,
 	Text,
 } from "react-native-paper"
@@ -30,10 +32,15 @@ const permitStepLabel = {
 
 export default function NativeHomeScreen() {
 	const theme = useAppTheme()
+	const conflictChoiceInProgress = useRef<string | null>(null)
 	const [isRefreshCoolingDown, setIsRefreshCoolingDown] = useState(false)
 	const [feedback, setFeedback] = useState<{
 		message: string
 		type: "success" | "error"
+	} | null>(null)
+	const [refreshConflictError, setRefreshConflictError] = useState<{
+		permitId: string
+		message: string
 	} | null>(null)
 	const { user, isAuthenticated, logout } = useMobileAuthStore(
 		useShallow((state) => ({
@@ -43,12 +50,19 @@ export default function NativeHomeScreen() {
 		})),
 	)
 	const { data: permits, loading } = useReadPermits()
-	const { loadPermits, loadingPermits } = useLoadPermits()
+	const {
+		loadPermits,
+		loadingPermits,
+		currentRefreshConflict,
+		dismissRefreshConflict,
+		replaceRefreshConflictWithServerCopy,
+	} = useLoadPermits()
 
 	const isPermitListLoading = loading || loadingPermits
 	const onManualRefresh = async () => {
 		if (loadingPermits || isRefreshCoolingDown) return
 
+		setRefreshConflictError(null)
 		const result = await loadPermits()
 
 		if (!result.ok) {
@@ -63,6 +77,36 @@ export default function NativeHomeScreen() {
 		setIsRefreshCoolingDown(true)
 	}
 
+	const onKeepLocalConflict = () => {
+		if (!currentRefreshConflict || conflictChoiceInProgress.current) return
+		conflictChoiceInProgress.current = currentRefreshConflict.permitId
+		setRefreshConflictError(null)
+		dismissRefreshConflict(currentRefreshConflict.permitId)
+	}
+
+	const onReplaceRefreshConflict = async () => {
+		if (!currentRefreshConflict || conflictChoiceInProgress.current) return
+		conflictChoiceInProgress.current = currentRefreshConflict.permitId
+
+		setRefreshConflictError(null)
+		const result = await replaceRefreshConflictWithServerCopy(
+			currentRefreshConflict.permitId,
+		)
+		if (result.ok) {
+			setFeedback({
+				message: "Se guardaron los datos del servidor",
+				type: "success",
+			})
+			return
+		}
+
+		conflictChoiceInProgress.current = null
+		setRefreshConflictError({
+			permitId: currentRefreshConflict.permitId,
+			message: result.error,
+		})
+	}
+
 	const onGoToLogin = () => {
 		router.replace(ROUTES.LOGIN)
 	}
@@ -71,6 +115,7 @@ export default function NativeHomeScreen() {
 		if (!isAuthenticated) return
 
 		const loadInitialPermits = async () => {
+			setRefreshConflictError(null)
 			const result = await loadPermits()
 
 			if (!result.ok) {
@@ -90,6 +135,16 @@ export default function NativeHomeScreen() {
 
 		return () => clearTimeout(cooldown)
 	}, [isRefreshCoolingDown])
+
+	useEffect(() => {
+		if (
+			conflictChoiceInProgress.current !== null &&
+			conflictChoiceInProgress.current !==
+				currentRefreshConflict?.permitId
+		) {
+			conflictChoiceInProgress.current = null
+		}
+	}, [currentRefreshConflict?.permitId])
 
 	return (
 		<SafeAreaView
@@ -310,6 +365,51 @@ export default function NativeHomeScreen() {
 					{feedback?.message}
 				</Text>
 			</Snackbar>
+			<Portal>
+				<Dialog
+					visible={currentRefreshConflict !== null}
+					dismissable={false}
+				>
+					<Dialog.Title>
+						Hay datos distintos en el servidor
+					</Dialog.Title>
+					<Dialog.Content>
+						<Text variant="bodyMedium">
+							El permiso {currentRefreshConflict?.permitNumber}{" "}
+							tiene otros datos en el servidor. Si reemplazas, se
+							borrarán los datos guardados en este dispositivo.
+						</Text>
+						{refreshConflictError &&
+							refreshConflictError.permitId ===
+								currentRefreshConflict?.permitId && (
+								<Text
+									variant="bodyMedium"
+									style={{
+										color: theme.colors.error,
+										marginTop: 12,
+									}}
+								>
+									{refreshConflictError.message}
+								</Text>
+							)}
+					</Dialog.Content>
+					<Dialog.Actions>
+						<Button
+							onPress={onKeepLocalConflict}
+							disabled={loadingPermits}
+						>
+							Conservar por ahora
+						</Button>
+						<Button
+							onPress={onReplaceRefreshConflict}
+							loading={loadingPermits}
+							disabled={loadingPermits}
+						>
+							Usar datos del servidor
+						</Button>
+					</Dialog.Actions>
+				</Dialog>
+			</Portal>
 		</SafeAreaView>
 	)
 }

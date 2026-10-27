@@ -28,10 +28,32 @@ import {
 import { useCallback, useState } from "react"
 import { useShallow } from "zustand/react/shallow"
 
-type PermitLoadResult = { ok: true } | { ok: false; error: string }
+type PermitOperationResult = { ok: true } | { ok: false; error: string }
+type PermitRefreshConflict = {
+	permitId: string
+	permitNumber: string
+}
 type SyncPermitResult =
 	| { ok: true }
 	| { ok: false; error: string; reason?: "conflict" | "pending" }
+
+function useRefreshConflictQueue() {
+	const [conflicts, setConflicts] = useState<PermitRefreshConflict[]>([])
+
+	const dismissConflict = useCallback((permitId: string) => {
+		setConflicts((currentConflicts) =>
+			currentConflicts.filter(
+				(conflict) => conflict.permitId !== permitId,
+			),
+		)
+	}, [])
+
+	return {
+		currentConflict: conflicts[0] ?? null,
+		replaceConflicts: setConflicts,
+		dismissConflict,
+	}
+}
 
 export function useLoadPermits() {
 	const [loadingPermits, setLoadingPermits] = useState(false)
@@ -41,36 +63,94 @@ export function useLoadPermits() {
 			userId: state.user?.id ?? null,
 		})),
 	)
+	const {
+		currentConflict,
+		replaceConflicts,
+		dismissConflict: dismissRefreshConflict,
+	} = useRefreshConflictQueue()
 
-	const loadPermits = useCallback(async (): Promise<PermitLoadResult> => {
-		if (!token || !userId) {
-			return { ok: false, error: "Sesión no disponible" }
-		}
-		if (!tryStartDataOperation("overview-only")) {
-			return { ok: false, error: "Ya hay una operación en curso" }
-		}
-
-		setLoadingPermits(true)
-
-		try {
-			const permits = await fetchPermits(token)
-			await savePermits(userId, permits)
-			return { ok: true }
-		} catch (error) {
-			return {
-				ok: false,
-				error:
-					error instanceof Error
-						? error.message
-						: "No se pudieron cargar los permisos",
+	const loadPermits =
+		useCallback(async (): Promise<PermitOperationResult> => {
+			if (!token || !userId) {
+				return { ok: false, error: "Sesión no disponible" }
 			}
-		} finally {
-			finishDataOperation()
-			setLoadingPermits(false)
-		}
-	}, [token, userId])
+			if (!tryStartDataOperation("overview-only")) {
+				return { ok: false, error: "Ya hay una operación en curso" }
+			}
 
-	return { loadPermits, loadingPermits }
+			setLoadingPermits(true)
+			let conflicts: PermitRefreshConflict[] = []
+
+			try {
+				const permits = await fetchPermits(token)
+				const conflictPermitIds = await savePermits(userId, permits)
+				const conflictIds = new Set(conflictPermitIds)
+				conflicts = permits
+					.filter(({ permit }) => conflictIds.has(permit.id))
+					.map(({ permit }) => ({
+						permitId: permit.id,
+						permitNumber: permit.permitNumber,
+					}))
+			} catch (error) {
+				return {
+					ok: false,
+					error:
+						error instanceof Error
+							? error.message
+							: "No se pudieron cargar los permisos",
+				}
+			} finally {
+				finishDataOperation()
+				setLoadingPermits(false)
+			}
+
+			replaceConflicts(conflicts)
+			return { ok: true }
+		}, [replaceConflicts, token, userId])
+
+	const replaceRefreshConflictWithServerCopy = useCallback(
+		async (permitId: string): Promise<PermitOperationResult> => {
+			if (!token || !userId) {
+				return { ok: false, error: "Sesión no disponible" }
+			}
+			if (!currentConflict || currentConflict.permitId !== permitId) {
+				return {
+					ok: false,
+					error: "Este conflicto ya no está disponible",
+				}
+			}
+			if (!tryStartDataOperation("overview-only")) {
+				return { ok: false, error: "Ya hay una operación en curso" }
+			}
+
+			setLoadingPermits(true)
+			try {
+				await downloadAndReplacePermit(token, userId, permitId)
+				dismissRefreshConflict(permitId)
+				return { ok: true }
+			} catch (error) {
+				return {
+					ok: false,
+					error:
+						error instanceof Error
+							? error.message
+							: "No se pudieron descargar los datos actuales",
+				}
+			} finally {
+				finishDataOperation()
+				setLoadingPermits(false)
+			}
+		},
+		[dismissRefreshConflict, currentConflict, token, userId],
+	)
+
+	return {
+		loadPermits,
+		loadingPermits,
+		currentRefreshConflict: currentConflict,
+		dismissRefreshConflict,
+		replaceRefreshConflictWithServerCopy,
+	}
 }
 
 export function useSyncPermit() {
@@ -226,7 +306,7 @@ export function useSyncPermit() {
 	)
 
 	const replaceWithServerCopy = useCallback(
-		async (permitId: string): Promise<PermitLoadResult> => {
+		async (permitId: string): Promise<PermitOperationResult> => {
 			if (!token || !userId) {
 				return { ok: false, error: "Sesión no disponible" }
 			}
@@ -236,8 +316,7 @@ export function useSyncPermit() {
 
 			setSyncOperation("download")
 			try {
-				const download = await fetchPermit(token, permitId)
-				await replacePermitWithServerCopy(userId, download)
+				await downloadAndReplacePermit(token, userId, permitId)
 				return { ok: true }
 			} catch (error) {
 				return {
@@ -262,6 +341,15 @@ export function useSyncPermit() {
 		syncingPermit: syncOperation !== null,
 		syncOperation,
 	}
+}
+
+async function downloadAndReplacePermit(
+	token: string,
+	userId: string,
+	permitId: string,
+): Promise<void> {
+	const download = await fetchPermit(token, permitId)
+	await replacePermitWithServerCopy(userId, download)
 }
 
 function isUncertainRequestFailure(error: unknown): boolean {
