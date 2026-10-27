@@ -69,7 +69,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 			case "save-assignments": {
 				if (!formData.has("userId")) {
 					return assignmentError(
-						"Esta página está desactualizada. Recárgala antes de guardar",
+						"El formulario enviado no es válido",
 						400,
 						intent,
 					)

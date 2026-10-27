@@ -36,3 +36,18 @@ export async function reopenSyncedPermit(permitId: string): Promise<boolean> {
 
 	return reopenedPermits.length === 1
 }
+
+export async function cancelReopenedPermit(permitId: string): Promise<boolean> {
+	const closedPermits = await db
+		.update(permits)
+		.set({
+			syncStatus: "synced",
+			updatedAt: new Date(),
+		})
+		.where(
+			and(eq(permits.id, permitId), eq(permits.syncStatus, "reopened")),
+		)
+		.returning({ id: permits.id })
+
+	return closedPermits.length === 1
+}

@@ -1,3 +1,5 @@
+import sharedErrors from "@vicugna/shared/errors.json"
+
 export type MobileErrorDefinition = {
 	code: string
 	message: string
@@ -48,23 +50,33 @@ export const mobileRequestErrors = {
 } as const satisfies Record<string, MobileErrorDefinition>
 
 export const mobilePermitSyncErrors = {
-	startAttempt: {
-		code: "MOBILE_SYNC_START_FAILED",
+	prepareSync: {
+		code: "MOBILE_SYNC_PREPARE_FAILED",
 		message: "No se pudo iniciar el envío. Intente nuevamente.",
 	},
 	readData: {
 		code: "MOBILE_SYNC_DATA_READ_FAILED",
 		message: "No se pudieron leer los datos guardados. Intente nuevamente.",
 	},
-	clearAttempt: {
-		code: "MOBILE_SYNC_CLEAR_FAILED",
+	clearPending: {
+		code: "MOBILE_SYNC_CLEAR_PENDING_FAILED",
 		message:
 			"El permiso sigue bloqueado. Sus datos están guardados. Pulse Reintentar envío.",
 	},
-	completeAttempt: {
-		code: "MOBILE_SYNC_COMPLETE_FAILED",
+	confirmUpload: {
+		code: "MOBILE_SYNC_CONFIRMATION_FAILED",
 		message:
 			"El permiso se envió, pero el teléfono no guardó la confirmación. Pulse Reintentar envío.",
+	},
+	replaceWithServerCopy: {
+		code: "MOBILE_SYNC_SERVER_REPLACE_FAILED",
+		message:
+			"No se pudieron guardar los datos del servidor. Sus datos siguen guardados en este dispositivo.",
+	},
+	unsupportedHashVersion: {
+		code: sharedErrors.permitSyncErrors.unsupportedHashVersion.code,
+		message:
+			"Esta versión de la aplicación ya no puede recibir estos datos. Actualice la aplicación.",
 	},
 	resultUnknown: {
 		code: "MOBILE_SYNC_RESULT_UNKNOWN",
@@ -73,41 +85,4 @@ export const mobilePermitSyncErrors = {
 	},
 } as const satisfies Record<string, MobileErrorDefinition>
 
-// These codes are duplicated from the backend until the error contract is stable.
-export const backendPermitSyncCodes = {
-	invalidPayload: "PYLD",
-	permitVersion: "VPRM_2",
-	participantsMissing: "VPRT_1",
-	participantPermit: "VPRT_2",
-	participantDuplicate: "VPRT_3",
-	shearingIncomplete: "VSHE_1",
-	shearingHeaderPermit: "VSHE_2",
-	shearingRecordsMissing: "VSHE_3",
-	shearingRecordPermit: "VSHE_4",
-	gestation: "VSHE_5",
-	sheared: "VSHE_6",
-	shearingRecordDuplicate: "VSHE_7",
-	cleaningHeaderIncomplete: "VCLG_1",
-	cleaningHeaderPermit: "VCLG_2",
-	cleaningRecordsMissing: "VCLG_3",
-	cleaningDetailCount: "VCLG_4",
-	cleaningRecordPermit: "VCLG_5",
-	cleaningDetailIncomplete: "VCLG_6",
-	groomingPermit: "VCLG_7",
-	dehearingPermit: "VCLG_8",
-	bothDetails: "VCLG_9",
-	cleanWeight: "VCLG_11",
-	dirtyWeight: "VCLG_12",
-	totalWeight: "VCLG_13",
-	calculatedWeight: "VCLG_14",
-	cleaningRecordDuplicate: "VCLG_15",
-	groomingRelationDuplicate: "VCLG_16",
-	groomingDetailDuplicate: "VCLG_17",
-	dehearingRelationDuplicate: "VCLG_18",
-	dehearingDetailDuplicate: "VCLG_19",
-	permitNotFound: "PERMIT_NOT_FOUND",
-	permitForbidden: "PERMIT_SYNC_FORBIDDEN",
-	permitUnavailable: "PERMIT_SYNC_UNAVAILABLE",
-	attemptMismatch: "SYNC_ATTEMPT_MISMATCH",
-	versionConflict: "SYNC_VERSION_CONFLICT",
-} as const
+export const backendPermitSyncErrors = sharedErrors.permitSyncErrors

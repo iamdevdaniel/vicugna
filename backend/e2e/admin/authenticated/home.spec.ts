@@ -58,15 +58,4 @@ test.describe("Inicio administrativo", () => {
 			await waitForAdminReady(page)
 		}
 	})
-
-	test("redirige el enlace anterior del panel al inicio", async ({
-		page,
-	}) => {
-		await page.goto("mission-control")
-		await waitForAdminReady(page)
-		await expect(page).toHaveURL(/\/admin\/$/)
-		await expect(
-			page.getByRole("heading", { name: "Inicio" }),
-		).toBeVisible()
-	})
 })

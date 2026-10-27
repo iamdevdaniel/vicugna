@@ -1,4 +1,9 @@
-import type { PermitSyncStatus } from "@shared"
+import type {
+	ExternalParasiteData,
+	GenderData,
+	PermitSyncStatus,
+	ShearingRecordData,
+} from "@shared"
 import { relations } from "drizzle-orm"
 import {
 	boolean,
@@ -107,29 +112,6 @@ export const permits = pgTable(
 	],
 )
 
-export const permitSyncAttempts = pgTable(
-	"permit_sync_attempts",
-	{
-		syncAttemptId: text("sync_attempt_id").primaryKey(),
-		permitId: text("permit_id")
-			.notNull()
-			.references(() => permits.id, { onDelete: "cascade" }),
-		version: integer("version").notNull(),
-		payloadHash: text("payload_hash"),
-		submittedByUserId: text("submitted_by_user_id")
-			.notNull()
-			.references(() => users.id),
-		submittedAt: timestamp("submitted_at").notNull().defaultNow(),
-		exportedAt: timestamp("exported_at"),
-	},
-	(table) => [
-		uniqueIndex("permit_sync_attempts_permit_version_unique").on(
-			table.permitId,
-			table.version,
-		),
-	],
-)
-
 export const assignments = pgTable(
 	"assignments",
 	{
@@ -158,7 +140,7 @@ export const participants = pgTable("participants", {
 		.references(() => permits.id, { onDelete: "cascade" }),
 	name: text("name").notNull(),
 	lastNames: text("last_names").notNull(),
-	gender: text("gender").notNull(),
+	gender: text("gender").$type<GenderData>().notNull(),
 	identityNumber: text("identity_number").notNull(),
 	signature: text("signature").notNull(),
 	notes: text("notes").notNull(),
@@ -191,14 +173,25 @@ export const shearingRecords = pgTable("shearing_records", {
 		.notNull()
 		.references(() => permits.id, { onDelete: "cascade" }),
 	tagNumber: integer("tag_number").notNull(),
-	sex: text("sex").notNull(),
-	ageCategory: text("age_category").notNull(),
+	sex: text("sex").$type<ShearingRecordData["sex"]>().notNull(),
+	ageCategory: text("age_category")
+		.$type<ShearingRecordData["ageCategory"]>()
+		.notNull(),
 	liveWeight: doublePrecision("live_weight").notNull(),
 	fiberLength: doublePrecision("fiber_length").notNull(),
-	bodyCondition: text("body_condition").notNull(),
-	gestationStatus: text("gestation_status").notNull(),
-	externalParasites: text("external_parasites").array().notNull(),
-	mangeSeverity: text("mange_severity").notNull(),
+	bodyCondition: text("body_condition")
+		.$type<ShearingRecordData["bodyCondition"]>()
+		.notNull(),
+	gestationStatus: text("gestation_status")
+		.$type<ShearingRecordData["gestationStatus"]>()
+		.notNull(),
+	externalParasites: text("external_parasites")
+		.array()
+		.$type<ExternalParasiteData[]>()
+		.notNull(),
+	mangeSeverity: text("mange_severity")
+		.$type<ShearingRecordData["mangeSeverity"]>()
+		.notNull(),
 	hasDandruff: boolean("has_dandruff").notNull(),
 	isSheared: boolean("is_sheared").notNull(),
 	isDead: boolean("is_dead").notNull(),
@@ -308,7 +301,6 @@ export const communityRelations = relations(communities, ({ one, many }) => ({
 
 export const userRelations = relations(users, ({ many }) => ({
 	assignments: many(assignments),
-	permitSyncAttempts: many(permitSyncAttempts),
 }))
 
 export const assignmentRelations = relations(assignments, ({ one }) => ({
@@ -345,22 +337,7 @@ export const permitRelations = relations(permits, ({ one, many }) => ({
 	shearingRecords: many(shearingRecords),
 	cleaningHeader: one(cleaningHeaders),
 	cleaningCommonRecords: many(cleaningCommonRecords),
-	permitSyncAttempts: many(permitSyncAttempts),
 }))
-
-export const permitSyncAttemptRelations = relations(
-	permitSyncAttempts,
-	({ one }) => ({
-		permit: one(permits, {
-			fields: [permitSyncAttempts.permitId],
-			references: [permits.id],
-		}),
-		submittedByUser: one(users, {
-			fields: [permitSyncAttempts.submittedByUserId],
-			references: [users.id],
-		}),
-	}),
-)
 
 export const participantRelations = relations(participants, ({ one }) => ({
 	permit: one(permits, {

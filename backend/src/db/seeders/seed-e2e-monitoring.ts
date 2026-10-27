@@ -45,7 +45,7 @@ async function seedE2eMonitoring() {
 				lastNames: `E2E ${fixture.suffix}`,
 				gender: "F",
 				identityNumber: `9100${fixture.suffix}`,
-				signature: "",
+				signature: '["M20 50 L80 20 L140 50"]',
 				notes: "Fixture de seguimiento",
 			})
 

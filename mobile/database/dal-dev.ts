@@ -5,7 +5,6 @@ import {
 	deriveIsSheared,
 	normalizeGestationStatus,
 } from "@utils/shearing-record-rules"
-import { updatePermitSyncStatus } from "./dal-permit"
 import type {
 	CleaningCommonModel,
 	CleaningHeaderModel,
@@ -77,6 +76,11 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 			.query(Q.where("permitId", permitId))
 			.fetch()
 		const permit = await database.get<PermitModel>("permits").find(permitId)
+		if (permit.syncPending) {
+			throw new Error(
+				"Este permiso tiene un envío pendiente. Reintente el envío antes de modificarlo.",
+			)
+		}
 
 		const batchOps: Model[] = [
 			...participants.map((record) => record.prepareDestroyPermanently()),
@@ -128,17 +132,13 @@ export async function clearPermitFieldData(permitId: string): Promise<void> {
 				model.participantsStatus = "ready"
 				model.shearingStatus = "disabled"
 				model.cleaningStatus = "disabled"
+				model.permitSyncStatus = "assigned"
+				model.syncedAt = null
+				model.hasLocalChanges = true
 			}),
 		)
 
 		await database.batch(batchOps)
-	})
-
-	await updatePermitSyncStatus({
-		permitId,
-		syncStatus: "assigned",
-		syncedAt: null,
-		syncVersion: null,
 	})
 }
 
@@ -723,6 +723,7 @@ export async function seedPermitFieldData(permitId: string): Promise<void> {
 				model.participantsStatus = "done"
 				model.shearingStatus = "done"
 				model.cleaningStatus = "done"
+				model.hasLocalChanges = true
 			}),
 		)
 

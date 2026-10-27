@@ -11,7 +11,10 @@ import {
 import { Link } from "react-router"
 import { SYNCED_PERMIT_STATUSES } from "../../../modules/common/common.constants"
 import type { SelectedMonitoringPermit } from "../../../modules/monitoring/monitoring.types"
-import { MonitoringReopenForm } from "./monitoring-reopen-form"
+import {
+	MonitoringCancelReopeningForm,
+	MonitoringReopenForm,
+} from "./monitoring-reopen-form"
 
 type MonitoringDetailProps = {
 	permit: SelectedMonitoringPermit
@@ -69,6 +72,11 @@ export function MonitoringDetail({ permit, seasonId }: MonitoringDetailProps) {
 						) : null}
 						{permit.syncStatus === "synced" ? (
 							<MonitoringReopenForm permitId={permit.permitId} />
+						) : null}
+						{permit.syncStatus === "reopened" ? (
+							<MonitoringCancelReopeningForm
+								permitId={permit.permitId}
+							/>
 						) : null}
 						<StatusBadge permit={permit} />
 					</Group>

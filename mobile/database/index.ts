@@ -22,13 +22,13 @@ export {
 export {
 	subscribePermits,
 	subscribeSinglePermit,
-	updatePermitSyncStatus,
 } from "./dal-permit"
 export {
-	clearPermitSyncAttempt,
-	completePermitSyncAttempt,
-	getFieldSyncData,
-	preparePermitSyncAttempt,
+	clearPermitSyncPending,
+	confirmPermitSync,
+	getPendingPermitSyncData,
+	preparePermitSync,
+	replacePermitWithServerCopy,
 	savePermits,
 } from "./dal-permit-sync"
 export {

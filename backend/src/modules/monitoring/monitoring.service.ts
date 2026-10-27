@@ -3,6 +3,7 @@ import { listSeasons } from "../common/common.repository"
 import { getUserFullName } from "../users/user-name"
 import { MonitoringError } from "./monitoring.errors"
 import {
+	cancelReopenedPermit,
 	listMonitoringAssignments,
 	reopenSyncedPermit,
 } from "./monitoring.repository"
@@ -24,6 +25,18 @@ export async function reopenPermit(permitId: string): Promise<void> {
 		throw new MonitoringError(
 			"Solo se puede reabrir un permiso sincronizado",
 		)
+	}
+}
+
+export async function cancelPermitReopening(permitId: string): Promise<void> {
+	if (!permitId) {
+		throw new MonitoringError("El permiso es obligatorio")
+	}
+
+	const ok = await cancelReopenedPermit(permitId)
+
+	if (!ok) {
+		throw new MonitoringError("Solo se puede cerrar un permiso reabierto")
 	}
 }
 

@@ -58,7 +58,7 @@ test.describe("Seguimiento de permisos", () => {
 		).toBeVisible()
 	})
 
-	test("genera reportes y reabre un permiso sincronizado", async ({
+	test("genera reportes, reabre y cancela la reapertura", async ({
 		page,
 	}) => {
 		await page.getByRole("searchbox", { name: "Buscar" }).fill("ASG-002")
@@ -84,6 +84,17 @@ test.describe("Seguimiento de permisos", () => {
 
 		await page.reload({ waitUntil: "networkidle" })
 		await expect(page.getByText("Reabierto", { exact: true })).toBeVisible()
+
+		page.once("dialog", (dialog) => dialog.accept())
+		await page.getByRole("button", { name: "Cancelar reapertura" }).click()
+		await expect(
+			page
+				.getByRole("status")
+				.filter({ hasText: "Reapertura cancelada" }),
+		).toHaveText("Reapertura cancelada")
+		await expect(
+			page.getByRole("button", { name: "Reabrir permiso" }),
+		).toBeVisible()
 	})
 })
 

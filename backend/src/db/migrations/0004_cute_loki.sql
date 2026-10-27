@@ -1,0 +1,1 @@
+DROP TABLE "permit_sync_attempts" CASCADE;

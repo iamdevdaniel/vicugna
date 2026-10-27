@@ -1,6 +1,10 @@
 import { updateShearingHeader as updateShearingHeaderData } from "@database"
 import type { ShearingHeaderSaveData } from "@definitions/types"
 import { useMobileAuthStore } from "@utils/auth-store"
+import {
+	finishDataOperation,
+	tryStartDataOperation,
+} from "@utils/data-operation-guard"
 import { useCallback, useState } from "react"
 
 export function useSingleShearingHeaderActions() {
@@ -11,6 +15,7 @@ export function useSingleShearingHeaderActions() {
 	const updateShearingHeader = useCallback(
 		async (headerId: string, data: ShearingHeaderSaveData) => {
 			if (!accountId) return false
+			if (!tryStartDataOperation()) return false
 			setSaving(true)
 			setError(null)
 			try {
@@ -20,6 +25,7 @@ export function useSingleShearingHeaderActions() {
 				setError(e as Error)
 				return false
 			} finally {
+				finishDataOperation()
 				setSaving(false)
 			}
 		},

@@ -5,10 +5,7 @@ import type {
 	ShearingRecordFormData,
 } from "@definitions/types"
 import { Q } from "@nozbe/watermelondb"
-import {
-	assertStoredPermitOwner,
-	batchWithPermitStatusUpdate,
-} from "./dal-permit"
+import { batchWithPermitStatusUpdate } from "./dal-permit"
 import {
 	applyShearingHeaderToModel,
 	applyShearingRecordToModel,
@@ -178,10 +175,14 @@ export async function updateSingleShearingRecord(
 		const record = await database
 			.get<ShearingRecordModel>("shearingRecord")
 			.find(recordId)
-		await assertStoredPermitOwner(record.permitId, accountId)
-		await record.update((model) => {
-			applyShearingRecordToModel(model, data)
-		})
+		await batchWithPermitStatusUpdate(record.permitId, accountId, () => ({
+			operations: [
+				record.prepareUpdate((model) => {
+					applyShearingRecordToModel(model, data)
+				}),
+			],
+			statusChange: {},
+		}))
 	})
 }
 

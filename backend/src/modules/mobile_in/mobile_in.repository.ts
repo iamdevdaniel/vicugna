@@ -1,5 +1,6 @@
 import { db } from "@db"
-import { and, desc, eq } from "drizzle-orm"
+import type { PermitFieldData } from "@shared"
+import { and, eq } from "drizzle-orm"
 import {
 	assignments,
 	cleaningCommonRecords,
@@ -7,67 +8,38 @@ import {
 	dehearingDetails,
 	groomingDetails,
 	participants,
-	permitSyncAttempts,
 	permits,
 	shearingHeaders,
 	shearingRecords,
 } from "../../db/schema"
+import {
+	getPermitDataHash,
+	PERMIT_DATA_HASH_VERSION,
+} from "../permit-sync/permit-data-hash"
+import { getPermitFieldData } from "../permit-sync/permit-field-data"
 import { PermitSyncError, permitSyncErrors } from "./mobile_in.errors"
-
 import type { PermitSyncResult, SyncFieldData } from "./mobile_in.types"
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
-export async function getPreviousSyncResponse(
-	data: SyncFieldData,
-	userId: string,
-	payloadHash: string,
-): Promise<PermitSyncResult | null> {
-	const previousAttempt = await db.query.permitSyncAttempts.findFirst({
-		where: eq(permitSyncAttempts.syncAttemptId, data.syncAttemptId),
-	})
-
-	return resolveRepeatedSyncResult(
-		previousAttempt,
-		data.permit.id,
-		userId,
-		payloadHash,
-	)
-}
-
 export async function saveSyncFieldData(
 	data: SyncFieldData,
 	userId: string,
-	payloadHash: string,
 ): Promise<PermitSyncResult> {
-	const syncedAt = new Date()
-
 	return db.transaction(async (tx) => {
 		const [existingPermit] = await tx
 			.select()
 			.from(permits)
-			.where(eq(permits.id, data.permit.id))
+			.where(eq(permits.id, data.permitId))
 			.for("update")
 
 		if (!existingPermit) {
 			throw new PermitSyncError(permitSyncErrors.notFound)
 		}
 
-		const previousAttempt = await tx.query.permitSyncAttempts.findFirst({
-			where: eq(permitSyncAttempts.syncAttemptId, data.syncAttemptId),
-		})
-
-		const repeatedResult = resolveRepeatedSyncResult(
-			previousAttempt,
-			data.permit.id,
-			userId,
-			payloadHash,
-		)
-		if (repeatedResult) return repeatedResult
-
 		const assignment = await tx.query.assignments.findFirst({
 			where: and(
-				eq(assignments.permitId, data.permit.id),
+				eq(assignments.permitId, data.permitId),
 				eq(assignments.userId, userId),
 			),
 		})
@@ -76,14 +48,34 @@ export async function saveSyncFieldData(
 			throw new PermitSyncError(permitSyncErrors.forbidden)
 		}
 
-		const latestVersion = await tx.query.permitSyncAttempts.findFirst({
-			where: eq(permitSyncAttempts.permitId, data.permit.id),
-			orderBy: [desc(permitSyncAttempts.version)],
+		const storedPermit = await tx.query.permits.findFirst({
+			where: eq(permits.id, data.permitId),
+			with: {
+				participants: true,
+				shearingHeader: true,
+				shearingRecords: true,
+				cleaningHeader: true,
+				cleaningCommonRecords: {
+					with: { grooming: true, dehearing: true },
+				},
+			},
 		})
-		const currentVersion = latestVersion?.version ?? null
 
-		if (data.expectedSyncVersion !== currentVersion) {
-			throw new PermitSyncError(permitSyncErrors.versionConflict)
+		if (!storedPermit) {
+			throw new PermitSyncError(permitSyncErrors.notFound)
+		}
+
+		const serverData = getPermitFieldData(storedPermit)
+		const deviceData = mapUploadToPermitFieldData(data)
+		const serverHash = getPermitDataHash(serverData)
+		const deviceHash = getPermitDataHash(deviceData)
+
+		if (deviceHash === serverHash) {
+			return getSyncResult(existingPermit, serverHash)
+		}
+
+		if (data.baseHash !== serverHash) {
+			throw new PermitSyncError(permitSyncErrors.dataConflict)
 		}
 
 		if (
@@ -93,104 +85,70 @@ export async function saveSyncFieldData(
 			throw new PermitSyncError(permitSyncErrors.unavailable)
 		}
 
-		const syncVersion = (currentVersion ?? 0) + 1
-		const syncAttemptId = data.syncAttemptId
-		const insertedAttempts = await tx
-			.insert(permitSyncAttempts)
-			.values({
-				syncAttemptId,
-				permitId: data.permit.id,
-				version: syncVersion,
-				payloadHash,
-				submittedByUserId: userId,
-				submittedAt: syncedAt,
-			})
-			.onConflictDoNothing({
-				target: permitSyncAttempts.syncAttemptId,
-			})
-			.returning({
-				syncAttemptId: permitSyncAttempts.syncAttemptId,
-			})
-
-		if (insertedAttempts.length === 0) {
-			const previousAttempt = await tx.query.permitSyncAttempts.findFirst(
-				{
-					where: eq(permitSyncAttempts.syncAttemptId, syncAttemptId),
-				},
-			)
-			const repeatedResult = resolveRepeatedSyncResult(
-				previousAttempt,
-				data.permit.id,
-				userId,
-				payloadHash,
-			)
-			if (repeatedResult) return repeatedResult
-
-			throw new PermitSyncError(permitSyncErrors.attemptReadFailed)
-		}
-
-		await deletePermitChildData(data, tx)
-		await insertPermitChildData(data, tx)
+		const syncedAt = new Date()
+		await deletePermitChildData(data.permitId, tx)
+		await insertPermitChildData(deviceData, tx)
 		await tx
 			.update(permits)
 			.set({
 				syncStatus: "synced",
 				syncedAt,
-				updatedAt: new Date(),
+				updatedAt: syncedAt,
 			})
-			.where(eq(permits.id, data.permit.id))
+			.where(eq(permits.id, data.permitId))
 
 		return {
-			permitId: data.permit.id,
+			permitId: data.permitId,
 			syncStatus: "synced",
-			syncVersion,
+			serverHash: deviceHash,
+			hashVersion: PERMIT_DATA_HASH_VERSION,
 			syncedAt: syncedAt.toISOString(),
 		}
 	})
 }
 
-function resolveRepeatedSyncResult(
-	attempt: typeof permitSyncAttempts.$inferSelect | null | undefined,
-	permitId: string,
-	userId: string,
-	payloadHash: string,
-): PermitSyncResult | null {
-	if (!attempt) return null
-	if (
-		attempt.permitId !== permitId ||
-		attempt.submittedByUserId !== userId ||
-		attempt.payloadHash !== payloadHash
-	) {
-		throw new PermitSyncError(permitSyncErrors.attemptMismatch)
-	}
-
+function mapUploadToPermitFieldData(data: SyncFieldData): PermitFieldData {
 	return {
-		permitId: attempt.permitId,
-		syncStatus: "synced",
-		syncVersion: attempt.version,
-		syncedAt: attempt.submittedAt.toISOString(),
+		participants: data.participants,
+		shearingHeader: data.shearingHeader,
+		shearingRecords: data.shearingRecords,
+		cleaningHeader: data.cleaningHeader,
+		cleaningCommonRecords: data.cleaningCommonRecords,
+		groomingDetails: data.groomingDetails,
+		dehearingDetails: data.dehearingDetails,
 	}
 }
 
-async function deletePermitChildData(data: SyncFieldData, tx: DbTransaction) {
-	await tx
-		.delete(participants)
-		.where(eq(participants.permitId, data.permit.id))
+function getSyncResult(
+	permit: typeof permits.$inferSelect,
+	serverHash: string,
+): PermitSyncResult {
+	return {
+		permitId: permit.id,
+		syncStatus: permit.syncStatus,
+		serverHash,
+		hashVersion: PERMIT_DATA_HASH_VERSION,
+		syncedAt: permit.syncedAt?.toISOString() ?? null,
+	}
+}
+
+async function deletePermitChildData(permitId: string, tx: DbTransaction) {
+	await tx.delete(participants).where(eq(participants.permitId, permitId))
 	await tx
 		.delete(shearingHeaders)
-		.where(eq(shearingHeaders.permitId, data.permit.id))
+		.where(eq(shearingHeaders.permitId, permitId))
 	await tx
 		.delete(shearingRecords)
-		.where(eq(shearingRecords.permitId, data.permit.id))
+		.where(eq(shearingRecords.permitId, permitId))
 	await tx
 		.delete(cleaningHeaders)
-		.where(eq(cleaningHeaders.permitId, data.permit.id))
+		.where(eq(cleaningHeaders.permitId, permitId))
 	await tx
 		.delete(cleaningCommonRecords)
-		.where(eq(cleaningCommonRecords.permitId, data.permit.id))
+		.where(eq(cleaningCommonRecords.permitId, permitId))
 }
 
-async function insertPermitChildData(data: SyncFieldData, tx: DbTransaction) {
+async function insertPermitChildData(data: PermitFieldData, tx: DbTransaction) {
 	await tx.insert(shearingHeaders).values(data.shearingHeader)
 	await tx.insert(cleaningHeaders).values(data.cleaningHeader)
 	await tx.insert(participants).values(data.participants)

@@ -35,7 +35,10 @@ export interface PermitData extends SyncPermitData {
 }
 
 export interface NativePermitData extends PermitData {
-	syncAttemptId: string | null
+	baseHash: string
+	hashVersion: number
+	hasLocalChanges: boolean
+	syncPending: boolean
 }
 
 export type AdminPermit = {

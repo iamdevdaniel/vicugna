@@ -14,6 +14,7 @@
     "build:ts": "tsc && tsc-alias",
     "tscheck": "npm run admin:typecheck && tsc --noEmit",
     "db": "node scripts/db.cjs",
+    "test:unit": "node --import tsx --test src/modules/**/*.test.ts",
     "lint": "biome check src e2e scripts/clean-build.cjs scripts/e2e.cjs drizzle.config.ts",
     "lint-fix": "biome check --write src e2e scripts/clean-build.cjs scripts/e2e.cjs drizzle.config.ts",
     "test:e2e": "node scripts/e2e.cjs"

@@ -34,8 +34,8 @@ Section-title comments always use this format:
 
 ## Testing
 
-See [docs/testing.md](docs/testing.md) for the current automated test coverage,
-setup, and architecture.
+See [TESTING.md](TESTING.md) for the current automated test coverage, setup,
+and architecture.
 
 ## Releases
 
