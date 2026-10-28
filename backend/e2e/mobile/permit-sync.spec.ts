@@ -1,5 +1,5 @@
 import { db } from "@db"
-import { type APIRequestContext, expect, test } from "@playwright/test"
+import { expect, test } from "@playwright/test"
 import type { MobilePermitData, PermitSyncResult, SyncFieldData } from "@shared"
 import { eq } from "drizzle-orm"
 import { assignments, permits } from "../../src/db/schema"
@@ -7,6 +7,12 @@ import {
 	getPermitDataHash,
 	PERMIT_DATA_HASH_VERSION,
 } from "../../src/modules/permit-sync/permit-data-hash"
+import {
+	authorization,
+	downloadPermit,
+	login,
+	sendPermit,
+} from "./permit-sync-test-helpers"
 
 const userId = "user-seed-03"
 const permitIds = {
@@ -263,54 +269,6 @@ test("rejects an unsupported hash version without changing data", async ({
 	const current = await downloadPermit(request, token, permitIds.untouched)
 	expect(current.fieldData).toBeNull()
 })
-
-async function login(
-	request: APIRequestContext,
-	email = "lucia.choque@gmail.com",
-	password = "e2e-lucia-password",
-) {
-	const response = await request.post("/mobile/auth/login", {
-		data: { email, password },
-	})
-	expect(response.ok()).toBe(true)
-	const body = (await response.json()) as {
-		ok: true
-		data: { token: string }
-	}
-	return body.data.token
-}
-
-function authorization(token: string) {
-	return { Authorization: `Bearer ${token}` }
-}
-
-async function downloadPermit(
-	request: APIRequestContext,
-	token: string,
-	permitId: string,
-) {
-	const response = await request.get(`/mobile/permits/${permitId}`, {
-		headers: authorization(token),
-	})
-	expect(response.status()).toBe(200)
-	const body = (await response.json()) as {
-		ok: true
-		data: MobilePermitData
-	}
-	expect(body.data.serverHash).toBe(getPermitDataHash(body.data.fieldData))
-	return body.data
-}
-
-function sendPermit(
-	request: APIRequestContext,
-	token: string,
-	payload: SyncFieldData,
-) {
-	return request.post("/permits/sync", {
-		headers: authorization(token),
-		data: payload,
-	})
-}
 
 function makePayload(
 	permitId: string,
