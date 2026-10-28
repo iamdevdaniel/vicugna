@@ -19,10 +19,9 @@ export function HomeSectionCard({
 		<Card
 			component={Link}
 			to={href}
-			withBorder
-			shadow="sm"
 			padding="xl"
-			mih={224}
+			h="100%"
+			mih={208}
 			style={{ textDecoration: "none" }}
 		>
 			<ThemeIcon size={48} radius="md">

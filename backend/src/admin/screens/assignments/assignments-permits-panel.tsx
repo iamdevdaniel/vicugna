@@ -1,9 +1,9 @@
 import {
 	Badge,
+	Box,
 	Button,
 	Group,
 	NativeSelect,
-	Paper,
 	ScrollArea,
 	Stack,
 	Text,
@@ -78,7 +78,7 @@ export function PermitsPanel({
 	})
 
 	return (
-		<Paper component="article" p="md" withBorder shadow="sm">
+		<Box component="article" p="xs">
 			<Title order={2} size="h4">
 				Crear permiso
 			</Title>
@@ -203,7 +203,7 @@ export function PermitsPanel({
 					))}
 				</Stack>
 			</ScrollArea.Autosize>
-		</Paper>
+		</Box>
 	)
 }
 

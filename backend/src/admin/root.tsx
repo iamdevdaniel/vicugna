@@ -1,4 +1,5 @@
 import "@mantine/core/styles.css"
+import "./admin.css"
 
 import {
 	Button,

@@ -1,11 +1,11 @@
 import {
+	ActionIcon,
 	Box,
 	Button,
 	Container,
 	Group,
 	Paper,
 	Progress,
-	Stack,
 	Text,
 } from "@mantine/core"
 import { Form, Link, Outlet } from "react-router"
@@ -14,14 +14,13 @@ import { ShellThemeToggle } from "./shell-theme-toggle"
 
 type ShellViewProps = {
 	adminUser: { fullName: string }
-	app: { version: string; environment: string }
 }
 
-export function ShellView({ adminUser, app }: ShellViewProps) {
+export function ShellView({ adminUser }: ShellViewProps) {
 	const shell = useShellState()
 
 	return (
-		<Box mih="100vh" display="flex" style={{ flexDirection: "column" }}>
+		<Box mih="100dvh" display="flex" style={{ flexDirection: "column" }}>
 			{shell.isNavigating ? (
 				<Progress
 					value={70}
@@ -34,32 +33,53 @@ export function ShellView({ adminUser, app }: ShellViewProps) {
 					aria-label="Cargando..."
 				/>
 			) : null}
-			<Paper component="header" radius={0} withBorder p="md">
-				<Container size="lg">
-					<Group justify="space-between" gap="md" wrap="wrap">
-						<Stack gap={3}>
-							<Text
+			<Paper
+				component="header"
+				radius={0}
+				pos="sticky"
+				top={0}
+				h={52}
+				style={{
+					zIndex: 100,
+					flex: "0 0 52px",
+					background: "var(--admin-header-bg)",
+				}}
+			>
+				<Container size="lg" h="100%">
+					<Group
+						justify="space-between"
+						gap="md"
+						wrap="nowrap"
+						h="100%"
+					>
+						<Group gap="xs" wrap="nowrap">
+							<ActionIcon
 								component={Link}
 								to="/"
-								size="xs"
-								fw={700}
-								c="dimmed"
-								style={{
-									textTransform: "uppercase",
-									letterSpacing: 0.5,
-								}}
+								variant="subtle"
+								size="lg"
+								aria-label="Ir al inicio"
 							>
-								Administración Vicugna
+								<HomeIcon />
+							</ActionIcon>
+							<Text fw={700} size="sm">
+								Vicugna
 							</Text>
-							<Text fw={600}>{adminUser.fullName}</Text>
-						</Stack>
+						</Group>
 						<Group gap={4}>
-							<ShellThemeToggle onToggle={shell.toggleTheme} />
+							<Text visibleFrom="sm" size="sm" fw={500} mr="xs">
+								{adminUser.fullName}
+							</Text>
+							<ShellThemeToggle
+								colorScheme={shell.colorScheme}
+								onToggle={shell.toggleTheme}
+							/>
 							<Form method="post" action="/logout" reloadDocument>
 								<Button
 									type="submit"
-									variant="outline"
-									size="sm"
+									variant="subtle"
+									size="compact-sm"
+									leftSection={<LogOutIcon />}
 								>
 									Cerrar sesión
 								</Button>
@@ -68,21 +88,48 @@ export function ShellView({ adminUser, app }: ShellViewProps) {
 					</Group>
 				</Container>
 			</Paper>
-			<Box style={{ flex: 1 }}>
+			<Box style={{ minHeight: 0, flex: 1 }}>
 				<Outlet />
 			</Box>
-			<Paper component="footer" radius={0} withBorder p="md">
-				<Container size="lg">
-					<Group justify="space-between" gap="xs" wrap="wrap">
-						<Text size="xs" c="dimmed">
-							Vicugna backend v{app.version}
-						</Text>
-						<Text size="xs" c="dimmed">
-							Entorno: {app.environment}
-						</Text>
-					</Group>
-				</Container>
-			</Paper>
 		</Box>
+	)
+}
+
+function HomeIcon() {
+	return (
+		<svg
+			width="20"
+			height="20"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+		>
+			<path d="m3 11 9-8 9 8" />
+			<path d="M5 10v10h14V10" />
+			<path d="M9 20v-6h6v6" />
+		</svg>
+	)
+}
+
+function LogOutIcon() {
+	return (
+		<svg
+			width="16"
+			height="16"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+		>
+			<path d="M10 17l5-5-5-5M15 12H3" />
+			<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+		</svg>
 	)
 }

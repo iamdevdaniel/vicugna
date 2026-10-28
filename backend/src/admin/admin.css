@@ -1,0 +1,18 @@
+html,
+body,
+[data-admin-hydrated] {
+	min-height: 100%;
+}
+
+html {
+	scrollbar-gutter: stable;
+}
+
+@media (min-width: 62em) {
+	.admin-page-fixed {
+		height: calc(100dvh - 52px);
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+}

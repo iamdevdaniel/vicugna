@@ -1,4 +1,4 @@
-import { Badge, Group, NativeSelect, Paper } from "@mantine/core"
+import { Badge, Box, Group, NativeSelect } from "@mantine/core"
 import { Form } from "react-router"
 import type { SelectOption } from "../../../modules/assignments/assignment.types"
 
@@ -16,7 +16,7 @@ export function AssignmentsSeasonSummary({
 	permitsCount,
 }: SeasonSummaryProps) {
 	return (
-		<Paper component="section" mt="xl" p="md" withBorder shadow="sm">
+		<Box component="section">
 			<Form
 				method="get"
 				style={{
@@ -52,6 +52,6 @@ export function AssignmentsSeasonSummary({
 					</Badge>
 				</Group>
 			</Form>
-		</Paper>
+		</Box>
 	)
 }

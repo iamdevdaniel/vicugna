@@ -1,4 +1,4 @@
-import { Alert, Container, Paper, Text, Title } from "@mantine/core"
+import { Alert, Box, Container, Paper, Text, Title } from "@mantine/core"
 import type { MonitoringPageState } from "../../../modules/monitoring/monitoring.types"
 import { MonitoringDetail } from "./monitoring-detail"
 import { MonitoringOverview } from "./monitoring-overview"
@@ -12,67 +12,70 @@ type MonitoringViewProps = {
 
 export function MonitoringView({ pageData, actionData }: MonitoringViewProps) {
 	return (
-		<Container component="main" size="lg" py="xl">
-			<header>
-				<Text size="xs" fw={700} c="dimmed" tt="uppercase">
-					Administración
-				</Text>
-				<Title order={1} mt={4}>
+		<Container component="main" size="lg" py="md">
+			<Box
+				component="header"
+				mih={72}
+				py={6}
+				display="flex"
+				style={{ flexDirection: "column", justifyContent: "center" }}
+			>
+				<Title order={1} size="h2">
 					Seguimiento
 				</Title>
 				<Text mt="xs" size="sm" c="dimmed">
 					Revisa el avance, la sincronización y los reportes de cada
 					permiso.
 				</Text>
-			</header>
+			</Box>
 
-			<MonitoringSummary
-				seasons={pageData.seasons}
-				selectedSeasonId={pageData.selectedSeasonId}
-				communitiesCount={pageData.communitiesCount}
-				permitsCount={pageData.permitsCount}
-				assignedUsersCount={pageData.assignedUsersCount}
-			/>
+			<Paper mt="md" p="md">
+				<MonitoringSummary
+					seasons={pageData.seasons}
+					selectedSeasonId={pageData.selectedSeasonId}
+					communitiesCount={pageData.communitiesCount}
+					permitsCount={pageData.permitsCount}
+					assignedUsersCount={pageData.assignedUsersCount}
+				/>
 
-			{actionData ? (
-				<Alert
-					mt="md"
-					color={actionData.ok ? "green" : "red"}
-					role={actionData.ok ? "status" : "alert"}
-				>
-					{actionData.message}
-				</Alert>
-			) : null}
-
-			<section style={{ marginTop: 16 }}>
-				{pageData.selectedPermit ? (
-					<MonitoringDetail
-						permit={pageData.selectedPermit}
-						seasonId={pageData.selectedSeasonId}
-					/>
-				) : pageData.communityGroups.length > 0 ? (
-					<MonitoringOverview
-						seasonId={pageData.selectedSeasonId}
-						communityGroups={pageData.communityGroups}
-					/>
-				) : (
-					<Paper
-						mih={288}
-						p="xl"
-						withBorder
-						shadow="sm"
-						display="flex"
-						style={{
-							alignItems: "center",
-							justifyContent: "center",
-						}}
+				{actionData ? (
+					<Alert
+						mt="md"
+						color={actionData.ok ? "green" : "red"}
+						role={actionData.ok ? "status" : "alert"}
 					>
-						<Text size="sm" c="dimmed">
-							No hay asignaciones para esta temporada.
-						</Text>
-					</Paper>
-				)}
-			</section>
+						{actionData.message}
+					</Alert>
+				) : null}
+
+				<section style={{ marginTop: 16 }}>
+					{pageData.selectedPermit ? (
+						<MonitoringDetail
+							permit={pageData.selectedPermit}
+							seasonId={pageData.selectedSeasonId}
+						/>
+					) : pageData.communityGroups.length > 0 ? (
+						<MonitoringOverview
+							seasonId={pageData.selectedSeasonId}
+							communityGroups={pageData.communityGroups}
+						/>
+					) : (
+						<Paper
+							mih={288}
+							p="xl"
+							display="flex"
+							style={{
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Text size="sm" c="dimmed">
+								No hay asignaciones para esta temporada.
+							</Text>
+						</Paper>
+					)}
+				</section>
+			</Paper>
 		</Container>
 	)
 }

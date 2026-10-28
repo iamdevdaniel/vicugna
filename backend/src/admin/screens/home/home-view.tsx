@@ -1,23 +1,27 @@
-import { Container, Grid, Text, Title } from "@mantine/core"
+import { Box, Container, Grid, Title } from "@mantine/core"
 import { HomeSectionCard } from "./home-section-card"
 
 export function HomeView() {
 	return (
-		<Container component="main" size="lg" py="xl">
-			<header>
-				<Text size="xs" fw={700} c="dimmed" tt="uppercase">
-					Panel administrativo
-				</Text>
-				<Title order={1} mt={4}>
+		<Container
+			component="main"
+			size="lg"
+			py="md"
+			className="admin-page-fixed"
+		>
+			<Box
+				component="header"
+				mih={72}
+				py={6}
+				display="flex"
+				style={{ flexDirection: "column", justifyContent: "center" }}
+			>
+				<Title order={1} size="h2">
 					Inicio
 				</Title>
-				<Text mt="xs" maw={672} size="sm" c="dimmed">
-					Gestiona el acceso, las asignaciones y el seguimiento de los
-					permisos.
-				</Text>
-			</header>
-			<Grid component="section" mt="xl">
-				<Grid.Col span={{ base: 12, md: 6 }}>
+			</Box>
+			<Grid component="section" mt="md">
+				<Grid.Col span={{ base: 12, md: 4 }}>
 					<HomeSectionCard
 						title="Usuarios"
 						description="Crear encargados y revisar las personas con acceso al sistema."
@@ -25,7 +29,7 @@ export function HomeView() {
 						icon={<UsersIcon />}
 					/>
 				</Grid.Col>
-				<Grid.Col span={{ base: 12, md: 6 }}>
+				<Grid.Col span={{ base: 12, md: 4 }}>
 					<HomeSectionCard
 						title="Asignaciones"
 						description="Asignar comunidad, encargado y permisos para la temporada."
@@ -33,7 +37,7 @@ export function HomeView() {
 						icon={<AssignmentsIcon />}
 					/>
 				</Grid.Col>
-				<Grid.Col span={12}>
+				<Grid.Col span={{ base: 12, md: 4 }}>
 					<HomeSectionCard
 						title="Seguimiento"
 						description="Revisar sincronización, avance y exportar los datos finales."

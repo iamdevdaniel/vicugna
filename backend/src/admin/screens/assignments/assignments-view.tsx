@@ -1,4 +1,4 @@
-import { Container, Text, Title } from "@mantine/core"
+import { Box, Container, Paper, Text, Title } from "@mantine/core"
 import type {
 	AssignmentPermitCard,
 	ManagedUserOption,
@@ -21,33 +21,50 @@ type AssignmentsViewProps = {
 
 export function AssignmentsView(props: AssignmentsViewProps) {
 	return (
-		<Container component="main" size="lg" py="xl">
-			<header>
-				<Text size="xs" fw={700} c="dimmed" tt="uppercase">
-					Administración
-				</Text>
-				<Title order={1} mt={4}>
+		<Container
+			component="main"
+			size="lg"
+			py="md"
+			className="admin-page-fixed"
+		>
+			<Box
+				component="header"
+				mih={72}
+				py={6}
+				display="flex"
+				style={{ flexDirection: "column", justifyContent: "center" }}
+			>
+				<Title order={1} size="h2">
 					Asignaciones
 				</Title>
 				<Text mt="xs" size="sm" c="dimmed">
 					Gestiona los permisos y su encargado por temporada.
 				</Text>
-			</header>
+			</Box>
 
-			<AssignmentsSeasonSummary
-				seasons={props.seasons}
-				selectedSeasonId={props.selectedSeasonId}
-				communitiesWithPermitsCount={props.communitiesWithPermitsCount}
-				permitsCount={props.permitsCount}
-			/>
-			<AssignmentsWorkspace
-				key={props.selectedSeasonId}
-				permits={props.permits}
-				communities={props.communities}
-				users={props.users}
-				assignmentCards={props.assignmentCards}
-				selectedSeasonId={props.selectedSeasonId}
-			/>
+			<Paper
+				component="section"
+				mt="md"
+				p="md"
+				style={{ minHeight: 0, flex: 1, overflow: "auto" }}
+			>
+				<AssignmentsSeasonSummary
+					seasons={props.seasons}
+					selectedSeasonId={props.selectedSeasonId}
+					communitiesWithPermitsCount={
+						props.communitiesWithPermitsCount
+					}
+					permitsCount={props.permitsCount}
+				/>
+				<AssignmentsWorkspace
+					key={props.selectedSeasonId}
+					permits={props.permits}
+					communities={props.communities}
+					users={props.users}
+					assignmentCards={props.assignmentCards}
+					selectedSeasonId={props.selectedSeasonId}
+				/>
+			</Paper>
 		</Container>
 	)
 }

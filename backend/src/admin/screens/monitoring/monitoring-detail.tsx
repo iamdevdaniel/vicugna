@@ -1,6 +1,7 @@
 import {
 	ActionIcon,
 	Badge,
+	Box,
 	Button,
 	Grid,
 	Group,
@@ -25,7 +26,7 @@ export function MonitoringDetail({ permit, seasonId }: MonitoringDetailProps) {
 	const synced = SYNCED_PERMIT_STATUSES.includes(permit.syncStatus)
 
 	return (
-		<Paper component="article" p="md" withBorder shadow="sm">
+		<Box component="article">
 			<Paper component="section" p="sm" withBorder>
 				<Group
 					justify="space-between"
@@ -123,7 +124,7 @@ export function MonitoringDetail({ permit, seasonId }: MonitoringDetailProps) {
 					</Paper>
 				</Grid.Col>
 			</Grid>
-		</Paper>
+		</Box>
 	)
 }
 

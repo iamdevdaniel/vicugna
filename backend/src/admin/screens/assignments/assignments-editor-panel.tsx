@@ -1,8 +1,8 @@
 import {
+	Box,
 	Button,
 	Group,
 	NativeSelect,
-	Paper,
 	Stack,
 	Text,
 	TextInput,
@@ -73,7 +73,7 @@ export function AssignmentEditorPanel({
 	})
 
 	return (
-		<Paper component="article" p="md" withBorder shadow="sm">
+		<Box component="article" p="xs">
 			<Title order={2} size="h4">
 				Configurar permiso
 			</Title>
@@ -236,6 +236,6 @@ export function AssignmentEditorPanel({
 					Selecciona un permiso para configurar su encargado.
 				</Text>
 			)}
-		</Paper>
+		</Box>
 	)
 }

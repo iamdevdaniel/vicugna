@@ -26,36 +26,26 @@ export function UsersView(props: UsersViewProps) {
 		state.activeTab === "users" ? state.regularUsers : state.adminUsers
 
 	return (
-		<Container component="main" size="lg" py="xl">
-			<header>
+		<Container component="main" size="lg" py="md">
+			<Box
+				component="header"
+				mih={72}
+				py={6}
+				display="flex"
+				style={{ flexDirection: "column", justifyContent: "center" }}
+			>
 				<div>
-					<Text size="xs" fw={700} c="dimmed" tt="uppercase">
-						Administración
-					</Text>
-					<Title order={1} mt={4}>
+					<Title order={1} size="h2">
 						Usuarios
 					</Title>
 					<Text mt="xs" size="sm" c="dimmed">
 						Gestiona las personas con acceso al sistema.
 					</Text>
 				</div>
-			</header>
+			</Box>
 
-			<Paper
-				component="section"
-				mt="xl"
-				withBorder
-				shadow="sm"
-				style={{ overflow: "hidden" }}
-			>
-				<Box
-					px="lg"
-					pt="lg"
-					style={{
-						borderBottom:
-							"1px solid var(--mantine-color-default-border)",
-					}}
-				>
+			<Paper component="section" mt="md" style={{ overflow: "hidden" }}>
+				<Box px="lg" pt="lg">
 					<Group mih={48} justify="space-between" gap="md">
 						<Title order={2} size="h3">
 							Usuarios registrados

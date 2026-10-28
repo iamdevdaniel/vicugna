@@ -35,6 +35,7 @@ export const adminTheme = createTheme({
 export const adminCssVariablesResolver: CSSVariablesResolver = () => ({
 	variables: {},
 	light: {
+		"--admin-header-bg": "#e3edde",
 		"--mantine-color-body": "#f7f2e8",
 		"--mantine-color-text": "#614731",
 		"--mantine-color-dimmed": "#806a55",
@@ -43,6 +44,7 @@ export const adminCssVariablesResolver: CSSVariablesResolver = () => ({
 		"--mantine-color-default-border": "#e5dac9",
 	},
 	dark: {
+		"--admin-header-bg": "#263523",
 		"--mantine-color-body": "#29231e",
 		"--mantine-color-text": "#f5ede3",
 		"--mantine-color-dimmed": "#c7b9aa",

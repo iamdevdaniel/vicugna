@@ -1,5 +1,6 @@
 import {
 	Badge,
+	Box,
 	Button,
 	Group,
 	Paper,
@@ -29,7 +30,7 @@ export function MonitoringOverview({
 	const state = useMonitoringState(seasonId, communityGroups)
 
 	return (
-		<Paper component="section" p="md" withBorder shadow="sm">
+		<Box component="section">
 			<Group
 				align="flex-end"
 				justify="space-between"
@@ -96,7 +97,7 @@ export function MonitoringOverview({
 					/>
 				))}
 			</Stack>
-		</Paper>
+		</Box>
 	)
 }
 

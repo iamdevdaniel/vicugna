@@ -1,4 +1,4 @@
-import { Badge, Group, NativeSelect, Paper } from "@mantine/core"
+import { Badge, Box, Group, NativeSelect } from "@mantine/core"
 import { Form } from "react-router"
 import type { MonitoringSeasonOption } from "../../../modules/monitoring/monitoring.types"
 
@@ -18,7 +18,7 @@ export function MonitoringSummary({
 	assignedUsersCount,
 }: MonitoringSummaryProps) {
 	return (
-		<Paper component="section" mt="xl" p="md" withBorder shadow="sm">
+		<Box component="section">
 			<Form
 				method="get"
 				style={{
@@ -57,7 +57,7 @@ export function MonitoringSummary({
 					/>
 				</Group>
 			</Form>
-		</Paper>
+		</Box>
 	)
 }
 

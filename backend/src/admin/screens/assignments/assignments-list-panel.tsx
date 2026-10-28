@@ -1,7 +1,7 @@
 import {
 	Badge,
+	Box,
 	Group,
-	Paper,
 	ScrollArea,
 	Stack,
 	Text,
@@ -31,7 +31,7 @@ export function AssignmentsListPanel({
 	onSelectPermit,
 }: AssignmentsListPanelProps) {
 	return (
-		<Paper component="article" p="md" withBorder shadow="sm">
+		<Box component="article" p="xs">
 			<Title order={2} size="h4">
 				Asignaciones actuales
 			</Title>
@@ -89,7 +89,7 @@ export function AssignmentsListPanel({
 					)}
 				</Stack>
 			</ScrollArea.Autosize>
-		</Paper>
+		</Box>
 	)
 }
 

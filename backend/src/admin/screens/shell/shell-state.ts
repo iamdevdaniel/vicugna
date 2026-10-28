@@ -7,6 +7,7 @@ export function useShellState() {
 	const { setColorScheme } = useMantineColorScheme()
 
 	return {
+		colorScheme: computedColorScheme,
 		isNavigating: navigation.state !== "idle",
 		toggleTheme: () =>
 			setColorScheme(computedColorScheme === "dark" ? "light" : "dark"),
