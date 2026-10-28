@@ -9,9 +9,9 @@ import { useMobileAuthStore } from "@utils/auth-store"
 import { ROUTES } from "@utils/constants"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
-import { router } from "expo-router"
-import { useEffect, useRef, useState } from "react"
-import { Alert, FlatList, View } from "react-native"
+import { router, useFocusEffect } from "expo-router"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { Alert, BackHandler, FlatList, View } from "react-native"
 import {
 	ActivityIndicator,
 	Button,
@@ -59,6 +59,21 @@ export default function NativeHomeScreen() {
 	} = useLoadPermits()
 
 	const isPermitListLoading = loading || loadingPermits
+
+	useFocusEffect(
+		useCallback(() => {
+			const subscription = BackHandler.addEventListener(
+				"hardwareBackPress",
+				() => {
+					BackHandler.exitApp()
+					return true
+				},
+			)
+
+			return () => subscription.remove()
+		}, []),
+	)
+
 	const onManualRefresh = async () => {
 		if (loadingPermits || isRefreshCoolingDown) return
 
