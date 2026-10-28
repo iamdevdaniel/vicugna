@@ -3,15 +3,18 @@ import { db } from "@db"
 import { type APIRequestContext, expect, test } from "@playwright/test"
 import type { PermitFieldData, PermitSyncResult, SyncFieldData } from "@shared"
 import { eq } from "drizzle-orm"
-import { assignments, permits, users } from "../../src/db/schema"
+import { assignments, participants, permits, users } from "../../src/db/schema"
+import { saveSyncFieldData } from "../../src/modules/mobile_in/mobile_in.repository"
 import { PERMIT_DATA_HASH_VERSION } from "../../src/modules/permit-sync/permit-data-hash"
 import { downloadPermit, login, sendPermit } from "./permit-sync-test-helpers"
 
 const userId = "user-seed-03"
+const rollbackBlockerPermitId = "permit-e2e-sync-rollback-blocker"
 const permitIds = {
 	retry: "permit-e2e-sync-retry",
 	replacement: "permit-e2e-sync-replacement",
 	auth: "permit-e2e-sync-auth",
+	rollback: "permit-e2e-sync-rollback",
 } as const
 
 test.describe.configure({ mode: "serial" })
@@ -34,6 +37,13 @@ test.beforeAll(async () => {
 				permitId,
 			})
 		}
+		await tx.insert(permits).values({
+			id: rollbackBlockerPermitId,
+			seasonId: "season-2026",
+			communityId: "atulcha",
+			permitNumber: "SYNC-SAFETY-BLOCKER",
+			syncStatus: "created",
+		})
 	})
 })
 
@@ -113,6 +123,63 @@ test("replaces a reopened permit with exactly the newly uploaded snapshot", asyn
 	)
 	expect(finalDownload.permit.syncStatus).toBe("synced")
 	expect(finalDownload.permit.syncedAt).toBe(replacementResult.syncedAt)
+})
+
+test("rolls back the complete replacement when a database insert fails", async ({
+	request,
+}) => {
+	const token = await login(request)
+	const emptyDownload = await downloadPermit(
+		request,
+		token,
+		permitIds.rollback,
+	)
+	const initialPayload = makePayload(
+		permitIds.rollback,
+		emptyDownload.serverHash,
+		makeInitialSnapshot(permitIds.rollback, "rollback"),
+	)
+	const initialResult = await expectSuccessfulSync(
+		request,
+		token,
+		initialPayload,
+	)
+
+	await db
+		.update(permits)
+		.set({ syncStatus: "reopened" })
+		.where(eq(permits.id, permitIds.rollback))
+
+	const reopenedDownload = await downloadPermit(
+		request,
+		token,
+		permitIds.rollback,
+	)
+	const replacementPayload = makePayload(
+		permitIds.rollback,
+		reopenedDownload.serverHash,
+		makeReplacementSnapshot(permitIds.rollback, "rollback"),
+	)
+
+	await db.insert(participants).values({
+		...replacementPayload.participants[1],
+		permitId: rollbackBlockerPermitId,
+	})
+
+	await expect(
+		saveSyncFieldData(replacementPayload, userId),
+	).rejects.toMatchObject({ cause: { code: "23505" } })
+
+	const finalDownload = await downloadPermit(
+		request,
+		token,
+		permitIds.rollback,
+	)
+	expect(normalizeFieldData(finalDownload.fieldData)).toEqual(
+		normalizeFieldData(fieldDataFromPayload(initialPayload)),
+	)
+	expect(finalDownload.permit.syncStatus).toBe("reopened")
+	expect(finalDownload.permit.syncedAt).toBe(initialResult.syncedAt)
 })
 
 test("rejects missing, invalid, expired, and deactivated-user authentication", async ({
