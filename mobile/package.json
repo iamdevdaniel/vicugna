@@ -7,14 +7,15 @@
     "reset-project": "node ./scripts/reset-project.js",
     "start": "expo start",
     "web": "expo start --web",
-	"android": "expo run:android",
+    "android": "expo run:android",
     "e2e:build": "expo prebuild --platform android --no-install && detox build -C ./e2e/detox.config.js -c android.attached.debug",
     "e2e:happy": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/happy-path.test.js",
     "e2e:isolation": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/account-isolation.test.js",
     "e2e:validation": "detox test -C ./e2e/detox.config.js -c android.attached.debug ./e2e/validation.test.js",
     "test:web-db": "tsx --test database/web/*.test.ts",
     "lint-fix": "npx biome check ./app ./components ./database ./assets ./definitions ./utils ./e2e ./screens --write",
-    "prepare": "cd .. && husky"
+    "prepare": "cd .. && husky",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
