@@ -25,52 +25,62 @@ const connectionTargetParameters = new Set([
 loadEnv({ path: envPath, quiet: true })
 
 async function main() {
-	const config = readE2eConfig()
-	const testEnvironment = {
+	if (testArgs.includes("--list")) {
+		const config = readE2eConfig()
+		process.exitCode = runPlaywright(createE2eEnvironment(config))
+		return
+	}
+
+	let e2eContext = null
+	let testExitCode = 1
+
+	try {
+		e2eContext = await prepareE2eEnvironment()
+		testExitCode = runPlaywright(e2eContext.environment)
+	} finally {
+		if (e2eContext) await removeE2eEnvironment(e2eContext)
+	}
+
+	process.exitCode = testExitCode
+}
+
+function createE2eEnvironment(config) {
+	return {
 		...process.env,
 		NODE_ENV: "test",
 		VICUGNA_DATABASE_URL: config.databaseUrl,
 		VICUGNA_E2E_DATABASE_URL: config.databaseUrl,
 		VICUGNA_SEED_USER_PASSWORD_FORMAT: "e2e-{name}-password",
 	}
+}
 
-	if (testArgs.includes("--list")) {
-		process.exitCode = runPlaywright(testEnvironment)
-		return
-	}
+async function prepareE2eEnvironment() {
+	const config = readE2eConfig()
+	const environment = createE2eEnvironment(config)
 
-	let databaseCreated = false
-	let testExitCode = 1
+	console.log(`Preparing isolated E2E database: ${config.databaseName}`)
+	await recreateDatabase(config)
 
 	try {
-		console.log(`Preparing isolated E2E database: ${config.databaseName}`)
-		await recreateDatabase(config)
-		databaseCreated = true
 		runChecked(
 			"database migrations",
 			process.execPath,
 			["scripts/db.cjs", "migrate"],
-			testEnvironment,
+			environment,
 		)
-		runChecked(
-			"backend build",
-			npmCommand,
-			["run", "build"],
-			testEnvironment,
-		)
-		seedExistingFixtures(testEnvironment)
+		runChecked("backend build", npmCommand, ["run", "build"], environment)
+		seedExistingFixtures(environment)
 		await seedAdmin(config)
-		testExitCode = runPlaywright(testEnvironment)
-	} finally {
-		if (databaseCreated) {
-			console.log(
-				`Removing isolated E2E database: ${config.databaseName}`,
-			)
-			await dropDatabase(config)
-		}
+		return { config, environment }
+	} catch (error) {
+		await dropDatabase(config)
+		throw error
 	}
+}
 
-	process.exitCode = testExitCode
+async function removeE2eEnvironment({ config }) {
+	console.log(`Removing isolated E2E database: ${config.databaseName}`)
+	await dropDatabase(config)
 }
 
 function readE2eConfig() {
@@ -242,7 +252,7 @@ function seedExistingFixtures(environment) {
 
 async function seedAdmin(config) {
 	const client = new Client({ connectionString: config.databaseUrl })
-	const passwordHash = await bcrypt.hash(config.adminPassword, 12)
+	const passwordHash = await hashE2ePassword(config.adminPassword)
 	await client.connect()
 
 	try {
@@ -286,6 +296,14 @@ async function seedAdmin(config) {
 	}
 }
 
+function hashE2ePassword(password) {
+	return bcrypt.hash(password, 12)
+}
+
+function createE2eDatabaseClient(connectionString) {
+	return new Client({ connectionString })
+}
+
 function runPlaywright(environment) {
 	const result = spawnSync(
 		process.execPath,
@@ -326,7 +344,17 @@ function runChecked(label, command, args, environment) {
 	}
 }
 
-main().catch((error) => {
-	console.error(error instanceof Error ? error.message : error)
-	process.exitCode = 1
-})
+if (require.main === module) {
+	main().catch((error) => {
+		console.error(error instanceof Error ? error.message : error)
+		process.exitCode = 1
+	})
+}
+
+module.exports = {
+	backendDir,
+	createE2eDatabaseClient,
+	hashE2ePassword,
+	prepareE2eEnvironment,
+	removeE2eEnvironment,
+}

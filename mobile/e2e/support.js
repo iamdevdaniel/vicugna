@@ -205,9 +205,15 @@ async function setTime(label, hour, minute) {
 	await expectFieldValue(label, displayTime(hour, minute))
 }
 
-async function resetLoginAndLoadPermits() {
-	const email = requiredEnvironment("E2E_TEST_USER_01_EMAIL")
-	const password = requiredEnvironment("E2E_TEST_USER_01_PASSWORD")
+async function resetLoginAndLoadPermits(
+	expectedPermits = [HAPPY_PERMIT, VALIDATION_PERMIT],
+	credentials,
+) {
+	const email =
+		credentials?.email ?? requiredEnvironment("E2E_TEST_USER_01_EMAIL")
+	const password =
+		credentials?.password ??
+		requiredEnvironment("E2E_TEST_USER_01_PASSWORD")
 
 	console.log("Resetting local app data...")
 	console.log("Opening the Expo development client...")
@@ -223,7 +229,7 @@ async function resetLoginAndLoadPermits() {
 		timeout: 30_000,
 	})
 
-	for (const permit of [HAPPY_PERMIT, VALIDATION_PERMIT]) {
+	for (const permit of expectedPermits) {
 		await detoxExpect(element(by.text(permit))).not.toExist()
 	}
 
@@ -233,11 +239,19 @@ async function resetLoginAndLoadPermits() {
 	await replaceField("Inicio de sesión: contraseña", password)
 	await tapLabel("Enviar inicio de sesión")
 
-	console.log("Waiting for TEST-01 and TEST-02...")
-	for (const permit of [HAPPY_PERMIT, VALIDATION_PERMIT]) {
+	console.log(`Waiting for ${expectedPermits.join(", ")}...`)
+	for (const permit of expectedPermits) {
 		await byLabelContaining(`Permiso ${permit}`, { timeout: 120_000 })
 	}
-	console.log("Test permits loaded")
+	console.log("Expected permits loaded")
+}
+
+async function relaunchApp() {
+	await device.launchApp({
+		newInstance: true,
+		resetAppState: false,
+		url: `vicugna://expo-development-client/?url=${encodeURIComponent(EXPO_SERVER_URL)}`,
+	})
 }
 
 async function openPermit(permitNumber) {
@@ -261,6 +275,7 @@ module.exports = {
 	openPermit,
 	requiredEnvironment,
 	replaceField,
+	relaunchApp,
 	resetLoginAndLoadPermits,
 	setTime,
 	tapLabel,

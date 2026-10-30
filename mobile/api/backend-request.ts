@@ -21,7 +21,9 @@ export class BackendRequestError extends Error {
 	}
 }
 
-const apiBaseUrl = process.env.EXPO_PUBLIC_BACKEND_URL
+const apiBaseUrl =
+	process.env.EXPO_PUBLIC_BACKEND_PROXY_URL ??
+	process.env.EXPO_PUBLIC_BACKEND_URL
 const requestTimeoutMs = 95_000
 
 if (!apiBaseUrl) {

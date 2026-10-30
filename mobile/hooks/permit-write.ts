@@ -15,6 +15,8 @@ import {
 } from "@database"
 import {
 	backendPermitSyncErrors,
+	getPendingSyncRequestErrorMessage,
+	isUncertainSyncRequestErrorCode,
 	type MobileErrorDefinition,
 	MobileOperationError,
 	mobilePermitSyncErrors,
@@ -353,18 +355,10 @@ async function downloadAndReplacePermit(
 }
 
 function isUncertainRequestFailure(error: unknown): boolean {
-	if (!(error instanceof BackendRequestError)) return false
-
-	switch (error.code) {
-		case mobileRequestErrors.timeout.code:
-		case mobileRequestErrors.unreachable.code:
-		case mobileRequestErrors.invalidResponse.code:
-		case mobileRequestErrors.serverError.code:
-		case mobileRequestErrors.unexpected.code:
-			return true
-		default:
-			return false
-	}
+	return (
+		error instanceof BackendRequestError &&
+		isUncertainSyncRequestErrorCode(error.code)
+	)
 }
 
 function isConfirmedRetryRejection(error: unknown): boolean {
@@ -444,20 +438,7 @@ function getMobileSyncError(error: MobileErrorDefinition): string {
 
 function getPendingSyncError(error: unknown): string {
 	if (error instanceof BackendRequestError) {
-		switch (error.code) {
-			case mobileRequestErrors.offline.code:
-			case mobileRequestErrors.unreachable.code:
-				return "No hay conexión. Tus datos están guardados. Conéctate a internet y pulsa Reintentar envío."
-			case mobileRequestErrors.timeout.code:
-				return "No llegó la confirmación del envío. Tus datos están guardados. Pulsa Reintentar envío."
-			case mobileRequestErrors.serverError.code:
-				return "El servidor tuvo un problema. Tus datos están guardados. Pulsa Reintentar envío."
-			case mobileRequestErrors.invalidResponse.code:
-			case mobileRequestErrors.unexpected.code:
-				return mobilePermitSyncErrors.resultUnknown.message
-			default:
-				return error.message
-		}
+		return getPendingSyncRequestErrorMessage(error.code, error.message)
 	}
 
 	return mobilePermitSyncErrors.resultUnknown.message

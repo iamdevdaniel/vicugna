@@ -85,4 +85,37 @@ export const mobilePermitSyncErrors = {
 	},
 } as const satisfies Record<string, MobileErrorDefinition>
 
+export function isUncertainSyncRequestErrorCode(code: string | null): boolean {
+	switch (code) {
+		case mobileRequestErrors.timeout.code:
+		case mobileRequestErrors.unreachable.code:
+		case mobileRequestErrors.invalidResponse.code:
+		case mobileRequestErrors.serverError.code:
+		case mobileRequestErrors.unexpected.code:
+			return true
+		default:
+			return false
+	}
+}
+
+export function getPendingSyncRequestErrorMessage(
+	code: string | null,
+	fallbackMessage: string,
+): string {
+	switch (code) {
+		case mobileRequestErrors.offline.code:
+		case mobileRequestErrors.unreachable.code:
+			return "No hay conexión. Tus datos están guardados. Conéctate a internet y pulsa Reintentar envío."
+		case mobileRequestErrors.timeout.code:
+			return "No llegó la confirmación del envío. Tus datos están guardados. Pulsa Reintentar envío."
+		case mobileRequestErrors.serverError.code:
+			return "El servidor tuvo un problema. Tus datos están guardados. Pulsa Reintentar envío."
+		case mobileRequestErrors.invalidResponse.code:
+		case mobileRequestErrors.unexpected.code:
+			return mobilePermitSyncErrors.resultUnknown.message
+		default:
+			return fallbackMessage
+	}
+}
+
 export const backendPermitSyncErrors = sharedErrors.permitSyncErrors

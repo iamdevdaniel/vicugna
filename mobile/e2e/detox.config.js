@@ -11,6 +11,7 @@ if (!deviceId) throw new Error("Missing E2E_DEVICE_ID in mobile/.env")
 const expoServerUrl =
 	process.env.E2E_EXPO_URL?.trim() || "http://127.0.0.1:8081"
 const metroPort = Number(new URL(expoServerUrl).port || 80)
+const backendProxyPort = 3200
 
 /** @type {Detox.DetoxConfig} */
 module.exports = {
@@ -37,7 +38,7 @@ module.exports = {
 			type: "android.apk",
 			binaryPath: "android/app/build/outputs/apk/debug/app-debug.apk",
 			build: "cd android && ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest -DtestBuildType=debug",
-			reversePorts: [metroPort],
+			reversePorts: Array.from(new Set([metroPort, backendProxyPort])),
 		},
 	},
 	devices: {

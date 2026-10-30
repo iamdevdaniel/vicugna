@@ -2,9 +2,9 @@
 
 ## Overview
 
-Automated tests currently cover data entry in the Android app. Jest organizes the tests. Detox taps buttons, fills fields, and reads the app on a connected Android device.
+Automated tests cover data entry and permit synchronization in the Android app. Jest organizes the tests. Detox taps buttons, fills fields, and reads the app on a connected Android device.
 
-The tests log in and download test permits, but they never press **Finalizar y enviar**. They check the forms and confirm that WatermelonDB keeps the saved data. They do not replace data in the backend.
+The happy-path and validation suites use the development backend and stop before **Finalizar y enviar**. The sync suite uses the real backend, Toxiproxy, and an isolated E2E PostgreSQL database. It tests sends, retries, conflicts, replacement, and reopening without touching the development database.
 
 The backend uses Node's test runner for pure business rules and Playwright for
 API and admin browser tests. The current unit suite covers canonical permit
@@ -54,21 +54,17 @@ The E2E database must use local PostgreSQL, its name must end in `_e2e`, and it 
 
 ```text
 Jest
-        |
-   E2E suites
-        |
- Reusable flows
-        |
-  Detox helpers
-        |
-Android app + WatermelonDB
+Jest -> E2E suites -> Detox helpers -> Android app + WatermelonDB
+                         |
+                         +-> Toxiproxy -> real backend -> E2E PostgreSQL
 ```
 
 - `mobile/e2e/detox.config.js` connects Detox to the Android test build.
 - `mobile/e2e/jest.config.js` sets up the test runner and results.
-- `mobile/e2e/happy-path.test.js` and `validation.test.js` contain the tests.
+- `mobile/e2e/happy-path.test.js`, `validation.test.js`, and `sync-flows.test.js` contain the tests.
 - `mobile/e2e/flows.js` contains shared actions, such as filling a complete form.
 - `mobile/e2e/support.js` contains basic Detox actions and checks.
+- `mobile/e2e/sync-environment.js` manages the isolated backend, database fixtures, and Toxiproxy faults for the sync suite.
 
 Detox finds buttons and fields through their accessibility labels.
 
@@ -94,6 +90,26 @@ The two test groups are independent and can run in either order. Each one clears
 
 - **Happy path (`TEST-01`):** completes all three steps, reopens saved records, and checks that the permit becomes ready to send.
 - **Validation (`TEST-02`):** checks required fields, allowed number ranges, rules between fields, exact limits, and automatic values.
+
+For the isolated sync suite, start Metro with the Toxiproxy URL:
+
+```sh
+npm run start:e2e-sync
+```
+
+Then run:
+
+```sh
+npm run e2e:sync
+```
+
+The suite creates and removes its E2E database, starts the real backend and Toxiproxy, and resets its fixtures automatically. It gives the E2E user a unique password for each run, then covers device handoff, complete snapshot replacement, multiple conflicts, missing responses across retry, restart, and logout, malformed responses, rejected authentication, and cancelled reopening.
+
+Run the small mobile logic tests with:
+
+```sh
+npm run test:sync-unit
+```
 
 From `backend`, run the unit tests with:
 
@@ -130,7 +146,7 @@ The happy path does not continue app actions after a failed stage because each l
 
 ## Scope
 
-The mobile tests check that a user can enter and keep valid data on an Android device. They do not test the final sync, saved backend data, the public site, iOS, production APKs, or OTA updates. The admin Playwright suite covers login, the authenticated home screen, users, assignments, and monitoring.
+The mobile tests check data entry, local persistence, and Android sync behavior. The isolated sync suite crosses Android, the real API, and PostgreSQL; the backend mobile API tests cover API rules more directly and in greater detail. These suites do not test the public site, iOS, production APKs, or OTA updates. The admin Playwright suite covers login, the authenticated home screen, users, assignments, and monitoring.
 
 The React admin does not have a separate component unit-test suite. Playwright
 covers its user-facing behavior. Backend unit tests are reserved for important

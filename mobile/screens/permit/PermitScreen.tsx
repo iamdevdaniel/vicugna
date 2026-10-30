@@ -11,15 +11,8 @@ import { useDataOperationGuard } from "@utils/data-operation-guard"
 import { getCommunityName } from "@utils/regionals"
 import { useAppTheme } from "@utils/useAppTheme"
 import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router"
-import { useEffect, useRef, useState } from "react"
-import {
-	Alert,
-	Animated,
-	BackHandler,
-	ScrollView,
-	Text,
-	View,
-} from "react-native"
+import { useEffect, useState } from "react"
+import { Alert, BackHandler, ScrollView, Text, View } from "react-native"
 import {
 	ActivityIndicator,
 	Button,
@@ -34,7 +27,6 @@ export default function NativePermitScreen() {
 	const theme = useAppTheme()
 	const insets = useSafeAreaInsets()
 	const navigation = useNavigation()
-	const snackbarTranslateY = useRef(new Animated.Value(80)).current
 	const [snackbarVisible, setSnackbarVisible] = useState(false)
 	const [snackbarMessage, setSnackbarMessage] = useState("")
 	const [snackbarType, setSnackbarType] = useState<"success" | "error">(
@@ -72,14 +64,6 @@ export default function NativePermitScreen() {
 	const communityName = permit
 		? getCommunityName(permit.communityId)
 		: "Comunidad"
-
-	useEffect(() => {
-		Animated.timing(snackbarTranslateY, {
-			toValue: snackbarVisible ? 0 : 80,
-			duration: 180,
-			useNativeDriver: true,
-		}).start()
-	}, [snackbarTranslateY, snackbarVisible])
 
 	useEffect(() => {
 		if (!syncingPermit) {
@@ -391,48 +375,43 @@ export default function NativePermitScreen() {
 							: "Finalizar y enviar"}
 				</Button>
 			</View>
-			<Animated.View
-				pointerEvents="box-none"
-				style={{
-					position: "absolute",
-					left: 16,
-					right: 16,
+			<Snackbar
+				visible={snackbarVisible}
+				onDismiss={hideSnackbar}
+				duration={3500}
+				wrapperStyle={{
+					left: 8,
+					right: 8,
 					bottom: 92 + insets.bottom,
+					width: "auto",
 					zIndex: 20,
-					transform: [{ translateY: snackbarTranslateY }],
+				}}
+				style={{
+					backgroundColor:
+						snackbarType === "error"
+							? theme.colors.error
+							: theme.colors.inverseSurface,
+				}}
+				action={{
+					label: "Cerrar",
+					textColor:
+						snackbarType === "error"
+							? theme.colors.onError
+							: theme.colors.inverseOnSurface,
+					onPress: hideSnackbar,
 				}}
 			>
-				<Snackbar
-					visible={snackbarVisible}
-					onDismiss={hideSnackbar}
-					duration={3500}
+				<Text
 					style={{
-						backgroundColor:
-							snackbarType === "error"
-								? theme.colors.error
-								: theme.colors.inverseSurface,
-					}}
-					action={{
-						label: "Cerrar",
-						textColor:
+						color:
 							snackbarType === "error"
 								? theme.colors.onError
 								: theme.colors.inverseOnSurface,
-						onPress: hideSnackbar,
 					}}
 				>
-					<Text
-						style={{
-							color:
-								snackbarType === "error"
-									? theme.colors.onError
-									: theme.colors.inverseOnSurface,
-						}}
-					>
-						{snackbarMessage}
-					</Text>
-				</Snackbar>
-			</Animated.View>
+					{snackbarMessage}
+				</Text>
+			</Snackbar>
 			<Portal>
 				<Modal
 					visible={syncingPermit}
