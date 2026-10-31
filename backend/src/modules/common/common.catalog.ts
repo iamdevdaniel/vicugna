@@ -1,5 +1,4 @@
-import { readFile } from "node:fs/promises"
-import path from "node:path"
+import regionalsCatalog from "@shared/regionals.json"
 
 type CommunityCatalogEntry = {
 	id: string
@@ -26,10 +25,7 @@ type RegionalsCatalog = Record<
 let cachedCommunitiesById: Map<string, CommunityCatalogEntry> | null = null
 
 export async function readRegionalsCatalog(): Promise<RegionalsCatalog> {
-	const filePath = path.resolve(process.cwd(), "src/assets/regionals.json")
-	const file = await readFile(filePath, "utf8")
-
-	return JSON.parse(file) as RegionalsCatalog
+	return regionalsCatalog
 }
 
 export async function getCommunityNameById(communityId: string) {
