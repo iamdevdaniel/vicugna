@@ -4,17 +4,12 @@
 
 ### App
 
-- **Expo / React Native**: One project for Android and the laptop Chrome PWA.
-- **WatermelonDB**: Android local database for offline data.
-- **Dexie / IndexedDB**: PWA local database behind web-specific files.
-- **React Native Paper**: Android components.
-- **Mantine**: Laptop web components; it must not be imported by
-  native files.
+- **Expo / React Native**: Android application.
+- **WatermelonDB**: Local database for offline data.
+- **React Native Paper**: Application components.
 
 Expo Router route files stay small and live in `app`. Complete route views live
-in `screens`: `.tsx` is the Android implementation and `.web.tsx` is the laptop
-implementation. Keeping the platform pair outside `app` prevents Expo Router
-from including both interfaces in both bundles.
+in `screens`.
 
 ### DAL organization
 

@@ -1,7 +1,7 @@
 # API Errors
 
-This document covers the JSON API used by Android and the PWA. Admin pages use
-React Router responses and are not covered here.
+This document covers the JSON API used by Android. Admin pages use React Router
+responses and are not covered here.
 
 Success uses `{ "ok": true, "data": ... }`. An expected error uses
 `{ "ok": false, "error": "Mensaje en español", "code": "OPTIONAL_CODE" }`.

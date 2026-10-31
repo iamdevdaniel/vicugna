@@ -10,11 +10,9 @@
 			"@utils/*": ["./utils/*"],
 			"@api": ["./api/index"],
 			"@database": ["./database/index"],
-			"@database/web": ["./database/index.web"],
 			"@components": ["./components/index"],
 			"@components/*": ["./components/*"],
 			"@hooks": ["./hooks/index"],
-			"@hooks/web": ["./hooks/index.web"],
 			"@screens/*": ["./screens/*"],
 			"@vicugna/shared": ["../shared/types.d.ts"],
 			"@vicugna/shared/*": ["../shared/*"]
